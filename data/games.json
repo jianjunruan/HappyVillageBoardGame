@@ -1,0 +1,67 @@
+{
+  "games": [
+    {
+      "id": "catan",
+      "name": "Catan",
+      "image": "images/catan.svg",
+      "description": "Settle the island of Catan by collecting wood, brick, wheat, sheep and ore. Trade with other players, build roads and settlements, and be the first to reach 10 victory points.\n\nGreat for: groups who enjoy trading and negotiating.",
+      "players": "3–4",
+      "playtime": "60–90 min",
+      "age": "10+",
+      "tags": ["Strategy", "Trading", "Family"],
+      "links": [
+        { "label": "Find how-to-play videos on YouTube", "url": "https://www.youtube.com/results?search_query=catan+how+to+play" }
+      ]
+    },
+    {
+      "id": "ticket-to-ride",
+      "name": "Ticket to Ride",
+      "image": "images/ticket-to-ride.svg",
+      "description": "Collect train cards and claim railway routes across the map. Complete your secret destination tickets to score big — but watch out, other players may block your path!",
+      "players": "2–5",
+      "playtime": "45–60 min",
+      "age": "8+",
+      "tags": ["Family", "Strategy"],
+      "links": [
+        { "label": "Find how-to-play videos on YouTube", "url": "https://www.youtube.com/results?search_query=ticket+to+ride+how+to+play" }
+      ]
+    },
+    {
+      "id": "codenames",
+      "name": "Codenames",
+      "image": "images/codenames.svg",
+      "description": "Two teams compete to find their secret agents. Each team's spymaster gives one-word clues that connect several words on the table. Guess carefully — touching the assassin loses the game instantly.",
+      "players": "4–8+",
+      "playtime": "15–20 min",
+      "age": "10+",
+      "tags": ["Party", "Word", "Team"],
+      "links": [
+        { "label": "Find how-to-play videos on YouTube", "url": "https://www.youtube.com/results?search_query=codenames+how+to+play" }
+      ]
+    },
+    {
+      "id": "splendor",
+      "name": "Splendor",
+      "image": "images/splendor.svg",
+      "description": "You are a Renaissance gem merchant. Collect gem tokens, buy development cards that give permanent bonuses, and attract nobles to your shop. Simple rules, deep decisions.",
+      "players": "2–4",
+      "playtime": "30 min",
+      "age": "10+",
+      "tags": ["Strategy", "Cards"],
+      "links": [
+        { "label": "Find how-to-play videos on YouTube", "url": "https://www.youtube.com/results?search_query=splendor+board+game+how+to+play" }
+      ]
+    },
+    {
+      "id": "uno",
+      "name": "UNO",
+      "image": "images/uno.svg",
+      "description": "Match cards by colour or number and be the first to empty your hand. Don't forget to shout \"UNO!\" when you have one card left.",
+      "players": "2–10",
+      "playtime": "20–30 min",
+      "age": "7+",
+      "tags": ["Party", "Cards", "Family"],
+      "links": []
+    }
+  ]
+}

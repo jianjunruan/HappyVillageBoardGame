@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Happy Village Board Games</title>
+  <meta name="description" content="Board games we play at Happy Village — rules, pictures and how-to-play videos.">
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <h1>🎲 Happy Village Board Games</h1>
+      <p class="tagline">Find a game, learn the rules, watch how it's played.</p>
+      <input id="search" type="search" placeholder="Search games, e.g. strategy, party, cards…" aria-label="Search games">
+      <div id="tags" class="tag-row" aria-label="Filter by tag"></div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <p id="status" class="status" role="status">Loading games…</p>
+    <div id="grid" class="grid"></div>
+  </main>
+
+  <footer class="wrap site-footer">
+    <p>Happy Village Board Game Club · Events &amp; registration coming soon</p>
+  </footer>
+
+  <dialog id="detail" aria-labelledby="detail-title">
+    <button class="close" data-close aria-label="Close">✕</button>
+    <article id="detail-body"></article>
+  </dialog>
+
+  <script src="js/config.js"></script>
+  <script src="js/media.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

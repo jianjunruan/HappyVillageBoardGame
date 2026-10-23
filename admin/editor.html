@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Game Entry Helper</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="../images/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    form { display: grid; gap: 14px; margin: 16px 0 24px; }
+    label { display: grid; gap: 4px; font-weight: 600; font-size: 0.92rem; }
+    label small { font-weight: 400; color: var(--muted); }
+    .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+    .link-row { display: grid; grid-template-columns: 1fr 2fr auto; gap: 8px; align-items: center; }
+    .link-row .kind { font-size: 0.8rem; color: var(--muted); min-width: 90px; }
+    button.btn { padding: 10px 16px; border-radius: 10px; border: 1px solid var(--accent); background: var(--accent); color: #fff; font: inherit; cursor: pointer; }
+    button.btn.ghost { background: transparent; color: var(--accent); }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px; overflow: auto; font-size: 0.85rem; }
+    .preview img { width: 100%; max-width: 320px; aspect-ratio: 4/3; object-fit: cover; border-radius: 10px; background: var(--accent-soft); }
+    @media (max-width: 560px) { .link-row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main class="wrap" style="padding-top:24px; padding-bottom:40px">
+    <p><a href="../">← Back to games</a></p>
+    <h1>Game entry helper</h1>
+    <p class="tagline">Fill in the form, copy the generated block, and paste it into <code>data/games.json</code> inside the <code>"games"</code> list (separate entries with a comma). Nothing here is saved.</p>
+
+    <form id="f" autocomplete="off">
+      <label>Name <input name="name" required placeholder="Catan"></label>
+      <label>Image <small>Path in the repo (images/catan.jpg) or a Google Drive / web image link. Drive files must be shared "Anyone with the link".</small>
+        <input name="image" placeholder="images/catan.jpg"></label>
+      <div class="preview"><img id="img-preview" alt="" src="../images/placeholder.svg"></div>
+      <label>Description <small>Line breaks are kept.</small><textarea name="description" rows="5"></textarea></label>
+      <div class="row">
+        <label>Players <input name="players" placeholder="3–4"></label>
+        <label>Play time <input name="playtime" placeholder="60 min"></label>
+        <label>Age <input name="age" placeholder="10+"></label>
+      </div>
+      <label>Tags <small>Comma separated</small><input name="tags" placeholder="Strategy, Family"></label>
+
+      <fieldset style="border:1px solid var(--border); border-radius:10px; padding:12px; display:grid; gap:8px">
+        <legend>Links &amp; videos <small style="color:var(--muted)">YouTube and Google Drive videos play inside the page</small></legend>
+        <div id="links"></div>
+        <button type="button" class="btn ghost" id="add-link">+ Add link</button>
+      </fieldset>
+    </form>
+
+    <h2>Generated entry</h2>
+    <pre id="out"></pre>
+    <button class="btn" id="copy">Copy</button>
+  </main>
+
+  <script src="../js/media.js"></script>
+  <script>
+    const f = document.getElementById("f");
+    const linksEl = document.getElementById("links");
+    const out = document.getElementById("out");
+    const kindLabel = { youtube: "▶ YouTube video", drive: "▶ Drive video", link: "🔗 Link" };
+
+    function addLink(label = "", url = "") {
+      const row = document.createElement("div");
+      row.className = "link-row";
+      row.innerHTML = `<input data-k="label" placeholder="How to play"><input data-k="url" placeholder="https://youtu.be/..."><span class="kind"></span>`;
+      row.querySelector('[data-k="label"]').value = label;
+      row.querySelector('[data-k="url"]').value = url;
+      linksEl.append(row);
+    }
+
+    const slug = (s) => s.toLowerCase().normalize("NFKD").replace(/[^\w\s-]/g, "").trim().replace(/[\s_]+/g, "-");
+
+    function update() {
+      const d = Object.fromEntries(new FormData(f));
+      const links = [...linksEl.querySelectorAll(".link-row")]
+        .map((row) => {
+          const label = row.querySelector('[data-k="label"]').value.trim();
+          const url = row.querySelector('[data-k="url"]').value.trim();
+          row.querySelector(".kind").textContent = url ? kindLabel[HVMedia.parse(url).type] : "";
+          return { label, url };
+        })
+        .filter((l) => l.url);
+      const entry = {
+        id: slug(d.name || ""),
+        name: d.name.trim(),
+        image: d.image.trim(),
+        description: d.description.trim(),
+        players: d.players.trim(),
+        playtime: d.playtime.trim(),
+        age: d.age.trim(),
+        tags: d.tags.split(",").map((t) => t.trim()).filter(Boolean),
+        links,
+      };
+      out.textContent = JSON.stringify(entry, null, 2);
+      const img = entry.image ? HVMedia.imageUrl(entry.image) : "images/placeholder.svg";
+      document.getElementById("img-preview").src = /^https?:/.test(img) ? img : "../" + img;
+    }
+
+    document.getElementById("add-link").onclick = () => { addLink(); update(); };
+    document.getElementById("copy").onclick = async (e) => {
+      await navigator.clipboard.writeText(out.textContent);
+      e.target.textContent = "Copied!";
+      setTimeout(() => (e.target.textContent = "Copy"), 1500);
+    };
+    f.addEventListener("input", update);
+    linksEl.addEventListener("input", update);
+    addLink("How to play", "");
+    update();
+  </script>
+</body>
+</html>
