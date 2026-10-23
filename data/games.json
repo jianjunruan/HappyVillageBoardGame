@@ -2866,6 +2866,98 @@
           "url": "https://boardgamegeek.com/boardgame/184267/on-mars"
         }
       ]
+    },
+    {
+      "id": "seti",
+      "name": { "zh": "星空觅迹：探寻地外文明计划", "en": "SETI: Search for Extraterrestrial Intelligence" },
+      "image": "images/seti.jpg",
+      "description": {
+        "zh": "你领导一个科研机构，寻找地球以外的生命迹象。发射探测器探索太阳系的行星和卫星，用望远镜扫描星区收集信号，分析数据并发表理论。随着发现积累，神秘的外星种族会逐渐揭开面纱，带来新的规则。灵感来自真实的太空探索技术。设计师：Tomáš Holek（2024）。\n\n适合：喜欢重度策略和太空题材的玩家。",
+        "en": "Lead a scientific institution searching for life beyond Earth. Launch probes to explore planets and moons, scan the sky with telescopes for signals, analyse data and publish theories. As discoveries mount, mysterious alien species are revealed, each adding new rules. Inspired by real space-exploration technology. Designed by Tomáš Holek (2024).\n\nGreat for: fans of heavy strategy and space themes."
+      },
+      "players": "1–4",
+      "playtime": "50",
+      "age": "14",
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=seti+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/418059/seti-search-for-extraterrestrial-intelligence"
+        }
+      ]
+    },
+    {
+      "id": "terraforming-mars",
+      "name": { "zh": "重塑火星", "en": "Terraforming Mars" },
+      "image": "images/terraforming-mars.jpg",
+      "description": {
+        "zh": "25 世纪，人类开始改造火星。你经营一家受地球世界政府资助的大公司，通过打出项目卡提高火星的温度、氧气含量和海洋覆盖率，同时建设城市、森林和基础设施。改造贡献最大、得分最高的公司获胜。设计师：Jacob Fryxelius（2016）。\n\n适合：喜欢引擎构筑和太空题材的玩家。",
+        "en": "In the 2400s, mankind begins to terraform Mars. Run a giant corporation funded by the World Government, playing project cards to raise the temperature, oxygen and ocean coverage while building cities, forests and infrastructure. The corporation that contributes most and scores highest wins. Designed by Jacob Fryxelius (2016).\n\nGreat for: fans of engine building and space themes."
+      },
+      "players": "1–5",
+      "playtime": "40",
+      "age": "12",
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=terraforming+mars+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/167791/terraforming-mars"
+        }
+      ]
+    },
+    {
+      "id": "terraforming-mars-prelude",
+      "name": { "zh": "重塑火星：序幕", "en": "Terraforming Mars: Prelude" },
+      "image": "images/terraforming-mars-prelude.jpg",
+      "description": {
+        "zh": "《重塑火星》的扩展。开局时每位玩家从序幕卡中选择两张，立刻获得资源、产能或提前改造，让公司快速起步，明显缩短游戏时间。还加入新的公司和项目卡，以及单人挑战。（扩展，需要《重塑火星》基础游戏才能玩。）设计师：Jacob Fryxelius（2018）。",
+        "en": "An expansion for Terraforming Mars. At the start, each player picks two Prelude cards that give instant resources, production or early terraforming, so corporations get going faster and games are noticeably shorter. Also adds new corporations, project cards and a solo challenge. (Expansion: requires the Terraforming Mars base game.) Designed by Jacob Fryxelius (2018)."
+      },
+      "players": "1–5",
+      "playtime": "50",
+      "age": "12",
+      "tags": ["Strategy", "Euro", "Expansion"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=terraforming+mars+prelude"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgameexpansion/247030/terraforming-mars-prelude"
+        }
+      ]
+    },
+    {
+      "id": "castles-of-burgundy-2011",
+      "name": { "zh": "勃根地城堡", "en": "The Castles of Burgundy" },
+      "image": "images/castles-of-burgundy-2011.jpg",
+      "description": {
+        "zh": "游戏背景设在中世纪鼎盛时期的法国勃艮第地区。每位玩家扮演一位贵族，从一块小小的封地起步，建造城镇与雄伟的城堡、沿河经商、开采银矿，并借助旅人的知识发展自己的领地。\n\n游戏分 5 个阶段，每阶段 5 轮。每轮掷两颗骰子，用点数从中央版图拿取地块、放入自己的领地、出售货物或获取工人。每种地块放下时都会触发效果，巧妙连锁能带来大量分数。约每位玩家 30 分钟。此为 2011 年原版。设计师：Stefan Feld（2011）。\n\n适合：喜欢规划和深度策略的玩家。",
+        "en": "Set in the Burgundy region of High Medieval France. Each player is an aristocrat who starts with a small princedom and grows it by building settlements and mighty castles, trading along the river, working silver mines and using the knowledge of travellers.\n\nThe game runs over 5 phases of 5 rounds. Each round you roll two dice and use them to take tiles from the central board, place them in your princedom, sell goods or gain workers. Every tile triggers an effect when placed, so clever combos score big. Allow about 30 minutes per player. This is the original 2011 edition. Designed by Stefan Feld (2011).\n\nGreat for: players who enjoy planning and deep strategy."
+      },
+      "players": "2–4",
+      "playtime": "30",
+      "age": "12",
+      "tags": ["Strategy", "Euro", "Dice"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=castles+of+burgundy+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/84876/the-castles-of-burgundy"
+        }
+      ]
     }
   ]
 }
