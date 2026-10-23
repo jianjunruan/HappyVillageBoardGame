@@ -42,6 +42,8 @@ All games live in **`data/games.json`**.
 | `description` | no | `{ "zh": "…", "en": "…" }`. Line breaks (`\n`) are kept. |
 | `players` | no | Just the number, e.g. `"3–4"`. The site adds "人" or "players". |
 | `playtime` | no | Minutes **per player**, numbers only, e.g. `"20"` or `"15–20"`. The site adds "分钟/人" or "min/player". |
+| `category` | yes | `"euro"` (德式), `"american"` (美式), `"party"` (聚会), `"card"` (卡牌), `"abstract"` (抽象), `"family"` (亲子), `"puzzle"` (解谜), `"war"` (战棋) or `"roleplay"` (扮演). Decides which section the game appears in. Games without one show under "其他 / Other". |
+| `weight` | yes | Difficulty on BGG's 1–5 scale (the "Weight" on the game's BoardGameGeek page), e.g. `2.9`. Groups the game into 入门 Light (under 2), 轻中度 Medium-light (2–2.75), 中重度 Medium-heavy (2.75–3.5) or 重度 Heavy (3.5+). |
 | `age` | no | Minimum age only, e.g. `"10"`. The site adds "岁以上" or "Ages 10+". |
 | `tags` | no | Tag keys, e.g. `["Strategy", "Family"]`. Translations live in the `"tags"` section at the top of the file. |
 | `links` | no | A list of `{ "label": { "zh": "教学视频", "en": "How to play" }, "url": "..." }`. |

@@ -47,6 +47,21 @@
         <label>每人时长（分钟）Minutes per player <small>例如 e.g. 20 或 or 15–20</small><input name="playtime" placeholder="20"></label>
         <label>最低年龄 Minimum age <small>例如 e.g. 10</small><input name="age" placeholder="10"></label>
       </div>
+      <div class="row">
+        <label>类型 Category
+          <select name="category">
+            <option value="euro">德式 Euro</option>
+            <option value="american">美式 American</option>
+            <option value="party">聚会 Party</option>
+            <option value="card">卡牌 Card</option>
+            <option value="abstract">抽象 Abstract</option>
+            <option value="family">亲子 Family</option>
+            <option value="puzzle">解谜 Puzzle</option>
+            <option value="war">战棋 War game</option>
+            <option value="roleplay">扮演 Role-play</option>
+          </select></label>
+        <label>难度 Difficulty <small>BGG weight 1–5（BGG 页面上的 Weight）</small><input name="weight" type="number" min="1" max="5" step="0.01" placeholder="2.5"></label>
+      </div>
       <label>标签 Tags <small>用逗号分隔，使用英文标签名 · comma separated tag keys. Existing: <span id="known-tags">…</span></small>
         <input name="tags" placeholder="Strategy, Family"></label>
 
@@ -121,6 +136,8 @@
         players: d.players,
         playtime: d.playtime,
         age: d.age,
+        category: d.category,
+        weight: d.weight ? Number(d.weight) : undefined,
         tags,
         links,
       };

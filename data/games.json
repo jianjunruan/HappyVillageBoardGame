@@ -31,6 +31,8 @@
       "players": "3–4",
       "playtime": "30",
       "age": "10",
+      "category": "euro",
+      "weight": 2.28,
       "tags": ["Strategy", "Trading", "Family"],
       "links": [
         {
@@ -62,6 +64,8 @@
       "players": "2–5",
       "playtime": "20",
       "age": "8",
+      "category": "euro",
+      "weight": 1.82,
       "tags": ["Family", "Strategy"],
       "links": [
         {
@@ -93,6 +97,8 @@
       "players": "2–8",
       "playtime": "3",
       "age": "10",
+      "category": "party",
+      "weight": 1.25,
       "tags": ["Party", "Word", "Team"],
       "links": [
         {
@@ -116,6 +122,8 @@
       "players": "2–4",
       "playtime": "10",
       "age": "10",
+      "category": "abstract",
+      "weight": 1.77,
       "tags": ["Strategy", "Cards"],
       "links": [
         {
@@ -147,6 +155,8 @@
       "players": "1–4",
       "playtime": "30",
       "age": "12",
+      "category": "euro",
+      "weight": 2.91,
       "tags": ["Strategy", "Dice"],
       "links": [
         {
@@ -178,6 +188,8 @@
       "players": "7–13",
       "playtime": "5",
       "age": "10",
+      "category": "party",
+      "weight": 1.83,
       "tags": ["Party", "Social Deduction", "Expansion"],
       "links": [
         {
@@ -201,6 +213,8 @@
       "players": "7–13",
       "playtime": "5",
       "age": "8",
+      "category": "party",
+      "weight": 1.52,
       "tags": ["Party", "Social Deduction", "Expansion"],
       "links": [
         {
@@ -224,6 +238,8 @@
       "players": "3–12",
       "playtime": "10",
       "age": "8",
+      "category": "family",
+      "weight": 1.7,
       "tags": ["Family", "Party"],
       "links": [
         {
@@ -247,6 +263,8 @@
       "players": "1–2",
       "playtime": "60",
       "age": "14",
+      "category": "american",
+      "weight": 3.57,
       "tags": ["Co-op", "Cards", "Thematic"],
       "links": [
         {
@@ -273,6 +291,8 @@
       "players": "1–4",
       "playtime": "60",
       "age": "14",
+      "category": "card",
+      "weight": 3.64,
       "tags": ["Co-op", "Cards", "Expansion"],
       "links": [
         {
@@ -299,6 +319,8 @@
       "players": "1–4",
       "playtime": "45",
       "age": "14",
+      "category": "card",
+      "weight": 3.67,
       "tags": ["Co-op", "Cards", "Expansion"],
       "links": [
         {
@@ -325,6 +347,8 @@
       "players": "1–4",
       "playtime": "60",
       "age": "14",
+      "category": "card",
+      "weight": 4.2,
       "tags": ["Co-op", "Cards", "Expansion"],
       "links": [
         {
@@ -348,6 +372,8 @@
       "players": "5–10",
       "playtime": "4",
       "age": "12",
+      "category": "party",
+      "weight": 1.83,
       "tags": ["Party", "Social Deduction", "Cards"],
       "links": [
         {
@@ -370,6 +396,8 @@
       },
       "players": "5–13",
       "playtime": "6",
+      "category": "party",
+      "weight": 2,
       "tags": ["Party"],
       "links": [
         {
@@ -389,6 +417,8 @@
       "players": "1–5",
       "playtime": "25",
       "age": "12",
+      "category": "euro",
+      "weight": 2.83,
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -412,6 +442,8 @@
       "players": "1–4",
       "playtime": "20",
       "age": "13",
+      "category": "puzzle",
+      "weight": 2.43,
       "tags": ["Deduction"],
       "links": [
         {
@@ -435,6 +467,8 @@
       "players": "1–4",
       "playtime": "30",
       "age": "14",
+      "category": "euro",
+      "weight": 3.12,
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -466,6 +500,8 @@
       "players": "2–5",
       "playtime": "10",
       "age": "8",
+      "category": "euro",
+      "weight": 1.74,
       "tags": ["Euro", "Family"],
       "links": [
         {
@@ -497,6 +533,8 @@
       "players": "1–4",
       "playtime": "10",
       "age": "14",
+      "category": "puzzle",
+      "weight": 2.53,
       "tags": ["Deduction"],
       "links": [
         {
@@ -524,6 +562,8 @@
       "description": { "zh": "一款 2–4 人的卡牌游戏（2024）。", "en": "A card game for 2–4 players (2024)." },
       "players": "2–4",
       "playtime": "15",
+      "category": "card",
+      "weight": 1.5,
       "tags": ["Cards"],
       "links": [
         {
@@ -543,6 +583,8 @@
       "players": "1–4",
       "playtime": "10",
       "age": "10",
+      "category": "card",
+      "weight": 1.98,
       "tags": ["Co-op", "Cards", "Abstract"],
       "links": [
         {
@@ -574,6 +616,8 @@
       "players": "2–8",
       "playtime": "10",
       "age": "7",
+      "category": "abstract",
+      "weight": 2.26,
       "tags": ["Family", "Abstract"],
       "links": [
         {
@@ -605,6 +649,8 @@
       "players": "3–8",
       "playtime": "10",
       "age": "8",
+      "category": "party",
+      "weight": 1.11,
       "tags": ["Party"],
       "links": [
         {
@@ -636,6 +682,8 @@
       "players": "1–4",
       "playtime": "15",
       "age": "10",
+      "category": "abstract",
+      "weight": 1.84,
       "tags": ["Family", "Abstract"],
       "links": [
         {
@@ -659,6 +707,8 @@
       "players": "1–4",
       "playtime": "40",
       "age": "12",
+      "category": "euro",
+      "weight": 3.11,
       "tags": ["Strategy", "Euro", "Expansion"],
       "links": [
         {
@@ -682,6 +732,8 @@
       "players": "2–9",
       "playtime": "5",
       "age": "10",
+      "category": "party",
+      "weight": 1.34,
       "tags": ["Party"],
       "links": [
         {
@@ -705,6 +757,8 @@
       "players": "6–12",
       "playtime": "3",
       "age": "14",
+      "category": "party",
+      "weight": 1.62,
       "tags": ["Party", "Social Deduction"],
       "links": [
         {
@@ -728,6 +782,8 @@
       "players": "2",
       "playtime": "25",
       "age": "14",
+      "category": "american",
+      "weight": 2.2,
       "tags": ["Thematic"],
       "links": [
         {
@@ -747,6 +803,8 @@
       "description": { "zh": "一款 2–5 人的猫咪主题卡牌游戏（2023）。", "en": "A cat-themed card game for 2–5 players (2023)." },
       "players": "2–5",
       "playtime": "5",
+      "category": "card",
+      "weight": 2,
       "tags": ["Cards"],
       "links": [
         {
@@ -766,6 +824,8 @@
       "players": "2",
       "playtime": "10",
       "age": "8",
+      "category": "abstract",
+      "weight": 1.6,
       "tags": ["Abstract", "Family"],
       "links": [
         {
@@ -797,6 +857,8 @@
       "players": "3–10",
       "playtime": "6",
       "age": "8",
+      "category": "party",
+      "weight": 1.32,
       "tags": ["Cards", "Party", "Family", "Social Deduction"],
       "links": [
         {
@@ -827,6 +889,8 @@
       },
       "players": "8–13",
       "playtime": "5",
+      "category": "party",
+      "weight": 1,
       "tags": ["Party", "Social Deduction"],
       "links": [
         {
@@ -846,6 +910,8 @@
       "players": "8–13",
       "playtime": "5",
       "age": "10",
+      "category": "party",
+      "weight": 1.31,
       "tags": ["Party", "Social Deduction"],
       "links": [
         {
@@ -877,6 +943,8 @@
       "players": "2–4",
       "playtime": "30",
       "age": "12",
+      "category": "euro",
+      "weight": 3.02,
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -908,6 +976,8 @@
       "players": "2–6",
       "playtime": "15",
       "age": "13",
+      "category": "euro",
+      "weight": 2.95,
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -939,6 +1009,8 @@
       "players": "2–6",
       "playtime": "3",
       "age": "12",
+      "category": "party",
+      "weight": 1.3,
       "tags": ["Cards", "Party"],
       "links": [
         {
@@ -962,6 +1034,8 @@
       "players": "2–4",
       "playtime": "10",
       "age": "8",
+      "category": "party",
+      "weight": 1.71,
       "tags": ["Party", "Abstract"],
       "links": [
         {
@@ -985,6 +1059,8 @@
       "players": "2",
       "playtime": "10",
       "age": "12",
+      "category": "card",
+      "weight": 1.91,
       "tags": ["Cards"],
       "links": [
         {
@@ -1007,6 +1083,8 @@
       },
       "players": "6",
       "playtime": "40",
+      "category": "roleplay",
+      "weight": 3,
       "tags": ["Role-play"],
       "links": [
         {
@@ -1026,6 +1104,8 @@
       "players": "1–4",
       "playtime": "40",
       "age": "14",
+      "category": "euro",
+      "weight": 3.8,
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -1049,6 +1129,8 @@
       "players": "1–4",
       "playtime": "15",
       "age": "14",
+      "category": "euro",
+      "weight": 2.05,
       "tags": ["Euro"],
       "links": [
         {
@@ -1080,6 +1162,8 @@
       "players": "1–5",
       "playtime": "20",
       "age": "13",
+      "category": "party",
+      "weight": 2.89,
       "tags": ["Party", "Deduction"],
       "links": [
         {
@@ -1111,6 +1195,8 @@
       "players": "2–4",
       "playtime": "5",
       "age": "8",
+      "category": "abstract",
+      "weight": 1.48,
       "tags": ["Abstract", "Deduction"],
       "links": [
         {
@@ -1134,6 +1220,8 @@
       "players": "1–4",
       "playtime": "45",
       "age": "12",
+      "category": "euro",
+      "weight": 3.91,
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -1157,6 +1245,8 @@
       "players": "2–5",
       "playtime": "5",
       "age": "6",
+      "category": "family",
+      "weight": 1.13,
       "tags": ["Family", "Cards"],
       "links": [
         {
@@ -1180,6 +1270,8 @@
       "players": "1–4",
       "playtime": "40",
       "age": "12",
+      "category": "euro",
+      "weight": 3.21,
       "tags": ["Strategy", "Euro", "Expansion"],
       "links": [
         {
@@ -1203,6 +1295,8 @@
       "players": "3–9",
       "playtime": "8",
       "age": "15",
+      "category": "party",
+      "weight": 2.39,
       "tags": ["Party", "Social Deduction", "Cards"],
       "links": [
         {
@@ -1226,6 +1320,8 @@
       "players": "2–4",
       "playtime": "10",
       "age": "14",
+      "category": "war",
+      "weight": 2.5,
       "tags": ["War Game", "Abstract", "Expansion"],
       "links": [
         {
@@ -1249,6 +1345,8 @@
       "players": "1–4",
       "playtime": "35",
       "age": "12",
+      "category": "euro",
+      "weight": 3.1,
       "tags": ["Euro", "Expansion"],
       "links": [
         {
@@ -1272,6 +1370,8 @@
       "players": "1–4",
       "playtime": "15",
       "age": "10",
+      "category": "euro",
+      "weight": 2.01,
       "tags": ["Euro", "Family"],
       "links": [
         {
@@ -1303,6 +1403,8 @@
       "players": "2–4",
       "playtime": "15",
       "age": "8",
+      "category": "abstract",
+      "weight": 1.78,
       "tags": ["Abstract", "Family"],
       "links": [
         {
@@ -1326,6 +1428,8 @@
       "players": "4–11",
       "playtime": "5",
       "age": "12",
+      "category": "party",
+      "weight": 1.84,
       "tags": ["Party", "Social Deduction"],
       "links": [
         {
@@ -1349,6 +1453,8 @@
       "players": "2–4",
       "playtime": "5",
       "age": "6",
+      "category": "family",
+      "weight": 1.17,
       "tags": ["Family", "Party"],
       "links": [
         {
@@ -1372,6 +1478,8 @@
       "players": "2",
       "playtime": "15",
       "age": "10",
+      "category": "euro",
+      "weight": 2.23,
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -1403,6 +1511,8 @@
       "players": "1–5",
       "playtime": "6",
       "age": "10",
+      "category": "card",
+      "weight": 1.45,
       "tags": ["Cards", "Family"],
       "links": [
         {
@@ -1426,6 +1536,8 @@
       "players": "3–6",
       "playtime": "12",
       "age": "12",
+      "category": "party",
+      "weight": 1.97,
       "tags": ["Party", "Trading"],
       "links": [
         {
@@ -1457,6 +1569,8 @@
       "players": "2–4",
       "playtime": "20",
       "age": "8",
+      "category": "euro",
+      "weight": 1.97,
       "tags": ["Euro", "Family"],
       "links": [
         {
@@ -1488,6 +1602,8 @@
       "players": "2–5",
       "playtime": "10",
       "age": "13",
+      "category": "euro",
+      "weight": 2.12,
       "tags": ["Euro", "Trading"],
       "links": [
         {
@@ -1519,6 +1635,8 @@
       "players": "1–4",
       "playtime": "45",
       "age": "12",
+      "category": "euro",
+      "weight": 4,
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -1542,6 +1660,8 @@
       "players": "2–4",
       "playtime": "30",
       "age": "12",
+      "category": "euro",
+      "weight": 3.19,
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -1565,6 +1685,8 @@
       "players": "1–4",
       "playtime": "30",
       "age": "14",
+      "category": "euro",
+      "weight": 4.02,
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -1588,6 +1710,8 @@
       "players": "1–4",
       "playtime": "40",
       "age": "14",
+      "category": "euro",
+      "weight": 3.91,
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -1619,6 +1743,8 @@
       "players": "2–4",
       "playtime": "30",
       "age": "10",
+      "category": "euro",
+      "weight": 2.24,
       "tags": ["Euro"],
       "links": [
         {
@@ -1642,6 +1768,8 @@
       "players": "1–4",
       "playtime": "40",
       "age": "14",
+      "category": "card",
+      "weight": 3.63,
       "tags": ["Strategy", "Cards"],
       "links": [
         {
@@ -1665,6 +1793,8 @@
       "players": "1–6",
       "playtime": "5",
       "age": "10",
+      "category": "euro",
+      "weight": 2.46,
       "tags": ["Euro"],
       "links": [
         {
@@ -1696,6 +1826,8 @@
       "players": "2–6",
       "playtime": "12",
       "age": "8",
+      "category": "party",
+      "weight": 1.66,
       "tags": ["Party", "Family"],
       "links": [
         {
@@ -1719,6 +1851,8 @@
       "players": "1–5",
       "playtime": "20",
       "age": "12",
+      "category": "euro",
+      "weight": 2.76,
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -1750,6 +1884,8 @@
       "players": "1–4",
       "playtime": "50",
       "age": "14",
+      "category": "euro",
+      "weight": 3.75,
       "tags": ["Strategy", "Euro", "Expansion"],
       "links": [
         {
@@ -1773,6 +1909,8 @@
       "players": "2–5",
       "playtime": "15",
       "age": "10",
+      "category": "card",
+      "weight": 2.22,
       "tags": ["Cards", "Family"],
       "links": [
         {
@@ -1804,6 +1942,8 @@
       "players": "2–5",
       "playtime": "8",
       "age": "10",
+      "category": "puzzle",
+      "weight": 2.01,
       "tags": ["Co-op", "Deduction"],
       "links": [
         {
@@ -1827,6 +1967,8 @@
       "players": "1–5",
       "playtime": "50",
       "age": "14",
+      "category": "euro",
+      "weight": 4.26,
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -1858,6 +2000,8 @@
       "players": "1–4",
       "playtime": "40",
       "age": "12",
+      "category": "euro",
+      "weight": 2.93,
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -1889,6 +2033,8 @@
       "players": "2–4",
       "playtime": "20",
       "age": "10",
+      "category": "euro",
+      "weight": 2.54,
       "tags": ["Euro"],
       "links": [
         {
@@ -1912,6 +2058,8 @@
       "players": "3–14+",
       "playtime": "5",
       "age": "8",
+      "category": "card",
+      "weight": 1.04,
       "tags": ["Cards", "Party"],
       "links": [
         {
@@ -1943,6 +2091,8 @@
       "players": "2–5",
       "playtime": "6",
       "age": "8",
+      "category": "card",
+      "weight": 1.69,
       "tags": ["Co-op", "Cards"],
       "links": [
         {
@@ -1974,6 +2124,8 @@
       "players": "2–4",
       "playtime": "15",
       "age": "8",
+      "category": "party",
+      "weight": 1.7,
       "tags": ["Party", "Family"],
       "links": [
         {
@@ -1996,6 +2148,8 @@
       },
       "players": "1–6",
       "playtime": "15",
+      "category": "euro",
+      "weight": 2.9,
       "tags": ["Accessory"],
       "links": [
         {
@@ -2019,6 +2173,8 @@
       "players": "1–6",
       "playtime": "25",
       "age": "13",
+      "category": "euro",
+      "weight": 2.9,
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -2050,6 +2206,8 @@
       "players": "1–5",
       "playtime": "40",
       "age": "12",
+      "category": "euro",
+      "weight": 3.27,
       "tags": ["Accessory"],
       "links": [
         {
@@ -2073,6 +2231,8 @@
       "players": "1–5",
       "playtime": "50",
       "age": "12",
+      "category": "euro",
+      "weight": 2.97,
       "tags": ["Strategy", "Euro", "Expansion"],
       "links": [
         {
@@ -2096,6 +2256,8 @@
       "players": "1–5",
       "playtime": "50",
       "age": "12",
+      "category": "euro",
+      "weight": 2.87,
       "tags": ["Strategy", "Euro", "Expansion"],
       "links": [
         {
@@ -2119,6 +2281,8 @@
       "players": "1–5",
       "playtime": "40",
       "age": "12",
+      "category": "euro",
+      "weight": 3.68,
       "tags": ["Strategy", "Euro", "Expansion"],
       "links": [
         {
@@ -2142,6 +2306,8 @@
       "players": "1–5",
       "playtime": "10",
       "age": "10",
+      "category": "euro",
+      "weight": 2.13,
       "tags": ["Euro", "Family"],
       "links": [
         {
@@ -2173,6 +2339,8 @@
       "players": "1–5",
       "playtime": "10",
       "age": "10",
+      "category": "euro",
+      "weight": 2.23,
       "tags": ["Euro", "Expansion"],
       "links": [
         {
@@ -2196,6 +2364,8 @@
       "players": "3–6",
       "playtime": "20",
       "age": "12",
+      "category": "american",
+      "weight": 2.4,
       "tags": ["Thematic"],
       "links": [
         {
@@ -2219,6 +2389,8 @@
       "players": "1–6",
       "playtime": "20",
       "age": "13",
+      "category": "american",
+      "weight": 2.14,
       "tags": ["Co-op", "Thematic", "Cards"],
       "links": [
         {
@@ -2242,6 +2414,8 @@
       "players": "1–4",
       "playtime": "20",
       "age": "13",
+      "category": "american",
+      "weight": 2.5,
       "tags": ["Co-op", "Thematic", "Cards"],
       "links": [
         {
@@ -2265,6 +2439,8 @@
       "players": "1–4",
       "playtime": "10",
       "age": "12",
+      "category": "card",
+      "weight": 1.83,
       "tags": ["Cards", "Family"],
       "links": [
         {
@@ -2296,6 +2472,8 @@
       "players": "1–4",
       "playtime": "10",
       "age": "12",
+      "category": "card",
+      "weight": 1.83,
       "tags": ["Cards", "Family", "Expansion"],
       "links": [
         {
@@ -2319,6 +2497,8 @@
       "players": "1–4",
       "playtime": "50",
       "age": "14",
+      "category": "euro",
+      "weight": 3.85,
       "tags": ["Strategy", "Euro", "Expansion"],
       "links": [
         {
@@ -2342,6 +2522,8 @@
       "players": "1–4",
       "playtime": "50",
       "age": "14",
+      "category": "euro",
+      "weight": 3.8,
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -2373,6 +2555,8 @@
       "players": "5–11",
       "playtime": "10",
       "age": "12",
+      "category": "party",
+      "weight": 2.17,
       "tags": ["Party", "Social Deduction"],
       "links": [
         {
@@ -2396,6 +2580,8 @@
       "players": "2–5",
       "playtime": "5",
       "age": "6",
+      "category": "card",
+      "weight": 1.5,
       "tags": ["Cards", "Party"],
       "links": [
         {
@@ -2419,6 +2605,8 @@
       "players": "2–8",
       "playtime": "4",
       "age": "8",
+      "category": "party",
+      "weight": 1.43,
       "tags": ["Family", "Party"],
       "links": [
         {
@@ -2442,6 +2630,8 @@
       "players": "1–4",
       "playtime": "10",
       "age": "14",
+      "category": "abstract",
+      "weight": 2.36,
       "tags": ["Abstract", "Dice"],
       "links": [
         {
@@ -2465,6 +2655,8 @@
       "players": "2–4",
       "playtime": "5",
       "age": "10",
+      "category": "card",
+      "weight": 1.18,
       "tags": ["Cards"],
       "links": [
         {
@@ -2496,6 +2688,8 @@
       "players": "2–10",
       "playtime": "10",
       "age": "8",
+      "category": "party",
+      "weight": 1.19,
       "tags": ["Party", "Cards"],
       "links": [
         {
@@ -2527,6 +2721,8 @@
       "players": "2–6",
       "playtime": "3",
       "age": "13",
+      "category": "party",
+      "weight": 1.41,
       "tags": ["Party", "Social Deduction", "Cards"],
       "links": [
         {
@@ -2558,6 +2754,8 @@
       "players": "2–6",
       "playtime": "5",
       "age": "8",
+      "category": "card",
+      "weight": 1.29,
       "tags": ["Cards"],
       "links": [
         {
@@ -2581,6 +2779,8 @@
       "players": "4–12",
       "playtime": "5",
       "age": "12",
+      "category": "party",
+      "weight": 2.03,
       "tags": ["Party", "Social Deduction", "Cards"],
       "links": [
         {
@@ -2604,6 +2804,8 @@
       "players": "4–8",
       "playtime": "3",
       "age": "8",
+      "category": "party",
+      "weight": 1.21,
       "tags": ["Party", "Social Deduction"],
       "links": [
         {
@@ -2627,6 +2829,8 @@
       "players": "2–4",
       "playtime": "40",
       "age": "14",
+      "category": "euro",
+      "weight": 3.86,
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -2650,6 +2854,8 @@
       "players": "1–4",
       "playtime": "45",
       "age": "12",
+      "category": "euro",
+      "weight": 4.4,
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -2681,6 +2887,8 @@
       "players": "3–6",
       "playtime": "5",
       "age": "10",
+      "category": "card",
+      "weight": 1.58,
       "tags": ["Co-op", "Cards"],
       "links": [
         {
@@ -2712,6 +2920,8 @@
       "players": "2",
       "playtime": "15",
       "age": "10",
+      "category": "euro",
+      "weight": 2.86,
       "tags": ["Strategy", "Euro", "Expansion"],
       "links": [
         {
@@ -2734,6 +2944,8 @@
       },
       "players": "3–6",
       "playtime": "5",
+      "category": "party",
+      "weight": 1.5,
       "tags": ["Co-op", "Cards", "Party"],
       "links": [
         {
@@ -2753,6 +2965,8 @@
       "players": "1–4",
       "playtime": "30",
       "age": "12",
+      "category": "euro",
+      "weight": 3.31,
       "tags": ["Euro", "Expansion"],
       "links": [
         {
@@ -2776,6 +2990,8 @@
       "players": "2",
       "playtime": "20",
       "age": "10",
+      "category": "euro",
+      "weight": 2.98,
       "tags": ["Euro"],
       "links": [
         {
@@ -2803,6 +3019,8 @@
       "players": "1–4",
       "playtime": "30",
       "age": "12",
+      "category": "euro",
+      "weight": 3.07,
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -2834,6 +3052,8 @@
       "players": "1–5",
       "playtime": "10",
       "age": "10",
+      "category": "euro",
+      "weight": 2.23,
       "tags": ["Euro", "Expansion"],
       "links": [
         {
@@ -2857,6 +3077,8 @@
       "players": "2–5",
       "playtime": "11",
       "age": "8",
+      "category": "party",
+      "weight": 1.46,
       "tags": ["Party", "Dice"],
       "links": [
         {
@@ -2880,6 +3102,8 @@
       "players": "3–6",
       "playtime": "15",
       "age": "10",
+      "category": "party",
+      "weight": 1.12,
       "tags": ["Party", "Cards"],
       "links": [
         {
@@ -2911,6 +3135,8 @@
       "players": "2–4",
       "playtime": "15",
       "age": "8",
+      "category": "abstract",
+      "weight": 1.71,
       "tags": ["Abstract", "Family"],
       "links": [
         {
@@ -2934,6 +3160,8 @@
       "players": "3–5",
       "playtime": "30",
       "age": "10",
+      "category": "euro",
+      "weight": 2.04,
       "tags": ["Euro", "Party"],
       "links": [
         {
@@ -2957,6 +3185,8 @@
       "players": "5–10",
       "playtime": "8",
       "age": "13",
+      "category": "party",
+      "weight": 1.74,
       "tags": ["Party", "Social Deduction"],
       "links": [
         {
@@ -2980,6 +3210,8 @@
       "players": "2–4",
       "playtime": "15",
       "age": "8",
+      "category": "abstract",
+      "weight": 1.77,
       "tags": ["Abstract", "Family"],
       "links": [
         {
@@ -3011,6 +3243,8 @@
       "players": "2–4",
       "playtime": "60",
       "age": "14",
+      "category": "euro",
+      "weight": 4.26,
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -3042,6 +3276,8 @@
       "players": "2–4",
       "playtime": "30",
       "age": "14",
+      "category": "american",
+      "weight": 3.84,
       "tags": ["Strategy", "Thematic"],
       "links": [
         {
@@ -3065,6 +3301,8 @@
       "players": "1–6",
       "playtime": "30",
       "age": "10",
+      "category": "american",
+      "weight": 3.86,
       "tags": ["Strategy", "Thematic", "Expansion"],
       "links": [
         {
@@ -3088,6 +3326,8 @@
       "players": "2–6",
       "playtime": "30",
       "age": "10",
+      "category": "american",
+      "weight": 3.65,
       "tags": ["Strategy", "Thematic", "Expansion"],
       "links": [
         {
@@ -3111,6 +3351,8 @@
       "players": "1–4",
       "playtime": "30",
       "age": "12",
+      "category": "euro",
+      "weight": 2.83,
       "tags": ["Strategy", "Euro", "Dice"],
       "links": [
         {
@@ -3142,6 +3384,8 @@
       "players": "2–4",
       "playtime": "10",
       "age": "10",
+      "category": "abstract",
+      "weight": 1.87,
       "tags": ["Cards", "Family"],
       "links": [
         {
@@ -3165,6 +3409,8 @@
       "players": "2–5",
       "playtime": "35",
       "age": "12",
+      "category": "euro",
+      "weight": 3.04,
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -3196,6 +3442,8 @@
       "players": "2–6",
       "playtime": "30",
       "age": "10",
+      "category": "war",
+      "weight": 2.06,
       "tags": ["War Game"],
       "links": [
         {
@@ -3219,6 +3467,8 @@
       "players": "1–4",
       "playtime": "50",
       "age": "14",
+      "category": "euro",
+      "weight": 4.62,
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -3242,6 +3492,8 @@
       "players": "1–4",
       "playtime": "50",
       "age": "14",
+      "category": "euro",
+      "weight": 3.84,
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -3265,6 +3517,8 @@
       "players": "1–5",
       "playtime": "40",
       "age": "12",
+      "category": "euro",
+      "weight": 3.27,
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -3296,6 +3550,8 @@
       "players": "1–5",
       "playtime": "50",
       "age": "12",
+      "category": "euro",
+      "weight": 2.56,
       "tags": ["Strategy", "Euro", "Expansion"],
       "links": [
         {
@@ -3319,6 +3575,8 @@
       "players": "2–4",
       "playtime": "30",
       "age": "12",
+      "category": "euro",
+      "weight": 2.97,
       "tags": ["Strategy", "Euro", "Dice"],
       "links": [
         {
@@ -3350,6 +3608,8 @@
       "players": "2–4",
       "playtime": "15",
       "age": "14",
+      "category": "war",
+      "weight": 2.32,
       "tags": ["War Game", "Abstract"],
       "links": [
         {
@@ -3381,6 +3641,8 @@
       "players": "1–4",
       "playtime": "25",
       "age": "12",
+      "category": "euro",
+      "weight": 2.89,
       "tags": ["Strategy", "Euro"],
       "links": [
         {

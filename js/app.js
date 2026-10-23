@@ -4,6 +4,7 @@
     grid: document.getElementById("grid"),
     status: document.getElementById("status"),
     search: document.getElementById("search"),
+    cats: document.getElementById("cats"),
     tags: document.getElementById("tags"),
     langToggle: document.getElementById("lang-toggle"),
     dialog: document.getElementById("detail"),
@@ -13,7 +14,21 @@
   let games = [];
   let tagNames = {};
   let activeTag = null;
+  let activeCat = null;
   let loaded = false;
+
+  // Sections and difficulty bands (BGG weight, 1–5), in display order.
+  const CATEGORIES = ["euro", "american", "party", "card", "abstract", "family", "puzzle", "war", "roleplay"];
+  const BANDS = [
+    { key: "light", max: 2, range: "1–2" },
+    { key: "medium-light", max: 2.75, range: "2–2.75" },
+    { key: "medium-heavy", max: 3.5, range: "2.75–3.5" },
+    { key: "heavy", max: Infinity, range: "3.5–5" },
+  ];
+  // Games without a known category land in an "other" section so they never disappear.
+  const catOf = (g) => (CATEGORIES.includes(g.category) ? g.category : "other");
+  const bandOf = (g) => BANDS.findIndex((b) => (g.weight ?? 0) < b.max);
+  const dots = (i) => "★".repeat(i + 1) + "☆".repeat(BANDS.length - i - 1);
 
   const esc = (s) =>
     String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
@@ -27,7 +42,15 @@
       game.players && `<span>👥 ${esc(t("players", { v: game.players }))}</span>`,
       game.playtime && `<span>⏱ ${esc(t("playtime", { v: game.playtime }))}</span>`,
       game.age && `<span>🎂 ${esc(t("age", { v: game.age }))}</span>`,
+      game.weight &&
+        `<span><span class="stars" aria-hidden="true">${dots(bandOf(game))}</span> ${esc(t("difficulty", { band: t("band_" + BANDS[bandOf(game)].key), v: game.weight.toFixed(1) }))}</span>`,
     ].filter(Boolean);
+  }
+
+  function renderCats() {
+    const chip = (key, label) =>
+      `<button class="chip${key === activeCat ? " is-on" : ""}" data-cat="${esc(key ?? "")}">${esc(label)}</button>`;
+    els.cats.innerHTML = chip(null, t("all")) + CATEGORIES.map((c) => chip(c, t("cat_" + c))).join("");
   }
 
   function renderTags() {
@@ -50,24 +73,47 @@
           .flatMap((v) => (v && typeof v === "object" ? Object.values(v) : [v]))
           .join(" ")
           .toLowerCase();
-        return (!q || text.includes(q)) && (!activeTag || (g.tags || []).includes(activeTag));
+        return (
+          (!q || text.includes(q)) &&
+          (!activeTag || (g.tags || []).includes(activeTag)) &&
+          (!activeCat || catOf(g) === activeCat)
+        );
       })
-      .sort((a, b) => gameName(a).localeCompare(gameName(b), HVI18n.lang));
+      // Easiest first within each category; name breaks ties.
+      .sort((a, b) => (a.weight ?? 0) - (b.weight ?? 0) || gameName(a).localeCompare(gameName(b), HVI18n.lang));
 
-    els.status.textContent = list.length ? "" : t("noMatch");
-    els.grid.innerHTML = list
-      .map(
-        (g) => `
+    const card = (g) => `
         <a class="card" href="#/game/${encodeURIComponent(g.id)}">
           <img src="${esc(HVMedia.imageUrl(g.image))}" alt="" loading="lazy" onerror="this.src='images/placeholder.svg'">
           <div class="card-body">
-            <h2>${esc(gameName(g))}</h2>
+            <h4 class="card-title">${esc(gameName(g))}</h4>
             <p class="meta">${meta(g).join(" · ")}</p>
             <p class="summary">${esc(loc(g.description))}</p>
           </div>
-        </a>`
-      )
-      .join("");
+        </a>`;
+
+    // Category sections, each split into difficulty bands from light to heavy.
+    els.status.textContent = list.length ? "" : t("noMatch");
+    els.grid.innerHTML = [...CATEGORIES, "other"].map((cat) => {
+      const inCat = list.filter((g) => catOf(g) === cat);
+      if (!inCat.length) return "";
+      const bands = BANDS.map((b, i) => {
+        const inBand = inCat.filter((g) => bandOf(g) === i);
+        if (!inBand.length) return "";
+        return `
+          <div class="band">
+            <h3 class="band-title"><span class="dots" aria-hidden="true">${dots(i)}</span> ${esc(t("band_" + b.key))}
+              <span class="band-range">${esc(t("bandRange", { v: b.range }))} · ${esc(t("count", { n: inBand.length }))}</span></h3>
+            <div class="grid">${inBand.map(card).join("")}</div>
+          </div>`;
+      }).join("");
+      return `
+        <section class="cat-section" id="cat-${cat}">
+          <h2 class="cat-title">${esc(t("cat_" + cat))} <span class="count">${esc(t("count", { n: inCat.length }))}</span></h2>
+          <p class="cat-hint">${esc(t("cat_" + cat + "_hint"))}</p>
+          ${bands}
+        </section>`;
+    }).join("");
   }
 
   function renderLinks(links = []) {
@@ -133,6 +179,7 @@
     els.langToggle.textContent = t("toggle");
     els.langToggle.setAttribute("aria-label", t("toggleLabel"));
     if (!loaded) return;
+    renderCats();
     renderTags();
     renderGrid();
     if (els.dialog.open) openGame(currentGameId()); // re-render open popup in the new language
@@ -144,6 +191,13 @@
     if (!btn) return;
     activeTag = btn.dataset.tag || null;
     renderTags();
+    renderGrid();
+  });
+  els.cats.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-cat]");
+    if (!btn) return;
+    activeCat = btn.dataset.cat || null;
+    renderCats();
     renderGrid();
   });
   els.langToggle.addEventListener("click", () => HVI18n.toggle());

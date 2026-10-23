@@ -87,11 +87,37 @@ button.chip { cursor: pointer; }
 .status:empty { display: none; }
 main.wrap { padding-top: 12px; }
 
+.cat-row .chip { font-size: 0.95rem; padding: 6px 16px; font-weight: 600; }
+
+/* Category sections, split into difficulty bands */
+.cat-section { margin: 4px 0 40px; }
+.cat-title {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--border);
+  font-size: clamp(1.35rem, 3vw, 1.7rem);
+}
+.count { font-size: 0.9rem; font-weight: 400; color: var(--muted); }
+.cat-hint { margin: 6px 0 4px; color: var(--muted); font-size: 0.92rem; }
+.band-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  margin: 22px 0 12px;
+  font-size: 1.08rem;
+}
+.dots { color: var(--accent); letter-spacing: 1px; font-size: 1rem; }
+.stars { color: var(--accent); letter-spacing: 1px; }
+.band-range { font-size: 0.85rem; font-weight: 400; color: var(--muted); }
+
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 20px;
-  padding-bottom: 40px;
 }
 
 .card {
@@ -109,7 +135,7 @@ main.wrap { padding-top: 12px; }
 .card:hover, .card:focus-visible { transform: translateY(-3px); box-shadow: 0 6px 20px rgb(60 40 20 / 0.15); }
 .card img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: contain; padding: 10px; background: var(--img-bg); }
 .card-body { padding: 14px 16px 18px; }
-.card h2 { margin: 0 0 4px; font-size: 1.15rem; }
+.card-title { margin: 0 0 4px; font-size: 1.15rem; }
 .meta { margin: 0; color: var(--muted); font-size: 0.88rem; }
 .meta span { white-space: nowrap; }
 .summary {
