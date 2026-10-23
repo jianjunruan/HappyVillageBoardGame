@@ -38,6 +38,14 @@
           "url": "https://www.youtube.com/results?search_query=catan+how+to+play"
         },
         {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpcatan"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=catan"
+        },
+        {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
           "url": "https://boardgamegeek.com/boardgame/13/catan"
         }
@@ -59,6 +67,14 @@
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=ticket+to+ride+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelptickettoride"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=tickettoride"
         },
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
@@ -107,6 +123,14 @@
           "url": "https://www.youtube.com/results?search_query=splendor+board+game+how+to+play"
         },
         {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpsplendor"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=splendor"
+        },
+        {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
           "url": "https://boardgamegeek.com/boardgame/148228/splendor"
         }
@@ -117,8 +141,8 @@
       "name": { "zh": "勃根地城堡：豪华版", "en": "The Castles of Burgundy (2019 Deluxe)" },
       "image": "images/castles-of-burgundy.jpg",
       "description": {
-        "zh": "游戏背景设在中世纪鼎盛时期的法国勃艮第地区。每位玩家扮演一位贵族，从一块小小的封地起步，建造城镇与雄伟的城堡、沿河经商、开采银矿，并借助旅人的知识发展自己的领地。\n\n游戏分 5 个阶段，每阶段 5 轮。每轮掷两颗骰子，用点数从中央版图拿取地块、放入自己的领地、出售货物或获取工人。每种地块放下时都会触发效果，巧妙连锁能带来大量分数。约每位玩家 30 分钟（2 人约 1 小时，4 人约 2 小时）。此为 2019 年 alea 豪华版，收录 8 个小扩展并加入单人模式。设计师：Stefan Feld（原版 2011）。\n\n适合：喜欢规划和深度策略的玩家。",
-        "en": "Set in the Burgundy region of High Medieval France. Each player is an aristocrat who starts with a small princedom and grows it by building settlements and mighty castles, trading along the river, working silver mines and using the knowledge of travellers.\n\nThe game runs over 5 phases of 5 rounds. Each round you roll two dice and use them to take tiles from the central board, place them in your princedom, sell goods or gain workers. Every tile triggers an effect when placed, so clever combos score big. Allow about 30 minutes per player (about 1 hour for 2, about 2 hours for 4). This is the 2019 alea deluxe edition, which includes 8 mini expansions and a solo mode. Designed by Stefan Feld (original 2011).\n\nGreat for: players who enjoy planning and deep strategy."
+        "zh": "游戏背景设在中世纪鼎盛时期的法国勃艮第地区。每位玩家扮演一位贵族，从一块小小的封地起步，建造城镇与雄伟的城堡、沿河经商、开采银矿，并借助旅人的知识发展自己的领地。（BGA 在线版支持 2–4 人。）\n\n游戏分 5 个阶段，每阶段 5 轮。每轮掷两颗骰子，用点数从中央版图拿取地块、放入自己的领地、出售货物或获取工人。每种地块放下时都会触发效果，巧妙连锁能带来大量分数。约每位玩家 30 分钟（2 人约 1 小时，4 人约 2 小时）。此为 2019 年 alea 豪华版，收录 8 个小扩展并加入单人模式。设计师：Stefan Feld（原版 2011）。\n\n适合：喜欢规划和深度策略的玩家。",
+        "en": "Set in the Burgundy region of High Medieval France. Each player is an aristocrat who starts with a small princedom and grows it by building settlements and mighty castles, trading along the river, working silver mines and using the knowledge of travellers. (BGA online version: 2–4 players.)\n\nThe game runs over 5 phases of 5 rounds. Each round you roll two dice and use them to take tiles from the central board, place them in your princedom, sell goods or gain workers. Every tile triggers an effect when placed, so clever combos score big. Allow about 30 minutes per player (about 1 hour for 2, about 2 hours for 4). This is the 2019 alea deluxe edition, which includes 8 mini expansions and a solo mode. Designed by Stefan Feld (original 2011).\n\nGreat for: players who enjoy planning and deep strategy."
       },
       "players": "1–4",
       "playtime": "30",
@@ -128,6 +152,14 @@
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=castles+of+burgundy+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpcastlesofburgundy"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=castlesofburgundy"
         },
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
@@ -397,8 +429,8 @@
       "name": { "zh": "庄园迷情", "en": "Obsession" },
       "image": "images/obsession.jpg",
       "description": {
-        "zh": "维多利亚时代的英国，你是一座没落庄园的家主。翻修庄园、管理管家和仆人、举办猎狐等社交活动，提升家族声望，并争取富有的 Fairchild 家族子女的青睐。融合牌库构筑与工人放置，主题感极强。设计师：Dan Hallagan（2018）。\n\n适合：喜欢主题和引擎构筑的玩家。",
-        "en": "Head a struggling family estate in Victorian England. Renovate your estate, manage butlers and maids, and host social events like fox hunts to raise your family's standing and court the wealthy Fairchild heirs. Combines deck building and worker placement with a strong theme. Designed by Dan Hallagan (2018).\n\nGreat for: players who enjoy theme and engine building."
+        "zh": "维多利亚时代的英国，你是一座没落庄园的家主。翻修庄园、管理管家和仆人、举办猎狐等社交活动，提升家族声望，并争取富有的 Fairchild 家族子女的青睐。融合牌库构筑与工人放置，主题感极强。设计师：Dan Hallagan（2018）。（BGA 在线版支持 2–4 人。）\n\n适合：喜欢主题和引擎构筑的玩家。",
+        "en": "Head a struggling family estate in Victorian England. Renovate your estate, manage butlers and maids, and host social events like fox hunts to raise your family's standing and court the wealthy Fairchild heirs. Combines deck building and worker placement with a strong theme. Designed by Dan Hallagan (2018). (BGA online version: 2–4 players.)\n\nGreat for: players who enjoy theme and engine building."
       },
       "players": "1–4",
       "playtime": "30",
@@ -408,6 +440,14 @@
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=obsession+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpobsession"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=obsession"
         },
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
@@ -433,6 +473,14 @@
           "url": "https://www.youtube.com/results?search_query=tokaido+board+game+how+to+play"
         },
         {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelptokaido"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=tokaido"
+        },
+        {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
           "url": "https://boardgamegeek.com/boardgame/123540/tokaido"
         }
@@ -443,8 +491,8 @@
       "name": { "zh": "图灵机", "en": "Turing Machine" },
       "image": "images/turing-machine.jpg",
       "description": {
-        "zh": "一款不用电的“计算机”推理游戏。用独特的镂空卡片向机器提问，验证你的猜测，率先推理出三位密码的玩家获胜。题库丰富，难度可调，也能单人玩。设计师：Fabien Gridel、Yoann Levet（2022）。\n\n适合：喜欢逻辑解谜的玩家。",
-        "en": "A deduction game played with an analog \"computer\" that needs no electricity. Question the machine using unique punched cards to test your ideas, and be first to crack the three-digit code. Lots of puzzles at different difficulties, and it plays solo too. Designed by Fabien Gridel and Yoann Levet (2022).\n\nGreat for: fans of logic puzzles."
+        "zh": "一款不用电的“计算机”推理游戏。用独特的镂空卡片向机器提问，验证你的猜测，率先推理出三位密码的玩家获胜。题库丰富，难度可调，也能单人玩。设计师：Fabien Gridel、Yoann Levet（2022）。（BGA 在线版支持 1–12 人。）\n\n适合：喜欢逻辑解谜的玩家。",
+        "en": "A deduction game played with an analog \"computer\" that needs no electricity. Question the machine using unique punched cards to test your ideas, and be first to crack the three-digit code. Lots of puzzles at different difficulties, and it plays solo too. Designed by Fabien Gridel and Yoann Levet (2022). (BGA online version: 1–12 players.)\n\nGreat for: fans of logic puzzles."
       },
       "players": "1–4",
       "playtime": "10",
@@ -454,6 +502,14 @@
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=turing+machine+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpturingmachine"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=turingmachine"
         },
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
@@ -494,6 +550,14 @@
           "url": "https://www.youtube.com/results?search_query=regicide+card+game+how+to+play"
         },
         {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpregicide"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=regicide"
+        },
+        {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
           "url": "https://boardgamegeek.com/boardgame/307002/regicide"
         }
@@ -504,8 +568,8 @@
       "name": { "zh": "卡卡颂（大盒版）", "en": "Carcassonne Big Box" },
       "image": "images/carcassonne-big-box.jpg",
       "description": {
-        "zh": "经典板块拼放游戏。每回合抽一块法国南部风景板块，与已有板块接上——城市接城市、道路接道路——再决定是否放下小人当骑士、强盗、修士或农夫来得分。大盒版包含基础游戏和多个扩展，最多可 8 人同玩。设计师：Klaus-Jürgen Wrede（2006）。\n\n适合：家庭和新手入门。",
-        "en": "The classic tile-laying game. Each turn draw a tile of southern French countryside and add it to the map, matching cities to cities and roads to roads, then decide whether to place a meeple as a knight, robber, monk or farmer to score. The Big Box includes the base game plus several expansions, for up to 8 players. Designed by Klaus-Jürgen Wrede (2006).\n\nGreat for: families and new players."
+        "zh": "经典板块拼放游戏。每回合抽一块法国南部风景板块，与已有板块接上——城市接城市、道路接道路——再决定是否放下小人当骑士、强盗、修士或农夫来得分。大盒版包含基础游戏和多个扩展，最多可 8 人同玩。设计师：Klaus-Jürgen Wrede（2006）。（BGA 在线版支持 2–5 人。）\n\n适合：家庭和新手入门。",
+        "en": "The classic tile-laying game. Each turn draw a tile of southern French countryside and add it to the map, matching cities to cities and roads to roads, then decide whether to place a meeple as a knight, robber, monk or farmer to score. The Big Box includes the base game plus several expansions, for up to 8 players. Designed by Klaus-Jürgen Wrede (2006). (BGA online version: 2–5 players.)\n\nGreat for: families and new players."
       },
       "players": "2–8",
       "playtime": "10",
@@ -515,6 +579,14 @@
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=carcassonne+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpcarcassonne"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=carcassonne"
         },
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
@@ -527,8 +599,8 @@
       "name": { "zh": "印加宝藏", "en": "Incan Gold" },
       "image": "images/incan-gold.jpg",
       "description": {
-        "zh": "简单刺激的拼运气游戏。大家一起深入神庙，每翻开一张牌就平分找到的宝石。每一步都要决定：继续冒险，还是带着收获撤回营地？如果同一种危险出现两次，还在里面的人会失去这一轮的全部宝藏。设计师：Bruno Faidutti、Alan R. Moon。\n\n适合：人多的聚会。",
-        "en": "A quick, exciting push-your-luck game. Explore a temple together, turning over cards and sharing the gems you find. Before each card, decide: go deeper, or head back to camp with your loot? If the same hazard appears twice, everyone still inside loses what they found that round. Designed by Bruno Faidutti and Alan R. Moon.\n\nGreat for: big party groups."
+        "zh": "简单刺激的拼运气游戏。大家一起深入神庙，每翻开一张牌就平分找到的宝石。每一步都要决定：继续冒险，还是带着收获撤回营地？如果同一种危险出现两次，还在里面的人会失去这一轮的全部宝藏。共进行 5 次探险，宝石最多者获胜。设计师：Bruno Faidutti、Alan R. Moon。\n\n适合：人多的聚会。",
+        "en": "A quick, exciting push-your-luck game. Explore a temple together, turning over cards and sharing the gems you find. Before each card, decide: go deeper, or head back to camp with your loot? If the same hazard appears twice, everyone still inside loses what they found that round. After five expeditions, the most gems wins. Designed by Bruno Faidutti and Alan R. Moon.\n\nGreat for: big party groups."
       },
       "players": "3–8",
       "playtime": "10",
@@ -538,6 +610,14 @@
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=incan+gold+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpincangold"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=incangold"
         },
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
@@ -693,6 +773,14 @@
           "url": "https://www.youtube.com/results?search_query=patchwork+board+game+how+to+play"
         },
         {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelppatchwork"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=patchwork"
+        },
+        {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
           "url": "https://boardgamegeek.com/boardgame/163412/patchwork"
         }
@@ -703,8 +791,8 @@
       "name": { "zh": "矮人掘金", "en": "Saboteur" },
       "image": "images/saboteur.jpg",
       "description": {
-        "zh": "玩家扮演挖金矿的矮人，但其中藏着破坏者！大家轮流出路线卡挖通隧道，矿工想挖到金子，破坏者则暗中搞破坏——弄坏别人的工具、挖死路。身份到回合结束才揭晓，三轮后金子最多的人获胜。设计师：Fréderic Moyersoen（2004）。\n\n适合：亲子和朋友聚会。",
-        "en": "Players are dwarves digging for gold, but there are saboteurs among them! Take turns playing tunnel cards toward the gold while the saboteurs secretly break tools and dig dead ends. Roles stay hidden until the round ends, and after three rounds the most gold wins. Designed by Fréderic Moyersoen (2004).\n\nGreat for: families and party groups."
+        "zh": "玩家扮演挖金矿的矮人，但其中藏着破坏者！大家轮流出路线卡挖通隧道，矿工想挖到金子，破坏者则暗中搞破坏——弄坏别人的工具、挖死路。身份到回合结束才揭晓，三轮后金子最多的人获胜。设计师：Fréderic Moyersoen（2004）。（BGA 在线版支持 2–12 人。）\n\n适合：亲子和朋友聚会。",
+        "en": "Players are dwarves digging for gold, but there are saboteurs among them! Take turns playing tunnel cards toward the gold while the saboteurs secretly break tools and dig dead ends. Roles stay hidden until the round ends, and after three rounds the most gold wins. Designed by Fréderic Moyersoen (2004). (BGA online version: 2–12 players.)\n\nGreat for: families and party groups."
       },
       "players": "3–10",
       "playtime": "6",
@@ -714,6 +802,14 @@
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=saboteur+card+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpsaboteur"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=saboteur"
         },
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
@@ -744,8 +840,8 @@
       "name": { "zh": "米勒山谷狼人", "en": "The Werewolves of Miller's Hollow" },
       "image": "images/werewolves-of-millers-hollow.jpg",
       "description": {
-        "zh": "经典身份推理游戏。村庄里藏着狼人，每位玩家秘密获得身份：狼人、普通村民，或预言家、女巫、猎人等特殊角色，由一名主持人控制流程。夜晚狼人秘密杀人，白天全村讨论并投票处决嫌疑人。村民要找出所有狼人，狼人则要吃掉村民。设计师：Philippe des Pallières、Hervé Marly（2001）。\n\n适合：人多的聚会。",
-        "en": "The classic social deduction game. Werewolves haunt the village, and each player secretly gets a role: werewolf, villager, or a special character like the Fortune Teller, the Witch or the Hunter, with a moderator running the game. At night the werewolves secretly kill; by day the village debates and votes someone out. Villagers must find every werewolf before they are eaten. Designed by Philippe des Pallières and Hervé Marly (2001).\n\nGreat for: big party groups."
+        "zh": "经典身份推理游戏。村庄里藏着狼人，每位玩家秘密获得身份：狼人、普通村民，或预言家、女巫、猎人等特殊角色，由一名主持人控制流程。夜晚狼人秘密杀人，白天全村讨论并投票处决嫌疑人。村民要找出所有狼人，狼人则要吃掉村民。设计师：Philippe des Pallières、Hervé Marly（2001）。（BGA 在线版支持 8–12 人。）\n\n适合：人多的聚会。",
+        "en": "The classic social deduction game. Werewolves haunt the village, and each player secretly gets a role: werewolf, villager, or a special character like the Fortune Teller, the Witch or the Hunter, with a moderator running the game. At night the werewolves secretly kill; by day the village debates and votes someone out. Villagers must find every werewolf before they are eaten. Designed by Philippe des Pallières and Hervé Marly (2001). (BGA online version: 8–12 players.)\n\nGreat for: big party groups."
       },
       "players": "8–13",
       "playtime": "5",
@@ -755,6 +851,14 @@
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=werewolves+of+millers+hollow+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpwerewolves"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=werewolves"
         },
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
@@ -767,8 +871,8 @@
       "name": { "zh": "德尔斐神谕", "en": "The Oracle of Delphi" },
       "image": "images/oracle-of-delphi.jpg",
       "description": {
-        "zh": "宙斯举办了一场竞赛，要选出一位值得邀请到奥林匹斯山的凡人。玩家驾船在爱琴海上航行，完成 12 项传奇任务：建造雕像、修筑神殿、献上祭品、斩杀怪物。用神谕骰子决定行动，最先完成全部任务并回到德尔斐的人获胜。设计师：Stefan Feld（2016）。\n\n适合：喜欢中重度策略的玩家。",
-        "en": "Zeus is holding a contest to find a mortal worthy of Olympus. Sail the Aegean and complete twelve legendary tasks: raise statues, build shrines, make offerings and slay monsters. Oracle dice decide your actions, and the first to finish every task and return to Delphi wins. Designed by Stefan Feld (2016).\n\nGreat for: fans of medium-heavy strategy."
+        "zh": "宙斯举办了一场竞赛，要选出一位值得邀请到奥林匹斯山的凡人。玩家驾船在爱琴海上航行，完成 12 项传奇任务：建造雕像、修筑神殿、献上祭品、斩杀怪物。用神谕骰子决定行动，最先完成全部任务并驾船返回版图中央宙斯处的玩家触发终局，本轮结束后游戏结束。设计师：Stefan Feld（2016）。\n\n适合：喜欢中重度策略的玩家。",
+        "en": "Zeus is holding a contest to find a mortal worthy of Olympus. Sail the Aegean and complete twelve legendary tasks: raise statues, build shrines, make offerings and slay monsters. Oracle dice decide your actions, and the first to finish every task and sail back to Zeus at the centre of the board triggers the end; the round is completed and the game ends. Designed by Stefan Feld (2016).\n\nGreat for: fans of medium-heavy strategy."
       },
       "players": "2–4",
       "playtime": "30",
@@ -778,6 +882,14 @@
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=oracle+of+delphi+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelptheoracleofdelphi"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=theoracleofdelphi"
         },
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
@@ -790,8 +902,8 @@
       "name": { "zh": "葡萄酒庄园", "en": "Viticulture" },
       "image": "images/viticulture.jpg",
       "description": {
-        "zh": "你在前现代的托斯卡纳继承了一座小葡萄园。分配工人度过四季：夏天种葡萄、接待游客，冬天酿酒、完成订单。和其他庄园抢占有限的行动位置，最先打造出成功酒庄的人获胜。设计师：Jamey Stegmaier、Alan Stone（2013）。\n\n适合：喜欢工人放置的玩家。",
-        "en": "You've inherited a humble vineyard in rustic Tuscany. Place your workers through the seasons: plant vines and host visitors in summer, make wine and fill orders in winter. Compete with other wineries for limited action spaces, and be the first to build a true success. Designed by Jamey Stegmaier and Alan Stone (2013).\n\nGreat for: fans of worker placement."
+        "zh": "你在前现代的托斯卡纳继承了一座小葡萄园。分配工人度过四季：夏天种葡萄、接待游客，冬天酿酒、完成订单。和其他庄园抢占有限的行动位置，有人达到 20 分时，当年结束后游戏结束，分数最高者获胜。设计师：Jamey Stegmaier、Alan Stone（2013）。（BGA 在线版支持 1–6 人。）\n\n适合：喜欢工人放置的玩家。",
+        "en": "You've inherited a humble vineyard in rustic Tuscany. Place your workers through the seasons: plant vines and host visitors in summer, make wine and fill orders in winter. Compete with other wineries for limited action spaces, When anyone reaches 20 points, the game ends after that year and the highest score wins. Designed by Jamey Stegmaier and Alan Stone (2013). (BGA online version: 1–6 players.)\n\nGreat for: fans of worker placement."
       },
       "players": "2–6",
       "playtime": "15",
@@ -801,6 +913,14 @@
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=viticulture+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpviticulture"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=viticulture"
         },
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
@@ -923,8 +1043,8 @@
       "name": { "zh": "提戈梅公会", "en": "The Guild of Merchant Explorers" },
       "image": "images/guild-of-merchant-explorers.jpg",
       "description": {
-        "zh": "每位玩家从自己地图上的一座城市出发。逐张翻开地形卡，所有人同时在自己的地图上放置探险方块，连通区域、跨越海洋、建立新城市、探索沉船。简单易学的同步翻牌画图式游戏。设计师：Matthew Dunstan、Brett J. Gilbert（2022）。\n\n适合：想要规则简单、人人同时行动的游戏。",
-        "en": "Each player starts with one city on their own map. As terrain cards are revealed one by one, everyone places explorer cubes at the same time to complete regions, cross seas, found new cities and explore shipwrecks. Simple rules and everyone plays at once. Designed by Matthew Dunstan and Brett J. Gilbert (2022).\n\nGreat for: groups who want simple rules and no waiting."
+        "zh": "每位玩家从自己地图上的一座城市出发。逐张翻开地形卡，所有人同时在自己的地图上放置探险方块，连通区域、跨越海洋、建立新城市、探索沉船。简单易学的同步翻牌画图式游戏。游戏共 4 个时代，金币最多者获胜。设计师：Matthew Dunstan、Brett J. Gilbert（2022）。\n\n适合：想要规则简单、人人同时行动的游戏。",
+        "en": "Each player starts with one city on their own map. As terrain cards are revealed one by one, everyone places explorer cubes at the same time to complete regions, cross seas, found new cities and explore shipwrecks. Simple rules and everyone plays at once. The game lasts 4 eras and the most coins wins. Designed by Matthew Dunstan and Brett J. Gilbert (2022).\n\nGreat for: groups who want simple rules and no waiting."
       },
       "players": "1–4",
       "playtime": "15",
@@ -934,6 +1054,14 @@
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=guild+of+merchant+explorers+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelptheguildofmerchantexplorers"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=theguildofmerchantexplorers"
         },
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
@@ -946,8 +1074,8 @@
       "name": { "zh": "心灵特工", "en": "MIND MGMT: The Psychic Espionage \"Game\"" },
       "image": "images/mind-mgmt.jpg",
       "description": {
-        "zh": "一对多的隐藏移动推理游戏，改编自同名漫画。一名玩家扮演 MIND MGMT 招募者，在地图上秘密移动并招募超能力者；其余玩家扮演叛逃特工，合作推理招募者的位置并将其抓获。独特的“SHIFT”机制会在多局之间逐步解锁新内容。设计师：Jay Cormier、Sen-Foong Lim（2021）。\n\n适合：喜欢推理和团队对抗的玩家。",
-        "en": "A one-versus-many hidden movement deduction game based on the comic. One player is the MIND MGMT Recruiter, moving secretly around the map to recruit psychics, while the others are rogue agents working together to deduce where the Recruiter is and capture them. The SHIFT system unlocks new content over several games. Designed by Jay Cormier and Sen-Foong Lim (2021).\n\nGreat for: fans of deduction and team-versus-one games."
+        "zh": "一对多的隐藏移动推理游戏，改编自同名漫画。一名玩家扮演 MIND MGMT 招募者，在地图上秘密移动并招募超能力者；其余玩家扮演叛逃特工，合作推理招募者的位置并将其抓获。独特的“SHIFT”机制会在多局之间逐步解锁新内容。设计师：Jay Cormier、Sen-Foong Lim（2021）。（BGA 在线版支持 2–5 人。）\n\n适合：喜欢推理和团队对抗的玩家。",
+        "en": "A one-versus-many hidden movement deduction game based on the comic. One player is the MIND MGMT Recruiter, moving secretly around the map to recruit psychics, while the others are rogue agents working together to deduce where the Recruiter is and capture them. The SHIFT system unlocks new content over several games. Designed by Jay Cormier and Sen-Foong Lim (2021). (BGA online version: 2–5 players.)\n\nGreat for: fans of deduction and team-versus-one games."
       },
       "players": "1–5",
       "playtime": "20",
@@ -957,6 +1085,14 @@
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=mind+mgmt+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpmindmgmt"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=mindmgmt"
         },
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
@@ -1143,6 +1279,14 @@
           "url": "https://www.youtube.com/results?search_query=harmonies+board+game+how+to+play"
         },
         {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpharmonies"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=harmonies"
+        },
+        {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
           "url": "https://boardgamegeek.com/boardgame/414317/harmonies"
         }
@@ -1235,6 +1379,14 @@
           "url": "https://www.youtube.com/results?search_query=7+wonders+duel+how+to+play"
         },
         {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpsevenwondersduel"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=sevenwondersduel"
+        },
+        {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
           "url": "https://boardgamegeek.com/boardgame/173346/7-wonders-duel"
         }
@@ -1281,6 +1433,14 @@
           "url": "https://www.youtube.com/results?search_query=im+the+boss+board+game+how+to+play"
         },
         {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpimtheboss"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=imtheboss"
+        },
+        {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
           "url": "https://boardgamegeek.com/boardgame/115/im-the-boss"
         }
@@ -1304,6 +1464,14 @@
           "url": "https://www.youtube.com/results?search_query=takenoko+how+to+play"
         },
         {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelptakenoko"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=takenoko"
+        },
+        {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
           "url": "https://boardgamegeek.com/boardgame/70919/takenoko"
         }
@@ -1325,6 +1493,14 @@
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=stockpile+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpstockpile"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=stockpile"
         },
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
@@ -1419,6 +1595,14 @@
           "url": "https://www.youtube.com/results?search_query=darwins+journey+how+to+play"
         },
         {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpdarwinsjourney"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=darwinsjourney"
+        },
+        {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
           "url": "https://boardgamegeek.com/boardgame/322289/darwins-journey"
         }
@@ -1488,6 +1672,14 @@
           "url": "https://www.youtube.com/results?search_query=welcome+to+the+moon+how+to+play"
         },
         {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpwelcometothemoon"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=welcometothemoon"
+        },
+        {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
           "url": "https://boardgamegeek.com/boardgame/339789/welcome-to-the-moon"
         }
@@ -1521,8 +1713,8 @@
       "name": { "zh": "西国建筑师", "en": "Architects of the West Kingdom" },
       "image": "images/architects-of-the-west-kingdom.jpg",
       "description": {
-        "zh": "公元 850 年左右，你是皇家建筑师，要为国王修建地标建筑。收集原料、雇佣学徒，同时盯紧自己的工人——别人可能会把他们抓去关押！还要在美德与诱惑之间做出选择。工人放置游戏。设计师：Shem Phillips、S J Macdonald（2018）。\n\n适合：喜欢工人放置的玩家。",
-        "en": "Around 850 AD, as royal architects you compete to build landmarks for the King. Gather materials, hire apprentices and watch your workers, since rivals can capture them! You must also choose between virtue and temptation. A worker-placement game. Designed by Shem Phillips and S J Macdonald (2018).\n\nGreat for: fans of worker placement."
+        "zh": "公元 850 年左右，你是皇家建筑师，要为国王修建地标建筑。收集原料、雇佣学徒，同时盯紧自己的工人——别人可能会把他们抓去关押！还要在美德与诱惑之间做出选择。工人放置游戏。设计师：Shem Phillips、S J Macdonald（2018）。（BGA 在线版支持 2–5 人。）\n\n适合：喜欢工人放置的玩家。",
+        "en": "Around 850 AD, as royal architects you compete to build landmarks for the King. Gather materials, hire apprentices and watch your workers, since rivals can capture them! You must also choose between virtue and temptation. A worker-placement game. Designed by Shem Phillips and S J Macdonald (2018). (BGA online version: 2–5 players.)\n\nGreat for: fans of worker placement."
       },
       "players": "1–5",
       "playtime": "20",
@@ -1532,6 +1724,14 @@
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=architects+of+the+west+kingdom+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelparchitectsofthewestkingdom"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=architectsofthewestkingdom"
         },
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
@@ -1580,6 +1780,14 @@
           "url": "https://www.youtube.com/results?search_query=forest+shuffle+how+to+play"
         },
         {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpforestshuffle"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=forestshuffle"
+        },
+        {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
           "url": "https://boardgamegeek.com/boardgame/391163/forest-shuffle"
         }
@@ -1626,6 +1834,14 @@
           "url": "https://www.youtube.com/results?search_query=age+of+innovation+how+to+play"
         },
         {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpageofinnovation"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=ageofinnovation"
+        },
+        {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
           "url": "https://boardgamegeek.com/boardgame/383179/age-of-innovation"
         }
@@ -1636,8 +1852,8 @@
       "name": { "zh": "阿纳克遗迹", "en": "Lost Ruins of Arnak" },
       "image": "images/lost-ruins-of-arnak.jpg",
       "description": {
-        "zh": "在一座未知海域的无人岛上，探险家发现了伟大文明的遗迹。带领探险队探索岛屿、寻找失落的神器、对抗可怕的守护者，揭开岛屿的秘密。融合牌库构筑与工人放置。设计师：Elwen、Mín（2020）。\n\n适合：喜欢探险题材和策略的玩家。",
-        "en": "On an uninhabited island in uncharted seas, explorers have found traces of a great civilization. Lead an expedition to explore the island, find lost artifacts and face fearsome guardians. Combines deck building and worker placement. Designed by Elwen and Mín (2020).\n\nGreat for: fans of adventure themes and strategy."
+        "zh": "在一座未知海域的无人岛上，探险家发现了伟大文明的遗迹。带领探险队探索岛屿、寻找失落的神器、对抗可怕的守护者，揭开岛屿的秘密。融合牌库构筑与工人放置。设计师：Elwen、Mín（2020）。（BGA 在线版支持 2–4 人。）\n\n适合：喜欢探险题材和策略的玩家。",
+        "en": "On an uninhabited island in uncharted seas, explorers have found traces of a great civilization. Lead an expedition to explore the island, find lost artifacts and face fearsome guardians. Combines deck building and worker placement. Designed by Elwen and Mín (2020). (BGA online version: 2–4 players.)\n\nGreat for: fans of adventure themes and strategy."
       },
       "players": "1–4",
       "playtime": "40",
@@ -1647,6 +1863,14 @@
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=lost+ruins+of+arnak+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelparnak"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=arnak"
         },
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
@@ -1682,8 +1906,8 @@
       "name": { "zh": "7连翻", "en": "Flip 7" },
       "image": "images/flip-7.jpg",
       "description": {
-        "zh": "一张张翻牌，但不能翻出重复的数字！牌堆里只有一张 1、两张 2、三张 3……还有加分、复活、冻结对手等特殊牌。见好就收，还是继续冒险凑够 7 张不同数字拿大奖？设计师：Eric Olsen（2024）。\n\n适合：人多的轻松聚会。",
-        "en": "Flip cards one by one without flipping the same number twice. There is one 1, two 2s, three 3s and so on, plus special cards that add points, save you or freeze a player. Bank your points, or push for seven different numbers and the big bonus? Designed by Eric Olsen (2024).\n\nGreat for: big, relaxed groups."
+        "zh": "一张张翻牌，但不能翻出重复的数字！牌堆里只有一张 1、两张 2、三张 3……还有加分、复活、冻结对手等特殊牌。见好就收，还是继续冒险凑够 7 张不同数字拿大奖？先达到 200 分者获胜。设计师：Eric Olsen（2024）。（BGA 在线版支持 3–12 人。）\n\n适合：人多的轻松聚会。",
+        "en": "Flip cards one by one without flipping the same number twice. There is one 1, two 2s, three 3s and so on, plus special cards that add points, save you or freeze a player. Bank your points, or push for seven different numbers and the big bonus? First to 200 points wins. Designed by Eric Olsen (2024). (BGA online version: 3–12 players.)\n\nGreat for: big, relaxed groups."
       },
       "players": "3–14+",
       "playtime": "5",
@@ -1693,6 +1917,14 @@
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=flip+7+card+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpflipseven"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=flipseven"
         },
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
@@ -1716,6 +1948,14 @@
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=hanabi+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelphanabi"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=hanabi"
         },
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
@@ -1773,8 +2013,8 @@
       "name": { "zh": "葡萄酒庄园：精华版", "en": "Viticulture Essential Edition" },
       "image": "images/viticulture-essential-edition.jpg",
       "description": {
-        "zh": "《葡萄酒庄园》的精华版，整合了初版之后最受欢迎的改进和扩展内容，并加入单人模式。你在托斯卡纳继承了一座小葡萄园，分配工人度过四季：种葡萄、接待游客、酿酒、完成订单，打造最成功的酒庄。设计师：Jamey Stegmaier、Alan Stone（2015）。\n\n适合：喜欢工人放置的玩家。",
-        "en": "The Essential Edition of Viticulture, bringing together the most popular improvements and expansion content, plus a solo mode. Inherit a humble Tuscan vineyard and place workers through the seasons to plant, host visitors, make wine and fill orders. Designed by Jamey Stegmaier and Alan Stone (2015).\n\nGreat for: fans of worker placement."
+        "zh": "《葡萄酒庄园》的精华版，整合了初版之后最受欢迎的改进和扩展内容，并加入单人模式。你在托斯卡纳继承了一座小葡萄园，分配工人度过四季：种葡萄、接待游客、酿酒、完成订单，打造最成功的酒庄。有人达到 20 分时，当年结束后游戏结束，分数最高者获胜。设计师：Jamey Stegmaier、Alan Stone（2015）。\n\n适合：喜欢工人放置的玩家。",
+        "en": "The Essential Edition of Viticulture, bringing together the most popular improvements and expansion content, plus a solo mode. Inherit a humble Tuscan vineyard and place workers through the seasons to plant, host visitors, make wine and fill orders. When anyone reaches 20 points, the game ends after that year and the highest score wins. Designed by Jamey Stegmaier and Alan Stone (2015).\n\nGreat for: fans of worker placement."
       },
       "players": "1–6",
       "playtime": "25",
@@ -1784,6 +2024,14 @@
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=viticulture+essential+edition+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpviticulture"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=viticulture"
         },
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
@@ -1888,8 +2136,8 @@
       "name": { "zh": "国家公园：自然之旅", "en": "PARKS" },
       "image": "images/parks.jpg",
       "description": {
-        "zh": "向美国国家公园致敬的游戏，配有精美的国家公园海报插画。每人带两名徒步者，在四季的步道上前进，收集代表山林、阳光、水和野生动物的“回忆”，用来造访国家公园得分。设计师：Henry Audubon（2019）。\n\n适合：喜欢美丽画风和轻策略的玩家。",
-        "en": "A celebration of the US National Parks with art from the Fifty-Nine Parks print series. Each player guides two hikers along the trail through four seasons, collecting memories (forest, sunshine, water, wildlife) to spend on visiting parks for points. Designed by Henry Audubon (2019).\n\nGreat for: beautiful art and light strategy."
+        "zh": "向美国国家公园致敬的游戏，配有精美的国家公园海报插画。每人带两名徒步者，在 3 个季节里沿步道前进，收集代表山林、阳光、水和野生动物的“回忆”，用来造访国家公园得分。设计师：Henry Audubon（2019）。\n\n适合：喜欢美丽画风和轻策略的玩家。",
+        "en": "A celebration of the US National Parks with art from the Fifty-Nine Parks print series. Each player guides two hikers along the trail over three seasons, collecting memories (forest, sunshine, water, wildlife) to spend on visiting parks for points. Designed by Henry Audubon (2019).\n\nGreat for: beautiful art and light strategy."
       },
       "players": "1–5",
       "playtime": "10",
@@ -1899,6 +2147,14 @@
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=parks+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpparks"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=parks"
         },
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
@@ -2003,8 +2259,8 @@
       "name": { "zh": "小小工厂：异画版", "en": "Little Factory (Firm with Brownies edition)" },
       "image": "images/little-factory.jpg",
       "description": {
-        "zh": "资源加工与建造的卡牌游戏。把原料加工成更有价值的东西——木头变木炭，木炭和面粉变面包——用累积的资产建造建筑，获得特殊能力和分数。此为日本 Brownies 精灵主题的异画版，平衡性有所调整并加入新卡。设计师：Shun Taguchi、Aya Taguchi。\n\n适合：亲子和轻度策略。",
-        "en": "A resource-processing and building card game. Turn resources into more valuable ones (wood into charcoal, charcoal and flour into bread) and use your assets to construct buildings for abilities and points. This is the Japanese Firm with Brownies edition with fairy art, rebalanced costs and new cards. Designed by Shun Taguchi and Aya Taguchi.\n\nGreat for: families and light strategy."
+        "zh": "资源加工与建造的卡牌游戏。把原料加工成更有价值的东西——木头变木炭，木炭和面粉变面包——用累积的资产建造建筑，获得特殊能力和分数。此为日本 Brownies 精灵主题的异画版，平衡性有所调整并加入新卡。率先达到 10 分者获胜。设计师：Shun Taguchi、Aya Taguchi。（BGA 在线版支持 2–4 人。）\n\n适合：亲子和轻度策略。",
+        "en": "A resource-processing and building card game. Turn resources into more valuable ones (wood into charcoal, charcoal and flour into bread) and use your assets to construct buildings for abilities and points. This is the Japanese Firm with Brownies edition with fairy art, rebalanced costs and new cards. First to 10 points wins. Designed by Shun Taguchi and Aya Taguchi. (BGA online version: 2–4 players.)\n\nGreat for: families and light strategy."
       },
       "players": "1–4",
       "playtime": "10",
@@ -2014,6 +2270,14 @@
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=little+factory+card+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelplittlefactory"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=littlefactory"
         },
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
@@ -2083,6 +2347,14 @@
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=ark+nova+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelparknova"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=arknova"
         },
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
@@ -2187,8 +2459,8 @@
       "name": { "zh": "情书", "en": "Love Letter" },
       "image": "images/love-letter.jpg",
       "description": {
-        "zh": "公主把自己锁在宫里，求婚者们只能托人帮忙递送情书。每人手上只有一张牌，轮流摸一张、打一张，利用侍卫、神父、男爵等角色的能力淘汰对手。最后留下或手牌最大的人把信送到公主手中。只有 16 张牌，几分钟一局。设计师：Seiji Kanai（2012）。\n\n适合：随时随地来一局。",
-        "en": "The princess has locked herself in the palace, so suitors must rely on others to deliver their love letters. Hold just one card; each turn draw one and play one, using the powers of the Guard, Priest, Baron and others to knock rivals out. The last player standing, or with the highest card, wins the round. Only 16 cards. Designed by Seiji Kanai (2012).\n\nGreat for: a quick game anywhere."
+        "zh": "公主把自己锁在宫里，求婚者们只能托人帮忙递送情书。每人手上只有一张牌，轮流摸一张、打一张，利用侍卫、神父、男爵等角色的能力淘汰对手。最后留下或手牌最大的人把信送到公主手中。只有 16 张牌，几分钟一局。设计师：Seiji Kanai（2012）。（BGA 在线版支持 2–6 人。）\n\n适合：随时随地来一局。",
+        "en": "The princess has locked herself in the palace, so suitors must rely on others to deliver their love letters. Hold just one card; each turn draw one and play one, using the powers of the Guard, Priest, Baron and others to knock rivals out. The last player standing, or with the highest card, wins the round. Only 16 cards. Designed by Seiji Kanai (2012). (BGA online version: 2–6 players.)\n\nGreat for: a quick game anywhere."
       },
       "players": "2–4",
       "playtime": "5",
@@ -2198,6 +2470,14 @@
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=love+letter+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelploveletter"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=loveletter"
         },
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
@@ -2223,6 +2503,14 @@
           "url": "https://www.youtube.com/results?search_query=6+nimmt+take+5+how+to+play"
         },
         {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpsechsnimmt"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=sechsnimmt"
+        },
+        {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
           "url": "https://boardgamegeek.com/boardgame/432/take-5"
         }
@@ -2233,8 +2521,8 @@
       "name": { "zh": "政变疑云", "en": "Coup" },
       "image": "images/coup.jpg",
       "description": {
-        "zh": "你是腐败城邦中一个家族的首领，要靠操纵、吹牛和贿赂夺取权力。每人有两张暗置的身份牌，可以宣称自己是任何角色来使用能力——别人可以质疑你。失去两张身份牌就出局，最后留下的人获胜。设计师：Rikki Tahta（2012）。\n\n适合：喜欢吹牛和心理战的聚会。",
-        "en": "Lead a family in a corrupt city-state and bluff, bribe and manipulate your way to power. You hold two hidden character cards but can claim to be anyone to use their power, and others can challenge you. Lose both cards and you're out; the last player standing wins. Designed by Rikki Tahta (2012).\n\nGreat for: groups who love bluffing."
+        "zh": "你是腐败城邦中一个家族的首领，要靠操纵、吹牛和贿赂夺取权力。每人有两张暗置的身份牌，可以宣称自己是任何角色来使用能力——别人可以质疑你。失去两张身份牌就出局，最后留下的人获胜。设计师：Rikki Tahta（2012）。（BGA 在线版支持 2–8 人。）\n\n适合：喜欢吹牛和心理战的聚会。",
+        "en": "Lead a family in a corrupt city-state and bluff, bribe and manipulate your way to power. You hold two hidden character cards but can claim to be anyone to use their power, and others can challenge you. Lose both cards and you're out; the last player standing wins. Designed by Rikki Tahta (2012). (BGA online version: 2–8 players.)\n\nGreat for: groups who love bluffing."
       },
       "players": "2–6",
       "playtime": "3",
@@ -2244,6 +2532,14 @@
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=coup+card+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpcoupcitystate"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=coupcitystate"
         },
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
@@ -2361,6 +2657,14 @@
           "url": "https://www.youtube.com/results?search_query=gaia+project+how+to+play"
         },
         {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpgaiaproject"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=gaiaproject"
+        },
+        {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
           "url": "https://boardgamegeek.com/boardgame/220308/gaia-project"
         }
@@ -2382,6 +2686,14 @@
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=the+gang+card+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpthegang"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=thegang"
         },
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
@@ -2471,6 +2783,10 @@
           "url": "https://www.youtube.com/results?search_query=white+castle+duel+how+to+play"
         },
         {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=thewhitecastleduel"
+        },
+        {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
           "url": "https://boardgamegeek.com/boardgame/438936/the-white-castle-duel"
         }
@@ -2492,6 +2808,14 @@
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=the+white+castle+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpthewhitecastle"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=thewhitecastle"
         },
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
@@ -2550,8 +2874,8 @@
       "name": { "zh": "骷髅牌", "en": "Skull" },
       "image": "images/skull.jpg",
       "description": {
-        "zh": "纯粹的吹牛游戏。每人有 3 张花和 1 张骷髅，轮流扣下一张牌，直到有人宣称能翻开多少张都是花。其他人可以加价，出价最高的人必须从自己的牌开始翻——翻到骷髅就失败！设计师：Hervé Marly（2011）。\n\n适合：喜欢心理战的聚会。",
-        "en": "Bluffing in its purest form. Everyone has three roses and one skull. Take turns placing a card face-down until someone bids how many roses they can flip; others can raise, and the highest bidder must flip, starting with their own cards. Hit a skull and you fail! Designed by Hervé Marly (2011).\n\nGreat for: groups who love mind games."
+        "zh": "纯粹的吹牛游戏。每人有 3 张花和 1 张骷髅，轮流扣下一张牌，直到有人宣称能翻开多少张都是花。其他人可以加价，出价最高的人必须从自己的牌开始翻——翻到骷髅就失败！成功翻牌 2 次，或成为最后留下的玩家即获胜。设计师：Hervé Marly（2011）。\n\n适合：喜欢心理战的聚会。",
+        "en": "Bluffing in its purest form. Everyone has three roses and one skull. Take turns placing a card face-down until someone bids how many roses they can flip; others can raise, and the highest bidder must flip, starting with their own cards. Hit a skull and you fail! Win two challenges, or be the last player left, to win. Designed by Hervé Marly (2011).\n\nGreat for: groups who love mind games."
       },
       "players": "3–6",
       "playtime": "15",
@@ -2561,6 +2885,14 @@
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=skull+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpskull"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=skull"
         },
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
@@ -2655,6 +2987,14 @@
           "url": "https://www.youtube.com/results?search_query=azul+how+to+play"
         },
         {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpazul"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=azul"
+        },
+        {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
           "url": "https://boardgamegeek.com/boardgame/230802/azul"
         }
@@ -2676,6 +3016,14 @@
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=hegemony+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelphegemony"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=hegemony"
         },
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
@@ -2757,8 +3105,8 @@
       "name": { "zh": "勃艮第城堡：特别典藏版", "en": "The Castles of Burgundy: Special Edition" },
       "image": "images/castles-of-burgundy-special-edition.jpg",
       "description": {
-        "zh": "经典《勃艮第城堡》的高端典藏版，由 Ravensburger 与 Awaken Realms 合作推出。重新设计的美术和版图、双层玩家版、放大 30% 的板块、板块收纳袋和金属钱币等豪华配件。玩法与原版相同：掷骰拿取板块，建设你的勃艮第领地。设计师：Stefan Feld（2023）。\n\n适合：《勃艮第城堡》的忠实粉丝。",
-        "en": "A high-end edition of the classic Castles of Burgundy by Ravensburger and Awaken Realms. Redesigned art and layout, double-layer player boards, 30% bigger tiles, tile bags, metal coins and more. Same gameplay: roll dice, take tiles and build your Burgundian estate. Designed by Stefan Feld (2023).\n\nGreat for: Castles of Burgundy fans."
+        "zh": "经典《勃艮第城堡》的高端典藏版，由 Ravensburger 与 Awaken Realms 合作推出。重新设计的美术和版图、双层玩家版、放大 30% 的板块、板块收纳袋和金属钱币等豪华配件。玩法与原版相同：掷骰拿取板块，建设你的勃艮第领地。设计师：Stefan Feld（2023）。（BGA 在线版支持 2–4 人。）\n\n适合：《勃艮第城堡》的忠实粉丝。",
+        "en": "A high-end edition of the classic Castles of Burgundy by Ravensburger and Awaken Realms. Redesigned art and layout, double-layer player boards, 30% bigger tiles, tile bags, metal coins and more. Same gameplay: roll dice, take tiles and build your Burgundian estate. Designed by Stefan Feld (2023). (BGA online version: 2–4 players.)\n\nGreat for: Castles of Burgundy fans."
       },
       "players": "1–4",
       "playtime": "30",
@@ -2768,6 +3116,14 @@
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=castles+of+burgundy+special+edition"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpcastlesofburgundy"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=castlesofburgundy"
         },
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
@@ -2814,6 +3170,14 @@
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=puerto+rico+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelppuertorico"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=puertorico"
         },
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
@@ -2908,6 +3272,14 @@
           "url": "https://www.youtube.com/results?search_query=terraforming+mars+how+to+play"
         },
         {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpterraformingmars"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=terraformingmars"
+        },
+        {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
           "url": "https://boardgamegeek.com/boardgame/167791/terraforming-mars"
         }
@@ -2954,8 +3326,78 @@
           "url": "https://www.youtube.com/results?search_query=castles+of+burgundy+how+to+play"
         },
         {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpcastlesofburgundy"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=castlesofburgundy"
+        },
+        {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
           "url": "https://boardgamegeek.com/boardgame/84876/the-castles-of-burgundy"
+        }
+      ]
+    },
+    {
+      "id": "war-chest",
+      "name": { "zh": "战争之匣", "en": "War Chest" },
+      "image": "images/war-chest.jpg",
+      "description": {
+        "zh": "以“袋子构筑”为核心的抽象战棋游戏。开局轮流征召不同兵种组成军队，每回合从袋子里摸出 3 枚兵种硬币，用来部署、移动、攻击、占领据点或招募更多士兵。不仅要指挥战场上的部队，还要管理袋中等待上场的后备军。率先把全部 6 个控制标记放到据点上的一方获胜，4 人时两两组队。设计师：Trevor Benjamin、David Thompson（2018）。（BGA 在线版支持 2、4 人。）\n\n适合：喜欢两人策略对抗的玩家。",
+        "en": "A bag-building war game. Draft different units into your army, then each round draw three unit coins from your bag and use them to deploy, move, attack, capture control points or recruit more troops. You must manage both your forces on the board and the reserves waiting in your bag. First to place all six control markers on locations wins; with four players it's two teams. Designed by Trevor Benjamin and David Thompson (2018). (BGA online version: 2 or 4 players.)\n\nGreat for: fans of head-to-head strategy."
+      },
+      "players": "2–4",
+      "playtime": "15",
+      "age": "14",
+      "tags": ["War Game", "Abstract"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=war+chest+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpwarchest"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=warchest"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/249259/war-chest"
+        }
+      ]
+    },
+    {
+      "id": "pirates-of-maracaibo",
+      "name": { "zh": "马拉开波海盗", "en": "Pirates of Maracaibo" },
+      "image": "images/pirates-of-maracaibo.jpg",
+      "description": {
+        "zh": "扬帆加勒比海，开始一场冒险的劫掠之旅！搜寻最珍贵的宝藏，把黄金、翡翠和珍珠藏到安全的港口；一路探索、囤积货物、雇佣船员、劫掠敌船，别忘了埋下宝藏。还要为退休后的生活找个落脚处——但一圈航行是不够的，要比对手更快。游戏共 3 轮。设计师：Alexander Pfister、Ralph Bienert、Ryan Hendrickson（2023）。\n\n适合：喜欢中重度策略的玩家。",
+        "en": "Set sail for an adventurous raid across the Caribbean! Hunt for the most valuable treasures and stash gold, emeralds and pearls in safe harbours. Explore, stockpile cargo, hire crew, commandeer rival ships and bury your loot, while finding somewhere to settle when your days at sea are done. One trip around the Caribbean won't be enough, so outpace your rivals. The game is played over 3 rounds. Designed by Alexander Pfister, Ralph Bienert and Ryan Hendrickson (2023).\n\nGreat for: fans of medium-heavy strategy."
+      },
+      "players": "1–4",
+      "playtime": "25",
+      "age": "12",
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=pirates+of+maracaibo+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelppiratesofmaracaibo"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=piratesofmaracaibo"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/397385/pirates-of-maracaibo"
         }
       ]
     }
