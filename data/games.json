@@ -1,65 +1,101 @@
 {
+  "tags": {
+    "Strategy": { "zh": "策略", "en": "Strategy" },
+    "Trading": { "zh": "交易", "en": "Trading" },
+    "Family": { "zh": "家庭", "en": "Family" },
+    "Party": { "zh": "派对", "en": "Party" },
+    "Word": { "zh": "文字", "en": "Word" },
+    "Team": { "zh": "团队", "en": "Team" },
+    "Cards": { "zh": "卡牌", "en": "Cards" }
+  },
   "games": [
     {
       "id": "catan",
-      "name": "Catan",
+      "name": { "zh": "卡坦岛", "en": "Catan" },
       "image": "images/catan.svg",
-      "description": "Settle the island of Catan by collecting wood, brick, wheat, sheep and ore. Trade with other players, build roads and settlements, and be the first to reach 10 victory points.\n\nGreat for: groups who enjoy trading and negotiating.",
+      "description": {
+        "zh": "在卡坦岛上开拓定居！收集木材、砖块、小麦、羊毛和矿石，与其他玩家交易，修建道路和村庄，率先获得 10 分的玩家获胜。\n\n适合：喜欢交易和谈判的朋友。",
+        "en": "Settle the island of Catan by collecting wood, brick, wheat, sheep and ore. Trade with other players, build roads and settlements, and be the first to reach 10 victory points.\n\nGreat for: groups who enjoy trading and negotiating."
+      },
       "players": "3–4",
-      "playtime": "60–90 min",
-      "age": "10+",
+      "playtime": "60–90",
+      "age": "10",
       "tags": ["Strategy", "Trading", "Family"],
       "links": [
-        { "label": "Find how-to-play videos on YouTube", "url": "https://www.youtube.com/results?search_query=catan+how+to+play" }
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=catan+how+to+play"
+        }
       ]
     },
     {
       "id": "ticket-to-ride",
-      "name": "Ticket to Ride",
+      "name": { "zh": "车票之旅", "en": "Ticket to Ride" },
       "image": "images/ticket-to-ride.svg",
-      "description": "Collect train cards and claim railway routes across the map. Complete your secret destination tickets to score big — but watch out, other players may block your path!",
+      "description": {
+        "zh": "收集火车卡，在地图上占领铁路线路。完成你的秘密目的地车票即可获得高分——但要小心，其他玩家可能会挡住你的路线！",
+        "en": "Collect train cards and claim railway routes across the map. Complete your secret destination tickets to score big — but watch out, other players may block your path!"
+      },
       "players": "2–5",
-      "playtime": "45–60 min",
-      "age": "8+",
+      "playtime": "45–60",
+      "age": "8",
       "tags": ["Family", "Strategy"],
       "links": [
-        { "label": "Find how-to-play videos on YouTube", "url": "https://www.youtube.com/results?search_query=ticket+to+ride+how+to+play" }
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=ticket+to+ride+how+to+play"
+        }
       ]
     },
     {
       "id": "codenames",
-      "name": "Codenames",
+      "name": { "zh": "行动代号", "en": "Codenames" },
       "image": "images/codenames.svg",
-      "description": "Two teams compete to find their secret agents. Each team's spymaster gives one-word clues that connect several words on the table. Guess carefully — touching the assassin loses the game instantly.",
+      "description": {
+        "zh": "两队比赛找出自己的秘密特工。每队的间谍首领只能给出一个词作为提示，把桌上的几个词联系起来。猜的时候要小心——碰到刺客就立刻输掉！",
+        "en": "Two teams compete to find their secret agents. Each team's spymaster gives one-word clues that connect several words on the table. Guess carefully — touching the assassin loses the game instantly."
+      },
       "players": "4–8+",
-      "playtime": "15–20 min",
-      "age": "10+",
+      "playtime": "15–20",
+      "age": "10",
       "tags": ["Party", "Word", "Team"],
       "links": [
-        { "label": "Find how-to-play videos on YouTube", "url": "https://www.youtube.com/results?search_query=codenames+how+to+play" }
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=codenames+how+to+play"
+        }
       ]
     },
     {
       "id": "splendor",
-      "name": "Splendor",
+      "name": { "zh": "璀璨宝石", "en": "Splendor" },
       "image": "images/splendor.svg",
-      "description": "You are a Renaissance gem merchant. Collect gem tokens, buy development cards that give permanent bonuses, and attract nobles to your shop. Simple rules, deep decisions.",
+      "description": {
+        "zh": "你是一位文艺复兴时期的宝石商人。收集宝石筹码，购买能提供永久加成的发展卡，吸引贵族光临你的店铺。规则简单，策略丰富。",
+        "en": "You are a Renaissance gem merchant. Collect gem tokens, buy development cards that give permanent bonuses, and attract nobles to your shop. Simple rules, deep decisions."
+      },
       "players": "2–4",
-      "playtime": "30 min",
-      "age": "10+",
+      "playtime": "30",
+      "age": "10",
       "tags": ["Strategy", "Cards"],
       "links": [
-        { "label": "Find how-to-play videos on YouTube", "url": "https://www.youtube.com/results?search_query=splendor+board+game+how+to+play" }
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=splendor+board+game+how+to+play"
+        }
       ]
     },
     {
       "id": "uno",
-      "name": "UNO",
+      "name": { "zh": "UNO 优诺", "en": "UNO" },
       "image": "images/uno.svg",
-      "description": "Match cards by colour or number and be the first to empty your hand. Don't forget to shout \"UNO!\" when you have one card left.",
+      "description": {
+        "zh": "按颜色或数字出牌，最先出完手牌的玩家获胜。只剩一张牌时，别忘了大喊「UNO！」",
+        "en": "Match cards by colour or number and be the first to empty your hand. Don't forget to shout \"UNO!\" when you have one card left."
+      },
       "players": "2–10",
-      "playtime": "20–30 min",
-      "age": "7+",
+      "playtime": "20–30",
+      "age": "7",
       "tags": ["Party", "Cards", "Family"],
       "links": []
     }

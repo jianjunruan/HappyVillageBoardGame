@@ -1,55 +1,71 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Game Entry Helper</title>
+  <title>桌游录入助手 Game Entry Helper</title>
   <meta name="robots" content="noindex">
   <link rel="icon" href="../images/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../css/style.css">
   <style>
     form { display: grid; gap: 14px; margin: 16px 0 24px; }
     label { display: grid; gap: 4px; font-weight: 600; font-size: 0.92rem; }
-    label small { font-weight: 400; color: var(--muted); }
-    .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
-    .link-row { display: grid; grid-template-columns: 1fr 2fr auto; gap: 8px; align-items: center; }
+    label small, .hint { font-weight: 400; color: var(--muted); font-size: 0.85rem; }
+    .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+    .link-row { display: grid; grid-template-columns: 1fr 1fr 2fr auto; gap: 8px; align-items: center; }
     .link-row .kind { font-size: 0.8rem; color: var(--muted); min-width: 90px; }
+    fieldset { border: 1px solid var(--border); border-radius: 10px; padding: 12px; display: grid; gap: 8px; }
     button.btn { padding: 10px 16px; border-radius: 10px; border: 1px solid var(--accent); background: var(--accent); color: #fff; font: inherit; cursor: pointer; }
     button.btn.ghost { background: transparent; color: var(--accent); }
     pre { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px; overflow: auto; font-size: 0.85rem; }
     .preview img { width: 100%; max-width: 320px; aspect-ratio: 4/3; object-fit: cover; border-radius: 10px; background: var(--accent-soft); }
-    @media (max-width: 560px) { .link-row { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) { .link-row { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
   <main class="wrap" style="padding-top:24px; padding-bottom:40px">
-    <p><a href="../">← Back to games</a></p>
-    <h1>Game entry helper</h1>
-    <p class="tagline">Fill in the form, copy the generated block, and paste it into <code>data/games.json</code> inside the <code>"games"</code> list (separate entries with a comma). Nothing here is saved.</p>
+    <p><a href="../">← 返回桌游列表 Back to games</a></p>
+    <h1>桌游录入助手 <small style="font-weight:400; color:var(--muted)">Game entry helper</small></h1>
+    <p class="tagline">填写表单，复制生成的内容，粘贴到 <code>data/games.json</code> 的 <code>"games"</code> 列表中（条目之间用英文逗号分隔）。此页面不会保存任何内容。<br>
+      Fill in the form, copy the result, and paste it into the <code>"games"</code> list in <code>data/games.json</code> (separate entries with a comma). Nothing here is saved.</p>
 
     <form id="f" autocomplete="off">
-      <label>Name <input name="name" required placeholder="Catan"></label>
-      <label>Image <small>Path in the repo (images/catan.jpg) or a Google Drive / web image link. Drive files must be shared "Anyone with the link".</small>
+      <div class="row">
+        <label>中文名称 Chinese name <input name="name_zh" placeholder="卡坦岛"></label>
+        <label>英文名称 English name <input name="name_en" placeholder="Catan"></label>
+      </div>
+      <label>ID <small>自动生成，可修改；只用小写英文和短横线 · Auto-filled from the English name; lowercase and dashes only</small>
+        <input name="gameId" placeholder="catan"></label>
+      <label>图片 Image <small>仓库中的路径（images/catan.jpg）或 Google Drive / 网络图片链接；Drive 文件需设为「知道链接的任何人均可查看」</small>
         <input name="image" placeholder="images/catan.jpg"></label>
       <div class="preview"><img id="img-preview" alt="" src="../images/placeholder.svg"></div>
-      <label>Description <small>Line breaks are kept.</small><textarea name="description" rows="5"></textarea></label>
+      <label>中文介绍 Chinese description <small>保留换行 · line breaks are kept</small><textarea name="desc_zh" rows="4"></textarea></label>
+      <label>英文介绍 English description <textarea name="desc_en" rows="4"></textarea></label>
       <div class="row">
-        <label>Players <input name="players" placeholder="3–4"></label>
-        <label>Play time <input name="playtime" placeholder="60 min"></label>
-        <label>Age <input name="age" placeholder="10+"></label>
+        <label>人数 Players <small>例如 e.g. 3–4</small><input name="players" placeholder="3–4"></label>
+        <label>时长（分钟）Play time (min) <small>例如 e.g. 60–90</small><input name="playtime" placeholder="60–90"></label>
+        <label>最低年龄 Minimum age <small>例如 e.g. 10</small><input name="age" placeholder="10"></label>
       </div>
-      <label>Tags <small>Comma separated</small><input name="tags" placeholder="Strategy, Family"></label>
+      <label>标签 Tags <small>用逗号分隔，使用英文标签名 · comma separated tag keys. Existing: <span id="known-tags">…</span></small>
+        <input name="tags" placeholder="Strategy, Family"></label>
 
-      <fieldset style="border:1px solid var(--border); border-radius:10px; padding:12px; display:grid; gap:8px">
-        <legend>Links &amp; videos <small style="color:var(--muted)">YouTube and Google Drive videos play inside the page</small></legend>
+      <fieldset>
+        <legend>链接与视频 Links &amp; videos <small class="hint">YouTube 和 Google Drive 视频可直接在页面中播放</small></legend>
         <div id="links"></div>
-        <button type="button" class="btn ghost" id="add-link">+ Add link</button>
+        <button type="button" class="btn ghost" id="add-link">+ 添加链接 Add link</button>
       </fieldset>
     </form>
 
-    <h2>Generated entry</h2>
+    <h2>生成的条目 Generated entry</h2>
     <pre id="out"></pre>
-    <button class="btn" id="copy">Copy</button>
+    <button class="btn" data-copy="out">复制 Copy</button>
+
+    <div id="tags-section" hidden>
+      <p class="hint">新标签需要加到 games.json 顶部的 <code>"tags"</code> 部分，并补上中文名称：<br>
+        New tags must also be added to the <code>"tags"</code> section at the top of games.json (fill in the Chinese name):</p>
+      <pre id="tags-out"></pre>
+      <button class="btn" data-copy="tags-out">复制 Copy</button>
+    </div>
   </main>
 
   <script src="../js/media.js"></script>
@@ -57,54 +73,80 @@
     const f = document.getElementById("f");
     const linksEl = document.getElementById("links");
     const out = document.getElementById("out");
-    const kindLabel = { youtube: "▶ YouTube video", drive: "▶ Drive video", link: "🔗 Link" };
+    const kindLabel = { youtube: "▶ YouTube", drive: "▶ Drive", link: "🔗 Link" };
+    let knownTags = {};
+    let idEdited = false;
+    const idInput = f.elements.gameId;
 
-    function addLink(label = "", url = "") {
+    fetch("../data/games.json", { cache: "no-cache" })
+      .then((r) => r.json())
+      .then((d) => {
+        knownTags = d.tags || {};
+        document.getElementById("known-tags").textContent =
+          Object.entries(knownTags).map(([k, v]) => `${k} (${v.zh || "?"})`).join(", ") || "—";
+        update();
+      })
+      .catch(() => (document.getElementById("known-tags").textContent = "—"));
+
+    function addLink() {
       const row = document.createElement("div");
       row.className = "link-row";
-      row.innerHTML = `<input data-k="label" placeholder="How to play"><input data-k="url" placeholder="https://youtu.be/..."><span class="kind"></span>`;
-      row.querySelector('[data-k="label"]').value = label;
-      row.querySelector('[data-k="url"]').value = url;
+      row.innerHTML = `<input data-k="zh" placeholder="中文说明，例如：教学视频"><input data-k="en" placeholder="English label, e.g. How to play"><input data-k="url" placeholder="https://youtu.be/..."><span class="kind"></span>`;
       linksEl.append(row);
     }
 
     const slug = (s) => s.toLowerCase().normalize("NFKD").replace(/[^\w\s-]/g, "").trim().replace(/[\s_]+/g, "-");
+    // Keep the zh/en object only when both are filled; otherwise store the one string.
+    const pair = (zh, en) => (zh && en ? { zh, en } : zh || en);
 
     function update() {
-      const d = Object.fromEntries(new FormData(f));
+      const d = Object.fromEntries([...new FormData(f)].map(([k, v]) => [k, v.trim()]));
+      if (!idEdited) idInput.value = slug(d.name_en || "");
       const links = [...linksEl.querySelectorAll(".link-row")]
         .map((row) => {
-          const label = row.querySelector('[data-k="label"]').value.trim();
-          const url = row.querySelector('[data-k="url"]').value.trim();
+          const v = (k) => row.querySelector(`[data-k="${k}"]`).value.trim();
+          const url = v("url");
           row.querySelector(".kind").textContent = url ? kindLabel[HVMedia.parse(url).type] : "";
-          return { label, url };
+          const label = pair(v("zh"), v("en"));
+          return label ? { label, url } : { url };
         })
         .filter((l) => l.url);
+      const tags = d.tags.split(/[,，]/).map((t) => t.trim()).filter(Boolean);
       const entry = {
-        id: slug(d.name || ""),
-        name: d.name.trim(),
-        image: d.image.trim(),
-        description: d.description.trim(),
-        players: d.players.trim(),
-        playtime: d.playtime.trim(),
-        age: d.age.trim(),
-        tags: d.tags.split(",").map((t) => t.trim()).filter(Boolean),
+        id: idInput.value.trim(),
+        name: pair(d.name_zh, d.name_en),
+        image: d.image,
+        description: pair(d.desc_zh, d.desc_en),
+        players: d.players,
+        playtime: d.playtime,
+        age: d.age,
+        tags,
         links,
       };
       out.textContent = JSON.stringify(entry, null, 2);
-      const img = entry.image ? HVMedia.imageUrl(entry.image) : "images/placeholder.svg";
+
+      const newTags = tags.filter((t) => !knownTags[t]);
+      document.getElementById("tags-section").hidden = newTags.length === 0;
+      document.getElementById("tags-out").textContent = newTags
+        .map((t) => `"${t}": { "zh": "", "en": "${t}" },`)
+        .join("\n");
+
+      const img = d.image ? HVMedia.imageUrl(d.image) : "images/placeholder.svg";
       document.getElementById("img-preview").src = /^https?:/.test(img) ? img : "../" + img;
     }
 
     document.getElementById("add-link").onclick = () => { addLink(); update(); };
-    document.getElementById("copy").onclick = async (e) => {
-      await navigator.clipboard.writeText(out.textContent);
-      e.target.textContent = "Copied!";
-      setTimeout(() => (e.target.textContent = "Copy"), 1500);
-    };
+    document.querySelectorAll("[data-copy]").forEach((btn) => {
+      btn.onclick = async () => {
+        await navigator.clipboard.writeText(document.getElementById(btn.dataset.copy).textContent);
+        const old = btn.textContent;
+        btn.textContent = "已复制 Copied!";
+        setTimeout(() => (btn.textContent = old), 1500);
+      };
+    });
+    idInput.addEventListener("input", () => (idEdited = idInput.value.trim() !== ""));
     f.addEventListener("input", update);
-    linksEl.addEventListener("input", update);
-    addLink("How to play", "");
+    addLink();
     update();
   </script>
 </body>
