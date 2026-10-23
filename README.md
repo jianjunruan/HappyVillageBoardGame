@@ -41,7 +41,7 @@ All games live in **`data/games.json`**.
 | `image` | no | A repo path (`images/catan.jpg`) or a Google Drive / web image URL. |
 | `description` | no | `{ "zh": "…", "en": "…" }`. Line breaks (`\n`) are kept. |
 | `players` | no | Just the number, e.g. `"3–4"`. The site adds "人" or "players". |
-| `playtime` | no | Minutes only, e.g. `"60–90"`. The site adds "分钟" or "min". |
+| `playtime` | no | Minutes **per player**, numbers only, e.g. `"20"` or `"15–20"`. The site adds "分钟/人" or "min/player". |
 | `age` | no | Minimum age only, e.g. `"10"`. The site adds "岁以上" or "Ages 10+". |
 | `tags` | no | Tag keys, e.g. `["Strategy", "Family"]`. Translations live in the `"tags"` section at the top of the file. |
 | `links` | no | A list of `{ "label": { "zh": "教学视频", "en": "How to play" }, "url": "..." }`. |

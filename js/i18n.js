@@ -8,7 +8,7 @@ window.HVI18n = (() => {
 
   const STRINGS = {
     zh: {
-      siteName: "快乐村桌游",
+      siteName: "欢乐小镇桌游",
       tagline: "找桌游、学规则、看教学视频。",
       searchPlaceholder: "搜索桌游，例如：策略、派对、卡牌……",
       searchLabel: "搜索桌游",
@@ -22,9 +22,9 @@ window.HVI18n = (() => {
       video: "视频",
       openIn: "在 {site} 中打开",
       players: "{v} 人",
-      playtime: "{v} 分钟",
+      playtime: "{v} 分钟/人",
       age: "{v} 岁以上",
-      footer: "快乐村桌游俱乐部 · 活动与报名功能即将推出",
+      footer: "欢乐小镇桌游 · 活动与报名功能即将推出",
       toggle: "EN",
       toggleLabel: "Switch to English",
     },
@@ -43,7 +43,7 @@ window.HVI18n = (() => {
       video: "Video",
       openIn: "open in {site}",
       players: "{v} players",
-      playtime: "{v} min",
+      playtime: "{v} min/player",
       age: "Ages {v}+",
       footer: "Happy Village Board Game Club · Events & registration coming soon",
       toggle: "中文",

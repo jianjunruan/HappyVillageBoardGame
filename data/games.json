@@ -6,98 +6,2866 @@
     "Party": { "zh": "派对", "en": "Party" },
     "Word": { "zh": "文字", "en": "Word" },
     "Team": { "zh": "团队", "en": "Team" },
-    "Cards": { "zh": "卡牌", "en": "Cards" }
+    "Cards": { "zh": "卡牌", "en": "Cards" },
+    "Dice": { "zh": "骰子", "en": "Dice" },
+    "Co-op": { "zh": "合作", "en": "Co-op" },
+    "Euro": { "zh": "德式", "en": "Euro" },
+    "Thematic": { "zh": "美式", "en": "Thematic" },
+    "Deduction": { "zh": "解谜", "en": "Deduction" },
+    "Social Deduction": { "zh": "身份推理", "en": "Social Deduction" },
+    "Expansion": { "zh": "扩展", "en": "Expansion" },
+    "Abstract": { "zh": "抽象", "en": "Abstract" },
+    "Role-play": { "zh": "扮演", "en": "Role-play" },
+    "War Game": { "zh": "战棋", "en": "War Game" },
+    "Accessory": { "zh": "配件", "en": "Accessory" }
   },
   "games": [
     {
       "id": "catan",
       "name": { "zh": "卡坦岛", "en": "Catan" },
-      "image": "images/catan.svg",
+      "image": "images/catan.jpg",
       "description": {
-        "zh": "在卡坦岛上开拓定居！收集木材、砖块、小麦、羊毛和矿石，与其他玩家交易，修建道路和村庄，率先获得 10 分的玩家获胜。\n\n适合：喜欢交易和谈判的朋友。",
-        "en": "Settle the island of Catan by collecting wood, brick, wheat, sheep and ore. Trade with other players, build roads and settlements, and be the first to reach 10 victory points.\n\nGreat for: groups who enjoy trading and negotiating."
+        "zh": "在卡坦岛上开拓定居！收集木材、砖块、小麦、羊毛和矿石，与其他玩家交易，修建道路和村庄，率先获得 10 分的玩家获胜。设计师：Klaus Teuber（1995）。\n\n适合：喜欢交易和谈判的朋友。",
+        "en": "Settle the island of Catan by collecting wood, brick, wheat, sheep and ore. Trade with other players, build roads and settlements, and be the first to reach 10 victory points. Designed by Klaus Teuber (1995).\n\nGreat for: groups who enjoy trading and negotiating."
       },
       "players": "3–4",
-      "playtime": "60–90",
+      "playtime": "30",
       "age": "10",
       "tags": ["Strategy", "Trading", "Family"],
       "links": [
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=catan+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/13/catan"
         }
       ]
     },
     {
       "id": "ticket-to-ride",
-      "name": { "zh": "车票之旅", "en": "Ticket to Ride" },
-      "image": "images/ticket-to-ride.svg",
+      "name": { "zh": "铁路环游", "en": "Ticket to Ride" },
+      "image": "images/ticket-to-ride.jpg",
       "description": {
-        "zh": "收集火车卡，在地图上占领铁路线路。完成你的秘密目的地车票即可获得高分——但要小心，其他玩家可能会挡住你的路线！",
-        "en": "Collect train cards and claim railway routes across the map. Complete your secret destination tickets to score big — but watch out, other players may block your path!"
+        "zh": "收集火车卡，在地图上占领铁路线路。完成你的秘密目的地车票即可获得高分——但要小心，其他玩家可能会挡住你的路线！设计师：Alan R. Moon（2004）。",
+        "en": "Collect train cards and claim railway routes across the map. Complete your secret destination tickets to score big — but watch out, other players may block your path! Designed by Alan R. Moon (2004)."
       },
       "players": "2–5",
-      "playtime": "45–60",
+      "playtime": "20",
       "age": "8",
       "tags": ["Family", "Strategy"],
       "links": [
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=ticket+to+ride+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/9209/ticket-to-ride"
         }
       ]
     },
     {
       "id": "codenames",
       "name": { "zh": "行动代号", "en": "Codenames" },
-      "image": "images/codenames.svg",
+      "image": "images/codenames.jpg",
       "description": {
-        "zh": "两队比赛找出自己的秘密特工。每队的间谍首领只能给出一个词作为提示，把桌上的几个词联系起来。猜的时候要小心——碰到刺客就立刻输掉！",
-        "en": "Two teams compete to find their secret agents. Each team's spymaster gives one-word clues that connect several words on the table. Guess carefully — touching the assassin loses the game instantly."
+        "zh": "两队比赛找出自己的秘密特工。每队的间谍首领只能给出一个词作为提示，把桌上的几个词联系起来。猜的时候要小心——碰到刺客就立刻输掉！4 人以上分两队玩最好玩；2–3 人可用合作变体。设计师：Vlaada Chvátil（2015）。",
+        "en": "Two teams compete to find their secret agents. Each team's spymaster gives one-word clues that connect several words on the table. Guess carefully — touching the assassin loses the game instantly. Best with 4 or more in two teams; 2–3 players can use the co-op variant. Designed by Vlaada Chvátil (2015)."
       },
-      "players": "4–8+",
-      "playtime": "15–20",
+      "players": "2–8",
+      "playtime": "3",
       "age": "10",
       "tags": ["Party", "Word", "Team"],
       "links": [
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=codenames+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/178900/codenames"
         }
       ]
     },
     {
       "id": "splendor",
       "name": { "zh": "璀璨宝石", "en": "Splendor" },
-      "image": "images/splendor.svg",
+      "image": "images/splendor.jpg",
       "description": {
-        "zh": "你是一位文艺复兴时期的宝石商人。收集宝石筹码，购买能提供永久加成的发展卡，吸引贵族光临你的店铺。规则简单，策略丰富。",
-        "en": "You are a Renaissance gem merchant. Collect gem tokens, buy development cards that give permanent bonuses, and attract nobles to your shop. Simple rules, deep decisions."
+        "zh": "你是一位文艺复兴时期的宝石商人。收集宝石筹码，购买能提供永久加成的发展卡，吸引贵族光临你的店铺。规则简单，策略丰富。设计师：Marc André（2014）。",
+        "en": "You are a Renaissance gem merchant. Collect gem tokens, buy development cards that give permanent bonuses, and attract nobles to your shop. Simple rules, deep decisions. Designed by Marc André (2014)."
       },
       "players": "2–4",
-      "playtime": "30",
+      "playtime": "10",
       "age": "10",
       "tags": ["Strategy", "Cards"],
       "links": [
         {
           "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
           "url": "https://www.youtube.com/results?search_query=splendor+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/148228/splendor"
         }
       ]
     },
     {
-      "id": "uno",
-      "name": { "zh": "UNO 优诺", "en": "UNO" },
-      "image": "images/uno.svg",
+      "id": "castles-of-burgundy",
+      "name": { "zh": "勃根地城堡：豪华版", "en": "The Castles of Burgundy (2019 Deluxe)" },
+      "image": "images/castles-of-burgundy.jpg",
       "description": {
-        "zh": "按颜色或数字出牌，最先出完手牌的玩家获胜。只剩一张牌时，别忘了大喊「UNO！」",
-        "en": "Match cards by colour or number and be the first to empty your hand. Don't forget to shout \"UNO!\" when you have one card left."
+        "zh": "游戏背景设在中世纪鼎盛时期的法国勃艮第地区。每位玩家扮演一位贵族，从一块小小的封地起步，建造城镇与雄伟的城堡、沿河经商、开采银矿，并借助旅人的知识发展自己的领地。\n\n游戏分 5 个阶段，每阶段 5 轮。每轮掷两颗骰子，用点数从中央版图拿取地块、放入自己的领地、出售货物或获取工人。每种地块放下时都会触发效果，巧妙连锁能带来大量分数。约每位玩家 30 分钟（2 人约 1 小时，4 人约 2 小时）。此为 2019 年 alea 豪华版，收录 8 个小扩展并加入单人模式。设计师：Stefan Feld（原版 2011）。\n\n适合：喜欢规划和深度策略的玩家。",
+        "en": "Set in the Burgundy region of High Medieval France. Each player is an aristocrat who starts with a small princedom and grows it by building settlements and mighty castles, trading along the river, working silver mines and using the knowledge of travellers.\n\nThe game runs over 5 phases of 5 rounds. Each round you roll two dice and use them to take tiles from the central board, place them in your princedom, sell goods or gain workers. Every tile triggers an effect when placed, so clever combos score big. Allow about 30 minutes per player (about 1 hour for 2, about 2 hours for 4). This is the 2019 alea deluxe edition, which includes 8 mini expansions and a solo mode. Designed by Stefan Feld (original 2011).\n\nGreat for: players who enjoy planning and deep strategy."
+      },
+      "players": "1–4",
+      "playtime": "30",
+      "age": "12",
+      "tags": ["Strategy", "Dice"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=castles+of+burgundy+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/271320/the-castles-of-burgundy"
+        }
+      ]
+    },
+    {
+      "id": "werewolves-characters",
+      "name": { "zh": "米勒山谷狼人：特殊身份", "en": "The Werewolves of Miller's Hollow: Characters" },
+      "image": "images/werewolves-characters.jpg",
+      "description": {
+        "zh": "《米勒山谷狼人》的第三个扩展，包含 24 张卡牌、16 个新身份。双胞胎姐妹可以在夜里交换信息，天使带着自己的胜利目标出现，演员每天都能扮演其他角色，让局面更加扑朔迷离。（扩展，需要基础游戏才能玩。）设计师：Philippe des Pallières、Hervé Marly（2012）。",
+        "en": "The third expansion for The Werewolves of Miller's Hollow, with 24 cards and 16 new roles. The two sisters can now confer at night, an angel may appear with its own goal, and the actor can take on other roles each day, so nothing is as it seems. (Expansion: requires the base game.) Designed by Philippe des Pallières and Hervé Marly (2012)."
+      },
+      "players": "7–13",
+      "playtime": "5",
+      "age": "10",
+      "tags": ["Party", "Social Deduction", "Expansion"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=werewolves+of+millers+hollow+characters"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/132780/the-werewolves-of-millers-hollow-characters"
+        }
+      ]
+    },
+    {
+      "id": "werewolves-new-moon",
+      "name": { "zh": "米勒山谷狼人：新月", "en": "The Werewolves of Miller's Hollow: New Moon" },
+      "image": "images/werewolves-new-moon.jpg",
+      "description": {
+        "zh": "《米勒山谷狼人》的第一个扩展：加入 36 张事件卡、5 个新村民身份（白痴、长老、吹笛人、替罪羊、守卫），以及 9 种新玩法变体。（扩展，需要基础游戏才能玩。）设计师：Philippe des Pallières、Hervé Marly（2005）。",
+        "en": "The first expansion for The Werewolves of Miller's Hollow: 36 event cards, 5 new villager roles (the idiot, the elder, the piper, the scapegoat and the savior) and 9 new variants. (Expansion: requires the base game.) Designed by Philippe des Pallières and Hervé Marly (2005)."
+      },
+      "players": "7–13",
+      "playtime": "5",
+      "age": "8",
+      "tags": ["Party", "Social Deduction", "Expansion"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=werewolves+of+millers+hollow+new+moon"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/21713/the-werewolves-of-millers-hollow-new-moon"
+        }
+      ]
+    },
+    {
+      "id": "eselsbrucke",
+      "name": { "zh": "驴桥", "en": "Eselsbrücke (Donkey Bridge)" },
+      "image": "images/eselsbrucke.jpg",
+      "description": {
+        "zh": "用随机抽到的图案和词语编一个好记又好笑的故事，帮大家记住你的关键词。之后要靠记忆把别人的词说出来——会编故事又会认真听的人最容易获胜。曾获 2012 年德国年度游戏提名。设计师：Stefan Dorra、Ralf zur Linde（2011）。\n\n适合：亲子和朋友聚会。",
+        "en": "Make up a fun, memorable story from randomly drawn symbols so everyone remembers your key words, then try to recall everyone else's. The best storytellers and listeners win. Nominated for the 2012 Spiel des Jahres. Designed by Stefan Dorra and Ralf zur Linde (2011).\n\nGreat for: families and party groups."
+      },
+      "players": "3–12",
+      "playtime": "10",
+      "age": "8",
+      "tags": ["Family", "Party"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=eselsbrucke+board+game"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/90009/eselsbrucke"
+        }
+      ]
+    },
+    {
+      "id": "arkham-horror-lcg",
+      "name": { "zh": "诡镇奇谈：卡牌版", "en": "Arkham Horror: The Card Game" },
+      "image": "images/arkham-horror-lcg.jpg",
+      "description": {
+        "zh": "克苏鲁神话题材的合作卡牌游戏。每位玩家扮演一名调查员，围绕角色能力组建牌组，一起揭开阿卡姆镇的神秘阴谋，同时对抗自己内心的恐惧。多个剧本串联成完整的战役故事，选择会影响后续剧情。设计师：Nate French、MJ Newman（2016）。\n\n适合：喜欢剧情和组牌的玩家。",
+        "en": "A cooperative Lovecraftian card game. Each player is an investigator who builds a deck around their abilities, working together to unravel the mysteries of Arkham while facing their own demons. Linked scenarios form a campaign where your choices carry forward. Designed by Nate French and MJ Newman (2016).\n\nGreat for: players who enjoy story and deck building."
+      },
+      "players": "1–2",
+      "playtime": "60",
+      "age": "14",
+      "tags": ["Co-op", "Cards", "Thematic"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=arkham+horror+card+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/205637/arkham-horror-the-card-game"
+        }
+      ]
+    },
+    {
+      "id": "arkham-dunwich-legacy-campaign",
+      "name": {
+        "zh": "诡镇奇谈：卡牌版 - 敦威治遗产 剧本扩展",
+        "en": "Arkham Horror: The Card Game – The Dunwich Legacy: Campaign Expansion"
+      },
+      "image": "images/arkham-dunwich-legacy-campaign.jpg",
+      "description": {
+        "zh": "数月前，三位米斯卡塔尼克大学的教授在敦威治终结了一场恐怖。如今阿米蒂奇博士的同事接连失踪，他需要你的帮助。一共 8 个剧本，从三叶草俱乐部和大学出发，最终深入敦威治。（剧本扩展，需要《诡镇奇谈：卡牌版》核心包；玩家卡在对应的调查员扩展中。）（2022 重新包装版）",
+        "en": "Months ago, three Miskatonic University professors ended a horror in Dunwich. Now Dr. Armitage's colleagues have gone missing and he needs your help. An eight-scenario campaign that starts at the Clover Club and the university and ends in Dunwich. (Campaign expansion: requires the Arkham Horror: The Card Game core set; player cards are in the matching Investigator Expansion.) (2022 repackaged edition.)"
+      },
+      "players": "1–4",
+      "playtime": "60",
+      "age": "14",
+      "tags": ["Co-op", "Cards", "Expansion"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=arkham+horror+card+game+dunwich+legacy"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/347149/arkham-horror-the-card-game-the-dunwich-legacy-campaign-expansion"
+        }
+      ]
+    },
+    {
+      "id": "arkham-path-to-carcosa-campaign",
+      "name": {
+        "zh": "诡镇奇谈：卡牌版 - 卡尔克萨之路 剧本扩展",
+        "en": "Arkham Horror: The Card Game – The Path to Carcosa: Campaign Expansion"
+      },
+      "image": "images/arkham-path-to-carcosa-campaign.jpg",
+      "description": {
+        "zh": "戏剧《黄衣之王》即将上演，而它所到之处总伴随着失踪、自杀与疯狂。调查员们必须追查真相，直面不可名状的恐怖。收录卡尔克萨之路循环的全部剧本与战役卡。（剧本扩展，需要《诡镇奇谈：卡牌版》核心包；玩家卡在对应的调查员扩展中。）（2022 重新包装版）",
+        "en": "The play The King in Yellow is coming to town, and wherever it is performed, disappearances, delusions and madness follow. Investigate the truth and face indescribable horrors. Contains all scenario and campaign cards from The Path to Carcosa cycle. (Campaign expansion: requires the Arkham Horror: The Card Game core set; player cards are in the matching Investigator Expansion.) (2022 repackaged edition.)"
+      },
+      "players": "1–4",
+      "playtime": "45",
+      "age": "14",
+      "tags": ["Co-op", "Cards", "Expansion"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=arkham+horror+card+game+path+to+carcosa"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/358212/arkham-horror-the-card-game-the-path-to-carcosa-campaign-expansion"
+        }
+      ]
+    },
+    {
+      "id": "arkham-scarlet-keys-campaign",
+      "name": {
+        "zh": "诡镇奇谈：卡牌版 - 猩红钥匙 剧本扩展",
+        "en": "Arkham Horror: The Card Game – The Scarlet Keys: Campaign Expansion"
+      },
+      "image": "images/arkham-scarlet-keys-campaign.jpg",
+      "description": {
+        "zh": "阿卡姆接连有人、物和动物凭空消失，连人们的记忆也一并抹去。一封神秘来信把调查员卷入一场环球冒险，对抗神秘组织“红色议会”。这是系列中第一个非线性战役：序章之后可自由选择前往的地点和剧本顺序。（剧本扩展，需要《诡镇奇谈：卡牌版》核心包；玩家卡在对应的调查员扩展中。）设计师：Jeremy Zwirn、MJ Newman 等（2022）。",
+        "en": "People, animals and objects are vanishing from Arkham, and from everyone's memory. A mysterious letter starts a journey across the globe against the deadly Red Coterie. The series' first non-linear campaign: after the prologue, you choose where to go and in what order. (Campaign expansion: requires the Arkham Horror: The Card Game core set; player cards are in the matching Investigator Expansion.) Designed by Jeremy Zwirn, MJ Newman and others (2022)."
+      },
+      "players": "1–4",
+      "playtime": "60",
+      "age": "14",
+      "tags": ["Co-op", "Cards", "Expansion"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=arkham+horror+card+game+scarlet+keys"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/366215/arkham-horror-the-card-game-the-scarlet-keys-campaign-expansion"
+        }
+      ]
+    },
+    {
+      "id": "blades-and-rose",
+      "name": { "zh": "血与刃的白蔷薇", "en": "Blades & Rose" },
+      "image": "images/blades-and-rose.jpg",
+      "description": {
+        "zh": "白蔷薇即将复活。白蔷薇阵营要把足够多的信徒送进地下圣所，血刃阵营则要在夜里除掉他们——而一旦唯一的白蔷薇化身被杀，血刃阵营立刻获胜。节奏紧凑的身份推理游戏，靠谈判、虚张声势和推理取胜。设计师：Yu Wang（2023）。",
+        "en": "The White Rose is about to be resurrected. Her faction must send enough followers to the underground sanctuary, while the Blood Blades try to slay them in the night, and if the one true White Rose dies, the Blood Blades win at once. A fast social deduction game of negotiation, bluffing and deduction. Designed by Yu Wang (2023)."
+      },
+      "players": "5–10",
+      "playtime": "4",
+      "age": "12",
+      "tags": ["Party", "Social Deduction", "Cards"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=blades+and+rose+board+game"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/400566/blades-rose"
+        }
+      ]
+    },
+    {
+      "id": "yin-yang-inn",
+      "name": { "zh": "阴阳客栈", "en": "Yin Yang Inn" },
+      "image": "images/yin-yang-inn.jpg",
+      "description": {
+        "zh": "一款 5–13 人的中文聚会游戏（2022），适合人多的时候一起玩。",
+        "en": "A Chinese party game for 5–13 players (2022), great for big groups."
+      },
+      "players": "5–13",
+      "playtime": "6",
+      "tags": ["Party"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=阴阳客栈+桌游"
+        }
+      ]
+    },
+    {
+      "id": "sanctuary",
+      "name": { "zh": "方舟保护区", "en": "Sanctuary: An Ark Nova Game" },
+      "image": "images/sanctuary.jpg",
+      "description": {
+        "zh": "《方舟动物园》的轻量独立作品。规划并建造一座现代化、科学管理的动物园：从 135 块各不相同的六边形板块中挑选动物、建筑和保护项目。每人 4 张行动卡，卡牌所在位置决定行动强度，完成保护目标、提升动物园吸引力。设计师：Mathias Wigge（2025）。\n\n适合：喜欢《方舟动物园》但想玩得更快的玩家。",
+        "en": "A lighter standalone game in the Ark Nova family. Plan and build a modern, scientifically managed zoo from 135 unique hex tiles of animals, buildings and projects. Each player has four action cards whose strength depends on their slot. Reach conservation goals and make your zoo attractive. Designed by Mathias Wigge (2025).\n\nGreat for: fans of Ark Nova who want a quicker game."
+      },
+      "players": "1–5",
+      "playtime": "25",
+      "age": "12",
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=sanctuary+ark+nova+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/441696/sanctuary"
+        }
+      ]
+    },
+    {
+      "id": "search-for-planet-x",
+      "name": { "zh": "X行星之谜", "en": "The Search for Planet X" },
+      "image": "images/search-for-planet-x.jpg",
+      "description": {
+        "zh": "玩家化身天文学家，在太阳系边缘寻找神秘的第九行星。配套 App 每局随机生成天体布局，玩家通过扫描星区、参加学术会议获取线索，用逻辑推理排除可能，最先准确找到 X 行星的人获胜。设计师：Matthew O'Malley、Ben Rosset（2020）。\n\n适合：喜欢逻辑推理的玩家。",
+        "en": "Players are astronomers hunting for a hidden planet at the edge of the solar system. A companion app sets up a random sky each game; scan sectors and attend conferences to gather clues, then use logic to narrow down where Planet X must be. Designed by Matthew O'Malley and Ben Rosset (2020).\n\nGreat for: fans of logic puzzles."
+      },
+      "players": "1–4",
+      "playtime": "20",
+      "age": "13",
+      "tags": ["Deduction"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=search+for+planet+x+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/279537/the-search-for-planet-x"
+        }
+      ]
+    },
+    {
+      "id": "obsession",
+      "name": { "zh": "庄园迷情", "en": "Obsession" },
+      "image": "images/obsession.jpg",
+      "description": {
+        "zh": "维多利亚时代的英国，你是一座没落庄园的家主。翻修庄园、管理管家和仆人、举办猎狐等社交活动，提升家族声望，并争取富有的 Fairchild 家族子女的青睐。融合牌库构筑与工人放置，主题感极强。设计师：Dan Hallagan（2018）。\n\n适合：喜欢主题和引擎构筑的玩家。",
+        "en": "Head a struggling family estate in Victorian England. Renovate your estate, manage butlers and maids, and host social events like fox hunts to raise your family's standing and court the wealthy Fairchild heirs. Combines deck building and worker placement with a strong theme. Designed by Dan Hallagan (2018).\n\nGreat for: players who enjoy theme and engine building."
+      },
+      "players": "1–4",
+      "playtime": "30",
+      "age": "14",
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=obsession+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/231733/obsession"
+        }
+      ]
+    },
+    {
+      "id": "tokaido",
+      "name": { "zh": "东海道", "en": "Tokaido" },
+      "image": "images/tokaido.jpg",
+      "description": {
+        "zh": "每位玩家都是行走在日本东海道上的旅人。一路上结识旅伴、品尝美食、收集纪念品、欣赏风景、参拜寺庙。走在最后的人先行动，所以有时放慢脚步反而收获更多。到达终点时，旅途见闻最丰富的人获胜。设计师：Antoine Bauza（2012）。\n\n适合：喜欢轻松、画风优美游戏的玩家。",
+        "en": "Each player is a traveller on the East Sea Road, one of Japan's most beautiful routes. Meet people, taste fine meals, collect souvenirs, admire panoramas and visit temples. The player furthest behind always moves next, so taking your time can pay off. The most enriching journey wins. Designed by Antoine Bauza (2012).\n\nGreat for: a relaxing game with beautiful art."
+      },
+      "players": "2–5",
+      "playtime": "10",
+      "age": "8",
+      "tags": ["Euro", "Family"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=tokaido+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/123540/tokaido"
+        }
+      ]
+    },
+    {
+      "id": "turing-machine",
+      "name": { "zh": "图灵机", "en": "Turing Machine" },
+      "image": "images/turing-machine.jpg",
+      "description": {
+        "zh": "一款不用电的“计算机”推理游戏。用独特的镂空卡片向机器提问，验证你的猜测，率先推理出三位密码的玩家获胜。题库丰富，难度可调，也能单人玩。设计师：Fabien Gridel、Yoann Levet（2022）。\n\n适合：喜欢逻辑解谜的玩家。",
+        "en": "A deduction game played with an analog \"computer\" that needs no electricity. Question the machine using unique punched cards to test your ideas, and be first to crack the three-digit code. Lots of puzzles at different difficulties, and it plays solo too. Designed by Fabien Gridel and Yoann Levet (2022).\n\nGreat for: fans of logic puzzles."
+      },
+      "players": "1–4",
+      "playtime": "10",
+      "age": "14",
+      "tags": ["Deduction"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=turing+machine+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/356123/turing-machine"
+        }
+      ]
+    },
+    {
+      "id": "ankh-2024",
+      "name": { "zh": "安卡：生命之符", "en": "Ankh" },
+      "image": "images/ankh-2024.jpg",
+      "description": { "zh": "一款 2–4 人的卡牌游戏（2024）。", "en": "A card game for 2–4 players (2024)." },
+      "players": "2–4",
+      "playtime": "15",
+      "tags": ["Cards"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=安卡+生命之符+桌游"
+        }
+      ]
+    },
+    {
+      "id": "regicide",
+      "name": { "zh": "弑君者", "en": "Regicide" },
+      "image": "images/regicide.jpg",
+      "description": {
+        "zh": "用一副普通扑克牌就能玩的合作游戏。大家齐心协力打倒 12 个强大的敌人（J、Q、K），每回合出牌攻击，敌人也会反击，必须弃牌抵挡——挡不住所有人就一起输。交流受限，考验默契和战术。设计师：Paul Abrahams、Luke Badger、Andy Richdale（2020）。\n\n适合：喜欢合作和精打细算的玩家。",
+        "en": "A cooperative game played with a standard deck of cards. Work together to defeat 12 powerful enemies (the Jacks, Queens and Kings). Each turn you attack, then the enemy strikes back and you must discard enough to survive, or everyone loses. Limited communication makes teamwork the challenge. Designed by Paul Abrahams, Luke Badger and Andy Richdale (2020).\n\nGreat for: groups who enjoy co-op and careful planning."
+      },
+      "players": "1–4",
+      "playtime": "10",
+      "age": "10",
+      "tags": ["Co-op", "Cards", "Abstract"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=regicide+card+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/307002/regicide"
+        }
+      ]
+    },
+    {
+      "id": "carcassonne-big-box",
+      "name": { "zh": "卡卡颂（大盒版）", "en": "Carcassonne Big Box" },
+      "image": "images/carcassonne-big-box.jpg",
+      "description": {
+        "zh": "经典板块拼放游戏。每回合抽一块法国南部风景板块，与已有板块接上——城市接城市、道路接道路——再决定是否放下小人当骑士、强盗、修士或农夫来得分。大盒版包含基础游戏和多个扩展，最多可 8 人同玩。设计师：Klaus-Jürgen Wrede（2006）。\n\n适合：家庭和新手入门。",
+        "en": "The classic tile-laying game. Each turn draw a tile of southern French countryside and add it to the map, matching cities to cities and roads to roads, then decide whether to place a meeple as a knight, robber, monk or farmer to score. The Big Box includes the base game plus several expansions, for up to 8 players. Designed by Klaus-Jürgen Wrede (2006).\n\nGreat for: families and new players."
+      },
+      "players": "2–8",
+      "playtime": "10",
+      "age": "7",
+      "tags": ["Family", "Abstract"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=carcassonne+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/142057/carcassonne-big-box"
+        }
+      ]
+    },
+    {
+      "id": "incan-gold",
+      "name": { "zh": "印加宝藏", "en": "Incan Gold" },
+      "image": "images/incan-gold.jpg",
+      "description": {
+        "zh": "简单刺激的拼运气游戏。大家一起深入神庙，每翻开一张牌就平分找到的宝石。每一步都要决定：继续冒险，还是带着收获撤回营地？如果同一种危险出现两次，还在里面的人会失去这一轮的全部宝藏。设计师：Bruno Faidutti、Alan R. Moon。\n\n适合：人多的聚会。",
+        "en": "A quick, exciting push-your-luck game. Explore a temple together, turning over cards and sharing the gems you find. Before each card, decide: go deeper, or head back to camp with your loot? If the same hazard appears twice, everyone still inside loses what they found that round. Designed by Bruno Faidutti and Alan R. Moon.\n\nGreat for: big party groups."
+      },
+      "players": "3–8",
+      "playtime": "10",
+      "age": "8",
+      "tags": ["Party"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=incan+gold+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/15512/diamant"
+        }
+      ]
+    },
+    {
+      "id": "cascadia",
+      "name": { "zh": "卡斯卡迪亚之旅", "en": "Cascadia" },
+      "image": "images/cascadia.jpg",
+      "description": {
+        "zh": "以北美太平洋西北地区为主题的板块拼放游戏。每回合选一块栖息地板块和配对的野生动物标记，拼进自己的地图，并按每局的动物计分卡摆出得分图案，同时尽量连成大片栖息地。规则简单，越玩越烧脑。曾获 2022 年德国年度游戏。设计师：Randy Flynn（2021）。\n\n适合：喜欢轻松拼图感的玩家。",
+        "en": "A puzzly tile-laying game about the habitats and wildlife of the Pacific Northwest. Each turn take a habitat tile and its paired wildlife token, add them to your area, and build the animal patterns shown on this game's scoring cards while growing large habitat corridors. Simple rules, satisfying puzzle. Winner of the 2022 Spiel des Jahres. Designed by Randy Flynn (2021).\n\nGreat for: players who like a relaxing puzzle."
+      },
+      "players": "1–4",
+      "playtime": "15",
+      "age": "10",
+      "tags": ["Family", "Abstract"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=cascadia+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/295947/cascadia"
+        }
+      ]
+    },
+    {
+      "id": "arnak-expedition-leaders",
+      "name": { "zh": "阿纳克遗迹：探险队长", "en": "Lost Ruins of Arnak: Expedition Leaders" },
+      "image": "images/arnak-expedition-leaders.jpg",
+      "description": {
+        "zh": "《阿纳克遗迹》的扩展。每位玩家选择 6 位探险队长之一，各有独特能力、技能和起始牌组，带来不同策略。还加入新的研究轨道、新物品和神器卡。（扩展，需要基础游戏才能玩。）设计师：Elwen、Mín（2021）。",
+        "en": "An expansion for Lost Ruins of Arnak. Each player picks one of six expedition leaders, each with unique abilities, skills and starting decks that open up new strategies. Also adds alternative research tracks and new item and artifact cards. (Expansion: requires the base game.) Designed by Elwen and Mín (2021)."
+      },
+      "players": "1–4",
+      "playtime": "40",
+      "age": "12",
+      "tags": ["Strategy", "Euro", "Expansion"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=lost+ruins+of+arnak+expedition+leaders"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/341254/lost-ruins-of-arnak-expedition-leaders"
+        }
+      ]
+    },
+    {
+      "id": "ready-set-bet",
+      "name": { "zh": "赛马大亨", "en": "Ready Set Bet" },
+      "image": "images/ready-set-bet.jpg",
+      "description": {
+        "zh": "和朋友去赛马场下注！比赛实时进行，每次掷骰决定马匹前进，玩家可以随时抢先在版图上下注。共 4 场比赛，赛后结算输赢，还能获得 VIP 卡帮助下一场。最后钱最多的人获胜。设计师：John D. Clair（2022）。\n\n适合：热闹的大型聚会。",
+        "en": "A day at the races with your friends! The race runs in real time: dice move the horses while everyone races to place bets on the board. After each of the four races, bets pay out and players gain VIP cards to help next time. Most money at the end wins. Designed by John D. Clair (2022).\n\nGreat for: loud, lively big groups."
+      },
+      "players": "2–9",
+      "playtime": "5",
+      "age": "10",
+      "tags": ["Party"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=ready+set+bet+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/351040/ready-set-bet"
+        }
+      ]
+    },
+    {
+      "id": "blood-bound",
+      "name": { "zh": "血契猎杀", "en": "Blood Bound" },
+      "image": "images/blood-bound.jpg",
+      "description": {
+        "zh": "吸血鬼题材的身份推理游戏。玩家分属野兽氏族和玫瑰氏族（人数为单数时还有人类审判官），隐藏身份，试图找出并俘获对方的长老，或为保护己方长老而牺牲。每次攻击都会逐步揭示线索：谁在为谁而战？设计师：Kalle Krenzer（2013）。\n\n适合：喜欢推理和虚张声势的聚会。",
+        "en": "A vampire social deduction game. Players belong to the Clan of the Beast or the Clan of the Rose (plus the human Inquisition with an odd number of players). Hidden behind secret identities, you try to capture the rival Elder or sacrifice yourself for your own. Every attack reveals more: who fights for whom? Designed by Kalle Krenzer (2013).\n\nGreat for: groups who enjoy deduction and bluffing."
+      },
+      "players": "6–12",
+      "playtime": "3",
+      "age": "14",
+      "tags": ["Party", "Social Deduction"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=blood+bound+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/130877/blood-bound"
+        }
+      ]
+    },
+    {
+      "id": "magic-number-eleven",
+      "name": { "zh": "梦幻十一人", "en": "Magic Number Eleven" },
+      "image": "images/magic-number-eleven.jpg",
+      "description": {
+        "zh": "双人足球战术对决。两位玩家各自担任球队教练，分上下半场，在球场版图上摆放球员卡来布置战术。射门时攻击力与对方防守力相加正好等于 11，就必定进球！平局则进入点球大战。设计师：Bonghwan Ju（2024）。\n\n适合：喜欢足球的两人对战。",
+        "en": "A two-player tactical football duel. Each player coaches a team over two halves, placing player cards on the field board to set up tactics. When you shoot, if your attack plus the opponent's defence makes exactly 11, it's a guaranteed goal! Ties go to a penalty shootout. Designed by Bonghwan Ju (2024).\n\nGreat for: football fans, head to head."
+      },
+      "players": "2",
+      "playtime": "25",
+      "age": "14",
+      "tags": ["Thematic"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=magic+number+eleven+board+game"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/411865/magic-number-eleven"
+        }
+      ]
+    },
+    {
+      "id": "entropy-cat",
+      "name": { "zh": "熵增猫", "en": "Entropy Cat" },
+      "image": "images/entropy-cat.jpg",
+      "description": { "zh": "一款 2–5 人的猫咪主题卡牌游戏（2023）。", "en": "A cat-themed card game for 2–5 players (2023)." },
+      "players": "2–5",
+      "playtime": "5",
+      "tags": ["Cards"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=熵增猫+桌游"
+        }
+      ]
+    },
+    {
+      "id": "patchwork",
+      "name": { "zh": "拼布艺术", "en": "Patchwork" },
+      "image": "images/patchwork.jpg",
+      "description": {
+        "zh": "双人拼布对决。轮流用纽扣购买形状各异的布块，拼进自己 9×9 的拼布板。每块布花费纽扣和时间，时间落后的人先行动，有的布块还能持续带来纽扣收入。拼得越满、纽扣越多越好。设计师：Uwe Rosenberg（2014）。\n\n适合：情侣、亲子两人对战。",
+        "en": "A two-player quilt-making duel. Take turns buying oddly shaped patches with buttons and fitting them onto your 9×9 board. Each patch costs buttons and time, the player behind on time goes next, and some patches earn button income. Fill your quilt and keep the most buttons. Designed by Uwe Rosenberg (2014).\n\nGreat for: couples and parent-child games for two."
+      },
+      "players": "2",
+      "playtime": "10",
+      "age": "8",
+      "tags": ["Abstract", "Family"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=patchwork+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/163412/patchwork"
+        }
+      ]
+    },
+    {
+      "id": "saboteur",
+      "name": { "zh": "矮人掘金", "en": "Saboteur" },
+      "image": "images/saboteur.jpg",
+      "description": {
+        "zh": "玩家扮演挖金矿的矮人，但其中藏着破坏者！大家轮流出路线卡挖通隧道，矿工想挖到金子，破坏者则暗中搞破坏——弄坏别人的工具、挖死路。身份到回合结束才揭晓，三轮后金子最多的人获胜。设计师：Fréderic Moyersoen（2004）。\n\n适合：亲子和朋友聚会。",
+        "en": "Players are dwarves digging for gold, but there are saboteurs among them! Take turns playing tunnel cards toward the gold while the saboteurs secretly break tools and dig dead ends. Roles stay hidden until the round ends, and after three rounds the most gold wins. Designed by Fréderic Moyersoen (2004).\n\nGreat for: families and party groups."
+      },
+      "players": "3–10",
+      "playtime": "6",
+      "age": "8",
+      "tags": ["Cards", "Party", "Family", "Social Deduction"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=saboteur+card+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/9220/saboteur"
+        }
+      ]
+    },
+    {
+      "id": "werewolf-2021-limited",
+      "name": { "zh": "狼人杀2021限定版", "en": "Werewolf 2021 Limited Edition" },
+      "image": "images/werewolf-2021-limited.jpg",
+      "description": {
+        "zh": "狼人杀 2021 限定版，8–13 人的身份推理聚会游戏。",
+        "en": "The 2021 limited edition of Werewolf (狼人杀), a social deduction party game for 8–13 players."
+      },
+      "players": "8–13",
+      "playtime": "5",
+      "tags": ["Party", "Social Deduction"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=狼人杀+规则"
+        }
+      ]
+    },
+    {
+      "id": "werewolves-of-millers-hollow",
+      "name": { "zh": "米勒山谷狼人", "en": "The Werewolves of Miller's Hollow" },
+      "image": "images/werewolves-of-millers-hollow.jpg",
+      "description": {
+        "zh": "经典身份推理游戏。村庄里藏着狼人，每位玩家秘密获得身份：狼人、普通村民，或预言家、女巫、猎人等特殊角色，由一名主持人控制流程。夜晚狼人秘密杀人，白天全村讨论并投票处决嫌疑人。村民要找出所有狼人，狼人则要吃掉村民。设计师：Philippe des Pallières、Hervé Marly（2001）。\n\n适合：人多的聚会。",
+        "en": "The classic social deduction game. Werewolves haunt the village, and each player secretly gets a role: werewolf, villager, or a special character like the Fortune Teller, the Witch or the Hunter, with a moderator running the game. At night the werewolves secretly kill; by day the village debates and votes someone out. Villagers must find every werewolf before they are eaten. Designed by Philippe des Pallières and Hervé Marly (2001).\n\nGreat for: big party groups."
+      },
+      "players": "8–13",
+      "playtime": "5",
+      "age": "10",
+      "tags": ["Party", "Social Deduction"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=werewolves+of+millers+hollow+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/25821/the-werewolves-of-millers-hollow"
+        }
+      ]
+    },
+    {
+      "id": "oracle-of-delphi",
+      "name": { "zh": "德尔斐神谕", "en": "The Oracle of Delphi" },
+      "image": "images/oracle-of-delphi.jpg",
+      "description": {
+        "zh": "宙斯举办了一场竞赛，要选出一位值得邀请到奥林匹斯山的凡人。玩家驾船在爱琴海上航行，完成 12 项传奇任务：建造雕像、修筑神殿、献上祭品、斩杀怪物。用神谕骰子决定行动，最先完成全部任务并回到德尔斐的人获胜。设计师：Stefan Feld（2016）。\n\n适合：喜欢中重度策略的玩家。",
+        "en": "Zeus is holding a contest to find a mortal worthy of Olympus. Sail the Aegean and complete twelve legendary tasks: raise statues, build shrines, make offerings and slay monsters. Oracle dice decide your actions, and the first to finish every task and return to Delphi wins. Designed by Stefan Feld (2016).\n\nGreat for: fans of medium-heavy strategy."
+      },
+      "players": "2–4",
+      "playtime": "30",
+      "age": "12",
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=oracle+of+delphi+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/193558/the-oracle-of-delphi"
+        }
+      ]
+    },
+    {
+      "id": "viticulture",
+      "name": { "zh": "葡萄酒庄园", "en": "Viticulture" },
+      "image": "images/viticulture.jpg",
+      "description": {
+        "zh": "你在前现代的托斯卡纳继承了一座小葡萄园。分配工人度过四季：夏天种葡萄、接待游客，冬天酿酒、完成订单。和其他庄园抢占有限的行动位置，最先打造出成功酒庄的人获胜。设计师：Jamey Stegmaier、Alan Stone（2013）。\n\n适合：喜欢工人放置的玩家。",
+        "en": "You've inherited a humble vineyard in rustic Tuscany. Place your workers through the seasons: plant vines and host visitors in summer, make wine and fill orders in winter. Compete with other wineries for limited action spaces, and be the first to build a true success. Designed by Jamey Stegmaier and Alan Stone (2013).\n\nGreat for: fans of worker placement."
+      },
+      "players": "2–6",
+      "playtime": "15",
+      "age": "13",
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=viticulture+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/128621/viticulture"
+        }
+      ]
+    },
+    {
+      "id": "world-championship-russian-roulette",
+      "name": { "zh": "赌命大赛", "en": "World Championship Russian Roulette" },
+      "image": "images/world-championship-russian-roulette.jpg",
+      "description": {
+        "zh": "黑色幽默的拼运气虚张声势游戏。你是“俄罗斯轮盘世界锦标赛”某支队伍的队长，所有人同时行动，不用等待。竞标你的队员能扣几次扳机，还能偷偷作弊少装子弹——先拿到 15 分或最后一个保住脑袋的队伍获胜。设计师：Anthony Burch（2017）。\n\n适合：喜欢欢乐吐槽的聚会。",
+        "en": "A darkly funny push-your-luck bluffing game. You captain a team at the World Championship of Russian Roulette, and everyone plays at once, so no waiting. Bid on how many trigger pulls your team will survive, and cheat by leaving bullets out. First to 15 points, or the last team with brains intact, wins. Designed by Anthony Burch (2017).\n\nGreat for: groups who like loud, silly fun."
+      },
+      "players": "2–6",
+      "playtime": "3",
+      "age": "12",
+      "tags": ["Cards", "Party"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=world+championship+russian+roulette+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/179245/world-championship-russian-roulette"
+        }
+      ]
+    },
+    {
+      "id": "kombo-klash",
+      "name": { "zh": "连击热斗", "en": "Kombo Klash!" },
+      "image": "images/kombo-klash.jpg",
+      "description": {
+        "zh": "动物格斗主题的板块放置与连击计分游戏。每种动物都有独特能力：乌鸦多抓板块、袋鼠把别的动物踢走、鳄鱼和秃鹫可以操控板块……巧妙组合打出疯狂连击，率先达到目标分数的回合结束时得分最高者获胜。设计师：Ondrej Sova（2021）。\n\n适合：喜欢快节奏、易上手游戏的玩家。",
+        "en": "A tactical tile-laying and combo-scoring game with battling animals. Every creature has its own power: the raven draws extra tiles, the kangaroo kicks others across the board, and alligators and vultures move tiles around. Chain abilities into crazy combos and outscore everyone. Designed by Ondrej Sova (2021).\n\nGreat for: a quick, easy-to-learn game."
+      },
+      "players": "2–4",
+      "playtime": "10",
+      "age": "8",
+      "tags": ["Party", "Abstract"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=kombo+klash+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/317312/kombo-klash"
+        }
+      ]
+    },
+    {
+      "id": "star-realms",
+      "name": { "zh": "星域奇航", "en": "Star Realms" },
+      "image": "images/star-realms.jpg",
+      "description": {
+        "zh": "太空舰队对战的牌库构筑游戏。用战舰和基地产生交易点购买更强的卡牌，或产生战斗力攻击对手，把对方的权威值打到 0 就获胜。节奏快、互动强，一盒就能玩。设计师：Robert Dougherty、Darwin Kastle（2014）。\n\n适合：喜欢快节奏对战的两人。",
+        "en": "A spaceship combat deck-building game. Use ships and bases to generate trade for buying stronger cards, or combat to attack your opponent, and reduce their Authority to zero to win. Fast and interactive. Designed by Robert Dougherty and Darwin Kastle (2014).\n\nGreat for: two players who want a quick duel."
+      },
+      "players": "2",
+      "playtime": "10",
+      "age": "12",
+      "tags": ["Cards"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=star+realms+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/147020/star-realms"
+        }
+      ]
+    },
+    {
+      "id": "script-suspect-7",
+      "name": { "zh": "剧本杀：第7号嫌疑人", "en": "Murder Mystery: Suspect No. 7" },
+      "image": "images/script-suspect-7.jpg",
+      "description": {
+        "zh": "一款 6 人剧本杀（2020）。每位玩家扮演一个角色，阅读剧本、搜集线索、互相盘问，最终找出真凶。",
+        "en": "A 6-player Chinese murder-mystery script game (剧本杀, 2020). Each player takes a character, reads their script, gathers clues and questions the others to find the culprit."
+      },
+      "players": "6",
+      "playtime": "40",
+      "tags": ["Role-play"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=第7号嫌疑人+剧本杀"
+        }
+      ]
+    },
+    {
+      "id": "boonlake",
+      "name": { "zh": "天恩湖", "en": "Boonlake" },
+      "image": "images/boonlake.jpg",
+      "description": {
+        "zh": "带领一群拓荒者来到被遗忘已久的天恩湖畔定居。探索地形、建造房屋和聚落、放牧牛群、生产资源、发展基础设施，并尽量让这些流程自动运转。重度策略游戏。设计师：Alexander Pfister（2021）。\n\n适合：喜欢重度策略的玩家。",
+        "en": "Lead a group of pioneers to settle the shores of Boonlake, a long-forgotten region. Explore the land, build houses and settlements, raise cattle, produce resources and develop infrastructure, and try to automate it all. A heavy strategy game. Designed by Alexander Pfister (2021).\n\nGreat for: fans of heavy strategy."
+      },
+      "players": "1–4",
+      "playtime": "40",
+      "age": "14",
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=boonlake+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/343905/boonlake"
+        }
+      ]
+    },
+    {
+      "id": "guild-of-merchant-explorers",
+      "name": { "zh": "提戈梅公会", "en": "The Guild of Merchant Explorers" },
+      "image": "images/guild-of-merchant-explorers.jpg",
+      "description": {
+        "zh": "每位玩家从自己地图上的一座城市出发。逐张翻开地形卡，所有人同时在自己的地图上放置探险方块，连通区域、跨越海洋、建立新城市、探索沉船。简单易学的同步翻牌画图式游戏。设计师：Matthew Dunstan、Brett J. Gilbert（2022）。\n\n适合：想要规则简单、人人同时行动的游戏。",
+        "en": "Each player starts with one city on their own map. As terrain cards are revealed one by one, everyone places explorer cubes at the same time to complete regions, cross seas, found new cities and explore shipwrecks. Simple rules and everyone plays at once. Designed by Matthew Dunstan and Brett J. Gilbert (2022).\n\nGreat for: groups who want simple rules and no waiting."
+      },
+      "players": "1–4",
+      "playtime": "15",
+      "age": "14",
+      "tags": ["Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=guild+of+merchant+explorers+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/350933/the-guild-of-merchant-explorers"
+        }
+      ]
+    },
+    {
+      "id": "mind-mgmt",
+      "name": { "zh": "心灵特工", "en": "MIND MGMT: The Psychic Espionage \"Game\"" },
+      "image": "images/mind-mgmt.jpg",
+      "description": {
+        "zh": "一对多的隐藏移动推理游戏，改编自同名漫画。一名玩家扮演 MIND MGMT 招募者，在地图上秘密移动并招募超能力者；其余玩家扮演叛逃特工，合作推理招募者的位置并将其抓获。独特的“SHIFT”机制会在多局之间逐步解锁新内容。设计师：Jay Cormier、Sen-Foong Lim（2021）。\n\n适合：喜欢推理和团队对抗的玩家。",
+        "en": "A one-versus-many hidden movement deduction game based on the comic. One player is the MIND MGMT Recruiter, moving secretly around the map to recruit psychics, while the others are rogue agents working together to deduce where the Recruiter is and capture them. The SHIFT system unlocks new content over several games. Designed by Jay Cormier and Sen-Foong Lim (2021).\n\nGreat for: fans of deduction and team-versus-one games."
+      },
+      "players": "1–5",
+      "playtime": "20",
+      "age": "13",
+      "tags": ["Party", "Deduction"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=mind+mgmt+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/284653/mind-mgmt-the-psychic-espionage-game"
+        }
+      ]
+    },
+    {
+      "id": "da-vinci-code",
+      "name": { "zh": "终极密码", "en": "Da Vinci Code (Coda)" },
+      "image": "images/da-vinci-code.jpg",
+      "description": {
+        "zh": "每位玩家把数字牌按从小到大排列成自己的秘密密码。轮流猜对手某张牌的数字：猜对就揭开它，猜错就要揭开自己的一张。每回合新摸的数字牌能帮你缩小范围。最后一个密码没被破解的人获胜。设计师：Hiroaki Suzuki、Eiji Wakasugi（2002）。\n\n适合：亲子和朋友间的轻松推理。",
+        "en": "Each player hides a secret code of numbers arranged in order. On your turn, guess one of an opponent's numbers: guess right and it is revealed, guess wrong and you must reveal one of yours. Each new tile you draw helps narrow things down. The last player with an unbroken code wins. Designed by Hiroaki Suzuki and Eiji Wakasugi (2002).\n\nGreat for: light deduction with family and friends."
+      },
+      "players": "2–4",
+      "playtime": "5",
+      "age": "8",
+      "tags": ["Abstract", "Deduction"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=da+vinci+code+coda+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/8946/da-vinci-code"
+        }
+      ]
+    },
+    {
+      "id": "great-western-trail-argentina",
+      "name": { "zh": "大西部开拓者：阿根廷开拓史", "en": "Great Western Trail: Argentina" },
+      "image": "images/great-western-trail-argentina.jpg",
+      "description": {
+        "zh": "19 世纪末，你在阿根廷拥有一座大牧场，要带着牛群穿越潘帕斯草原，把它们送到布宜诺斯艾利斯的火车站。保留了《大西部开拓者》的牌库管理、环形移动和玩家版图升级，并加入新的变化。可独立游玩。设计师：Alexander Pfister（2022）。\n\n适合：喜欢重度策略的玩家。",
+        "en": "Own a vast estancia in late-19th-century Argentina and drive your cattle across the Pampas to the railway station in Buenos Aires. Keeps Great Western Trail's deck management, rondel and player-board upgrades, with new twists. Standalone. Designed by Alexander Pfister (2022).\n\nGreat for: fans of heavy strategy."
+      },
+      "players": "1–4",
+      "playtime": "45",
+      "age": "12",
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=great+western+trail+argentina+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/364011/great-western-trail-argentina"
+        }
+      ]
+    },
+    {
+      "id": "mountain-53",
+      "name": { "zh": "垃圾山", "en": "Mountain 53 (Ab in die Tonne)" },
+      "image": "images/mountain-53.jpg",
+      "description": {
+        "zh": "大家都懒得倒垃圾，只想把垃圾往桶里越堆越高，等别人一不小心把它碰倒来收拾！每人用 1–10 的数字牌决定要往垃圾桶上堆几件垃圾，堆倒的人要拿走垃圾扣分。曾获挪威年度最佳儿童游戏。设计师：Carlo A. Rossi（2013）。\n\n适合：亲子和小朋友。",
+        "en": "Everyone is too lazy to empty the bin, so they keep piling trash higher and hope someone else knocks it over and has to clean up! Play number cards from 1 to 10 to decide how many pieces of trash you must stack; topple the pile and you take the mess. Winner of Norway's Best Children's Game. Designed by Carlo A. Rossi (2013).\n\nGreat for: families with kids."
+      },
+      "players": "2–5",
+      "playtime": "5",
+      "age": "6",
+      "tags": ["Family", "Cards"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=ab+in+die+tonne+mountain+53"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/136416/mountain-53"
+        }
+      ]
+    },
+    {
+      "id": "arnak-missing-expedition",
+      "name": { "zh": "阿纳克遗迹：失踪的探险队", "en": "Lost Ruins of Arnak: The Missing Expedition" },
+      "image": "images/arnak-missing-expedition.jpg",
+      "description": {
+        "zh": "《阿纳克遗迹》的第二个扩展。追随线索查明库蒂尔教授和其他失踪探险者的下落。加入 2 位新队长、2 条新研究轨道，以及新的神器、物品和助手；还可以作为 1–2 人的剧情战役来体验。（扩展，需要基础游戏才能玩。）设计师：Elwen、Mín（2023）。",
+        "en": "The second expansion for Lost Ruins of Arnak. Follow the trail to learn what happened to Professor Kutil and other missing explorers. Adds two new leaders, two new research tracks and new artifacts, items and assistants, plus a story campaign for 1–2 players. (Expansion: requires the base game.) Designed by Elwen and Mín (2023)."
+      },
+      "players": "1–4",
+      "playtime": "40",
+      "age": "12",
+      "tags": ["Strategy", "Euro", "Expansion"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=lost+ruins+of+arnak+missing+expedition"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgameexpansion/382350/lost-ruins-of-arnak-the-missing-expedition"
+        }
+      ]
+    },
+    {
+      "id": "the-message",
+      "name": { "zh": "风声", "en": "The Message" },
+      "image": "images/the-message.jpg",
+      "description": {
+        "zh": "改编自同名电影的谍战身份推理卡牌游戏，背景设在抗战时期。每位玩家秘密获得潜伏、军情或酱油的身份，并扮演一名拥有特殊技能的角色。传递情报、截获情报、试探与伪装，找出谁是自己人。\n\n适合：喜欢谍战和推理的聚会。",
+        "en": "A spy-themed social deduction card game based on the Chinese film of the same name, set in wartime China. Each player secretly belongs to the Underground, the Army or is a Passer-by, and plays a character with special skills. Pass, intercept and fake secret messages to work out who is on your side. (2009)\n\nGreat for: groups who enjoy spy stories and deduction."
+      },
+      "players": "3–9",
+      "playtime": "8",
+      "age": "15",
+      "tags": ["Party", "Social Deduction", "Cards"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=风声+桌游+教学"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/67919/the-message"
+        }
+      ]
+    },
+    {
+      "id": "war-chest-nightfall",
+      "name": { "zh": "战争之匣：夜幕扩展", "en": "War Chest: Nightfall" },
+      "image": "images/war-chest-nightfall.jpg",
+      "description": {
+        "zh": "《战争之匣》的扩展。并非所有战斗都在战场上决出胜负：伪造信件、佯攻撤退、投毒、刺杀与渗透……使用这些特殊兵种，在正面交锋之前就让敌人陷入混乱。（扩展，需要基础游戏才能玩。）设计师：Trevor Benjamin、David Thompson（2024）。",
+        "en": "An expansion for War Chest. Not every battle is won on the open field: forged letters, feigned retreats, poisoned wells, assassinations and infiltration. Use these specialist units to throw your enemy into disarray before the main battle starts. (Expansion: requires the base game.) Designed by Trevor Benjamin and David Thompson (2024)."
+      },
+      "players": "2–4",
+      "playtime": "10",
+      "age": "14",
+      "tags": ["War Game", "Abstract", "Expansion"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=war+chest+nightfall"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgameexpansion/388565/war-chest-nightfall"
+        }
+      ]
+    },
+    {
+      "id": "maracaibo-commanders",
+      "name": { "zh": "马拉开波海盗：指挥官", "en": "Pirates of Maracaibo: Commanders" },
+      "image": "images/maracaibo-commanders.jpg",
+      "description": {
+        "zh": "《马拉开波海盗》的第一个扩展。你现在扮演一位赫赫有名的船长，拥有独特能力，带来更多战术变化。还可以给船装上大炮，攻打某些岛屿的要塞夺取财宝。（扩展，需要基础游戏才能玩。）设计师：Alexander Pfister、Ralph Bienert、Ryan Hendrickson（2024）。",
+        "en": "The first expansion for Pirates of Maracaibo. You now play a notorious ship commander with special abilities for extra tactical depth, and you can fit your ship with cannons to raid island fortifications for treasure. (Expansion: requires the base game.) Designed by Alexander Pfister, Ralph Bienert and Ryan Hendrickson (2024)."
+      },
+      "players": "1–4",
+      "playtime": "35",
+      "age": "12",
+      "tags": ["Euro", "Expansion"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=pirates+of+maracaibo+commanders"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgameexpansion/424911/pirates-of-maracaibo-commanders"
+        }
+      ]
+    },
+    {
+      "id": "harmonies",
+      "name": { "zh": "自然和弦", "en": "Harmonies" },
+      "image": "images/harmonies.jpg",
+      "description": {
+        "zh": "用彩色标记在自己的版图上堆出山脉、森林、河流等地形，再为动物卡打造合适的栖息地。每回合从中央拿 3 个地形标记放置，并可选择一张动物卡。地形和动物安排得越巧妙，得分越高。设计师：Johan Benvenuto（2024）。\n\n适合：喜欢轻松美观拼图的玩家。",
+        "en": "Build landscapes from coloured tokens (mountains, forests, rivers and more) and create the right habitats for your animals. Each turn take three terrain tokens from the centre and optionally an animal card. The smarter your landscapes and animals fit together, the more you score. Designed by Johan Benvenuto (2024).\n\nGreat for: a relaxing, beautiful puzzle."
+      },
+      "players": "1–4",
+      "playtime": "15",
+      "age": "10",
+      "tags": ["Euro", "Family"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=harmonies+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/414317/harmonies"
+        }
+      ]
+    },
+    {
+      "id": "azul-master-chocolatier",
+      "name": { "zh": "花砖物语：巧夺天工", "en": "Azul: Master Chocolatier" },
+      "image": "images/azul-master-chocolatier.jpg",
+      "description": {
+        "zh": "经典《花砖物语》的巧克力主题版。轮流从工坊拿取同色砖块放到自己的版图上，按图案和成套得分，浪费的砖块会扣分。工坊板是双面的：一面与原版规则相同，另一面带有特殊效果。设计师：Michael Kiesling（2022）。\n\n适合：家庭和新手。",
+        "en": "A chocolate-themed version of the classic Azul. Take turns drafting tiles of one colour from the factories onto your board, scoring for patterns and sets while wasted tiles cost points. The factory boards are double-sided: one side plays like the original, the other adds special effects. Designed by Michael Kiesling (2022).\n\nGreat for: families and new players."
+      },
+      "players": "2–4",
+      "playtime": "15",
+      "age": "8",
+      "tags": ["Abstract", "Family"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=azul+master+chocolatier+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/363247/azul-master-chocolatier"
+        }
+      ]
+    },
+    {
+      "id": "night-of-the-ninja",
+      "name": { "zh": "忍者之夜", "en": "Night of the Ninja" },
+      "image": "images/night-of-the-ninja.jpg",
+      "description": {
+        "zh": "快节奏的阵营身份推理游戏。你属于某个忍者家族，要找出并击败敌对家族——前提是你能认出他们！每轮选择忍者角色：间谍和占卜师获取情报，只有忍者和盲眼刺客能出手刺杀。被淘汰的玩家仍可参与讨论。设计师：Justin Gary（2021）。\n\n适合：人多的聚会。",
+        "en": "A fast game of deadly secrets and paper-thin alliances. Defeat the rival ninja House, if you can work out who they are! Each round pick a ninja role: Spies and Fortune Tellers gather information, but only a Shinobi or Blind Assassin can strike. Eliminated players can still join the discussion. Designed by Justin Gary (2021).\n\nGreat for: big party groups."
+      },
+      "players": "4–11",
+      "playtime": "5",
+      "age": "12",
+      "tags": ["Party", "Social Deduction"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=night+of+the+ninja+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/306321/night-of-the-ninja"
+        }
+      ]
+    },
+    {
+      "id": "kushi-express",
+      "name": { "zh": "串好啦！", "en": "Kushi Express" },
+      "image": "images/kushi-express.jpg",
+      "description": {
+        "zh": "比手速的日式烤串游戏！每人有番茄、青椒、虾、牛排四种食材块和芝士、培根两块布片。翻开订单卡，所有人抢着按顺序把食材串好，最快串对的人得分，先得 10 分的成为烤串之王。游戏内无文字。设计师：Yohan Goh（2019）。\n\n适合：亲子和小朋友。",
+        "en": "Race to make Japanese BBQ skewers! Everyone has blocks of tomato, pepper, shrimp and steak plus cheese and bacon pieces. Flip an order card and race to build the matching skewer; the fastest correct skewer scores, and the first to 10 points is the King of Kushi. No text in the game. Designed by Yohan Goh (2019).\n\nGreat for: families with kids."
+      },
+      "players": "2–4",
+      "playtime": "5",
+      "age": "6",
+      "tags": ["Family", "Party"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=kushi+express+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/264797/kushi-express"
+        }
+      ]
+    },
+    {
+      "id": "7-wonders-duel",
+      "name": { "zh": "七大奇迹：对决", "en": "7 Wonders Duel" },
+      "image": "images/7-wonders-duel.jpg",
+      "description": {
+        "zh": "《七大奇迹》的双人版。历经三个时代，从桌面上半明半暗排列的卡牌中轮流拿取，获取资源、发展军事或科技、建造奇迹。除了比分数外，还能靠军事压制或集齐科技直接获胜。设计师：Antoine Bauza、Bruno Cathala（2015）。\n\n适合：两人的经典策略对决。",
+        "en": "The two-player version of 7 Wonders. Over three ages, take turns drafting cards from a layout of face-up and face-down cards to gain resources, advance your military or science, and build wonders. Besides points, you can win outright through military supremacy or scientific progress. Designed by Antoine Bauza and Bruno Cathala (2015).\n\nGreat for: a classic two-player strategy duel."
+      },
+      "players": "2",
+      "playtime": "15",
+      "age": "10",
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=7+wonders+duel+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/173346/7-wonders-duel"
+        }
+      ]
+    },
+    {
+      "id": "ten",
+      "name": { "zh": "彩虹数列", "en": "TEN" },
+      "image": "images/ten.jpg",
+      "description": {
+        "zh": "拼运气加竞拍的家庭卡牌游戏。一张张翻牌，总和不能超过 10，否则就爆掉！可以冒险多翻，也可以花钱买牌，目标是在每种颜色中凑出最长的连续数列。出现万能牌时还要竞拍争夺。设计师：Molly Johnson、Robert Melvin、Shawn Stankewich（2021）。\n\n适合：全家一起玩。",
+        "en": "A push-your-luck and auction card game for the whole family. Draw cards one at a time without going over a total of TEN, or you bust! Push your luck or spend money to buy cards, trying to build the longest number run in each colour, and bid for valuable wild cards. Designed by Molly Johnson, Robert Melvin and Shawn Stankewich (2021).\n\nGreat for: the whole family."
+      },
+      "players": "1–5",
+      "playtime": "6",
+      "age": "10",
+      "tags": ["Cards", "Family"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=ten+card+game+aeg+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/335609/ten"
+        }
+      ]
+    },
+    {
+      "id": "im-the-boss",
+      "name": { "zh": "我是大老板！", "en": "I'm the Boss!" },
+      "image": "images/im-the-boss.jpg",
+      "description": {
+        "zh": "谈判交易的经典游戏。版图上的每个格子都是一笔生意，当上老板的玩家要拉拢其他人带着投资人入伙，再谈好分成才能成交。手牌可以让投资人去度假、挖走别人的投资人，甚至抢下整笔生意。热闹又混乱！设计师：Sid Sackson（1994）。\n\n适合：喜欢讨价还价的聚会。",
+        "en": "A classic negotiation game. Each space on the board is a deal, and the player who is the Boss must bring in the right investors held by others and agree how to split the money. Cards can send investors on vacation, poach them, or let you seize the deal yourself. Loud and chaotic! Designed by Sid Sackson (1994).\n\nGreat for: groups who love haggling."
+      },
+      "players": "3–6",
+      "playtime": "12",
+      "age": "12",
+      "tags": ["Party", "Trading"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=im+the+boss+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/115/im-the-boss"
+        }
+      ]
+    },
+    {
+      "id": "takenoko",
+      "name": { "zh": "御竹园", "en": "Takenoko" },
+      "image": "images/takenoko.jpg",
+      "description": {
+        "zh": "中国皇帝把一只大熊猫送给日本天皇作为和平的象征，玩家们则是负责照料竹园的宫廷成员。开垦土地、引水灌溉、种出绿、黄、粉三种竹子，同时还要应付贪吃的熊猫。完成目标卡得分。设计师：Antoine Bauza（2011）。\n\n适合：家庭和新手。",
+        "en": "Long ago, the Chinese Emperor gave a giant panda to the Japanese Emperor as a symbol of peace. As members of the court, you tend the bamboo garden: cultivate plots, irrigate them and grow green, yellow and pink bamboo, all while the hungry panda munches away. Complete objective cards to score. Designed by Antoine Bauza (2011).\n\nGreat for: families and new players."
+      },
+      "players": "2–4",
+      "playtime": "20",
+      "age": "8",
+      "tags": ["Euro", "Family"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=takenoko+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/70919/takenoko"
+        }
+      ]
+    },
+    {
+      "id": "stockpile",
+      "name": { "zh": "纵横股海", "en": "Stockpile" },
+      "image": "images/stockpile.jpg",
+      "description": {
+        "zh": "20 世纪末的股票市场，你是想一夜暴富的投资人。竞标一堆堆半明半暗的股票卡，利用内幕消息预判股价涨跌，低买高卖，游戏结束时钱最多的人获胜。设计师：Brett Sobol、Seth Van Orden（2015）。\n\n适合：喜欢竞拍和经济题材的玩家。",
+        "en": "Play stock market investors at the end of the 20th century trying to strike it rich. Bid on piles of stock cards (some face-up, some hidden), use insider information to predict price moves, buy low and sell high. Most money at the end wins. Designed by Brett Sobol and Seth Van Orden (2015).\n\nGreat for: fans of bidding and economic games."
+      },
+      "players": "2–5",
+      "playtime": "10",
+      "age": "13",
+      "tags": ["Euro", "Trading"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=stockpile+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/161614/stockpile"
+        }
+      ]
+    },
+    {
+      "id": "great-western-trail-new-zealand",
+      "name": { "zh": "大西部开拓者：新西兰开拓史", "en": "Great Western Trail: New Zealand" },
+      "image": "images/great-western-trail-new-zealand.jpg",
+      "description": {
+        "zh": "19 世纪末，你在新西兰南岛经营一座牧羊场。培育不同品种的羊、提高羊毛价值，并沿着路线把羊毛运往港口。保留《大西部开拓者》的牌库管理与环形移动，并加入新挑战。可独立游玩。设计师：Alexander Pfister（2023）。\n\n适合：喜欢重度策略的玩家。",
+        "en": "Run a sheep station on New Zealand's South Island at the end of the 19th century. Breed different sheep, raise the value of your wool and drive it along the trail to the ports. Keeps Great Western Trail's deck management and rondel with new challenges. Standalone. Designed by Alexander Pfister (2023).\n\nGreat for: fans of heavy strategy."
+      },
+      "players": "1–4",
+      "playtime": "45",
+      "age": "12",
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=great+western+trail+new+zealand+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/380607/great-western-trail-new-zealand"
+        }
+      ]
+    },
+    {
+      "id": "grand-austria-hotel",
+      "name": { "zh": "奥地利大饭店", "en": "Grand Austria Hotel" },
+      "image": "images/grand-austria-hotel.jpg",
+      "description": {
+        "zh": "维也纳的咖啡馆竞争激烈，艺术家、政要和游客都需要住处。把你的小咖啡馆经营成世界知名的大饭店：雇佣员工、满足客人的点单、准备房间，并赢得皇帝的青睐。设计师：Virginio Gigli、Simone Luciani（2015）。\n\n适合：喜欢中重度策略的玩家。",
+        "en": "Vienna's cafés compete for customers, and artists, politicians and tourists all need rooms. Turn your little café into a world-famous hotel: hire staff, serve your guests' orders, prepare rooms and win the emperor's favour. Designed by Virginio Gigli and Simone Luciani (2015).\n\nGreat for: fans of medium-heavy strategy."
+      },
+      "players": "2–4",
+      "playtime": "30",
+      "age": "12",
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=grand+austria+hotel+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/182874/grand-austria-hotel"
+        }
+      ]
+    },
+    {
+      "id": "golem",
+      "name": { "zh": "傀儡魔像", "en": "Golem" },
+      "image": "images/golem.jpg",
+      "description": {
+        "zh": "取材自 16 世纪布拉格的魔像传说。玩家扮演拉比，制造并操控魔像，同时研究知识、打造神器。用彩色弹珠选择行动，颜色还会推动控制魔像的大师前进。引擎构筑类重策游戏。设计师：Flaminia Brasini、Virginio Gigli、Simone Luciani（2021）。\n\n适合：喜欢重度策略的玩家。",
+        "en": "Based on the 16th-century legend of the Golem of Prague. As rabbis, you build and control golems while studying and crafting artifacts. Marbles drawn from a ramp choose your actions, and their colours also advance the masters who command the golems. A heavy engine builder. Designed by Flaminia Brasini, Virginio Gigli and Simone Luciani (2021).\n\nGreat for: fans of heavy strategy."
+      },
+      "players": "1–4",
+      "playtime": "30",
+      "age": "14",
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=golem+cranio+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/298383/golem"
+        }
+      ]
+    },
+    {
+      "id": "darwins-journey",
+      "name": { "zh": "达尔文的旅程", "en": "Darwin's Journey" },
+      "image": "images/darwins-journey.jpg",
+      "description": {
+        "zh": "随达尔文登上加拉帕戈斯群岛。派出探险者探索岛屿、研究物种、把标本送往博物馆、写信与学术界交流，逐步解锁新的能力。工人放置类重策游戏。设计师：Simone Luciani、Nestore Mangone（2023）。\n\n适合：喜欢重度策略的玩家。",
+        "en": "Land on the Galápagos with Darwin. Send explorers across the islands, study species, ship specimens to the museum and correspond with scholars, unlocking new abilities as you go. A heavy worker-placement game. Designed by Simone Luciani and Nestore Mangone (2023).\n\nGreat for: fans of heavy strategy."
+      },
+      "players": "1–4",
+      "playtime": "40",
+      "age": "14",
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=darwins+journey+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/322289/darwins-journey"
+        }
+      ]
+    },
+    {
+      "id": "castles-of-tuscany",
+      "name": { "zh": "托斯卡纳城堡：豪华版", "en": "The Castles of Tuscany (Deluxe)" },
+      "image": "images/castles-of-tuscany.jpg",
+      "description": {
+        "zh": "15 世纪文艺复兴时期的托斯卡纳，你是一位有权势的王子。用手牌拿取并放置六边形板块，支持城镇、村庄和修道院，开采大理石、运送货物，让领地繁荣并赢取分数。与《勃艮第城堡》同一设计师，节奏更快。设计师：Stefan Feld（2020）。\n\n适合：喜欢《勃艮第城堡》但想玩得更快的玩家。",
+        "en": "Fifteenth-century Tuscany, home of the Renaissance. As an influential prince, use cards to take and place hex tiles: support towns, villages and monasteries, quarry marble and deliver goods to grow your domain and score points. By the designer of The Castles of Burgundy, but faster. Designed by Stefan Feld (2020).\n\nGreat for: fans of Castles of Burgundy who want a quicker game."
+      },
+      "players": "2–4",
+      "playtime": "30",
+      "age": "10",
+      "tags": ["Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=castles+of+tuscany+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/300327/the-castles-of-tuscany"
+        }
+      ]
+    },
+    {
+      "id": "imperium-classics",
+      "name": { "zh": "帝国：经典", "en": "Imperium: Classics" },
+      "image": "images/imperium-classics.jpg",
+      "description": {
+        "zh": "带领一个伟大的古代文明（罗马、希腊、迦太基等）走向帝国。牌库构筑游戏：征服新土地、推动科学和文化进步。扩张太快会引发动乱，发展太慢又会被历史淘汰。设计师：Nigel Buckle、Dávid Turczi（2021）。\n\n适合：喜欢牌库构筑和文明题材的玩家。",
+        "en": "Lead one of history's great civilizations (Rome, Greece, Carthage and more) to empire. A deck-building game: conquer new lands and drive scientific and cultural progress. Expand too fast and unrest will break you; too slow and you become a footnote. Designed by Nigel Buckle and Dávid Turczi (2021).\n\nGreat for: fans of deck building and civilization games."
+      },
+      "players": "1–4",
+      "playtime": "40",
+      "age": "14",
+      "tags": ["Strategy", "Cards"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=imperium+classics+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/318184/imperium-classics"
+        }
+      ]
+    },
+    {
+      "id": "welcome-to-the-moon",
+      "name": { "zh": "欢迎来到月球", "en": "Welcome to the Moon" },
+      "image": "images/welcome-to-the-moon.jpg",
+      "description": {
+        "zh": "《欢迎来到》系列的翻牌填写游戏，这次要殖民太空拯救人类！每轮从三叠卡中翻出三组数字和行动组合，所有人同时选择一组填到自己的冒险纸上。包含 8 张冒险纸，可以作为战役连续游玩，也能单人玩。设计师：Benoit Turpin、Alexis Allard（2021）。\n\n适合：人多也不怕等待的轻策略游戏。",
+        "en": "A flip-and-write in the Welcome To... series, this time saving humanity through space colonization! Each turn three combinations of number and action are flipped and everyone picks one at the same time to write on their sheet. Eight adventure sheets can be played as a campaign, and it works solo too. Designed by Benoit Turpin and Alexis Allard (2021).\n\nGreat for: big groups with no waiting."
+      },
+      "players": "1–6",
+      "playtime": "5",
+      "age": "10",
+      "tags": ["Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=welcome+to+the+moon+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/339789/welcome-to-the-moon"
+        }
+      ]
+    },
+    {
+      "id": "jamaica",
+      "name": { "zh": "牙买加（2021）", "en": "Jamaica (2021 edition)" },
+      "image": "images/jamaica.jpg",
+      "description": {
+        "zh": "海盗船长摩根当上了牙买加总督，每年都举办环岛大赛。玩家驾驶海盗船绕岛航行，用行动牌决定白天和夜晚的前进与装货，途中还能抢夺宝藏、和其他船开炮对战。比赛结束时金子最多的船长获胜。设计师：Malcolm Braff、Bruno Cathala、Sébastien Pauchon（原版 2007）。\n\n适合：热闹的家庭和朋友聚会。",
+        "en": "Captain Henry Morgan is now Governor of Jamaica and holds a great race around the island every year. Sail your pirate ship around the island, using action cards to move and load cargo by day and night, grab treasure and fire on rival ships. The captain with the most gold at the end wins. Designed by Malcolm Braff, Bruno Cathala and Sébastien Pauchon (original 2007).\n\nGreat for: lively family and friend groups."
+      },
+      "players": "2–6",
+      "playtime": "12",
+      "age": "8",
+      "tags": ["Party", "Family"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=jamaica+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/28023/jamaica"
+        }
+      ]
+    },
+    {
+      "id": "architects-of-the-west-kingdom",
+      "name": { "zh": "西国建筑师", "en": "Architects of the West Kingdom" },
+      "image": "images/architects-of-the-west-kingdom.jpg",
+      "description": {
+        "zh": "公元 850 年左右，你是皇家建筑师，要为国王修建地标建筑。收集原料、雇佣学徒，同时盯紧自己的工人——别人可能会把他们抓去关押！还要在美德与诱惑之间做出选择。工人放置游戏。设计师：Shem Phillips、S J Macdonald（2018）。\n\n适合：喜欢工人放置的玩家。",
+        "en": "Around 850 AD, as royal architects you compete to build landmarks for the King. Gather materials, hire apprentices and watch your workers, since rivals can capture them! You must also choose between virtue and temptation. A worker-placement game. Designed by Shem Phillips and S J Macdonald (2018).\n\nGreat for: fans of worker placement."
+      },
+      "players": "1–5",
+      "playtime": "20",
+      "age": "12",
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=architects+of+the+west+kingdom+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/236457/architects-of-the-west-kingdom"
+        }
+      ]
+    },
+    {
+      "id": "seti-space-agencies",
+      "name": { "zh": "星空觅迹：群星计画", "en": "SETI: Space Agencies" },
+      "image": "images/seti-space-agencies.jpg",
+      "description": {
+        "zh": "《星空觅迹》（SETI）的扩展。加入 11 个各具特色的机构——从私营科技公司到全球科研网络——每个都有独特能力和起始条件；还加入信号标记和 3 种新外星种族。（扩展，需要基础游戏才能玩。）设计师：Tomáš Holek（2025）。",
+        "en": "An expansion for SETI: Search for Extraterrestrial Intelligence. Adds 11 asymmetric organizations, from private tech companies to global research networks, each with unique abilities and starting conditions, plus signal tokens and three new alien species. (Expansion: requires the base game.) Designed by Tomáš Holek (2025)."
+      },
+      "players": "1–4",
+      "playtime": "50",
+      "age": "14",
+      "tags": ["Strategy", "Euro", "Expansion"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=seti+space+agencies+expansion"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgameexpansion/445048/seti-space-agencies"
+        }
+      ]
+    },
+    {
+      "id": "forest-shuffle",
+      "name": { "zh": "森森不息", "en": "Forest Shuffle" },
+      "image": "images/forest-shuffle.jpg",
+      "description": {
+        "zh": "打造一片生态平衡的森林。先种下树木，再把动物、植物和蘑菇等森林居民放到树的上下左右。不同物种之间互相加分，组合越巧妙分数越高。设计师：Kosch（2023）。\n\n适合：喜欢自然题材和卡牌组合的玩家。",
+        "en": "Build an ecologically balanced forest. Plant trees, then attract animals, plants and mushrooms to their tops, bottoms and sides. Species score off each other, so clever combinations win. Designed by Kosch (2023).\n\nGreat for: nature lovers who enjoy card combos."
+      },
+      "players": "2–5",
+      "playtime": "15",
+      "age": "10",
+      "tags": ["Cards", "Family"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=forest+shuffle+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/391163/forest-shuffle"
+        }
+      ]
+    },
+    {
+      "id": "bomb-busters",
+      "name": { "zh": "炸弹克星", "en": "Bomb Busters" },
+      "image": "images/bomb-busters.jpg",
+      "description": {
+        "zh": "炸弹倒计时开始了！你们是拆弹小队，每人面前有一排看不见的数字电线，不能直接交流。轮流猜队友的哪根电线和自己的某根相同并剪断，剪到红线就爆炸！合理使用道具，完成 66 个关卡。2025 年德国年度游戏。设计师：Hisashi Hayashi（2024）。\n\n适合：喜欢合作推理的玩家。",
+        "en": "The countdown has started! You are a bomb disposal team, each with a hidden row of numbered wires and no talking about them. Take turns guessing which of a teammate's wires matches one of yours and cut it, but cut a red wire and BOOM! Use your equipment wisely across 66 missions. 2025 Spiel des Jahres winner. Designed by Hisashi Hayashi (2024).\n\nGreat for: groups who enjoy co-op deduction."
+      },
+      "players": "2–5",
+      "playtime": "8",
+      "age": "10",
+      "tags": ["Co-op", "Deduction"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=bomb+busters+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/413246/bomb-busters"
+        }
+      ]
+    },
+    {
+      "id": "age-of-innovation",
+      "name": { "zh": "大创造时代", "en": "Age of Innovation" },
+      "image": "images/age-of-innovation.jpg",
+      "description": {
+        "zh": "《神秘大地》世界观下的独立作品。12 个各具特色的种族，在多种地形上建造建筑并连成城市。每局组合不同的种族、家园和能力，变化丰富。设计师：Helge Ostertag（2023）。\n\n适合：喜欢重度策略的玩家。",
+        "en": "A standalone game set in the world of Terra Mystica. Twelve unique factions compete to build on varied terrain and merge buildings into cities. Each game combines different factions, homelands and abilities, so no two are alike. Designed by Helge Ostertag (2023).\n\nGreat for: fans of heavy strategy."
+      },
+      "players": "1–5",
+      "playtime": "50",
+      "age": "14",
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=age+of+innovation+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/383179/age-of-innovation"
+        }
+      ]
+    },
+    {
+      "id": "lost-ruins-of-arnak",
+      "name": { "zh": "阿纳克遗迹", "en": "Lost Ruins of Arnak" },
+      "image": "images/lost-ruins-of-arnak.jpg",
+      "description": {
+        "zh": "在一座未知海域的无人岛上，探险家发现了伟大文明的遗迹。带领探险队探索岛屿、寻找失落的神器、对抗可怕的守护者，揭开岛屿的秘密。融合牌库构筑与工人放置。设计师：Elwen、Mín（2020）。\n\n适合：喜欢探险题材和策略的玩家。",
+        "en": "On an uninhabited island in uncharted seas, explorers have found traces of a great civilization. Lead an expedition to explore the island, find lost artifacts and face fearsome guardians. Combines deck building and worker placement. Designed by Elwen and Mín (2020).\n\nGreat for: fans of adventure themes and strategy."
+      },
+      "players": "1–4",
+      "playtime": "40",
+      "age": "12",
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=lost+ruins+of+arnak+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/312484/lost-ruins-of-arnak"
+        }
+      ]
+    },
+    {
+      "id": "carpe-diem",
+      "name": { "zh": "活在当下", "en": "Carpe Diem" },
+      "image": "images/carpe-diem.jpg",
+      "description": {
+        "zh": "古罗马的富裕贵族们竞相建造最赚钱的城区。在中央版图上移动拿取建筑板块，拼进自己的城区，并配合多种计分卡争取声望分数。策略路线多样。设计师：Stefan Feld（2018）。\n\n适合：喜欢板块拼放和规划的玩家。",
+        "en": "Wealthy patricians in ancient Rome race to build the most lucrative city district. Move around the central board to take building tiles, fit them into your district and chase a wide variety of scoring cards. Lots of strategies to explore. Designed by Stefan Feld (2018).\n\nGreat for: fans of tile placement and planning."
+      },
+      "players": "2–4",
+      "playtime": "20",
+      "age": "10",
+      "tags": ["Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=carpe+diem+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/245934/carpe-diem"
+        }
+      ]
+    },
+    {
+      "id": "flip-7",
+      "name": { "zh": "7连翻", "en": "Flip 7" },
+      "image": "images/flip-7.jpg",
+      "description": {
+        "zh": "一张张翻牌，但不能翻出重复的数字！牌堆里只有一张 1、两张 2、三张 3……还有加分、复活、冻结对手等特殊牌。见好就收，还是继续冒险凑够 7 张不同数字拿大奖？设计师：Eric Olsen（2024）。\n\n适合：人多的轻松聚会。",
+        "en": "Flip cards one by one without flipping the same number twice. There is one 1, two 2s, three 3s and so on, plus special cards that add points, save you or freeze a player. Bank your points, or push for seven different numbers and the big bonus? Designed by Eric Olsen (2024).\n\nGreat for: big, relaxed groups."
+      },
+      "players": "3–14+",
+      "playtime": "5",
+      "age": "8",
+      "tags": ["Cards", "Party"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=flip+7+card+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/420087/flip-7"
+        }
+      ]
+    },
+    {
+      "id": "hanabi",
+      "name": { "zh": "花火", "en": "Hanabi" },
+      "image": "images/hanabi.jpg",
+      "description": {
+        "zh": "合作打造完美的烟花表演。你看不到自己的手牌，只能看到别人的！轮流给队友提示（颜色或数字），按顺序把五种颜色的 1–5 打出来。提示次数有限，打错会引起爆炸。2013 年德国年度游戏。设计师：Antoine Bauza（2010）。\n\n适合：喜欢默契合作的玩家。",
+        "en": "Work together to create the perfect fireworks show. You can't see your own cards, only everyone else's! Give teammates limited clues (a colour or a number) to play each of five colours from 1 to 5 in order. Misplays cause explosions. 2013 Spiel des Jahres winner. Designed by Antoine Bauza (2010).\n\nGreat for: groups who like teamwork."
+      },
+      "players": "2–5",
+      "playtime": "6",
+      "age": "8",
+      "tags": ["Co-op", "Cards"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=hanabi+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/98778/hanabi"
+        }
+      ]
+    },
+    {
+      "id": "survive-escape-from-atlantis",
+      "name": { "zh": "逃离亚特兰蒂斯", "en": "Survive: Escape from Atlantis!" },
+      "image": "images/survive-escape-from-atlantis.jpg",
+      "description": {
+        "zh": "亚特兰蒂斯岛正在沉没！每人带领 10 个价值不同的岛民，坐船或游泳逃往安全的岛屿。每回合都有一块岛屿沉入大海，还会冒出鲨鱼、鲸鱼和海怪。记住自己高分岛民的位置，同时坑一下别人！设计师：Julian Courtland-Smith（1982）。\n\n适合：喜欢互相“伤害”的家庭聚会。",
+        "en": "Atlantis is sinking! Each player leads ten islanders of different values, escaping by boat or swimming to safe land. Every turn another piece of the island sinks and sharks, whales and sea serpents appear. Remember where your most valuable people are, and mess with everyone else's! Designed by Julian Courtland-Smith (1982).\n\nGreat for: families who enjoy cutthroat fun."
+      },
+      "players": "2–4",
+      "playtime": "15",
+      "age": "8",
+      "tags": ["Party", "Family"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=survive+escape+from+atlantis+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/2653/survive-escape-from-atlantis"
+        }
+      ]
+    },
+    {
+      "id": "viticulture-wine-crate",
+      "name": { "zh": "葡萄酒庄园：收纳大盒", "en": "Viticulture: Wine Crate" },
+      "image": "images/viticulture-wine-crate.jpg",
+      "description": {
+        "zh": "《葡萄酒庄园》的官方收纳盒（配件，不是游戏）。可以装下基础游戏和全部扩展（包括已绝版的模块），内含 6 个定制塑料收纳盒和盖子，可放入套了牌套的卡牌，方便快速摆放。设计师：Jamey Stegmaier。",
+        "en": "The official storage box for Viticulture (an accessory, not a game). Holds the core game and every expansion, including out-of-print modules, in 6 custom plastic trays with lids. Fits sleeved cards and speeds up setup. By Jamey Stegmaier."
+      },
+      "players": "1–6",
+      "playtime": "15",
+      "tags": ["Accessory"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=viticulture+wine+crate"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgameaccessory/367360/viticulture-wine-crate"
+        }
+      ]
+    },
+    {
+      "id": "viticulture-essential-edition",
+      "name": { "zh": "葡萄酒庄园：精华版", "en": "Viticulture Essential Edition" },
+      "image": "images/viticulture-essential-edition.jpg",
+      "description": {
+        "zh": "《葡萄酒庄园》的精华版，整合了初版之后最受欢迎的改进和扩展内容，并加入单人模式。你在托斯卡纳继承了一座小葡萄园，分配工人度过四季：种葡萄、接待游客、酿酒、完成订单，打造最成功的酒庄。设计师：Jamey Stegmaier、Alan Stone（2015）。\n\n适合：喜欢工人放置的玩家。",
+        "en": "The Essential Edition of Viticulture, bringing together the most popular improvements and expansion content, plus a solo mode. Inherit a humble Tuscan vineyard and place workers through the seasons to plant, host visitors, make wine and fill orders. Designed by Jamey Stegmaier and Alan Stone (2015).\n\nGreat for: fans of worker placement."
+      },
+      "players": "1–6",
+      "playtime": "25",
+      "age": "13",
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=viticulture+essential+edition+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/183394/viticulture-essential-edition"
+        }
+      ]
+    },
+    {
+      "id": "terraforming-mars-big-box",
+      "name": { "zh": "重塑火星：模型&收纳大盒", "en": "Terraforming Mars: Big Box" },
+      "image": "images/terraforming-mars-big-box.jpg",
+      "description": {
+        "zh": "《重塑火星》的收纳大盒：可以装下基础游戏和五个扩展，还附带一套立体的城市、森林、海洋等 3D 地形板块，让版图更好看。（扩展，需要《重塑火星》基础游戏才能玩。）（2021）",
+        "en": "A storage solution for Terraforming Mars that holds the base game and five expansions, plus a set of 3D city, forest, ocean and special tiles to dress up the board. (Expansion: requires the Terraforming Mars base game.) (2021)"
+      },
+      "players": "1–5",
+      "playtime": "40",
+      "age": "12",
+      "tags": ["Accessory"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=terraforming+mars+big+box"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgameexpansion/311247/terraforming-mars-big-box"
+        }
+      ]
+    },
+    {
+      "id": "terraforming-mars-colonies",
+      "name": { "zh": "重塑火星：殖民地", "en": "Terraforming Mars: Colonies" },
+      "image": "images/terraforming-mars-colonies.jpg",
+      "description": {
+        "zh": "公司把业务扩展到太阳系的各个角落。派出贸易舰队前往遥远的卫星，在木卫、土卫上建立殖民地，获得资源收入，帮助实现火星改造的最终目标。加入新的殖民地板块、公司和项目卡。（扩展，需要《重塑火星》基础游戏才能玩。）设计师：Jacob Fryxelius（2018）。",
+        "en": "Corporations reach out across the solar system. Send trade fleets to distant moons and build colonies for extra income to help terraform Mars. Adds colony tiles, corporations and project cards. (Expansion: requires the Terraforming Mars base game.) Designed by Jacob Fryxelius (2018)."
+      },
+      "players": "1–5",
+      "playtime": "50",
+      "age": "12",
+      "tags": ["Strategy", "Euro", "Expansion"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=terraforming+mars+colonies"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgameexpansion/255681/terraforming-mars-colonies"
+        }
+      ]
+    },
+    {
+      "id": "terraforming-mars-venus-next",
+      "name": { "zh": "重塑火星：接续金星", "en": "Terraforming Mars: Venus Next" },
+      "image": "images/terraforming-mars-venus-next.jpg",
+      "description": {
+        "zh": "世界政府决定同时资助改造金星！在金星上建造浮空城市、改善大气。加入金星版图、约 50 张项目卡和 5 家新公司。（扩展，需要《重塑火星》基础游戏才能玩。）设计师：Jacob Fryxelius（2017）。",
+        "en": "The World Government also funds terraforming Venus! Build floating cities and make its atmosphere more hospitable. Adds a Venus board, around 50 project cards and 5 corporations. (Expansion: requires the Terraforming Mars base game.) Designed by Jacob Fryxelius (2017)."
+      },
+      "players": "1–5",
+      "playtime": "50",
+      "age": "12",
+      "tags": ["Strategy", "Euro", "Expansion"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=terraforming+mars+venus+next"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgameexpansion/231965/terraforming-mars-venus-next"
+        }
+      ]
+    },
+    {
+      "id": "terraforming-mars-turmoil",
+      "name": { "zh": "重塑火星：动荡", "en": "Terraforming Mars: Turmoil" },
+      "image": "images/terraforming-mars-turmoil.jpg",
+      "description": {
+        "zh": "政治登场！玩家向各党派派出代表，获得多数的党派会在下一世代执政，带来一次性奖励和持续政策。还有沙尘暴、暴乱等全球事件，提前三个世代就能看到，需要提前规划。专家级扩展。（扩展，需要《重塑火星》基础游戏才能玩。）设计师：Jacob Fryxelius（2019）。",
+        "en": "Politics arrives! Place delegates in parties; the dominant party rules the next generation with a one-time bonus and an ongoing policy. Global Events such as dust storms and riots appear three generations ahead, so you can plan for them. An expert expansion. (Expansion: requires the Terraforming Mars base game.) Designed by Jacob Fryxelius (2019)."
+      },
+      "players": "1–5",
+      "playtime": "40",
+      "age": "12",
+      "tags": ["Strategy", "Euro", "Expansion"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=terraforming+mars+turmoil"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgameexpansion/273473/terraforming-mars-turmoil"
+        }
+      ]
+    },
+    {
+      "id": "parks",
+      "name": { "zh": "国家公园：自然之旅", "en": "PARKS" },
+      "image": "images/parks.jpg",
+      "description": {
+        "zh": "向美国国家公园致敬的游戏，配有精美的国家公园海报插画。每人带两名徒步者，在四季的步道上前进，收集代表山林、阳光、水和野生动物的“回忆”，用来造访国家公园得分。设计师：Henry Audubon（2019）。\n\n适合：喜欢美丽画风和轻策略的玩家。",
+        "en": "A celebration of the US National Parks with art from the Fifty-Nine Parks print series. Each player guides two hikers along the trail through four seasons, collecting memories (forest, sunshine, water, wildlife) to spend on visiting parks for points. Designed by Henry Audubon (2019).\n\nGreat for: beautiful art and light strategy."
+      },
+      "players": "1–5",
+      "playtime": "10",
+      "age": "10",
+      "tags": ["Euro", "Family"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=parks+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/266524/parks"
+        }
+      ]
+    },
+    {
+      "id": "parks-nightfall",
+      "name": { "zh": "国家公园：夜幕", "en": "PARKS: Nightfall" },
+      "image": "images/parks-nightfall.jpg",
+      "description": {
+        "zh": "《国家公园》的扩展。加入 24 张新公园卡（包括基础游戏中缺少的 17 座国家公园）、新的年度卡和额外计分，以及全新的露营机制。（扩展，需要基础游戏才能玩。）（2020）",
+        "en": "An expansion for PARKS. Adds 24 new park cards (including the 17 parks missing from the base game), new year cards, bonus scoring and a new camping mechanic. (Expansion: requires the base game.) (2020)"
+      },
+      "players": "1–5",
+      "playtime": "10",
+      "age": "10",
+      "tags": ["Euro", "Expansion"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=parks+nightfall+expansion"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgameexpansion/298729/parks-nightfall"
+        }
+      ]
+    },
+    {
+      "id": "betrayal-at-house-on-the-hill",
+      "name": { "zh": "山中小屋", "en": "Betrayal at House on the Hill" },
+      "image": "images/betrayal-at-house-on-the-hill.jpg",
+      "description": {
+        "zh": "一群人走进山上的闹鬼老宅，一边探索一边逐块拼出房间，每局的宅子都不一样。途中会遇到鬼魂和不祥的预兆，直到“作祟”触发——其中一人会变成叛徒！之后从 50 个剧本中选出一个，叛徒和其他人展开对决。\n\n适合：喜欢恐怖氛围和剧情的玩家。",
+        "en": "Explore a haunted mansion that you build room by room, so the house is different every game. Spirits and omens build up until the haunt begins and one player turns traitor! One of 50 scenarios then pits the traitor against everyone else. (2004)\n\nGreat for: fans of spooky stories and theme."
+      },
+      "players": "3–6",
+      "playtime": "20",
+      "age": "12",
+      "tags": ["Thematic"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=betrayal+at+house+on+the+hill+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/10547/betrayal-at-house-on-the-hill"
+        }
+      ]
+    },
+    {
+      "id": "maximum-apocalypse",
+      "name": { "zh": "末日启示录", "en": "Maximum Apocalypse" },
+      "image": "images/maximum-apocalypse.jpg",
+      "description": {
+        "zh": "文明已经崩溃，你们是末日的幸存者。合作类 Roguelike 冒险游戏：地图每局随机生成，玩家每回合有 4 个行动去探索、打出卡牌、对抗怪物，同时还要管理饥饿和生命值，完成剧本目标。设计师：Mike Gnade（2018）。\n\n适合：喜欢合作生存冒险的玩家。",
+        "en": "Civilization has fallen and you are the survivors. A cooperative roguelike adventure with a randomly generated map every game. Use four actions a turn to explore, play cards and fight monsters while managing hunger and health to complete each scenario. Designed by Mike Gnade (2018).\n\nGreat for: fans of co-op survival adventures."
+      },
+      "players": "1–6",
+      "playtime": "20",
+      "age": "13",
+      "tags": ["Co-op", "Thematic", "Cards"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=maximum+apocalypse+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/188547/maximum-apocalypse"
+        }
+      ]
+    },
+    {
+      "id": "maximum-apocalypse-wasted-wilds",
+      "name": { "zh": "末日启示录：荒野废墟", "en": "Maximum Apocalypse: Wasted Wilds" },
+      "image": "images/maximum-apocalypse-wasted-wilds.jpg",
+      "description": {
+        "zh": "《末日启示录》系列的续作，可独立游玩。保留了合作生存玩法，加入两条剧情战役、严酷天气和与其他幸存者的互动，以及 5 名新角色和大量新内容。设计师：Mike Gnade（2021 众筹，2023 发行）。\n\n适合：喜欢合作生存冒险的玩家。",
+        "en": "The standalone follow-up in the Maximum Apocalypse series. Same cooperative survival gameplay, plus two campaigns, exposure to the elements, interactions with other survivors, five new characters and lots of new content. Designed by Mike Gnade (crowdfunded 2021, released 2023).\n\nGreat for: fans of co-op survival adventures."
+      },
+      "players": "1–4",
+      "playtime": "20",
+      "age": "13",
+      "tags": ["Co-op", "Thematic", "Cards"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=maximum+apocalypse+wasted+wilds"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/335446/maximum-apocalypse-wasted-wilds"
+        }
+      ]
+    },
+    {
+      "id": "little-factory",
+      "name": { "zh": "小小工厂：异画版", "en": "Little Factory (Firm with Brownies edition)" },
+      "image": "images/little-factory.jpg",
+      "description": {
+        "zh": "资源加工与建造的卡牌游戏。把原料加工成更有价值的东西——木头变木炭，木炭和面粉变面包——用累积的资产建造建筑，获得特殊能力和分数。此为日本 Brownies 精灵主题的异画版，平衡性有所调整并加入新卡。设计师：Shun Taguchi、Aya Taguchi。\n\n适合：亲子和轻度策略。",
+        "en": "A resource-processing and building card game. Turn resources into more valuable ones (wood into charcoal, charcoal and flour into bread) and use your assets to construct buildings for abilities and points. This is the Japanese Firm with Brownies edition with fairy art, rebalanced costs and new cards. Designed by Shun Taguchi and Aya Taguchi.\n\nGreat for: families and light strategy."
+      },
+      "players": "1–4",
+      "playtime": "10",
+      "age": "12",
+      "tags": ["Cards", "Family"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=little+factory+card+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/306300/little-factory"
+        }
+      ]
+    },
+    {
+      "id": "little-factory-shokai-training",
+      "name": { "zh": "小小工厂：商会研修！", "en": "Firm With Brownies: Shokai Training!" },
+      "image": "images/little-factory-shokai-training.jpg",
+      "description": {
+        "zh": "《小小工厂（Brownies 版）》的扩展。加入更多变化，以及单人模式：成为精明的商人，和 Brownies 伙伴们一起学习生产和销售。（扩展，需要基础游戏才能玩。）设计师：Shun Taguchi、Aya Taguchi（2021）。",
+        "en": "An expansion for Little Factory (Firm with Brownies edition). Adds more variety plus a solo mode where you train as a sharp merchant alongside your Brownie friends. (Expansion: requires the base game.) Designed by Shun Taguchi and Aya Taguchi (2021)."
+      },
+      "players": "1–4",
+      "playtime": "10",
+      "age": "12",
+      "tags": ["Cards", "Family", "Expansion"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=firm+with+brownies"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgameexpansion/352449/firm-with-brownies-shokai-training"
+        }
+      ]
+    },
+    {
+      "id": "ark-nova-marine-worlds",
+      "name": { "zh": "方舟动物园：海洋世界", "en": "Ark Nova: Marine Worlds" },
+      "image": "images/ark-nova-marine-worlds.jpg",
+      "description": {
+        "zh": "《方舟动物园》的扩展。加入海洋动物，必须养在临水建造的特殊水族馆中；约一半是珊瑚礁生物，每放入一只都会触发所有珊瑚礁生物的能力。还加入新的行动卡、大学、奖励板块和终局计分卡。（扩展，需要基础游戏才能玩。）设计师：Mathias Wigge（2023）。",
+        "en": "An expansion for Ark Nova. Adds sea animals that need special enclosures built next to water; about half are reef dwellers, and adding one triggers every reef dweller in your zoo. Also adds alternate action cards, a new university, bonus tiles and final scoring cards. (Expansion: requires the base game.) Designed by Mathias Wigge (2023)."
+      },
+      "players": "1–4",
+      "playtime": "50",
+      "age": "14",
+      "tags": ["Strategy", "Euro", "Expansion"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=ark+nova+marine+worlds"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgameexpansion/368966/ark-nova-marine-worlds"
+        }
+      ]
+    },
+    {
+      "id": "ark-nova",
+      "name": { "zh": "方舟动物园", "en": "Ark Nova" },
+      "image": "images/ark-nova.jpg",
+      "description": {
+        "zh": "规划并设计一座现代化、科学管理的动物园。建造围栏、安置动物、支持世界各地的保护项目，借助专家和特殊建筑打造最成功的动物园。每人 5 张行动卡，卡牌位置决定行动强度。BGG 排名前列的重策游戏。设计师：Mathias Wigge（2021）。\n\n适合：喜欢重度策略的玩家。",
+        "en": "Plan and design a modern, scientifically managed zoo. Build enclosures, house animals and support conservation projects around the world, with help from specialists and unique buildings. Five action cards whose strength depends on their slot drive your turns. One of BGG's top-ranked strategy games. Designed by Mathias Wigge (2021).\n\nGreat for: fans of heavy strategy."
+      },
+      "players": "1–4",
+      "playtime": "50",
+      "age": "14",
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=ark+nova+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/342942/ark-nova"
+        }
+      ]
+    },
+    {
+      "id": "feed-the-kraken",
+      "name": { "zh": "险恶疑航", "en": "Feed the Kraken" },
+      "image": "images/feed-the-kraken.jpg",
+      "description": {
+        "zh": "大家同在一条船上，却想往不同方向开！忠诚的水手要把船安全开回大陆，海盗想偷偷把船驶进百慕大三角，疯狂的邪教徒则试图把船员拉入教派，献祭给海怪。船长、副手和领航员共同决定航向，大家可以讨论、甩锅、发动兵变。设计师：Maikel Cheney、Hans Joachim Höh、Tobias Immich（2022）。\n\n适合：人多的身份推理聚会。",
+        "en": "Everyone is in the same boat, but wants to sail in different directions! Loyal sailors want to reach the mainland, pirates secretly steer for the Bermuda Triangle, and a crazy cultist tries to convert the crew and feed someone to the Kraken. Captain, lieutenant and navigator choose the course, then everyone argues, blames and may mutiny. Designed by Maikel Cheney, Hans Joachim Höh and Tobias Immich (2022).\n\nGreat for: big social deduction groups."
+      },
+      "players": "5–11",
+      "playtime": "10",
+      "age": "12",
+      "tags": ["Party", "Social Deduction"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=feed+the+kraken+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/271601/feed-the-kraken"
+        }
+      ]
+    },
+    {
+      "id": "dumb-animals",
+      "name": { "zh": "低等动物", "en": "Dumb Animals" },
+      "image": "images/dumb-animals.jpg",
+      "description": {
+        "zh": "混乱的动物王国，靠欺骗、记忆和心理战取胜。每张牌是食物链上的一种动物，可以把牌扣着打出并谎称是更强的动物，其他人可以选择质疑。每局可以用一次特殊的胡萝卜硬币。设计师：丁七（2025）。\n\n适合：喜欢吹牛和心理战的聚会。",
+        "en": "A chaotic animal kingdom where deception, memory and mind games win. Each card is an animal in a quirky food chain; play cards face-down and bluff that they're stronger, and others may challenge you. A special carrot coin can be used once per game. Designed by DING Qi (2025).\n\nGreat for: groups who love bluffing."
+      },
+      "players": "2–5",
+      "playtime": "5",
+      "age": "6",
+      "tags": ["Cards", "Party"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=低等动物+桌游"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/468655/dumb-animals"
+        }
+      ]
+    },
+    {
+      "id": "ghost-blitz-spooky-doo",
+      "name": { "zh": "闪灵快手：魔法帽", "en": "Ghost Blitz: Spooky Doo" },
+      "image": "images/ghost-blitz-spooky-doo.jpg",
+      "description": {
+        "zh": "比眼力和反应的抢答游戏。翻开一张卡，找出卡上颜色和形状都正确的物品——或者两者都没出现的那一个——抢先拿到就得分！这一版加入了酒桶和魔法帽，魔法帽可以盖住其他物品，你还得记住下面藏的是什么。设计师：Jacques Zeimet（2016）。\n\n适合：亲子和朋友聚会。",
+        "en": "A fast reaction game. Flip a card and grab the object shown in its true colour, or the one that isn't pictured at all, before anyone else! This edition adds a barrel and a fez; the fez can cover another object, so you must remember what is hiding underneath. Designed by Jacques Zeimet (2016).\n\nGreat for: families and party groups."
+      },
+      "players": "2–8",
+      "playtime": "4",
+      "age": "8",
+      "tags": ["Family", "Party"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=ghost+blitz+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/197760/ghost-blitz-spooky-doo"
+        }
+      ]
+    },
+    {
+      "id": "clever-cubed",
+      "name": { "zh": "立方聪明", "en": "Clever Cubed" },
+      "image": "images/clever-cubed.jpg",
+      "description": {
+        "zh": "“聪明”系列第三作的掷骰填写游戏。选骰子，把数字填进对应颜色的区域，设计连锁奖励，一次触发好几个得分机会。新加入的计分区有时要同时使用多颗骰子。设计师：Wolfgang Warsch（2020）。\n\n适合：喜欢动脑筋算分的玩家。",
+        "en": "The third roll-and-write in the Clever series. Choose dice, write their numbers into the matching coloured areas and chain bonuses together for big combos. New scoring areas sometimes use several dice at once. Designed by Wolfgang Warsch (2020).\n\nGreat for: players who love number crunching."
+      },
+      "players": "1–4",
+      "playtime": "10",
+      "age": "14",
+      "tags": ["Abstract", "Dice"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=clever+cubed+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/316546/clever-cubed"
+        }
+      ]
+    },
+    {
+      "id": "love-letter",
+      "name": { "zh": "情书", "en": "Love Letter" },
+      "image": "images/love-letter.jpg",
+      "description": {
+        "zh": "公主把自己锁在宫里，求婚者们只能托人帮忙递送情书。每人手上只有一张牌，轮流摸一张、打一张，利用侍卫、神父、男爵等角色的能力淘汰对手。最后留下或手牌最大的人把信送到公主手中。只有 16 张牌，几分钟一局。设计师：Seiji Kanai（2012）。\n\n适合：随时随地来一局。",
+        "en": "The princess has locked herself in the palace, so suitors must rely on others to deliver their love letters. Hold just one card; each turn draw one and play one, using the powers of the Guard, Priest, Baron and others to knock rivals out. The last player standing, or with the highest card, wins the round. Only 16 cards. Designed by Seiji Kanai (2012).\n\nGreat for: a quick game anywhere."
+      },
+      "players": "2–4",
+      "playtime": "5",
+      "age": "10",
+      "tags": ["Cards"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=love+letter+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/129622/love-letter"
+        }
+      ]
+    },
+    {
+      "id": "6-nimmt",
+      "name": { "zh": "牛头王", "en": "6 nimmt! (Take 5)" },
+      "image": "images/6-nimmt.jpg",
+      "description": {
+        "zh": "所有人同时出一张数字牌，从小到大依次接到桌上四行牌的后面。谁的牌成了一行的第 6 张，就要把前面 5 张连同牛头全部收走——牛头越少越好！简单、刺激，人越多越热闹。设计师：Wolfgang Kramer（1994）。\n\n适合：人多的聚会。",
+        "en": "Everyone plays a number card at once; cards are added to the four rows in order from lowest to highest. Whoever places the sixth card in a row must take the other five and their bull heads, and fewer bull heads is better! Simple and tense, and more fun with more players. Designed by Wolfgang Kramer (1994).\n\nGreat for: big groups."
       },
       "players": "2–10",
-      "playtime": "20–30",
-      "age": "7",
-      "tags": ["Party", "Cards", "Family"],
-      "links": []
+      "playtime": "10",
+      "age": "8",
+      "tags": ["Party", "Cards"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=6+nimmt+take+5+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/432/take-5"
+        }
+      ]
+    },
+    {
+      "id": "coup",
+      "name": { "zh": "政变疑云", "en": "Coup" },
+      "image": "images/coup.jpg",
+      "description": {
+        "zh": "你是腐败城邦中一个家族的首领，要靠操纵、吹牛和贿赂夺取权力。每人有两张暗置的身份牌，可以宣称自己是任何角色来使用能力——别人可以质疑你。失去两张身份牌就出局，最后留下的人获胜。设计师：Rikki Tahta（2012）。\n\n适合：喜欢吹牛和心理战的聚会。",
+        "en": "Lead a family in a corrupt city-state and bluff, bribe and manipulate your way to power. You hold two hidden character cards but can claim to be anyone to use their power, and others can challenge you. Lose both cards and you're out; the last player standing wins. Designed by Rikki Tahta (2012).\n\nGreat for: groups who love bluffing."
+      },
+      "players": "2–6",
+      "playtime": "3",
+      "age": "13",
+      "tags": ["Party", "Social Deduction", "Cards"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=coup+card+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/131357/coup"
+        }
+      ]
+    },
+    {
+      "id": "hungry-monkey",
+      "name": { "zh": "开心马喽", "en": "Hungry Monkey" },
+      "image": "images/hungry-monkey.jpg",
+      "description": {
+        "zh": "小猴子丢了早餐，森林里的动物都来帮忙找，但只有一个能成为赢家。快节奏的出牌游戏，比谁先把手牌出完，有点像 UNO。设计师：Erik Andersson Sundén（2022）。\n\n适合：亲子和轻松聚会。",
+        "en": "Hungry Monkey has lost his breakfast and all the animals help look for it, but only one can win. A fast card-shedding game: be first to play all your cards, a bit like UNO. Designed by Erik Andersson Sundén (2022).\n\nGreat for: families and relaxed groups."
+      },
+      "players": "2–6",
+      "playtime": "5",
+      "age": "8",
+      "tags": ["Cards"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=hungry+monkey+card+game"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/355735/hungry-monkey"
+        }
+      ]
+    },
+    {
+      "id": "salem-1692",
+      "name": { "zh": "猎巫镇1692", "en": "Salem 1692" },
+      "image": "images/salem-1692.jpg",
+      "description": {
+        "zh": "1692 年的塞勒姆镇，一句错误的指控就可能让你被当作女巫绞死。玩家互相指控和辩护，用卡牌对可疑的人施加指控，找出隐藏的女巫；女巫则要在夜里暗中除掉镇民。设计师：Travis Hancock（2015）。\n\n适合：人多的身份推理聚会。",
+        "en": "Salem, Massachusetts, 1692: one wrong accusation and you could be the next to hang. Accuse and defend your fellow townsfolk, playing cards to build accusations and uncover the hidden witches, while the witches secretly strike at night. Designed by Travis Hancock (2015).\n\nGreat for: big social deduction groups."
+      },
+      "players": "4–12",
+      "playtime": "5",
+      "age": "12",
+      "tags": ["Party", "Social Deduction", "Cards"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=salem+1692+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/175549/salem-1692"
+        }
+      ]
+    },
+    {
+      "id": "cheese-thief",
+      "name": { "zh": "奶酪大盗", "en": "Cheese Thief" },
+      "image": "images/cheese-thief.jpg",
+      "description": {
+        "zh": "轻松快速的身份推理游戏。大家都是梦着明天吃奶酪的小老鼠，但其中一只是小偷，趁大家睡着把奶酪偷走了！每人掷骰决定自己在夜里几点醒来，醒着时可以偷看……天亮后讨论并投票抓出小偷。设计师：Dongxu Li。\n\n适合：亲子和朋友聚会。",
+        "en": "A light, fast social deduction game. Everyone is a sleepy mouse dreaming of tomorrow's cheese, but one of you is the thief who steals it in the night! Roll a die to decide when you wake up and what you might see, then discuss and vote to catch the thief in the morning. Designed by Dongxu Li.\n\nGreat for: families and party groups."
+      },
+      "players": "4–8",
+      "playtime": "3",
+      "age": "8",
+      "tags": ["Party", "Social Deduction"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=cheese+thief+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/294175/cheese-thief"
+        }
+      ]
+    },
+    {
+      "id": "brass-birmingham",
+      "name": { "zh": "工业革命：伯明翰", "en": "Brass: Birmingham" },
+      "image": "images/brass-birmingham.jpg",
+      "description": {
+        "zh": "1770 至 1870 年工业革命时期的伯明翰，你是一位企业家。修建运河和铁路网络，建造纺织厂、煤矿、钢铁厂和酿酒厂，在两个时代中经营产业、开发市场。经济策略游戏，BGG 长期排名前列。设计师：Gavan Brown、Matt Tolman、Martin Wallace（2018）。\n\n适合：喜欢重度经济策略的玩家。",
+        "en": "Compete as entrepreneurs in Birmingham during the Industrial Revolution, 1770–1870. Build canal and rail networks and develop cotton mills, coal mines, ironworks and breweries across two eras. An economic strategy game that sits near the top of BGG's rankings. Designed by Gavan Brown, Matt Tolman and Martin Wallace (2018).\n\nGreat for: fans of heavy economic strategy."
+      },
+      "players": "2–4",
+      "playtime": "40",
+      "age": "14",
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=brass+birmingham+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/224517/brass-birmingham"
+        }
+      ]
+    },
+    {
+      "id": "gaia-project",
+      "name": { "zh": "盖亚计划", "en": "Gaia Project" },
+      "image": "images/gaia-project.jpg",
+      "description": {
+        "zh": "《神秘大地》的太空续作。从 14 个种族中选择一个，在 7 种星球上扩张、研究科技、升级建筑、殖民银河。每个种族只能在特定星球上生存，需要改造邻近的星球才能发展。设计师：Jens Drögemüller、Helge Ostertag（2017）。\n\n适合：喜欢重度策略的玩家。",
+        "en": "The space follow-up to Terra Mystica. Choose one of 14 factions to expand, research, upgrade and settle the galaxy. Each faction thrives only on its own type of planet, so you must terraform your neighbours to grow. Designed by Jens Drögemüller and Helge Ostertag (2017).\n\nGreat for: fans of heavy strategy."
+      },
+      "players": "1–4",
+      "playtime": "45",
+      "age": "12",
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=gaia+project+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/220308/gaia-project"
+        }
+      ]
+    },
+    {
+      "id": "the-gang",
+      "name": { "zh": "纸牌帮", "en": "The Gang" },
+      "image": "images/the-gang.jpg",
+      "description": {
+        "zh": "合作版德州扑克，一起完成银行抢劫！不能交流手牌，每轮在翻牌前后用筹码表示自己的牌在全桌中有多强，最后按顺序亮牌——排序全对就成功。成功 3 次获胜，失败 3 次就输。设计师：John Cooper、Kory Heath（2024）。\n\n适合：喜欢默契合作的聚会。",
+        "en": "Pull off bank heists with cooperative Texas Hold'em! Without discussing your cards, take chips each round to show how strong you think your hand is compared with everyone else's, then reveal in order. Get the order right three times to win, but fail three times and you lose. Designed by John Cooper and Kory Heath (2024).\n\nGreat for: groups who like teamwork."
+      },
+      "players": "3–6",
+      "playtime": "5",
+      "age": "10",
+      "tags": ["Co-op", "Cards"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=the+gang+card+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/411567/the-gang"
+        }
+      ]
+    },
+    {
+      "id": "7-wonders-duel-agora",
+      "name": { "zh": "七大奇迹：对决 - 市政广场", "en": "7 Wonders Duel: Agora" },
+      "image": "images/7-wonders-duel-agora.jpg",
+      "description": {
+        "zh": "《七大奇迹：对决》的扩展。加入元老院版图，由 6 个议院组成，用议员卡争夺议院控制权并获得好处；控制多数议院即可直接获胜，带来新的政治胜利方式。还加入新的奇迹和阴谋卡。（扩展，需要基础游戏才能玩。）设计师：Antoine Bauza、Bruno Cathala（2020）。",
+        "en": "An expansion for 7 Wonders Duel. Adds the Senate board with six chambers you fight over with senator cards for their benefits; control a majority of chambers and you win immediately, a new political victory. Also adds new wonders and conspiracies. (Expansion: requires the base game.) Designed by Antoine Bauza and Bruno Cathala (2020)."
+      },
+      "players": "2",
+      "playtime": "15",
+      "age": "10",
+      "tags": ["Strategy", "Euro", "Expansion"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=7+wonders+duel+agora"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgameexpansion/309116/7-wonders-duel-agora"
+        }
+      ]
+    },
+    {
+      "id": "before-she-wakes",
+      "name": { "zh": "冰冷的她醒来之前", "en": "Before She Wakes" },
+      "image": "images/before-she-wakes.jpg",
+      "description": {
+        "zh": "一款 3–6 人的合作卡牌聚会游戏（2020）。",
+        "en": "A cooperative card party game for 3–6 players (2020)."
+      },
+      "players": "3–6",
+      "playtime": "5",
+      "tags": ["Co-op", "Cards", "Party"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=冰冷的她醒来之前+桌游"
+        }
+      ]
+    },
+    {
+      "id": "white-castle-matcha",
+      "name": { "zh": "姬路城：茶道", "en": "The White Castle: Matcha" },
+      "image": "images/white-castle-matcha.jpg",
+      "description": {
+        "zh": "《姬路城》的第一个扩展，以日本茶道为主题。加入艺伎、茶室、池塘、茶道仪式板块和新资源“茶筅”，让家族成员进入茶室赢取影响力。（扩展，需要基础游戏才能玩。）设计师：Isra C.、Shei S.（2024）。",
+        "en": "The first expansion for The White Castle, themed around the Japanese tea ceremony. Adds geishas, the tea house, the pond, ceremony tiles and a new resource (chasen), letting your clan members gain influence in the tea room. (Expansion: requires the base game.) Designed by Isra C. and Shei S. (2024)."
+      },
+      "players": "1–4",
+      "playtime": "30",
+      "age": "12",
+      "tags": ["Euro", "Expansion"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=white+castle+matcha+expansion"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgameexpansion/420321/the-white-castle-matcha"
+        }
+      ]
+    },
+    {
+      "id": "white-castle-duel",
+      "name": { "zh": "姬路城：对决", "en": "The White Castle Duel" },
+      "image": "images/white-castle-duel.jpg",
+      "description": {
+        "zh": "《姬路城》的双人独立版。葡萄牙人来到日本后，大名们争夺对外贸易与技术，两个家族在白鹭城的朝廷中角力。没有骰子，全局只有 12 个行动，每一步都很关键。设计师：Isra C.、Shei S.（2025）。\n\n适合：两人的中度策略对决。",
+        "en": "A standalone two-player version of The White Castle. After the Portuguese arrive in Japan, two clans compete for influence in the White Heron's court. No dice and only twelve actions in total, so every move counts. Designed by Isra C. and Shei S. (2025).\n\nGreat for: a medium-weight two-player duel."
+      },
+      "players": "2",
+      "playtime": "20",
+      "age": "10",
+      "tags": ["Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=white+castle+duel+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/438936/the-white-castle-duel"
+        }
+      ]
+    },
+    {
+      "id": "white-castle",
+      "name": { "zh": "姬路城", "en": "The White Castle" },
+      "image": "images/white-castle.jpg",
+      "description": {
+        "zh": "白鹭飞过姬路城上空，大名在城楼俯瞰仆从们忙碌：园丁打理锦鲤池，武士守卫城墙，朝臣聚集在城门等候觐见。用骰子选择行动，派出家族成员进入城堡、花园和城墙，在短短 3 轮中争取最高声望。节奏紧凑的中重度策略游戏。设计师：Isra C.、Shei S.（2023）。\n\n适合：喜欢紧凑策略的玩家。",
+        "en": "The heron flies over Himeji while the Daimyo watches his servants: gardeners tend the koi pond, warriors guard the walls and courtiers crowd the gates. Use dice to choose actions and send clan members into the castle, gardens and walls, competing for prestige in just three rounds. A tight medium-heavy strategy game. Designed by Isra C. and Shei S. (2023).\n\nGreat for: fans of tight strategy."
+      },
+      "players": "1–4",
+      "playtime": "30",
+      "age": "12",
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=the+white+castle+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/371942/the-white-castle"
+        }
+      ]
+    },
+    {
+      "id": "parks-wildlife",
+      "name": { "zh": "国家公园：野生动物", "en": "PARKS: Wildlife" },
+      "image": "images/parks-wildlife.jpg",
+      "description": {
+        "zh": "《国家公园》的扩展。加入新的步道地点、公园卡（含野生动物插画）、装备卡、季节卡和水壶，还有一只在公园卡之间游走的大野牛，给造访的玩家带来奖励。（扩展，需要基础游戏才能玩。）设计师：Henry Audubon、Mattox Shuler（2022）。",
+        "en": "An expansion for PARKS. Adds new trail sites, park cards with wildlife art, gear cards, season cards and canteens, plus a big wandering bison that gives bonuses to players who visit its park. (Expansion: requires the base game.) Designed by Henry Audubon and Mattox Shuler (2022)."
+      },
+      "players": "1–5",
+      "playtime": "10",
+      "age": "10",
+      "tags": ["Euro", "Expansion"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=parks+wildlife+expansion"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgameexpansion/358854/parks-wildlife"
+        }
+      ]
+    },
+    {
+      "id": "las-vegas-royale",
+      "name": { "zh": "拉斯维加斯：豪华版", "en": "Las Vegas Royale" },
+      "image": "images/las-vegas-royale.jpg",
+      "description": {
+        "zh": "简单好玩的掷骰赌场游戏。桌上有 6 个对应骰子点数的赌场，每轮放出奖金。轮流掷骰，把同一点数的所有骰子放到对应赌场，最后每个赌场骰子最多的人拿最大奖——但打平的人全部出局！豪华版加入了巨型骰子、筹码和 8 块双面扩展板块。设计师：Rüdiger Dorn（2019）。\n\n适合：全家和朋友聚会。",
+        "en": "An easy, fun casino dice game. Six casinos, one per die face, each offer prize money. Roll your dice and place all dice of one number on its casino; the most dice wins the biggest prize, but tied players get nothing! Royale adds a giant die, chips and eight double-sided bonus tiles. Designed by Rüdiger Dorn (2019).\n\nGreat for: families and friends."
+      },
+      "players": "2–5",
+      "playtime": "11",
+      "age": "8",
+      "tags": ["Party", "Dice"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=las+vegas+royale+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/271319/las-vegas-royale"
+        }
+      ]
+    },
+    {
+      "id": "skull",
+      "name": { "zh": "骷髅牌", "en": "Skull" },
+      "image": "images/skull.jpg",
+      "description": {
+        "zh": "纯粹的吹牛游戏。每人有 3 张花和 1 张骷髅，轮流扣下一张牌，直到有人宣称能翻开多少张都是花。其他人可以加价，出价最高的人必须从自己的牌开始翻——翻到骷髅就失败！设计师：Hervé Marly（2011）。\n\n适合：喜欢心理战的聚会。",
+        "en": "Bluffing in its purest form. Everyone has three roses and one skull. Take turns placing a card face-down until someone bids how many roses they can flip; others can raise, and the highest bidder must flip, starting with their own cards. Hit a skull and you fail! Designed by Hervé Marly (2011).\n\nGreat for: groups who love mind games."
+      },
+      "players": "3–6",
+      "playtime": "15",
+      "age": "10",
+      "tags": ["Party", "Cards"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=skull+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/92415/skull"
+        }
+      ]
+    },
+    {
+      "id": "rummikub",
+      "name": { "zh": "拉密", "en": "Rummikub" },
+      "image": "images/rummikub.jpg",
+      "description": {
+        "zh": "经典数字牌游戏。用数字牌组成同色顺子或同数不同色的组合放到桌上，还可以重新拆分桌上已有的组合来打出更多牌。最先出完所有牌的人获胜。设计师：Ephraim Hertzano。\n\n适合：全家老少。",
+        "en": "The classic number tile game. Lay down runs of one colour or groups of the same number in different colours, and rearrange the sets already on the table to play even more tiles. First to play all their tiles wins. Designed by Ephraim Hertzano.\n\nGreat for: all ages."
+      },
+      "players": "2–4",
+      "playtime": "15",
+      "age": "8",
+      "tags": ["Abstract", "Family"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=rummikub+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/811/rummikub"
+        }
+      ]
+    },
+    {
+      "id": "manila",
+      "name": { "zh": "马尼拉", "en": "Manila" },
+      "image": "images/manila.jpg",
+      "description": {
+        "zh": "19 世纪初的菲律宾，商人们押注货船能否平安到港。竞拍成为港务长，决定装哪些货、船从哪里出发；其他人投资货船、雇佣领航员，甚至当海盗劫船。掷骰决定船的前进，紧张刺激。设计师：Franz-Benno Delonge（2005）。\n\n适合：喜欢押注和竞拍的玩家。",
+        "en": "Early 19th-century Philippines: merchants gamble on whether cargo ships make it to port. Bid to become harbour master and choose the cargo and starting positions; others invest in ships, hire navigators or turn pirate. Dice move the boats for plenty of tension. Designed by Franz-Benno Delonge (2005).\n\nGreat for: fans of betting and bidding."
+      },
+      "players": "3–5",
+      "playtime": "30",
+      "age": "10",
+      "tags": ["Euro", "Party"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=manila+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/15817/manila"
+        }
+      ]
+    },
+    {
+      "id": "avalon",
+      "name": { "zh": "抵抗组织：阿瓦隆", "en": "The Resistance: Avalon" },
+      "image": "images/avalon.jpg",
+      "description": {
+        "zh": "亚瑟王的勇士中藏着莫德雷德的爪牙。正义方要完成任务，邪恶方人数少但彼此认识，会暗中破坏任务。梅林知道谁是坏人却不能暴露自己，否则会被刺客刺杀。没有淘汰，所有人玩到最后。设计师：Don Eskridge（2012）。\n\n适合：人多的身份推理聚会。",
+        "en": "Hidden among Arthur's loyal knights are Mordred's minions. Good must complete quests, while the few evil players know each other and secretly sabotage them. Merlin knows who is evil but must stay hidden or the Assassin will strike. No elimination, so everyone plays to the end. Designed by Don Eskridge (2012).\n\nGreat for: big social deduction groups."
+      },
+      "players": "5–10",
+      "playtime": "8",
+      "age": "13",
+      "tags": ["Party", "Social Deduction"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=avalon+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/128882/the-resistance-avalon"
+        }
+      ]
+    },
+    {
+      "id": "azul",
+      "name": { "zh": "花砖物语", "en": "Azul" },
+      "image": "images/azul.jpg",
+      "description": {
+        "zh": "葡萄牙国王想用精美的瓷砖装饰宫殿。轮流从工坊拿取同色瓷砖放到自己的版图上，按图案和成套得分，浪费的瓷砖会扣分。规则简单、颜值很高。2018 年德国年度游戏。设计师：Michael Kiesling（2017）。\n\n适合：家庭和新手。",
+        "en": "The King of Portugal wants his palace decorated with beautiful tiles. Take turns drafting tiles of one colour from the factories onto your board, scoring for patterns and sets while wasted tiles cost points. Simple rules and gorgeous to look at. 2018 Spiel des Jahres winner. Designed by Michael Kiesling (2017).\n\nGreat for: families and new players."
+      },
+      "players": "2–4",
+      "playtime": "15",
+      "age": "8",
+      "tags": ["Abstract", "Family"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=azul+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/230802/azul"
+        }
+      ]
+    },
+    {
+      "id": "hegemony",
+      "name": { "zh": "领国者：阶级霸权之路", "en": "Hegemony: Lead Your Class to Victory" },
+      "image": "images/hegemony.jpg",
+      "description": {
+        "zh": "国家陷入混乱，阶级之间爆发冲突：工人阶级的福利被削减，资本家的利润下滑，中产阶级逐渐萎缩，国家财政赤字严重。每位玩家领导一个阶级——工人、中产、资本家或国家——各有不同的目标和玩法，争夺政策主导权。设计师：Vangelis Bagiartakis、Varnavas Timotheou（2023）。\n\n适合：喜欢重度、非对称策略的玩家。",
+        "en": "The nation is in disarray and the classes are at war: workers lose welfare, capitalists lose profits, the middle class is fading and the state is deep in deficit. Each player leads a class (Working, Middle, Capitalist or the State) with its own goals and playstyle, fighting to shape policy. Designed by Vangelis Bagiartakis and Varnavas Timotheou (2023).\n\nGreat for: fans of heavy, asymmetric strategy."
+      },
+      "players": "2–4",
+      "playtime": "60",
+      "age": "14",
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=hegemony+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/321608/hegemony-lead-your-class-to-victory"
+        }
+      ]
+    },
+    {
+      "id": "root",
+      "name": { "zh": "茂林源记：森林的权力之战", "en": "Root" },
+      "image": "images/root.jpg",
+      "description": {
+        "zh": "冒险与战争的游戏，玩家争夺广袤森林的控制权。每个阵营的能力和胜利条件完全不同：侯爵猫要建设工业，鹰巢王朝要重夺森林，林地联盟在暗中发动起义，流浪者在各方之间游走。非对称对抗的代表作。设计师：Cole Wehrle（2018）。\n\n适合：喜欢非对称对抗的玩家。",
+        "en": "A game of adventure and war for control of a vast woodland. Every faction plays differently with its own victory condition: the Marquise builds industry, the Eyrie Dynasties reclaim the forest, the Woodland Alliance stirs up revolt and the Vagabond plays all sides. A landmark asymmetric game. Designed by Cole Wehrle (2018).\n\nGreat for: fans of asymmetric conflict."
+      },
+      "players": "2–4",
+      "playtime": "30",
+      "age": "14",
+      "tags": ["Strategy", "Thematic"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=root+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/237182/root"
+        }
+      ]
+    },
+    {
+      "id": "root-riverfolk",
+      "name": { "zh": "茂林源记：河岸扩展", "en": "Root: The Riverfolk Expansion" },
+      "image": "images/root-riverfolk.jpg",
+      "description": {
+        "zh": "《茂林源记》的扩展。加入两个新阵营：做生意的河岸商会和传教的蜥蜴教派，还有额外的流浪者、合作剧本和机器人规则，支持 1–6 人。（扩展，需要基础游戏才能玩。）设计师：Cole Wehrle（2018）。",
+        "en": "An expansion for Root. Adds two new factions, the trading Riverfolk Company and the Lizard Cult, plus an extra Vagabond, co-op scenarios and bot rules, for 1–6 players. (Expansion: requires the base game.) Designed by Cole Wehrle (2018)."
+      },
+      "players": "1–6",
+      "playtime": "30",
+      "age": "10",
+      "tags": ["Strategy", "Thematic", "Expansion"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=root+riverfolk+expansion"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgameexpansion/241386/root-the-riverfolk-expansion"
+        }
+      ]
+    },
+    {
+      "id": "root-underworld",
+      "name": { "zh": "茂林源记：地下世界", "en": "Root: The Underworld Expansion" },
+      "image": "images/root-underworld.jpg",
+      "description": {
+        "zh": "《茂林源记》的扩展。加入两个新阵营：从地下洞穴进军的地下公国，以及暗中布下阴谋的鸦群密谋；还有湖泊和山地两张新地图。（扩展，需要基础游戏才能玩。）设计师：Cole Wehrle、Patrick Leder（2020）。",
+        "en": "An expansion for Root. Adds two new factions, the Underground Duchy marching from its Burrow and the plotting Corvid Conspiracy, plus two new maps: Lake and Mountain. (Expansion: requires the base game.) Designed by Cole Wehrle and Patrick Leder (2020)."
+      },
+      "players": "2–6",
+      "playtime": "30",
+      "age": "10",
+      "tags": ["Strategy", "Thematic", "Expansion"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=root+underworld+expansion"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgameexpansion/272637/root-the-underworld-expansion"
+        }
+      ]
+    },
+    {
+      "id": "castles-of-burgundy-special-edition",
+      "name": { "zh": "勃艮第城堡：特别典藏版", "en": "The Castles of Burgundy: Special Edition" },
+      "image": "images/castles-of-burgundy-special-edition.jpg",
+      "description": {
+        "zh": "经典《勃艮第城堡》的高端典藏版，由 Ravensburger 与 Awaken Realms 合作推出。重新设计的美术和版图、双层玩家版、放大 30% 的板块、板块收纳袋和金属钱币等豪华配件。玩法与原版相同：掷骰拿取板块，建设你的勃艮第领地。设计师：Stefan Feld（2023）。\n\n适合：《勃艮第城堡》的忠实粉丝。",
+        "en": "A high-end edition of the classic Castles of Burgundy by Ravensburger and Awaken Realms. Redesigned art and layout, double-layer player boards, 30% bigger tiles, tile bags, metal coins and more. Same gameplay: roll dice, take tiles and build your Burgundian estate. Designed by Stefan Feld (2023).\n\nGreat for: Castles of Burgundy fans."
+      },
+      "players": "1–4",
+      "playtime": "30",
+      "age": "12",
+      "tags": ["Strategy", "Euro", "Dice"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=castles+of+burgundy+special+edition"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/363622/the-castles-of-burgundy-special-edition"
+        }
+      ]
+    },
+    {
+      "id": "splendor-pokemon",
+      "name": { "zh": "璀璨宝石：宝可梦", "en": "Splendor: Pokémon" },
+      "image": "images/splendor-pokemon.jpg",
+      "description": {
+        "zh": "宝可梦主题的《璀璨宝石》。你是一名训练家：收集精灵球、捕捉宝可梦，还能让它们进化。玩法与原版相近，并加入宝可梦的特殊规则。设计师：Marc André（2023）。\n\n适合：宝可梦粉丝和家庭。",
+        "en": "Splendor with a Pokémon theme. As a Trainer, collect Poké Balls, catch Pokémon and evolve them. Plays much like the original with some special Pokémon rules. Designed by Marc André (2023).\n\nGreat for: Pokémon fans and families."
+      },
+      "players": "2–4",
+      "playtime": "10",
+      "age": "10",
+      "tags": ["Cards", "Family"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=splendor+pokemon"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/406291/seupeulrendeo-pokemon-splendor-pokemon"
+        }
+      ]
+    },
+    {
+      "id": "puerto-rico-deluxe",
+      "name": { "zh": "波多黎各：豪华版", "en": "Puerto Rico (2020 Deluxe)" },
+      "image": "images/puerto-rico-deluxe.jpg",
+      "description": {
+        "zh": "经典角色选择游戏。玩家是波多黎各岛上的总督，每轮轮流选择角色——拓荒者、市长、建筑师、手工业者、商人、船长等——所有人都执行该行动，选择者获得额外好处。种植园生产作物，运往欧洲或建造建筑来得分。2020 年 alea 豪华版收录两个扩展。设计师：Andreas Seyfarth。\n\n适合：喜欢经典德式策略的玩家。",
+        "en": "The classic role-selection game. As governors on Puerto Rico, take turns choosing roles such as Settler, Mayor, Builder, Craftsman, Trader and Captain; everyone performs the action and the chooser gets a bonus. Grow crops, ship them to Europe or construct buildings for points. The 2020 alea deluxe edition includes two expansions. Designed by Andreas Seyfarth.\n\nGreat for: fans of classic Euro strategy."
+      },
+      "players": "2–5",
+      "playtime": "35",
+      "age": "12",
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=puerto+rico+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/318985/puerto-rico"
+        }
+      ]
+    },
+    {
+      "id": "risk",
+      "name": { "zh": "战国风云", "en": "Risk" },
+      "image": "images/risk.jpg",
+      "description": {
+        "zh": "最经典的大众战争游戏，目标是征服世界。每回合根据占领的领土和大洲获得援军，用掷骰比大小的方式攻打相邻领土，并加固防线。设计师：Albert Lamorisse、Michael I. Levin（1959）。\n\n适合：喜欢征服和对抗的玩家。",
+        "en": "The classic mass-market war game: conquer the world. Each turn gain reinforcements for the territories and continents you hold, attack neighbours by comparing dice, then fortify your lines. Designed by Albert Lamorisse and Michael I. Levin (1959).\n\nGreat for: players who love conquest."
+      },
+      "players": "2–6",
+      "playtime": "30",
+      "age": "10",
+      "tags": ["War Game"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=risk+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/181/risk"
+        }
+      ]
+    },
+    {
+      "id": "on-mars",
+      "name": { "zh": "火星之上", "en": "On Mars" },
+      "image": "images/on-mars.jpg",
+      "description": {
+        "zh": "2037 年第一批定居者抵达火星，私营探索公司开始建设自给自足的殖民地。在轨道站和火星表面之间往返，建造建筑、研究科技、发展殖民地。Vital Lacerda 的超重度策略游戏。设计师：Vital Lacerda（2020）。\n\n适合：喜欢超重度策略的玩家。",
+        "en": "The first settlers reached Mars in 2037, and private companies are now building a self-sustaining colony. Travel between the orbital station and the surface to construct buildings, research technology and grow the colony. A very heavy strategy game. Designed by Vital Lacerda (2020).\n\nGreat for: fans of very heavy strategy."
+      },
+      "players": "1–4",
+      "playtime": "50",
+      "age": "14",
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=on+mars+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/184267/on-mars"
+        }
+      ]
     }
   ]
 }
