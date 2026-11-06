@@ -8,6 +8,10 @@ window.HVLoans = (() => {
   const base = (supabaseUrl || "").replace(/\/+$/, "").replace(/\/(rest|auth)\/v1$/, "");
   const STORE_KEY = "hv-admin-session";
   const LOAN_FIELDS = "id,game_id,borrower,quantity,loaned_at,due_date,returned_at";
+  // Rulebooks live in the public Storage bucket "rulebooks", one PDF per game: <game id>.pdf
+  const RULEBOOKS = "rulebooks";
+  const RULEBOOK_MAX = 50 * 1024 * 1024; // the free plan's per-file limit
+  const rulebookPath = (gameId) => `${RULEBOOKS}/${encodeURIComponent(gameId)}.pdf`;
 
   function readSession() {
     try {
@@ -68,6 +72,18 @@ window.HVLoans = (() => {
     return session.access;
   }
 
+  // { present, storage, withOwner, owner } -> a game_copies row. A blank owner is stored as null.
+  function toRow(gameId, { present = 0, storage = 0, withOwner = 0, owner = "" }) {
+    const name = String(owner || "").trim();
+    return {
+      game_id: gameId,
+      copies: present + storage + withOwner,
+      storage_copies: storage,
+      owner_copies: withOwner,
+      owner: name || null,
+    };
+  }
+
   async function request(path, { method = "GET", body, admin = false, prefer } = {}) {
     // Public reads send only the apikey header, which works with both the newer publishable key (sb_publishable_…)
     // and the legacy anon key. Admin calls add the signed-in user's token.
@@ -76,6 +92,19 @@ window.HVLoans = (() => {
     if (prefer) headers.Prefer = prefer;
     const res = await fetch(base + path, { method, headers, body: body ? JSON.stringify(body) : undefined, cache: "no-store" });
     return parse(res);
+  }
+
+  // Storage API calls. Uploads send the file itself, not JSON.
+  async function storage(path, { method = "GET", admin = false, json, body, headers: extra = {} } = {}) {
+    const headers = { apikey: supabaseAnonKey, ...extra };
+    if (admin) headers.Authorization = `Bearer ${await accessToken()}`;
+    // The legacy anon key is a JWT and Storage also expects it as the bearer token; publishable keys go in apikey only.
+    else if (/^eyJ/.test(supabaseAnonKey)) headers.Authorization = `Bearer ${supabaseAnonKey}`;
+    if (json !== undefined) {
+      headers["Content-Type"] = "application/json";
+      body = JSON.stringify(json);
+    }
+    return parse(await fetch(base + "/storage/v1" + path, { method, headers, body, cache: "no-store" }));
   }
 
   return {
@@ -104,15 +133,23 @@ window.HVLoans = (() => {
       for (const r of rows) (byGame[r.game_id] ||= []).push(r);
       return byGame;
     },
-    // Sets per location, saved by an admin: { "catan": { present: 1, storage: 1 }, ... }
-    // Games not listed have 1 set, present.
+    // Sets per location and the owner, saved by an admin:
+    // { "catan": { present: 1, storage: 1, withOwner: 0, owner: "" }, ... }. Games not listed have 1 set, present.
     async gameInfo() {
-      const rows = await request("/rest/v1/game_copies?select=game_id,copies,storage_copies");
+      const rows = await request("/rest/v1/game_copies?select=game_id,copies,storage_copies,owner_copies,owner");
       return Object.fromEntries(
-        rows.map((r) => [r.game_id, { present: r.copies - r.storage_copies, storage: r.storage_copies }])
+        rows.map((r) => [
+          r.game_id,
+          {
+            present: r.copies - r.storage_copies - (r.owner_copies || 0),
+            storage: r.storage_copies,
+            withOwner: r.owner_copies || 0,
+            owner: r.owner || "",
+          },
+        ])
       );
     },
-    // Saves many games in one request: [{ game_id, present, storage }, ...]. All or nothing: if one row is
+    // Saves many games in one request: [{ game_id, present, storage, withOwner, owner }, ...]. All or nothing: if one row is
     // refused (e.g. fewer sets than are on loan), none are saved.
     async saveGameInfoMany(rows) {
       if (!rows.length) return;
@@ -120,25 +157,59 @@ window.HVLoans = (() => {
         method: "POST",
         admin: true,
         prefer: "resolution=merge-duplicates,return=minimal",
-        body: rows.map((r) => ({ game_id: r.game_id, copies: r.present + r.storage, storage_copies: r.storage })),
+        body: rows.map((r) => toRow(r.game_id, r)),
       });
     },
-    async saveGameInfo(gameId, { present, storage }) {
+    async saveGameInfo(gameId, sets) {
       await request("/rest/v1/game_copies?on_conflict=game_id", {
         method: "POST",
         admin: true,
         prefer: "resolution=merge-duplicates,return=minimal",
-        body: { game_id: gameId, copies: present + storage, storage_copies: storage },
+        body: toRow(gameId, sets),
       });
+    },
+    // Rulebooks that exist: { "catan": { updated: "2026-11-06T…", size: 1234567 }, ... }
+    async rulebooks() {
+      const items = await storage(`/object/list/${RULEBOOKS}`, {
+        method: "POST",
+        json: { prefix: "", limit: 1000, offset: 0, sortBy: { column: "name", order: "asc" } },
+      });
+      const out = {};
+      for (const it of items || []) {
+        if (!/\.pdf$/i.test(it.name) || !it.id) continue; // skip folders
+        out[decodeURIComponent(it.name.replace(/\.pdf$/i, ""))] = { updated: it.updated_at, size: it.metadata && it.metadata.size };
+      }
+      return out;
+    },
+    // Public link; "?v=" changes when the file is replaced, so browsers don't show an old copy.
+    rulebookUrl(gameId, info) {
+      const v = info && info.updated ? `?v=${Date.parse(info.updated)}` : "";
+      return `${base}/storage/v1/object/public/${rulebookPath(gameId)}${v}`;
+    },
+    // Uploads (or replaces) a game's rulebook. Admins only (Storage policies in schema.sql).
+    async uploadRulebook(gameId, file) {
+      if (!file) throw Object.assign(new Error("No file"), { code: "rulebook-none" });
+      if (file.type !== "application/pdf" && !/\.pdf$/i.test(file.name)) throw Object.assign(new Error("Not a PDF"), { code: "rulebook-not-pdf" });
+      if (file.size > RULEBOOK_MAX) throw Object.assign(new Error("Too big"), { code: "rulebook-too-big" });
+      await storage(`/object/${rulebookPath(gameId)}`, {
+        method: "POST",
+        admin: true,
+        body: file,
+        headers: { "Content-Type": "application/pdf", "x-upsert": "true", "cache-control": "max-age=300" },
+      });
+    },
+    async deleteRulebook(gameId) {
+      await storage(`/object/${rulebookPath(gameId)}`, { method: "DELETE", admin: true });
     },
     history: (gameId, limit = 10) =>
       request(`/rest/v1/loans?game_id=eq.${encodeURIComponent(gameId)}&order=loaned_at.desc&limit=${limit}&select=${LOAN_FIELDS}`),
-    async lend(gameId, borrower, dueDate, quantity = 1) {
+    // loanedAt: an ISO timestamp to backdate the loan; leave it out for "now".
+    async lend(gameId, borrower, dueDate, quantity = 1, loanedAt = null) {
       const rows = await request("/rest/v1/loans", {
         method: "POST",
         admin: true,
         prefer: "return=representation",
-        body: { game_id: gameId, borrower, due_date: dueDate || null, quantity },
+        body: { game_id: gameId, borrower, due_date: dueDate || null, quantity, ...(loanedAt ? { loaned_at: loanedAt } : {}) },
       });
       return rows[0];
     },

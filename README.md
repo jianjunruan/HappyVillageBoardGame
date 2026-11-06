@@ -45,6 +45,7 @@ All games live in **`data/games.json`**.
 | `category` | yes | `"euro"` (德式), `"american"` (美式), `"party"` (聚会), `"card"` (卡牌), `"abstract"` (抽象), `"family"` (亲子), `"puzzle"` (解谜), `"war"` (战棋) or `"roleplay"` (扮演). Decides which section the game appears in. Games without one show under "其他 / Other". |
 | `weight` | yes | Difficulty on BGG's 1–5 scale (the "Weight" on the game's BoardGameGeek page), e.g. `2.9`. Groups the game into 入门 Light (under 2), 轻中度 Medium-light (2–2.75), 中重度 Medium-heavy (2.75–3.5) or 重度 Heavy (3.5+). |
 | `series` | no | Keeps related games next to each other within a difficulty band: give the base game, its expansions and other editions the same value, normally the base game's `id` (e.g. `"terraforming-mars"`). The base game is shown first, then the rest by difficulty. |
+| `rulebookFrom` | no | For expansions: the base game's `id` (e.g. `"terraforming-mars"`). The expansion's popup then also shows the base game's uploaded rulebook, so it only needs uploading once. |
 | `age` | no | Minimum age only, e.g. `"10"`. The site adds "岁以上" or "Ages 10+". |
 | `tags` | no | Tag keys, e.g. `["Strategy", "Family"]`. Translations live in the `"tags"` section at the top of the file. |
 | `links` | no | A list of `{ "label": { "zh": "教学视频", "en": "How to play" }, "url": "..." }`. |

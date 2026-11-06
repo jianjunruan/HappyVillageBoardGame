@@ -215,6 +215,24 @@ dialog article { padding: 0 24px 28px; }
 .loan-form.copies-form label { flex: 0 1 140px; }
 .loc-storage { color: var(--muted); font-weight: 600; }
 .loc-none { color: var(--muted); font-weight: 600; }
+.loan-owner { margin: 6px 0 0; font-size: 0.9rem; color: var(--muted); }
+.loan-rulebook { margin: 6px 0 0; font-weight: 600; display: flex; flex-wrap: wrap; gap: 4px 18px; }
+.rulebook-item { display: inline-flex; align-items: center; gap: 8px; }
+.pdf-preview-btn { font-size: 0.85rem; font-weight: 600; }
+/* In-page PDF preview: desktop only. Phones and touch tablets can't show PDFs inside a page reliably. */
+.pdf-preview { margin: 0 0 14px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--surface); }
+.pdf-preview-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--border); background: var(--bg); }
+.pdf-preview-bar span { display: inline-flex; align-items: center; gap: 12px; font-size: 0.9rem; }
+.pdf-preview iframe { display: block; width: 100%; height: 75vh; border: 0; background: #525659; }
+@media (max-width: 760px), (hover: none) {
+  .pdf-preview-btn, .pdf-preview { display: none !important; }
+}
+.loan-form.rulebook-form { padding-top: 10px; border-top: 1px dashed var(--border); }
+.loan-form.rulebook-form label { flex: 1 1 240px; }
+.rulebook-hint { flex: 1 0 100%; margin: 0; font-size: 0.85rem; color: var(--muted); }
+.loan-form input[type="file"] { padding: 6px; border: 1px dashed var(--border); border-radius: 8px; background: var(--surface); font-size: 0.85rem; }
+.form-error.is-ok { color: var(--ok); }
+.loan-form.copies-form label.owner-field { flex: 1 1 180px; }
 .loan-status.is-none { color: var(--muted); }
 .card.is-gone img { filter: grayscale(1); opacity: 0.55; }
 .card.is-gone .card-title { color: var(--muted); }

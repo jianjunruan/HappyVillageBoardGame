@@ -23,6 +23,7 @@
   let activeLoan = null; // null = all, "in" = available, "out" = on loan, "present" / "storage" = has sets there
   let loaded = false;
   let loans = {}; // open loans by game id (a list per game), from Supabase
+  let rulebooks = {}; // game id -> { updated, size } for games with a rulebook PDF
   let info = {}; // sets per location by game id: { present, storage }; games not listed have 1 set, present
   let loansFailed = false;
   let loansLoaded = false;
@@ -51,22 +52,30 @@
   const toDate = (s) => (/^\d{4}-\d{2}-\d{2}$/.test(s) ? new Date(...s.split("-").map((n, i) => (i === 1 ? n - 1 : +n))) : new Date(s));
   const fmtDate = (s) =>
     toDate(s).toLocaleDateString(HVI18n.lang === "zh" ? "zh-CN" : "en", { year: "numeric", month: "short", day: "numeric" });
+  // Today as "YYYY-MM-DD" in local time (for date inputs).
+  const todayYmd = () => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  };
   const isOverdue = (loan) => loan.due_date && toDate(loan.due_date) < new Date(new Date().toDateString());
 
   // Sets owned, sets out and sets left for a game.
   const loansOf = (g) => loans[g.id] || [];
-  const setsAt = (g) => info[g.id] || { present: 1, storage: 0 };
-  const ownedOf = (g) => setsAt(g).present + setsAt(g).storage;
-  const LOCATIONS = ["present", "storage"];
-  const locationIcon = (loc) => (loc === "storage" ? "📦" : "📍");
+  const setsAt = (g) => ({ present: 1, storage: 0, withOwner: 0, owner: "", ...info[g.id] });
+  const ownedOf = (g) => setsAt(g).present + setsAt(g).storage + setsAt(g).withOwner;
+  // Where sets can be: at the venue, in storage, or at the owner's place (only when an owner is set).
+  const LOCATIONS = ["present", "storage", "owner"];
+  const locationIcon = (loc) => ({ storage: "📦", owner: "🏠" })[loc] || "📍";
+  const countAt = (g, loc) => (loc === "owner" ? setsAt(g).withOwner : setsAt(g)[loc]);
+  const locLabel = (g, loc) => (loc === "owner" ? t("loc_owner", { name: setsAt(g).owner }) : t("loc_" + loc));
   // "📍 在场" for a single set; "📍 在场 2 套 · 📦 仓库 1 套" when there are several; "⚪ 暂无（0 套）" when none.
   const whereHtml = (g, cls) =>
     ownedOf(g) === 0
       ? `<span class="${cls} loc-none">⚪ ${esc(t("loc_none"))}</span>`
-      : LOCATIONS.filter((loc) => setsAt(g)[loc] > 0)
+      : LOCATIONS.filter((loc) => countAt(g, loc) > 0)
       .map((loc) => {
-        const n = ownedOf(g) > 1 ? ` ${t("loanQty", { n: setsAt(g)[loc] })}` : "";
-        return `<span class="${cls} loc-${loc}">${locationIcon(loc)} ${esc(t("loc_" + loc))}${esc(n)}</span>`;
+        const n = ownedOf(g) > 1 ? ` ${t("loanQty", { n: countAt(g, loc) })}` : "";
+        return `<span class="${cls} loc-${loc}">${locationIcon(loc)} ${esc(locLabel(g, loc))}${esc(n)}</span>`;
       })
       .join(" ");
   const outOf = (g) => loansOf(g).reduce((n, l) => n + (l.quantity || 1), 0);
@@ -107,13 +116,15 @@
     const out = games.filter((g) => outOf(g) > 0).length;
     const chip = (key, label) =>
       `<button class="chip${key === activeLoan ? " is-on" : ""}" data-loan="${esc(key ?? "")}">${esc(label)}</button>`;
-    const at = (loc) => games.filter((g) => setsAt(g)[loc] > 0).length;
+    const at = (loc) => games.filter((g) => countAt(g, loc) > 0).length;
     const none = games.filter((g) => ownedOf(g) === 0).length;
     els.loanFilter.innerHTML =
       chip(null, t("all")) +
       chip("in", t("loanFilterIn")) +
       chip("out", `${t("loanFilterOut")} (${out})`) +
-      LOCATIONS.map((loc) => chip(loc, `${locationIcon(loc)} ${t("loc_" + loc)} (${at(loc)})`)).join("") +
+      LOCATIONS.filter((loc) => loc !== "owner" || at(loc) || activeLoan === "owner")
+        .map((loc) => chip(loc, `${locationIcon(loc)} ${t("locFilter_" + loc)} (${at(loc)})`))
+        .join("") +
       (none || activeLoan === "none" ? chip("none", `⚪ ${t("loc_noneShort")} (${none})`) : "");
   }
 
@@ -131,7 +142,7 @@
           (!activeTag || (g.tags || []).includes(activeTag)) &&
           (!activeCat || catOf(g) === activeCat) &&
           (!activeLoan ||
-            (activeLoan === "out" ? outOf(g) > 0 : activeLoan === "in" ? leftOf(g) > 0 : activeLoan === "none" ? ownedOf(g) === 0 : setsAt(g)[activeLoan] > 0))
+            (activeLoan === "out" ? outOf(g) > 0 : activeLoan === "in" ? leftOf(g) > 0 : activeLoan === "none" ? ownedOf(g) === 0 : countAt(g, activeLoan) > 0))
         );
       });
     // Easiest first within each category and band, but games in the same series (base game, expansions,
@@ -158,11 +169,16 @@
       const tag = (cls, text, title = "") =>
         `<span class="card-tag ${cls}"${title ? ` title="${esc(title)}"` : ""}>${esc(text)}</span>`;
       if (owned === 0) return `<div class="card-tags">${tag("is-none", `⚪ ${t("loc_none")}`)}</div>`;
-      const at = setsAt(g);
+      // One place: "📍 在场" / "📦 仓库" / "🏠 在小明处". Several: "📍1 📦1 🏠1" (hover for details).
+      const places = LOCATIONS.filter((loc) => countAt(g, loc) > 0);
       const where =
-        at.present && at.storage
-          ? tag("is-where", `📍${at.present} 📦${at.storage}`, `${t("loc_present")} ${at.present} · ${t("loc_storage")} ${at.storage}`)
-          : tag("is-where", at.storage ? `📦 ${t("loc_storage")}` : `📍 ${t("loc_present")}`);
+        places.length > 1
+          ? tag(
+              "is-where",
+              places.map((loc) => `${locationIcon(loc)}${countAt(g, loc)}`).join(" "),
+              places.map((loc) => `${locLabel(g, loc)} ${countAt(g, loc)}`).join(" · ")
+            )
+          : tag("is-where", `${locationIcon(places[0])} ${locLabel(g, places[0])}`);
       const list = loansOf(g);
       const left = leftOf(g);
       const who = list.map((l) => `${l.borrower}${(l.quantity || 1) > 1 ? ` ×${l.quantity}` : ""}`).join("、");
@@ -261,10 +277,26 @@
       return `<li><span>${esc(bits.join(" · "))}${overdue}</span>${ret}</li>`;
     });
     const where = owned === 0 ? "" : whereHtml(g, "loan-loc");
-    return summary.replace("</p>", ` ${where}</p>`) + (rows.length ? `<ul class="loan-list">${rows.join("")}</ul>` : "");
+    const owner = setsAt(g).owner ? `<p class="loan-owner">👤 ${esc(t("ownerIs", { name: setsAt(g).owner }))}</p>` : "";
+    // The game's own rulebook, plus the base game's for expansions ("rulebookFrom" in games.json).
+    const base = g.rulebookFrom && games.find((x) => x.id === g.rulebookFrom);
+    const bookLinks = [
+      rulebooks[g.id] && [g.id, t("rulebook")],
+      base && rulebooks[base.id] && [base.id, t("rulebookBase", { name: gameName(base) })],
+    ].filter(Boolean);
+    const book = bookLinks.length
+      ? `<p class="loan-rulebook">${bookLinks
+          .map(([id, label]) => {
+            const url = HVLoans.rulebookUrl(id, rulebooks[id]);
+            return `<span class="rulebook-item"><a href="${esc(url)}" target="_blank" rel="noopener">📖 ${esc(label)} ↗</a>` +
+              `<button class="link-btn pdf-preview-btn" type="button" data-preview="${esc(url)}" data-preview-title="${esc(label)}">👁 ${esc(t("preview"))}</button></span>`;
+          })
+          .join("")}</p>`
+      : "";
+    return summary.replace("</p>", ` ${where}</p>`) + owner + book + (rows.length ? `<ul class="loan-list">${rows.join("")}</ul>` : "");
   }
 
-  function renderLoanBox(g, message = "") {
+  function renderLoanBox(g, message = "", messageOk = false) {
     const box = els.detailBody.querySelector("#loan-box");
     if (!box) return;
     if (loansFailed) {
@@ -280,20 +312,34 @@
         left > 1
           ? `<label class="loan-qty">${esc(t("loanQtyLabel"))}<select name="quantity">${Array.from({ length: left }, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join("")}</select></label>`
           : `<input type="hidden" name="quantity" value="1">`;
+      const s = setsAt(g);
       admin = `<form class="loan-form copies-form" data-copies>
-             <label>📍 ${esc(t("setsPresent"))}<input name="present" type="number" min="0" max="99" step="1" value="${setsAt(g).present}" required></label>
-             <label>📦 ${esc(t("setsStorage"))}<input name="storage" type="number" min="0" max="99" step="1" value="${setsAt(g).storage}" required></label>
+             <label class="owner-field">👤 ${esc(t("ownerLabel"))}<input name="owner" maxlength="60" autocomplete="off" value="${esc(s.owner)}" placeholder="${esc(t("ownerPlaceholder"))}"></label>
+             <label>📍 ${esc(t("setsPresent"))}<input name="present" type="number" min="0" max="99" step="1" value="${s.present}" required></label>
+             <label>📦 ${esc(t("setsStorage"))}<input name="storage" type="number" min="0" max="99" step="1" value="${s.storage}" required></label>
+             <label data-owner-only${s.owner ? "" : " hidden"}>🏠 ${esc(t("setsWithOwner"))}<input name="withOwner" type="number" min="0" max="99" step="1" value="${s.withOwner}" required></label>
              <button class="btn ghost" type="submit">${esc(t("copiesSave"))}</button>
            </form>`;
       admin += left
         ? `<form class="loan-form lend-form" data-loan-lend>
              <label>${esc(t("loanBorrower"))}<input name="borrower" required maxlength="60" autocomplete="off"></label>
              ${qty}
+             <label>${esc(t("loanDateLabel"))}<input name="loaned" type="date" value="${todayYmd()}" max="${todayYmd()}" required></label>
              <label>${esc(t("loanDueLabel"))}<input name="due" type="date"></label>
              <button class="btn" type="submit">${esc(t("loanLend"))}</button>
            </form>`
         : "";
-      admin += `<p class="form-error" role="alert">${esc(message)}</p>
+      const has = Boolean(rulebooks[g.id]);
+      const baseGame = g.rulebookFrom && games.find((x) => x.id === g.rulebookFrom);
+      const baseHint = baseGame && !has
+        ? `<p class="hint rulebook-hint">${esc(t(rulebooks[baseGame.id] ? "rulebookUsingBase" : "rulebookBaseMissing", { name: gameName(baseGame) }))}</p>`
+        : "";
+      admin += `<form class="loan-form rulebook-form" data-rulebook>${baseHint}
+             <label>📖 ${esc(t("rulebookLabel"))}<input name="file" type="file" accept="application/pdf,.pdf" required></label>
+             <button class="btn ghost" type="submit">${esc(t(has ? "rulebookReplace" : "rulebookUpload"))}</button>
+             ${has ? `<button class="link-btn" type="button" data-rulebook-delete>${esc(t("rulebookDelete"))}</button>` : ""}
+           </form>`;
+      admin += `<p class="form-error${messageOk ? " is-ok" : ""}" role="alert">${esc(message)}</p>
         <details class="loan-history" data-history><summary>${esc(t("loanHistory"))}</summary><ul><li>…</li></ul></details>`;
     }
     box.innerHTML = loanStatusHtml(g, isAdmin) + admin;
@@ -320,6 +366,11 @@
   function loanErrorText(err) {
     if (err.code === "HVC01" || err.code === "23505") return t("loanAlready");
     if (err.code === "HVC02") return t("copiesTooFew");
+    if (err.code === "HVC03") return t("loanDateFuture");
+    if (err.code === "rulebook-not-pdf") return t("rulebookNotPdf");
+    if (err.code === "rulebook-too-big") return t("rulebookTooBig");
+    if (err.code === "rulebook-none") return t("rulebookPick");
+    if (err.code === "HVC04") return t("loanDueBeforeLoan");
     if (err.code === "42501" || err.code === "nothing-updated" || err.status === 403) return t("loanNotAllowed");
     if (err.status === 401) return t("loanSignedOut");
     return t("loanError", { msg: err.message });
@@ -328,7 +379,8 @@
   async function refreshLoans() {
     if (!HVLoans.enabled) return;
     try {
-      [loans, info] = await Promise.all([HVLoans.active(), HVLoans.gameInfo()]);
+      // Rulebooks are optional: if Storage isn't set up yet, the rest still works.
+      [loans, info, rulebooks] = await Promise.all([HVLoans.active(), HVLoans.gameInfo(), HVLoans.rulebooks().catch(() => ({}))]);
       loansFailed = false;
       loansLoaded = true;
     } catch {
@@ -362,7 +414,7 @@
       <h2 id="detail-title">${esc(gameName(g))}</h2>
       <p class="meta">${meta(g).join(" · ")}</p>
       ${(g.tags || []).length ? `<p class="tag-row">${g.tags.map((k) => `<span class="chip">${esc(tagLabel(k))}</span>`).join("")}</p>` : ""}
-      ${HVLoans.enabled ? `<div id="loan-box" class="loan-box"></div>` : ""}
+      ${HVLoans.enabled ? `<div id="loan-box" class="loan-box"></div><div id="pdf-preview" class="pdf-preview" hidden></div>` : ""}
       <p class="description">${esc(loc(g.description))}</p>
       ${renderLinks(g.links)}`;
     renderLoanBox(g);
@@ -437,17 +489,48 @@
     const g = games.find((x) => x.id === currentGameId());
     if (g && e.target.matches("[data-history]") && e.target.open) loadHistory(g, e.target);
   }, true);
+  els.detailBody.addEventListener("input", (e) => {
+    if (e.target.name !== "owner" || !e.target.closest("[data-copies]")) return;
+    const field = e.target.closest("[data-copies]").querySelector("[data-owner-only]");
+    if (field) field.hidden = !e.target.value.trim();
+  });
   els.detailBody.addEventListener("submit", async (e) => {
+    const bookForm = e.target.closest("[data-rulebook]");
+    if (bookForm) {
+      e.preventDefault();
+      const g = games.find((x) => x.id === currentGameId());
+      if (!g) return;
+      const btn = bookForm.querySelector("button[type=submit]");
+      btn.disabled = true;
+      els.detailBody.querySelector("#loan-box .form-error").textContent = t("rulebookUploading");
+      try {
+        await HVLoans.uploadRulebook(g.id, bookForm.elements.file.files[0]);
+        await refreshLoans();
+        renderLoanBox(g, t("rulebookUploaded"), true);
+      } catch (err) {
+        renderLoanBox(g, loanErrorText(err));
+        if (err.status === 401) renderAdminBar();
+      }
+      return;
+    }
     const copiesForm = e.target.closest("[data-copies]");
     if (copiesForm) {
       e.preventDefault();
       const g = games.find((x) => x.id === currentGameId());
+      const f = copiesForm.elements;
       const sets = {
-        present: parseInt(copiesForm.elements.present.value, 10) || 0,
-        storage: parseInt(copiesForm.elements.storage.value, 10) || 0,
+        present: parseInt(f.present.value, 10) || 0,
+        storage: parseInt(f.storage.value, 10) || 0,
+        withOwner: parseInt(f.withOwner.value, 10) || 0,
+        owner: f.owner.value.trim(),
       };
+      // No owner: sets can't be "at the owner's", so count them as present.
+      if (!sets.owner) {
+        sets.present += sets.withOwner;
+        sets.withOwner = 0;
+      }
       if (!g) return;
-      const total = sets.present + sets.storage;
+      const total = sets.present + sets.storage + sets.withOwner;
       if (total > 99 || total < outOf(g)) {
         renderLoanBox(g, total < outOf(g) ? t("copiesTooFew") : t("setsTotalRange"));
         return;
@@ -468,16 +551,64 @@
     const g = games.find((x) => x.id === currentGameId());
     const borrower = form.elements.borrower.value.trim();
     if (!g || !borrower) return;
+    // Loan date: today means "now"; an earlier date is recorded at noon that day (local time), so it never
+    // slips to the day before when stored in UTC.
+    const day = form.elements.loaned.value || todayYmd();
+    const due = form.elements.due.value;
+    if (day > todayYmd()) return renderLoanBox(g, t("loanDateFuture"));
+    if (due && due < day) return renderLoanBox(g, t("loanDueBeforeLoan"));
+    const loanedAt = day === todayYmd() ? null : new Date(toDate(day).setHours(12)).toISOString();
     form.querySelector("button").disabled = true;
     try {
-      await HVLoans.lend(g.id, borrower, form.elements.due.value, parseInt(form.elements.quantity.value, 10) || 1);
+      await HVLoans.lend(g.id, borrower, due, parseInt(form.elements.quantity.value, 10) || 1, loanedAt);
       await refreshLoans();
     } catch (err) {
       renderLoanBox(g, loanErrorText(err));
       if (err.status === 401) renderAdminBar();
     }
   });
+  // Rulebook preview inside the popup (desktop only; phones open the PDF in a new tab instead).
+  function showPreview(url, title) {
+    const panel = els.detailBody.querySelector("#pdf-preview");
+    if (!panel) return;
+    panel.innerHTML = `
+      <div class="pdf-preview-bar">
+        <strong>📖 ${esc(title)}</strong>
+        <span>
+          <a href="${esc(url)}" target="_blank" rel="noopener">${esc(t("openNewTab"))} ↗</a>
+          <button class="btn ghost btn-sm" type="button" data-preview-close>✕ ${esc(t("previewClose"))}</button>
+        </span>
+      </div>
+      <iframe src="${esc(url)}#view=FitH" title="${esc(title)}"></iframe>`;
+    panel.hidden = false;
+    panel.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  function closePreview() {
+    const panel = els.detailBody.querySelector("#pdf-preview");
+    if (!panel) return;
+    panel.hidden = true;
+    panel.innerHTML = ""; // unloads the PDF
+  }
+  els.detailBody.addEventListener("click", (e) => {
+    const open = e.target.closest("[data-preview]");
+    if (open) return showPreview(open.dataset.preview, open.dataset.previewTitle);
+    if (e.target.closest("[data-preview-close]")) closePreview();
+  });
+
   els.detailBody.addEventListener("click", async (e) => {
+    if (e.target.closest("[data-rulebook-delete]")) {
+      const g = games.find((x) => x.id === currentGameId());
+      if (!g || !confirm(t("rulebookDeleteConfirm", { name: gameName(g) }))) return;
+      try {
+        await HVLoans.deleteRulebook(g.id);
+        await refreshLoans();
+        renderLoanBox(g, t("rulebookDeleted"), true);
+      } catch (err) {
+        renderLoanBox(g, loanErrorText(err));
+        if (err.status === 401) renderAdminBar();
+      }
+      return;
+    }
     const btn = e.target.closest("[data-loan-return]");
     if (!btn) return;
     const g = games.find((x) => x.id === currentGameId());

@@ -1,0 +1,19 @@
+# Supabase pauses free projects after about a week without activity.
+# This makes one small read every 3 days so the loans database and rulebooks stay online.
+# The URL and key are the same public ones as in js/config.js (the publishable key is safe to share).
+name: Keep Supabase awake
+
+on:
+  schedule:
+    - cron: "17 3 */3 * *"   # 03:17 UTC every 3rd day
+  workflow_dispatch:          # lets you run it by hand from the Actions tab
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read one row from Supabase
+        run: |
+          curl -fsS -o /dev/null -w "Supabase answered HTTP %{http_code}\n" \
+            -H "apikey: sb_publishable_M-oaWVq6dgi8UbHreUJd2A_glWug8LE" \
+            "https://arsqwtojjoeoriinbmiq.supabase.co/rest/v1/game_copies?select=game_id&limit=1"

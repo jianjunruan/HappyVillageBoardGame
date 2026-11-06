@@ -193,6 +193,7 @@
       "category": "party",
       "weight": 1.83,
       "series": "werewolves-of-millers-hollow",
+      "rulebookFrom": "werewolves-of-millers-hollow",
       "tags": ["Party", "Social Deduction", "Expansion"],
       "links": [
         {
@@ -219,6 +220,7 @@
       "category": "party",
       "weight": 1.52,
       "series": "werewolves-of-millers-hollow",
+      "rulebookFrom": "werewolves-of-millers-hollow",
       "tags": ["Party", "Social Deduction", "Expansion"],
       "links": [
         {
@@ -299,6 +301,7 @@
       "category": "card",
       "weight": 3.64,
       "series": "arkham-horror-lcg",
+      "rulebookFrom": "arkham-horror-lcg",
       "tags": ["Co-op", "Cards", "Expansion"],
       "links": [
         {
@@ -328,6 +331,7 @@
       "category": "card",
       "weight": 3.67,
       "series": "arkham-horror-lcg",
+      "rulebookFrom": "arkham-horror-lcg",
       "tags": ["Co-op", "Cards", "Expansion"],
       "links": [
         {
@@ -357,6 +361,7 @@
       "category": "card",
       "weight": 4.2,
       "series": "arkham-horror-lcg",
+      "rulebookFrom": "arkham-horror-lcg",
       "tags": ["Co-op", "Cards", "Expansion"],
       "links": [
         {
@@ -719,6 +724,7 @@
       "category": "euro",
       "weight": 3.11,
       "series": "lost-ruins-of-arnak",
+      "rulebookFrom": "lost-ruins-of-arnak",
       "tags": ["Strategy", "Euro", "Expansion"],
       "links": [
         {
@@ -1287,6 +1293,7 @@
       "category": "euro",
       "weight": 3.21,
       "series": "lost-ruins-of-arnak",
+      "rulebookFrom": "lost-ruins-of-arnak",
       "tags": ["Strategy", "Euro", "Expansion"],
       "links": [
         {
@@ -1338,6 +1345,7 @@
       "category": "war",
       "weight": 2.5,
       "series": "war-chest",
+      "rulebookFrom": "war-chest",
       "tags": ["War Game", "Abstract", "Expansion"],
       "links": [
         {
@@ -1364,6 +1372,7 @@
       "category": "euro",
       "weight": 3.1,
       "series": "pirates-of-maracaibo",
+      "rulebookFrom": "pirates-of-maracaibo",
       "tags": ["Euro", "Expansion"],
       "links": [
         {
@@ -1907,6 +1916,7 @@
       "category": "euro",
       "weight": 3.75,
       "series": "seti",
+      "rulebookFrom": "seti",
       "tags": ["Strategy", "Euro", "Expansion"],
       "links": [
         {
@@ -2173,6 +2183,7 @@
       "category": "euro",
       "weight": 2.9,
       "series": "viticulture",
+      "rulebookFrom": "viticulture",
       "tags": ["Accessory"],
       "links": [
         {
@@ -2233,6 +2244,7 @@
       "category": "euro",
       "weight": 3.27,
       "series": "terraforming-mars",
+      "rulebookFrom": "terraforming-mars",
       "tags": ["Accessory"],
       "links": [
         {
@@ -2259,6 +2271,7 @@
       "category": "euro",
       "weight": 2.97,
       "series": "terraforming-mars",
+      "rulebookFrom": "terraforming-mars",
       "tags": ["Strategy", "Euro", "Expansion"],
       "links": [
         {
@@ -2285,6 +2298,7 @@
       "category": "euro",
       "weight": 2.87,
       "series": "terraforming-mars",
+      "rulebookFrom": "terraforming-mars",
       "tags": ["Strategy", "Euro", "Expansion"],
       "links": [
         {
@@ -2311,6 +2325,7 @@
       "category": "euro",
       "weight": 3.68,
       "series": "terraforming-mars",
+      "rulebookFrom": "terraforming-mars",
       "tags": ["Strategy", "Euro", "Expansion"],
       "links": [
         {
@@ -2371,6 +2386,7 @@
       "category": "euro",
       "weight": 2.23,
       "series": "parks",
+      "rulebookFrom": "parks",
       "tags": ["Euro", "Expansion"],
       "links": [
         {
@@ -2448,6 +2464,7 @@
       "category": "american",
       "weight": 2.5,
       "series": "maximum-apocalypse",
+      "rulebookFrom": "maximum-apocalypse",
       "tags": ["Co-op", "Thematic", "Cards"],
       "links": [
         {
@@ -2508,6 +2525,7 @@
       "category": "card",
       "weight": 1.83,
       "series": "little-factory",
+      "rulebookFrom": "little-factory",
       "tags": ["Cards", "Family", "Expansion"],
       "links": [
         {
@@ -2534,6 +2552,7 @@
       "category": "euro",
       "weight": 3.85,
       "series": "ark-nova",
+      "rulebookFrom": "ark-nova",
       "tags": ["Strategy", "Euro", "Expansion"],
       "links": [
         {
@@ -2960,6 +2979,7 @@
       "category": "euro",
       "weight": 2.86,
       "series": "7-wonders-duel",
+      "rulebookFrom": "7-wonders-duel",
       "tags": ["Strategy", "Euro", "Expansion"],
       "links": [
         {
@@ -3006,6 +3026,7 @@
       "category": "euro",
       "weight": 3.31,
       "series": "white-castle",
+      "rulebookFrom": "white-castle",
       "tags": ["Euro", "Expansion"],
       "links": [
         {
@@ -3096,6 +3117,7 @@
       "category": "euro",
       "weight": 2.23,
       "series": "parks",
+      "rulebookFrom": "parks",
       "tags": ["Euro", "Expansion"],
       "links": [
         {
@@ -3348,6 +3370,7 @@
       "category": "american",
       "weight": 3.86,
       "series": "root",
+      "rulebookFrom": "root",
       "tags": ["Strategy", "Thematic", "Expansion"],
       "links": [
         {
@@ -3374,6 +3397,7 @@
       "category": "american",
       "weight": 3.65,
       "series": "root",
+      "rulebookFrom": "root",
       "tags": ["Strategy", "Thematic", "Expansion"],
       "links": [
         {
@@ -3603,6 +3627,7 @@
       "category": "euro",
       "weight": 2.56,
       "series": "terraforming-mars",
+      "rulebookFrom": "terraforming-mars",
       "tags": ["Strategy", "Euro", "Expansion"],
       "links": [
         {
@@ -3823,6 +3848,68 @@
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
           "url": "https://boardgamegeek.com/boardgame/425445/sweet-lands"
+        }
+      ]
+    },
+    {
+      "id": "luthier",
+      "name": { "zh": "制琴师", "en": "Luthier" },
+      "image": "images/luthier.jpg",
+      "description": {
+        "zh": "回到西欧古典音乐的黄金年代，你经营一家制琴工坊，为历史上真实的贵族赞助人打造和修理乐器，还要演出、培养学徒、扩建工坊，赢得声望。游戏共 6 轮，核心是“工人出价”：每位玩家的工人标有不同数值，依次放到想做的行动地点上，结算时数值高的先行动，抢到最好的选择。赞助人的耐心有限，太久没满足他们的要求就会离开，还要扣声望。多种得分路线，支持单人模式。设计师：Dave Beck、Abe Burson，美术：Vincent Dutrait（2025）。\n\n适合：喜欢中重度工人放置、主题优雅的玩家。",
+        "en": "Run a luthier's workshop in the golden age of Western classical music: build and repair instruments for real historical patrons, perform, train apprentices and grow your workshop to earn prestige. Over 6 rounds, the core is worker bidding: each player's workers carry different values and are placed one at a time on the actions they want; when an action resolves, the highest value goes first and gets the best pick. Patrons' patience runs out, and a patron who waits too long leaves and costs you prestige. Many paths to victory, plus a solo mode. Designed by Dave Beck and Abe Burson, art by Vincent Dutrait (2025).\n\nGood for: fans of medium-heavy worker placement with an elegant theme."
+      },
+      "players": "1–4",
+      "playtime": "30–40",
+      "age": "14",
+      "category": "euro",
+      "weight": 3.83,
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=luthier+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpluthier"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=luthier"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/371330/luthier"
+        }
+      ]
+    },
+    {
+      "id": "speakeasy",
+      "name": { "zh": "地下酒吧", "en": "Speakeasy" },
+      "image": "images/speakeasy.jpg",
+      "description": {
+        "zh": "1920 年代禁酒令时期的纽约曼哈顿，你是一个黑帮家族，开设非法酒吧和赌场、酿造和走私私酒，在各个街区争夺地盘，同时还要应付其他帮派和警察。玩法融合工人放置、区域控制和运送：每个小动作都会牵动整座城市的势力平衡。全局只有四大轮、行动次数很少，每一步都要深思熟虑。“复杂哥” Vital Lacerda 的重量级作品，主题和机制结合得很紧密，规则讲解通常要 1 小时以上。美术：Ian O'Toole（2025）。支持单人模式。\n\n适合：硬核策略玩家，Lacerda 的粉丝。",
+        "en": "Manhattan during 1920s Prohibition: you are a mob family opening speakeasies and casinos, brewing and smuggling liquor, and fighting for control of neighbourhoods while dealing with rival gangs and the police. It blends worker placement, area majority and pick-up-and-deliver, and every small move shifts the balance of power across the city. With only four rounds and very few actions, every turn counts. A heavyweight from Vital Lacerda, with theme and mechanics tightly woven; expect an hour or more to teach. Art by Ian O'Toole (2025). Includes a solo mode.\n\nGood for: hardcore strategy players and Lacerda fans."
+      },
+      "players": "1–4",
+      "playtime": "45–60",
+      "age": "14",
+      "category": "euro",
+      "weight": 4.44,
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "规则教学视频（B站）", "en": "Rules teach video (Bilibili, Chinese)" },
+          "url": "https://www.bilibili.com/video/BV1nHxBeYEJi/"
+        },
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=speakeasy+lacerda+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/375459/speakeasy"
         }
       ]
     }
