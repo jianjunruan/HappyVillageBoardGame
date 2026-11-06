@@ -61,7 +61,7 @@
 
   // Sets owned, sets out and sets left for a game.
   const loansOf = (g) => loans[g.id] || [];
-  const setsAt = (g) => ({ present: 1, storage: 0, withOwner: 0, owner: "", ...info[g.id] });
+  const setsAt = (g) => ({ present: 1, storage: 0, withOwner: 0, owner: "", rulebookFrom: null, ...info[g.id] });
   const ownedOf = (g) => setsAt(g).present + setsAt(g).storage + setsAt(g).withOwner;
   // Where sets can be: at the venue, in storage, or at the owner's place (only when an owner is set).
   const LOCATIONS = ["present", "storage", "owner"];
@@ -278,11 +278,12 @@
     });
     const where = owned === 0 ? "" : whereHtml(g, "loan-loc");
     const owner = setsAt(g).owner ? `<p class="loan-owner">👤 ${esc(t("ownerIs", { name: setsAt(g).owner }))}</p>` : "";
-    // The game's own rulebook, plus the base game's for expansions ("rulebookFrom" in games.json).
-    const base = g.rulebookFrom && games.find((x) => x.id === g.rulebookFrom);
+    // The game's own rulebook, plus the one it shares with another game (set by an admin, or "rulebookFrom" in games.json).
+    const sharedId = HVShare.resolve(games, g, info, rulebooks);
+    const shared = sharedId && games.find((x) => x.id === sharedId);
     const bookLinks = [
       rulebooks[g.id] && [g.id, t("rulebook")],
-      base && rulebooks[base.id] && [base.id, t("rulebookBase", { name: gameName(base) })],
+      shared && [shared.id, t("rulebookBase", { name: gameName(shared) })],
     ].filter(Boolean);
     const book = bookLinks.length
       ? `<p class="loan-rulebook">${bookLinks
@@ -330,14 +331,27 @@
            </form>`
         : "";
       const has = Boolean(rulebooks[g.id]);
-      const baseGame = g.rulebookFrom && games.find((x) => x.id === g.rulebookFrom);
+      const shareId = HVShare.target(g, info);
+      const baseGame = shareId && games.find((x) => x.id === shareId);
       const baseHint = baseGame && !has
-        ? `<p class="hint rulebook-hint">${esc(t(rulebooks[baseGame.id] ? "rulebookUsingBase" : "rulebookBaseMissing", { name: gameName(baseGame) }))}</p>`
+        ? `<p class="hint rulebook-hint">${esc(t(HVShare.resolve(games, g, info, rulebooks) ? "rulebookUsingBase" : "rulebookBaseMissing", { name: gameName(baseGame) }))}</p>`
         : "";
+      // Pick which game's rulebook this one shares; similar names are listed first.
+      const shareSelect = HVShare.options(games, g, shareId || "", {
+        none: t("shareNone"),
+        similarLabel: t("shareSimilar"),
+        othersLabel: t("shareOthers"),
+        lang: HVI18n.lang,
+        esc,
+      });
       admin += `<form class="loan-form rulebook-form" data-rulebook>${baseHint}
              <label>📖 ${esc(t("rulebookLabel"))}<input name="file" type="file" accept="application/pdf,.pdf" required></label>
              <button class="btn ghost" type="submit">${esc(t(has ? "rulebookReplace" : "rulebookUpload"))}</button>
              ${has ? `<button class="link-btn" type="button" data-rulebook-delete>${esc(t("rulebookDelete"))}</button>` : ""}
+           </form>
+           <form class="loan-form share-form" data-share>
+             <label>🔗 ${esc(t("shareLabel"))}<select name="share">${shareSelect}</select></label>
+             <button class="btn ghost" type="submit">${esc(t("copiesSave"))}</button>
            </form>`;
       admin += `<p class="form-error${messageOk ? " is-ok" : ""}" role="alert">${esc(message)}</p>
         <details class="loan-history" data-history><summary>${esc(t("loanHistory"))}</summary><ul><li>…</li></ul></details>`;
@@ -395,7 +409,8 @@
 
   // The admin button only appears with ?admin in the address (e.g. index.html?admin=1),
   // or while an admin is signed in, so they can always sign out.
-  const adminParam = new URLSearchParams(location.search).has("admin");
+  // Not case-sensitive: ?admin=1, ?Admin=1 and ?ADMIN all work.
+  const adminParam = [...new URLSearchParams(location.search).keys()].some((k) => k.toLowerCase() === "admin");
   function renderAdminBar() {
     const show = HVLoans.enabled && (adminParam || Boolean(HVLoans.user));
     els.adminBar.hidden = !show;
@@ -495,6 +510,23 @@
     if (field) field.hidden = !e.target.value.trim();
   });
   els.detailBody.addEventListener("submit", async (e) => {
+    const shareForm = e.target.closest("[data-share]");
+    if (shareForm) {
+      e.preventDefault();
+      const g = games.find((x) => x.id === currentGameId());
+      if (!g) return;
+      shareForm.querySelector("button").disabled = true;
+      try {
+        // Saved with the game's other settings; "" = shares with none.
+        await HVLoans.saveGameInfo(g.id, { ...setsAt(g), rulebookFrom: shareForm.elements.share.value });
+        await refreshLoans();
+        renderLoanBox(g, t("shareSaved"), true);
+      } catch (err) {
+        renderLoanBox(g, loanErrorText(err));
+        if (err.status === 401) renderAdminBar();
+      }
+      return;
+    }
     const bookForm = e.target.closest("[data-rulebook]");
     if (bookForm) {
       e.preventDefault();
@@ -517,12 +549,14 @@
     if (copiesForm) {
       e.preventDefault();
       const g = games.find((x) => x.id === currentGameId());
+      if (!g) return;
       const f = copiesForm.elements;
       const sets = {
         present: parseInt(f.present.value, 10) || 0,
         storage: parseInt(f.storage.value, 10) || 0,
         withOwner: parseInt(f.withOwner.value, 10) || 0,
         owner: f.owner.value.trim(),
+        rulebookFrom: setsAt(g).rulebookFrom,
       };
       // No owner: sets can't be "at the owner's", so count them as present.
       if (!sets.owner) {

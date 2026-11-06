@@ -230,6 +230,8 @@ dialog article { padding: 0 24px 28px; }
 .loan-form.rulebook-form { padding-top: 10px; border-top: 1px dashed var(--border); }
 .loan-form.rulebook-form label { flex: 1 1 240px; }
 .rulebook-hint { flex: 1 0 100%; margin: 0; font-size: 0.85rem; color: var(--muted); }
+.loan-form.share-form label { flex: 1 1 260px; }
+.loan-form.share-form select { width: 100%; }
 .loan-form input[type="file"] { padding: 6px; border: 1px dashed var(--border); border-radius: 8px; background: var(--surface); font-size: 0.85rem; }
 .form-error.is-ok { color: var(--ok); }
 .loan-form.copies-form label.owner-field { flex: 1 1 180px; }

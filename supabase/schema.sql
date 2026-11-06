@@ -53,6 +53,12 @@ alter table public.game_copies add constraint game_copies_owner_length check (ow
 alter table public.game_copies drop constraint if exists game_copies_storage_range;
 alter table public.game_copies add constraint game_copies_storage_range
   check (storage_copies >= 0 and owner_copies >= 0 and storage_copies + owner_copies <= copies);
+-- Shares another game's Happy Village rulebook (e.g. an expansion uses its base game's).
+-- null = use "rulebookFrom" in games.json; '' = shares with none; '<game id>' = uses that game's rulebook.
+alter table public.game_copies add column if not exists rulebook_from text;
+alter table public.game_copies drop constraint if exists game_copies_rulebook_from;
+alter table public.game_copies add constraint game_copies_rulebook_from
+  check (rulebook_from is null or (char_length(rulebook_from) <= 100 and rulebook_from <> game_id));
 alter table public.game_copies drop constraint if exists game_copies_owner_sets;
 alter table public.game_copies add constraint game_copies_owner_sets
   check (owner_copies = 0 or coalesce(trim(owner), '') <> '');
@@ -198,6 +204,6 @@ grant usage on schema public to anon, authenticated;
 grant select on public.loans, public.game_copies to anon, authenticated;
 grant insert (game_id, borrower, due_date, quantity, loaned_at) on public.loans to authenticated;  -- loaned_at: for backdating
 grant update (returned_at) on public.loans to authenticated;
-grant insert (game_id, copies, storage_copies, owner, owner_copies) on public.game_copies to authenticated;
-grant update (game_id, copies, storage_copies, owner, owner_copies) on public.game_copies to authenticated;  -- "insert or update" (upsert) needs every column
+grant insert (game_id, copies, storage_copies, owner, owner_copies, rulebook_from) on public.game_copies to authenticated;
+grant update (game_id, copies, storage_copies, owner, owner_copies, rulebook_from) on public.game_copies to authenticated;  -- "insert or update" (upsert) needs every column
 grant execute on function public.is_admin() to anon, authenticated;

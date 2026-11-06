@@ -70,7 +70,10 @@ Running [`supabase/schema.sql`](../supabase/schema.sql) also creates a public St
 - **Upload:** signed in as admin, open a game's popup → **📖 欢乐小镇规则书 PDF** → choose the file → **上传欢乐小镇规则书**. Or use the **📖 欢乐小镇规则书** column on **库存管理 Inventory** (**⬆ 上传** / **替换**); uploads there happen right away.
 - Each game has one rulebook, saved as `rulebooks/<game id>.pdf`. Uploading again replaces it; **删除欢乐小镇规则书** removes it.
 - Everyone sees a **📖 欢乐小镇规则书（PDF）** link in the game's popup as soon as a file exists. No editing of `data/games.json` is needed.
-- **Expansions share the base game's rulebook.** Games with `"rulebookFrom": "<base game id>"` in `data/games.json` (all expansions and the two storage boxes) automatically show **📖 基础版《…》欢乐小镇规则书**, so upload the base game's rulebook once. If an expansion also has its own rulebook, upload it on the expansion and both links show. Standalone spin-offs (e.g. 方舟保护区, 克苏鲁情书) and other editions keep their own.
+- **Games can share a rulebook** (e.g. an expansion uses its base game's). A game that shares another's shows **📖 《…》欢乐小镇规则书（共用）**, so the shared rulebook only needs uploading once; if it also has its own, both links show.
+  - **Set it per game:** in the game's popup, **🔗 与哪款游戏共用欢乐小镇规则书** → pick a game (same or similar names are listed first) → **保存**. Pick **不共用** to stop sharing.
+  - **Set it in bulk:** on **库存管理**, the **🔗 共用规则书** column has a **修改** dropdown per game, and **按名称自动配对** fills in games whose name starts with another game's full name (e.g. 重塑火星：动荡 → 重塑火星). Auto-match also suggests spin-offs like 璀璨宝石：宝可梦, so check the highlighted rows, then **保存全部**.
+  - The starting values come from `"rulebookFrom"` in `data/games.json` (all expansions and the two storage boxes); anything set on the site overrides them.
 - The inventory page can filter **有欢乐小镇规则书 / 没有欢乐小镇规则书** to see which games still need one.
 - Free plan: about 1 GB of files in total and about 5 GB of downloads a month. Compress large scanned PDFs first (e.g. ilovepdf.com → Compress).
 

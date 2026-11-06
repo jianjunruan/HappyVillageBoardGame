@@ -73,7 +73,7 @@ window.HVLoans = (() => {
   }
 
   // { present, storage, withOwner, owner } -> a game_copies row. A blank owner is stored as null.
-  function toRow(gameId, { present = 0, storage = 0, withOwner = 0, owner = "" }) {
+  function toRow(gameId, { present = 0, storage = 0, withOwner = 0, owner = "", rulebookFrom = null }) {
     const name = String(owner || "").trim();
     return {
       game_id: gameId,
@@ -81,6 +81,7 @@ window.HVLoans = (() => {
       storage_copies: storage,
       owner_copies: withOwner,
       owner: name || null,
+      rulebook_from: rulebookFrom ?? null, // null = default from games.json, "" = none
     };
   }
 
@@ -136,7 +137,7 @@ window.HVLoans = (() => {
     // Sets per location and the owner, saved by an admin:
     // { "catan": { present: 1, storage: 1, withOwner: 0, owner: "" }, ... }. Games not listed have 1 set, present.
     async gameInfo() {
-      const rows = await request("/rest/v1/game_copies?select=game_id,copies,storage_copies,owner_copies,owner");
+      const rows = await request("/rest/v1/game_copies?select=game_id,copies,storage_copies,owner_copies,owner,rulebook_from");
       return Object.fromEntries(
         rows.map((r) => [
           r.game_id,
@@ -145,6 +146,7 @@ window.HVLoans = (() => {
             storage: r.storage_copies,
             withOwner: r.owner_copies || 0,
             owner: r.owner || "",
+            rulebookFrom: r.rulebook_from, // null = default from games.json, "" = none, else a game id
           },
         ])
       );

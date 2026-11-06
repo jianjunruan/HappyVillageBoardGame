@@ -41,6 +41,9 @@
     td input[type="number"] { width: 64px; }
     td.total { font-weight: 600; }
     td.book { white-space: nowrap; font-size: 0.88rem; }
+    .wrap { max-width: 1440px; }  /* wide table */
+    td.share { font-size: 0.88rem; min-width: 150px; }
+    td.share select { max-width: 220px; padding: 4px 6px; font-size: 0.85rem; }
     td input.owner { width: 120px; margin: 0; padding: 6px 8px; }
     td input:disabled { opacity: 0.35; }
     .out { color: var(--danger); font-weight: 600; }
@@ -88,6 +91,7 @@
             <option value="has-owner">👤 有拥有者的 Has an owner</option>
             <option value="book">📖 有欢乐小镇规则书（含基础版）Has a Happy Village rulebook (incl. base game's)</option>
             <option value="no-book">📖 没有欢乐小镇规则书 No Happy Village rulebook</option>
+            <option value="shares">🔗 共用其他游戏规则书的 Shares another game's rulebook</option>
             <option value="none">⚪ 暂无（0 套）None (0 sets)</option>
           </select>
         </label>
@@ -120,6 +124,13 @@
           <button class="btn" type="button" id="owner-all">应用到全部 Apply to all</button>
         </div>
         <div class="group">
+          <b>🔗 共用欢乐小镇规则书 Share rulebook</b>
+          <button class="btn ghost" type="button" id="share-sel">按名称自动配对选中的 Auto-match selected</button>
+          <button class="btn" type="button" id="share-all">按名称自动配对全部 Auto-match all</button>
+          <button class="link-btn" type="button" id="share-clear">选中的不共用 Clear for selected</button>
+          <span class="hint">自动配对：名称以另一款游戏全名开头的（如“重塑火星：动荡” → “重塑火星”），会共用它的欢乐小镇规则书。保存前请检查。Auto-match links a game to the one whose full name its name starts with. Check before saving.</span>
+        </div>
+        <div class="group">
           <b>全部套数移到 Move all sets to</b>
           <select id="bulk-move">
             <option value="present">📍 在场 Present</option>
@@ -145,6 +156,7 @@
               <th class="num">📦 仓库<br>Storage</th>
               <th class="num">🏠 拥有者处<br>With owner</th>
               <th class="num">合计<br>Total</th>
+              <th>🔗 共用规则书<br>Shares rulebook of</th>
               <th>📖 欢乐小镇规则书<br>Happy Village rulebook</th>
             </tr>
           </thead>
@@ -164,6 +176,7 @@
 
   <script src="../js/config.js"></script>
   <script src="../js/loans.js"></script>
+  <script src="../js/rulebook-share.js"></script>
   <script>
     (() => {
       const $ = (id) => document.getElementById(id);
@@ -171,7 +184,7 @@
       const CATS = { euro: "德式", american: "美式", party: "聚会", card: "卡牌", abstract: "抽象", family: "亲子", puzzle: "解谜", war: "战棋", roleplay: "扮演" };
       const nameZh = (g) => (typeof g.name === "string" ? g.name : g.name.zh || g.name.en);
       const nameEn = (g) => (typeof g.name === "string" ? g.name : g.name.en || g.name.zh);
-      const DEFAULT = { present: 1, storage: 0, withOwner: 0, owner: "" };
+      const DEFAULT = { present: 1, storage: 0, withOwner: 0, owner: "", rulebookFrom: null };
 
       let games = [];
       let saved = {};    // game id -> { present, storage, withOwner, owner } as stored in Supabase
@@ -183,10 +196,16 @@
       const current = (id) => ({ ...DEFAULT, ...(edits[id] || saved[id]) });
       const sumOf = (c) => c.present + c.storage + c.withOwner;
       const totalOf = (id) => sumOf(current(id));
+      // Rulebook sharing as it would be shown: "" = none, else a game id (falls back to games.json "rulebookFrom").
+      const gameById = (id) => games.find((x) => x.id === id);
+      const shareOf = (id, c) => (c.rulebookFrom === "" ? "" : c.rulebookFrom || (gameById(id) || {}).rulebookFrom || "");
+      // Lets HVShare read this page's current (possibly unsaved) values.
+      const shareInfo = new Proxy({}, { get: (_, id) => ({ rulebookFrom: current(id).rulebookFrom }) });
       const isChanged = (id) => {
         if (!edits[id]) return false;
         const e = current(id), s = { ...DEFAULT, ...saved[id] };
-        return e.present !== s.present || e.storage !== s.storage || e.withOwner !== s.withOwner || e.owner.trim() !== s.owner.trim();
+        return e.present !== s.present || e.storage !== s.storage || e.withOwner !== s.withOwner || e.owner.trim() !== s.owner.trim() ||
+          shareOf(id, e) !== shareOf(id, s);
       };
       const isInvalid = (id) => {
         const c = current(id);
@@ -220,6 +239,7 @@
               : loc === "has-owner" ? Boolean(c.owner.trim())
               : loc === "book" ? Boolean(books[g.id] || baseBook(g))
               : loc === "no-book" ? !(books[g.id] || baseBook(g))
+              : loc === "shares" ? Boolean(shareOf(g.id, c))
               : c[loc] > 0;
             return where && (!q || `${nameZh(g)} ${nameEn(g)} ${g.id} ${c.owner}`.toLowerCase().includes(q));
           })
@@ -248,6 +268,7 @@
               <td class="num"><input type="number" data-with-owner min="0" max="99" step="1" value="${c.withOwner}" ${c.owner.trim() ? "" : "disabled"}
                 title="${c.owner.trim() ? "" : "先填拥有者 Fill in an owner first"}" aria-label="在拥有者处 With owner"></td>
               <td class="num total" data-total>${totalOf(g.id) || "⚪ 0"}</td>
+              <td class="share" data-share-cell>${shareCell(g)}</td>
               <td class="book" data-book>${bookCell(g)}</td>
             </tr>`;
           })
@@ -285,8 +306,23 @@
       }
 
       // Rulebook cell: view link + replace, or upload. Uploads happen right away (not part of "Save all").
-      // Expansions ("rulebookFrom" in games.json) also use their base game's rulebook.
-      const baseBook = (g) => (g.rulebookFrom && books[g.rulebookFrom] ? g.rulebookFrom : null);
+      // Games that share another game's rulebook show that one too (following A → B → C until a file exists).
+      const baseBook = (g) => HVShare.resolve(games, g, shareInfo, books);
+      // Sharing cell: the game it shares with (or —) and a button that turns into a dropdown.
+      function shareCell(g) {
+        const id = shareOf(g.id, current(g.id));
+        const x = id && gameById(id);
+        return `${x ? `🔗 ${esc(nameZh(x))}` : `<span class="muted">—</span>`} <button class="link-btn" type="button" data-share-pick>修改 Change</button>`;
+      }
+      function shareSelect(g) {
+        return `<select data-share aria-label="共用规则书 Shares rulebook of">${HVShare.options(games, g, shareOf(g.id, current(g.id)), {
+          none: "— 不共用 None",
+          similarLabel: "名称相同或相似 Same or similar name",
+          othersLabel: "其他游戏 Other games",
+          lang: "zh",
+          esc,
+        })}</select>`;
+      }
       function bookCell(g) {
         const id = g.id, b = books[id], base = baseBook(g);
         const mb = b && b.size ? ` <small class="muted">${(b.size / 1048576).toFixed(1)} MB</small>` : "";
@@ -300,6 +336,18 @@
       }
       $("rows").addEventListener("click", (e) => {
         if (e.target.closest("[data-book-pick]")) e.target.closest("td").querySelector("[data-book-file]").click();
+        if (e.target.closest("[data-share-pick]")) {
+          const td = e.target.closest("td"), g = gameById(td.closest("tr").dataset.id);
+          td.innerHTML = shareSelect(g);
+          td.querySelector("select").focus();
+        }
+      });
+      // Choosing a game in the sharing dropdown is an unsaved change, like the set counts.
+      $("rows").addEventListener("change", (e) => {
+        if (!e.target.matches("[data-share]")) return;
+        setEdit(e.target.closest("tr").dataset.id, { rulebookFrom: e.target.value });
+        $("save-msg").classList.remove("ok");
+        render();
       });
       $("rows").addEventListener("change", async (e) => {
         if (!e.target.matches("[data-book-file]") || !e.target.files[0]) return;
@@ -323,7 +371,7 @@
       // Row edits.
       $("rows").addEventListener("input", (e) => {
         const tr = e.target.closest("tr");
-        if (!tr || e.target.matches("[data-book-file]")) return;
+        if (!tr || e.target.matches("[data-book-file], [data-share]")) return;
         const id = tr.dataset.id;
         if (e.target.matches("[data-sel]")) {
           e.target.checked ? selected.add(id) : selected.delete(id);
@@ -404,6 +452,37 @@
         const s = bulkSets();
         if (s && confirmAll(`都设为 在场 ${s.present} 套、仓库 ${s.storage} 套`)) bulk(games.map((g) => g.id), () => ({ ...s }));
       });
+      // Rulebook sharing by name. Only games without a sharing setting yet are filled; an admin's "none" is kept.
+      function autoMatch(ids) {
+        let matched = 0;
+        for (const id of ids) {
+          const c = current(id), g = gameById(id);
+          if (c.rulebookFrom === "" || shareOf(id, c)) continue;
+          const base = HVShare.suggest(games, g);
+          if (base) {
+            setEdit(id, { rulebookFrom: base.id });
+            matched++;
+          }
+        }
+        render();
+        const msg = $("save-msg");
+        if (!msg.classList.contains("err")) {
+          msg.textContent += ` · 自动配对了 ${matched} 款，请检查后保存 · Auto-matched ${matched} game(s); check before saving`;
+        }
+      }
+      $("share-sel").addEventListener("click", () => {
+        const ids = selectedIds();
+        if (ids.length) autoMatch(ids);
+      });
+      $("share-all").addEventListener("click", () => {
+        if (confirmAll(" 按名称自动配对共用的欢乐小镇规则书")) autoMatch(games.map((g) => g.id));
+      });
+      $("share-clear").addEventListener("click", () => {
+        const ids = selectedIds();
+        for (const id of ids) setEdit(id, { rulebookFrom: "" });
+        if (ids.length) render();
+      });
+
       // Owner: a name, or blank to clear it (sets that were with the owner move back to present).
       const bulkOwner = () => ({ owner: $("bulk-owner").value.trim() });
       $("owner-sel").addEventListener("click", () => bulk(selectedIds(), bulkOwner));
