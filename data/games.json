@@ -124,6 +124,7 @@
       "age": "10",
       "category": "abstract",
       "weight": 1.77,
+      "series": "splendor",
       "tags": ["Strategy", "Cards"],
       "links": [
         {
@@ -157,6 +158,7 @@
       "age": "12",
       "category": "euro",
       "weight": 2.91,
+      "series": "castles-of-burgundy",
       "tags": ["Strategy", "Dice"],
       "links": [
         {
@@ -190,6 +192,7 @@
       "age": "10",
       "category": "party",
       "weight": 1.83,
+      "series": "werewolves-of-millers-hollow",
       "tags": ["Party", "Social Deduction", "Expansion"],
       "links": [
         {
@@ -215,6 +218,7 @@
       "age": "8",
       "category": "party",
       "weight": 1.52,
+      "series": "werewolves-of-millers-hollow",
       "tags": ["Party", "Social Deduction", "Expansion"],
       "links": [
         {
@@ -265,6 +269,7 @@
       "age": "14",
       "category": "american",
       "weight": 3.57,
+      "series": "arkham-horror-lcg",
       "tags": ["Co-op", "Cards", "Thematic"],
       "links": [
         {
@@ -293,6 +298,7 @@
       "age": "14",
       "category": "card",
       "weight": 3.64,
+      "series": "arkham-horror-lcg",
       "tags": ["Co-op", "Cards", "Expansion"],
       "links": [
         {
@@ -321,6 +327,7 @@
       "age": "14",
       "category": "card",
       "weight": 3.67,
+      "series": "arkham-horror-lcg",
       "tags": ["Co-op", "Cards", "Expansion"],
       "links": [
         {
@@ -349,6 +356,7 @@
       "age": "14",
       "category": "card",
       "weight": 4.2,
+      "series": "arkham-horror-lcg",
       "tags": ["Co-op", "Cards", "Expansion"],
       "links": [
         {
@@ -419,6 +427,7 @@
       "age": "12",
       "category": "euro",
       "weight": 2.83,
+      "series": "ark-nova",
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -709,6 +718,7 @@
       "age": "12",
       "category": "euro",
       "weight": 3.11,
+      "series": "lost-ruins-of-arnak",
       "tags": ["Strategy", "Euro", "Expansion"],
       "links": [
         {
@@ -891,6 +901,7 @@
       "playtime": "5",
       "category": "party",
       "weight": 1,
+      "series": "werewolves-of-millers-hollow",
       "tags": ["Party", "Social Deduction"],
       "links": [
         {
@@ -912,6 +923,7 @@
       "age": "10",
       "category": "party",
       "weight": 1.31,
+      "series": "werewolves-of-millers-hollow",
       "tags": ["Party", "Social Deduction"],
       "links": [
         {
@@ -978,6 +990,7 @@
       "age": "13",
       "category": "euro",
       "weight": 2.95,
+      "series": "viticulture",
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -1222,6 +1235,7 @@
       "age": "12",
       "category": "euro",
       "weight": 3.91,
+      "series": "great-western-trail",
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -1272,6 +1286,7 @@
       "age": "12",
       "category": "euro",
       "weight": 3.21,
+      "series": "lost-ruins-of-arnak",
       "tags": ["Strategy", "Euro", "Expansion"],
       "links": [
         {
@@ -1322,6 +1337,7 @@
       "age": "14",
       "category": "war",
       "weight": 2.5,
+      "series": "war-chest",
       "tags": ["War Game", "Abstract", "Expansion"],
       "links": [
         {
@@ -1347,6 +1363,7 @@
       "age": "12",
       "category": "euro",
       "weight": 3.1,
+      "series": "pirates-of-maracaibo",
       "tags": ["Euro", "Expansion"],
       "links": [
         {
@@ -1405,6 +1422,7 @@
       "age": "8",
       "category": "abstract",
       "weight": 1.78,
+      "series": "azul",
       "tags": ["Abstract", "Family"],
       "links": [
         {
@@ -1480,6 +1498,7 @@
       "age": "10",
       "category": "euro",
       "weight": 2.23,
+      "series": "7-wonders-duel",
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -1637,6 +1656,7 @@
       "age": "12",
       "category": "euro",
       "weight": 4,
+      "series": "great-western-trail",
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -1886,6 +1906,7 @@
       "age": "14",
       "category": "euro",
       "weight": 3.75,
+      "series": "seti",
       "tags": ["Strategy", "Euro", "Expansion"],
       "links": [
         {
@@ -2002,6 +2023,7 @@
       "age": "12",
       "category": "euro",
       "weight": 2.93,
+      "series": "lost-ruins-of-arnak",
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -2150,6 +2172,7 @@
       "playtime": "15",
       "category": "euro",
       "weight": 2.9,
+      "series": "viticulture",
       "tags": ["Accessory"],
       "links": [
         {
@@ -2175,6 +2198,7 @@
       "age": "13",
       "category": "euro",
       "weight": 2.9,
+      "series": "viticulture",
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -2208,6 +2232,7 @@
       "age": "12",
       "category": "euro",
       "weight": 3.27,
+      "series": "terraforming-mars",
       "tags": ["Accessory"],
       "links": [
         {
@@ -2233,6 +2258,7 @@
       "age": "12",
       "category": "euro",
       "weight": 2.97,
+      "series": "terraforming-mars",
       "tags": ["Strategy", "Euro", "Expansion"],
       "links": [
         {
@@ -2258,6 +2284,7 @@
       "age": "12",
       "category": "euro",
       "weight": 2.87,
+      "series": "terraforming-mars",
       "tags": ["Strategy", "Euro", "Expansion"],
       "links": [
         {
@@ -2283,6 +2310,7 @@
       "age": "12",
       "category": "euro",
       "weight": 3.68,
+      "series": "terraforming-mars",
       "tags": ["Strategy", "Euro", "Expansion"],
       "links": [
         {
@@ -2308,6 +2336,7 @@
       "age": "10",
       "category": "euro",
       "weight": 2.13,
+      "series": "parks",
       "tags": ["Euro", "Family"],
       "links": [
         {
@@ -2341,6 +2370,7 @@
       "age": "10",
       "category": "euro",
       "weight": 2.23,
+      "series": "parks",
       "tags": ["Euro", "Expansion"],
       "links": [
         {
@@ -2391,6 +2421,7 @@
       "age": "13",
       "category": "american",
       "weight": 2.14,
+      "series": "maximum-apocalypse",
       "tags": ["Co-op", "Thematic", "Cards"],
       "links": [
         {
@@ -2416,6 +2447,7 @@
       "age": "13",
       "category": "american",
       "weight": 2.5,
+      "series": "maximum-apocalypse",
       "tags": ["Co-op", "Thematic", "Cards"],
       "links": [
         {
@@ -2441,6 +2473,7 @@
       "age": "12",
       "category": "card",
       "weight": 1.83,
+      "series": "little-factory",
       "tags": ["Cards", "Family"],
       "links": [
         {
@@ -2474,6 +2507,7 @@
       "age": "12",
       "category": "card",
       "weight": 1.83,
+      "series": "little-factory",
       "tags": ["Cards", "Family", "Expansion"],
       "links": [
         {
@@ -2499,6 +2533,7 @@
       "age": "14",
       "category": "euro",
       "weight": 3.85,
+      "series": "ark-nova",
       "tags": ["Strategy", "Euro", "Expansion"],
       "links": [
         {
@@ -2524,6 +2559,7 @@
       "age": "14",
       "category": "euro",
       "weight": 3.8,
+      "series": "ark-nova",
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -2657,6 +2693,7 @@
       "age": "10",
       "category": "card",
       "weight": 1.18,
+      "series": "love-letter",
       "tags": ["Cards"],
       "links": [
         {
@@ -2922,6 +2959,7 @@
       "age": "10",
       "category": "euro",
       "weight": 2.86,
+      "series": "7-wonders-duel",
       "tags": ["Strategy", "Euro", "Expansion"],
       "links": [
         {
@@ -2967,6 +3005,7 @@
       "age": "12",
       "category": "euro",
       "weight": 3.31,
+      "series": "white-castle",
       "tags": ["Euro", "Expansion"],
       "links": [
         {
@@ -2992,6 +3031,7 @@
       "age": "10",
       "category": "euro",
       "weight": 2.98,
+      "series": "white-castle",
       "tags": ["Euro"],
       "links": [
         {
@@ -3021,6 +3061,7 @@
       "age": "12",
       "category": "euro",
       "weight": 3.07,
+      "series": "white-castle",
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -3054,6 +3095,7 @@
       "age": "10",
       "category": "euro",
       "weight": 2.23,
+      "series": "parks",
       "tags": ["Euro", "Expansion"],
       "links": [
         {
@@ -3212,6 +3254,7 @@
       "age": "8",
       "category": "abstract",
       "weight": 1.77,
+      "series": "azul",
       "tags": ["Abstract", "Family"],
       "links": [
         {
@@ -3278,6 +3321,7 @@
       "age": "14",
       "category": "american",
       "weight": 3.84,
+      "series": "root",
       "tags": ["Strategy", "Thematic"],
       "links": [
         {
@@ -3303,6 +3347,7 @@
       "age": "10",
       "category": "american",
       "weight": 3.86,
+      "series": "root",
       "tags": ["Strategy", "Thematic", "Expansion"],
       "links": [
         {
@@ -3328,6 +3373,7 @@
       "age": "10",
       "category": "american",
       "weight": 3.65,
+      "series": "root",
       "tags": ["Strategy", "Thematic", "Expansion"],
       "links": [
         {
@@ -3353,6 +3399,7 @@
       "age": "12",
       "category": "euro",
       "weight": 2.83,
+      "series": "castles-of-burgundy",
       "tags": ["Strategy", "Euro", "Dice"],
       "links": [
         {
@@ -3386,6 +3433,7 @@
       "age": "10",
       "category": "abstract",
       "weight": 1.87,
+      "series": "splendor",
       "tags": ["Cards", "Family"],
       "links": [
         {
@@ -3494,6 +3542,7 @@
       "age": "14",
       "category": "euro",
       "weight": 3.84,
+      "series": "seti",
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -3519,6 +3568,7 @@
       "age": "12",
       "category": "euro",
       "weight": 3.27,
+      "series": "terraforming-mars",
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -3552,6 +3602,7 @@
       "age": "12",
       "category": "euro",
       "weight": 2.56,
+      "series": "terraforming-mars",
       "tags": ["Strategy", "Euro", "Expansion"],
       "links": [
         {
@@ -3577,6 +3628,7 @@
       "age": "12",
       "category": "euro",
       "weight": 2.97,
+      "series": "castles-of-burgundy",
       "tags": ["Strategy", "Euro", "Dice"],
       "links": [
         {
@@ -3610,6 +3662,7 @@
       "age": "14",
       "category": "war",
       "weight": 2.32,
+      "series": "war-chest",
       "tags": ["War Game", "Abstract"],
       "links": [
         {
@@ -3643,6 +3696,7 @@
       "age": "12",
       "category": "euro",
       "weight": 2.89,
+      "series": "pirates-of-maracaibo",
       "tags": ["Strategy", "Euro"],
       "links": [
         {
@@ -3660,6 +3714,115 @@
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
           "url": "https://boardgamegeek.com/boardgame/397385/pirates-of-maracaibo"
+        }
+      ]
+    },
+    {
+      "id": "hakoniwa-meow",
+      "name": { "zh": "箱庭喵喵", "en": "Hakoniwa Meow" },
+      "image": "images/hakoniwa-meow.jpg",
+      "description": {
+        "zh": "又称“箱庭猫”。国产原创的猫咪派对对战游戏。玩家轮流打出房间板块，一点点拼出“箱庭”地图，再用卡牌效果招来更多喵喵，掷骰子和其他玩家的猫咪混战，最后留下来的就是赢家。过程中可以结盟，也可以背叛。上百张卡牌效果各不相同，每局手牌都不一样，还有闭眼叠喵喵、抛撒喵喵等实体小挑战。设计师：英哲，新物集众筹发行。\n\n适合：朋友聚会，喜欢热闹互动的玩家。",
+        "en": "An original Chinese cat-themed party battle game. Players lay room tiles to build a little \"box garden\" map, use card effects to bring in more cats, then roll dice to brawl with everyone else's cats. The last one standing wins. Alliances and betrayals happen along the way. With over a hundred different card effects, every hand plays differently, and there are dexterity moments like stacking cats with your eyes closed or tossing them to see how many stay standing. Designed by Yingzhe; crowdfunded on Xinwuji.\n\nGood for: lively game nights with friends."
+      },
+      "players": "2–6",
+      "playtime": "8–20",
+      "age": "8",
+      "category": "party",
+      "weight": 1.8,
+      "tags": ["Party", "Cards", "Dice"],
+      "links": [
+        {
+          "label": { "zh": "规则介绍视频（B站）", "en": "Gameplay video (Bilibili, Chinese)" },
+          "url": "https://www.bilibili.com/video/BV1KVf5YqEnz/"
+        },
+        {
+          "label": { "zh": "在 B站 搜索教学视频", "en": "Find how-to-play videos on Bilibili" },
+          "url": "https://search.bilibili.com/all?keyword=箱庭喵喵"
+        }
+      ]
+    },
+    {
+      "id": "arkham-lovecraft-letter",
+      "name": { "zh": "诡镇奇谈：克苏鲁情书", "en": "Arkham Horror: Lovecraft Letter" },
+      "image": "images/arkham-lovecraft-letter.jpg",
+      "description": {
+        "zh": "《情书》的克苏鲁版本（又名“洛夫克拉夫特情书”），舞台换成了《诡镇奇谈》的阿卡姆镇。规则和《情书》一样：每人只拿一张牌，轮流摸一张、打一张，用角色能力推理和淘汰对手。不同的是加入了“疯狂”：疯狂牌的效果更强，但打出越多疯狂牌，之后每回合都要做理智检定，一旦失败就出局。要保持清醒，还是冒险拥抱疯狂？牌组共 27 张，比原版更丰富。设计师：Seiji Kanai（2025）。\n\n适合：喜欢《情书》、想要更多变化和克苏鲁氛围的玩家。",
+        "en": "The Cthulhu take on Love Letter, set in Arkham from the Arkham Horror universe. Like Love Letter, you hold one card; each turn draw one and play one, using character powers to deduce and knock out rivals. The twist is madness: insane cards have stronger effects, but the more of them you play, the more sanity checks you face at the start of your turns, and failing one knocks you out. Stay sane, or embrace the madness? A 27-card deck, bigger than the original. Designed by Seiji Kanai (2025).\n\nGood for: Love Letter fans who want more variety and a Lovecraftian mood."
+      },
+      "players": "2–6",
+      "playtime": "3–5",
+      "age": "14",
+      "category": "card",
+      "weight": 1.42,
+      "series": "love-letter",
+      "tags": ["Cards", "Deduction", "Thematic"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=arkham+horror+lovecraft+letter+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/424784/arkham-horror-lovecraft-letter"
+        }
+      ]
+    },
+    {
+      "id": "canvas",
+      "name": { "zh": "流画溢彩", "en": "Canvas" },
+      "image": "images/canvas.jpg",
+      "description": {
+        "zh": "画家们参加艺术比赛，用透明的艺术卡层层叠出三幅画作。每回合二选一：从艺术卡列中拿一张牌（越靠后的牌要在前面的牌上放灵感标记才能拿），或者把手上的三张牌按自己想要的顺序叠成一幅画。上层的牌会遮住下层底部的图标，所以叠放顺序决定了画作露出哪些图标，再按本局的四张计分卡拿缎带得分。每人完成三幅画后游戏结束。透明卡牌叠出来的画很漂亮。设计师：Jeff Chin、Andrew Nerger（2021）。支持单人模式。\n\n适合：喜欢颜值高、规则简单又要动脑的玩家。",
+        "en": "Painters enter an art competition, layering transparent Art cards into three paintings. Each turn, either take an Art card from the row (cards further along cost Inspiration tokens placed on the ones you skip) or stack three cards from your hand, in any order, into a painting. Top cards hide some of the icons on the cards beneath, so the order decides what shows, and the painting earns ribbons from this game's four scoring cards. The game ends when everyone has finished three paintings. The see-through cards make genuinely beautiful paintings. Designed by Jeff Chin and Andrew Nerger (2021). Includes a solo mode.\n\nGood for: players who like a gorgeous, easy-to-learn puzzle."
+      },
+      "players": "1–5",
+      "playtime": "6–10",
+      "age": "10",
+      "category": "abstract",
+      "weight": 1.73,
+      "tags": ["Cards", "Abstract", "Family"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=canvas+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
+          "url": "https://en.doc.boardgamearena.com/Gamehelpcanvas"
+        },
+        {
+          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
+          "url": "https://boardgamearena.com/gamepanel?game=canvas"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/290236/canvas"
+        }
+      ]
+    },
+    {
+      "id": "sweet-lands",
+      "name": { "zh": "甜蜜国度", "en": "Sweet Lands" },
+      "image": "images/sweet-lands.jpg",
+      "description": {
+        "zh": "外表可爱、内核硬核的糖果王国经营游戏。玩家要在甜点之国建设城市、发展产业，打造最富有的糖果帝国，争夺“甜点之冠”。核心是工人放置：派出市民执行行动，同时在六边形地图上放置板块扩张城市，每位玩家能力各不相同。游戏有 200 多张市民卡和近 450 个木质配件，规模很大。设计师：Totsuca Chuo，Uchibacoya 出版（2025）。支持单人模式。\n\n适合：喜欢重度策略、能接受长时间对局的玩家。别被画风骗了，BGG 重度评分超过 4。",
+        "en": "A cute-looking but heavy candy-kingdom economic game. Build towns and industries in the land of sweets to grow the richest confectionery empire and claim the crown. At its heart is worker placement: send citizens to take actions while placing tiles on a hex map to expand your city, with different powers for each player. Over 200 citizen cards and nearly 450 wooden pieces. Designed by Totsuca Chuo, published by Uchibacoya (2025). Includes a solo mode.\n\nGood for: fans of heavy strategy games with time for a long session. Don't be fooled by the art: it weighs over 4 on BGG."
+      },
+      "players": "1–4",
+      "playtime": "50",
+      "age": "14",
+      "category": "euro",
+      "weight": 4.19,
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=sweet+lands+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/425445/sweet-lands"
         }
       ]
     }

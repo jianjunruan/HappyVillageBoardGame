@@ -6,16 +6,26 @@
     search: document.getElementById("search"),
     cats: document.getElementById("cats"),
     tags: document.getElementById("tags"),
+    loanFilter: document.getElementById("loan-filter"),
     langToggle: document.getElementById("lang-toggle"),
     dialog: document.getElementById("detail"),
     detailBody: document.getElementById("detail-body"),
+    adminBar: document.getElementById("admin-bar"),
+    login: document.getElementById("login"),
+    loginForm: document.getElementById("login-form"),
+    loginError: document.getElementById("login-error"),
   };
 
   let games = [];
   let tagNames = {};
   let activeTag = null;
   let activeCat = null;
+  let activeLoan = null; // null = all, "in" = available, "out" = on loan, "present" / "storage" = has sets there
   let loaded = false;
+  let loans = {}; // open loans by game id (a list per game), from Supabase
+  let info = {}; // sets per location by game id: { present, storage }; games not listed have 1 set, present
+  let loansFailed = false;
+  let loansLoaded = false;
 
   // Sections and difficulty bands (BGG weight, 1–5), in display order.
   const CATEGORIES = ["euro", "american", "party", "card", "abstract", "family", "puzzle", "war", "roleplay"];
@@ -36,6 +46,31 @@
   // Tags are stored as keys (e.g. "Strategy"); their translations live in games.json → "tags".
   const tagLabel = (key) => loc(tagNames[key]) || key;
   const gameName = (g) => loc(g.name);
+
+  // Dates: timestamps come as ISO strings, due dates as "YYYY-MM-DD" (read as a local date, not UTC).
+  const toDate = (s) => (/^\d{4}-\d{2}-\d{2}$/.test(s) ? new Date(...s.split("-").map((n, i) => (i === 1 ? n - 1 : +n))) : new Date(s));
+  const fmtDate = (s) =>
+    toDate(s).toLocaleDateString(HVI18n.lang === "zh" ? "zh-CN" : "en", { year: "numeric", month: "short", day: "numeric" });
+  const isOverdue = (loan) => loan.due_date && toDate(loan.due_date) < new Date(new Date().toDateString());
+
+  // Sets owned, sets out and sets left for a game.
+  const loansOf = (g) => loans[g.id] || [];
+  const setsAt = (g) => info[g.id] || { present: 1, storage: 0 };
+  const ownedOf = (g) => setsAt(g).present + setsAt(g).storage;
+  const LOCATIONS = ["present", "storage"];
+  const locationIcon = (loc) => (loc === "storage" ? "📦" : "📍");
+  // "📍 在场" for a single set; "📍 在场 2 套 · 📦 仓库 1 套" when there are several; "⚪ 暂无（0 套）" when none.
+  const whereHtml = (g, cls) =>
+    ownedOf(g) === 0
+      ? `<span class="${cls} loc-none">⚪ ${esc(t("loc_none"))}</span>`
+      : LOCATIONS.filter((loc) => setsAt(g)[loc] > 0)
+      .map((loc) => {
+        const n = ownedOf(g) > 1 ? ` ${t("loanQty", { n: setsAt(g)[loc] })}` : "";
+        return `<span class="${cls} loc-${loc}">${locationIcon(loc)} ${esc(t("loc_" + loc))}${esc(n)}</span>`;
+      })
+      .join(" ");
+  const outOf = (g) => loansOf(g).reduce((n, l) => n + (l.quantity || 1), 0);
+  const leftOf = (g) => Math.max(ownedOf(g) - outOf(g), 0);
 
   function meta(game) {
     return [
@@ -64,6 +99,24 @@
     els.tags.innerHTML = chip(null, t("all")) + keys.map((k) => chip(k, tagLabel(k))).join("");
   }
 
+  // Available / on-loan filter; only shown once loan data has loaded.
+  function renderLoanFilter() {
+    const show = HVLoans.enabled && !loansFailed;
+    els.loanFilter.hidden = !show;
+    if (!show) return;
+    const out = games.filter((g) => outOf(g) > 0).length;
+    const chip = (key, label) =>
+      `<button class="chip${key === activeLoan ? " is-on" : ""}" data-loan="${esc(key ?? "")}">${esc(label)}</button>`;
+    const at = (loc) => games.filter((g) => setsAt(g)[loc] > 0).length;
+    const none = games.filter((g) => ownedOf(g) === 0).length;
+    els.loanFilter.innerHTML =
+      chip(null, t("all")) +
+      chip("in", t("loanFilterIn")) +
+      chip("out", `${t("loanFilterOut")} (${out})`) +
+      LOCATIONS.map((loc) => chip(loc, `${locationIcon(loc)} ${t("loc_" + loc)} (${at(loc)})`)).join("") +
+      (none || activeLoan === "none" ? chip("none", `⚪ ${t("loc_noneShort")} (${none})`) : "");
+  }
+
   function renderGrid() {
     const q = els.search.value.trim().toLowerCase();
     const list = games
@@ -76,14 +129,54 @@
         return (
           (!q || text.includes(q)) &&
           (!activeTag || (g.tags || []).includes(activeTag)) &&
-          (!activeCat || catOf(g) === activeCat)
+          (!activeCat || catOf(g) === activeCat) &&
+          (!activeLoan ||
+            (activeLoan === "out" ? outOf(g) > 0 : activeLoan === "in" ? leftOf(g) > 0 : activeLoan === "none" ? ownedOf(g) === 0 : setsAt(g)[activeLoan] > 0))
         );
-      })
-      // Easiest first within each category; name breaks ties.
-      .sort((a, b) => (a.weight ?? 0) - (b.weight ?? 0) || gameName(a).localeCompare(gameName(b), HVI18n.lang));
+      });
+    // Easiest first within each category and band, but games in the same series (base game, expansions,
+    // editions) stay together: the series sits where its easiest member would, base game first.
+    const groupKey = (g) => `${catOf(g)}|${bandOf(g)}|${g.series || g.id}`;
+    const groupMin = {};
+    for (const g of list) groupMin[groupKey(g)] = Math.min(groupMin[groupKey(g)] ?? Infinity, g.weight ?? 0);
+    const groupName = {};
+    for (const g of list) if (!groupName[groupKey(g)] || g.id === g.series) groupName[groupKey(g)] = gameName(g);
+    list.sort(
+      (a, b) =>
+        groupMin[groupKey(a)] - groupMin[groupKey(b)] ||
+        groupName[groupKey(a)].localeCompare(groupName[groupKey(b)], HVI18n.lang) ||
+        groupKey(a).localeCompare(groupKey(b)) ||
+        (b.id === b.series) - (a.id === a.series) ||
+        (a.weight ?? 0) - (b.weight ?? 0) ||
+        gameName(a).localeCompare(gameName(b), HVI18n.lang)
+    );
 
+    // Quick-look tags in the card's top-right corner: sets owned, where they are, and loan status.
+    const badge = (g) => {
+      if (!HVLoans.enabled || loansFailed || !loansLoaded) return "";
+      const owned = ownedOf(g);
+      const tag = (cls, text, title = "") =>
+        `<span class="card-tag ${cls}"${title ? ` title="${esc(title)}"` : ""}>${esc(text)}</span>`;
+      if (owned === 0) return `<div class="card-tags">${tag("is-none", `⚪ ${t("loc_none")}`)}</div>`;
+      const at = setsAt(g);
+      const where =
+        at.present && at.storage
+          ? tag("is-where", `📍${at.present} 📦${at.storage}`, `${t("loc_present")} ${at.present} · ${t("loc_storage")} ${at.storage}`)
+          : tag("is-where", at.storage ? `📦 ${t("loc_storage")}` : `📍 ${t("loc_present")}`);
+      const list = loansOf(g);
+      const left = leftOf(g);
+      const who = list.map((l) => `${l.borrower}${(l.quantity || 1) > 1 ? ` ×${l.quantity}` : ""}`).join("、");
+      const overdue = list.some(isOverdue) ? " is-overdue" : "";
+      const status = !list.length
+        ? tag("is-in", owned > 1 ? `🟢 ${t("tagLeft", { n: left })}` : `🟢 ${t("loanFilterIn")}`)
+        : left
+          ? tag(`is-partial${overdue}`, `🟠 ${t("tagOut", { out: outOf(g), owned })}`, who)
+          : tag(`is-out${overdue}`, `🔴 ${t("loanOnLoan")}${owned === 1 ? ` · ${who}` : ` ${outOf(g)}/${owned}`}`, who);
+      return `<div class="card-tags">${tag("is-sets", `🎲 ${t("loanQty", { n: owned })}`)}${where}${status}</div>`;
+    };
     const card = (g) => `
-        <a class="card" href="#/game/${encodeURIComponent(g.id)}">
+        <a class="card${loansLoaded && !loansFailed && ownedOf(g) === 0 ? " is-gone" : ""}" href="#/game/${encodeURIComponent(g.id)}">
+          ${badge(g)}
           <img src="${esc(HVMedia.imageUrl(g.image))}" alt="" loading="lazy" onerror="this.src='images/placeholder.svg'">
           <div class="card-body">
             <h4 class="card-title">${esc(gameName(g))}</h4>
@@ -143,6 +236,124 @@
     return videoHtml + linkHtml;
   }
 
+  // --- Loan box in the game popup: status for everyone, lend/return + history for admins ---
+  // Summary line (e.g. "🟢 共 3 套 · 可借 1 套"), then one line per open loan.
+  function loanStatusHtml(g, admin) {
+    const owned = ownedOf(g);
+    const left = leftOf(g);
+    const summary =
+      owned === 0
+        ? `<p class="loan-status is-none">⚪ ${esc(t("loanNone"))}</p>`
+        : owned > 1
+        ? `<p class="loan-status ${left ? "is-in" : "is-out"}">${left ? "🟢" : "🔴"} ${esc(t("loanSets", { owned, left }))}</p>`
+        : left
+          ? `<p class="loan-status is-in">🟢 ${esc(t("loanAvailable"))}</p>`
+          : `<p class="loan-status is-out">🔴 ${esc(t("loanOnLoan"))}</p>`;
+    const rows = loansOf(g).map((loan) => {
+      const bits = [t("loanTo", { name: loan.borrower })];
+      if (owned > 1 || (loan.quantity || 1) > 1) bits.push(t("loanQty", { n: loan.quantity || 1 }));
+      bits.push(t("loanSince", { date: fmtDate(loan.loaned_at) }));
+      if (loan.due_date) bits.push(t("loanDue", { date: fmtDate(loan.due_date) }));
+      const overdue = isOverdue(loan) ? ` <strong class="overdue">${esc(t("loanOverdue"))}</strong>` : "";
+      const ret = admin
+        ? `<button class="btn ghost btn-sm" type="button" data-loan-return="${esc(loan.id)}" data-borrower="${esc(loan.borrower)}">${esc(t("loanReturn"))}</button>`
+        : "";
+      return `<li><span>${esc(bits.join(" · "))}${overdue}</span>${ret}</li>`;
+    });
+    const where = owned === 0 ? "" : whereHtml(g, "loan-loc");
+    return summary.replace("</p>", ` ${where}</p>`) + (rows.length ? `<ul class="loan-list">${rows.join("")}</ul>` : "");
+  }
+
+  function renderLoanBox(g, message = "") {
+    const box = els.detailBody.querySelector("#loan-box");
+    if (!box) return;
+    if (loansFailed) {
+      box.innerHTML = `<p class="loan-status">${esc(t("loanLoadError"))}</p>`;
+      return;
+    }
+    const isAdmin = Boolean(HVLoans.user);
+    let admin = "";
+    if (isAdmin) {
+      const left = leftOf(g);
+      // Quantity picker only when more than one set is left.
+      const qty =
+        left > 1
+          ? `<label class="loan-qty">${esc(t("loanQtyLabel"))}<select name="quantity">${Array.from({ length: left }, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join("")}</select></label>`
+          : `<input type="hidden" name="quantity" value="1">`;
+      admin = `<form class="loan-form copies-form" data-copies>
+             <label>📍 ${esc(t("setsPresent"))}<input name="present" type="number" min="0" max="99" step="1" value="${setsAt(g).present}" required></label>
+             <label>📦 ${esc(t("setsStorage"))}<input name="storage" type="number" min="0" max="99" step="1" value="${setsAt(g).storage}" required></label>
+             <button class="btn ghost" type="submit">${esc(t("copiesSave"))}</button>
+           </form>`;
+      admin += left
+        ? `<form class="loan-form lend-form" data-loan-lend>
+             <label>${esc(t("loanBorrower"))}<input name="borrower" required maxlength="60" autocomplete="off"></label>
+             ${qty}
+             <label>${esc(t("loanDueLabel"))}<input name="due" type="date"></label>
+             <button class="btn" type="submit">${esc(t("loanLend"))}</button>
+           </form>`
+        : "";
+      admin += `<p class="form-error" role="alert">${esc(message)}</p>
+        <details class="loan-history" data-history><summary>${esc(t("loanHistory"))}</summary><ul><li>…</li></ul></details>`;
+    }
+    box.innerHTML = loanStatusHtml(g, isAdmin) + admin;
+  }
+
+  async function loadHistory(g, details) {
+    const ul = details.querySelector("ul");
+    try {
+      const rows = await HVLoans.history(g.id);
+      ul.innerHTML = rows.length
+        ? rows
+            .map((r) => {
+              const end = r.returned_at ? t("loanReturnedOn", { date: fmtDate(r.returned_at) }) : t("loanOnLoan");
+              const qty = (r.quantity || 1) > 1 ? ` · ${t("loanQty", { n: r.quantity })}` : "";
+              return `<li>${esc(r.borrower)}${esc(qty)} · ${esc(fmtDate(r.loaned_at))} → ${esc(end)}</li>`;
+            })
+            .join("")
+        : `<li>${esc(t("loanHistoryEmpty"))}</li>`;
+    } catch (err) {
+      ul.innerHTML = `<li>${esc(t("loanError", { msg: err.message }))}</li>`;
+    }
+  }
+
+  function loanErrorText(err) {
+    if (err.code === "HVC01" || err.code === "23505") return t("loanAlready");
+    if (err.code === "HVC02") return t("copiesTooFew");
+    if (err.code === "42501" || err.code === "nothing-updated" || err.status === 403) return t("loanNotAllowed");
+    if (err.status === 401) return t("loanSignedOut");
+    return t("loanError", { msg: err.message });
+  }
+
+  async function refreshLoans() {
+    if (!HVLoans.enabled) return;
+    try {
+      [loans, info] = await Promise.all([HVLoans.active(), HVLoans.gameInfo()]);
+      loansFailed = false;
+      loansLoaded = true;
+    } catch {
+      loansFailed = true;
+    }
+    if (!loaded) return;
+    renderLoanFilter();
+    renderGrid();
+    const g = els.dialog.open && games.find((x) => x.id === currentGameId());
+    if (g) renderLoanBox(g);
+  }
+
+  // The admin button only appears with ?admin in the address (e.g. index.html?admin=1),
+  // or while an admin is signed in, so they can always sign out.
+  const adminParam = new URLSearchParams(location.search).has("admin");
+  function renderAdminBar() {
+    const show = HVLoans.enabled && (adminParam || Boolean(HVLoans.user));
+    els.adminBar.hidden = !show;
+    if (!show) return void (els.adminBar.innerHTML = "");
+    const who = HVLoans.user && esc(t("adminSignedIn", { email: HVLoans.user }));
+    els.adminBar.innerHTML = HVLoans.user
+      ? `<span class="admin-who" title="${who}">${who}</span><a class="admin-btn" href="admin/inventory.html">${esc(t("inventory"))}</a><button class="admin-btn" type="button" data-signout title="${who}">${esc(t("adminSignOut"))}</button>`
+      : `<button class="admin-btn" type="button" data-signin>${esc(t("adminLogin"))}</button>`;
+  }
+
   function openGame(id) {
     const g = games.find((x) => x.id === id);
     if (!g) return;
@@ -151,8 +362,10 @@
       <h2 id="detail-title">${esc(gameName(g))}</h2>
       <p class="meta">${meta(g).join(" · ")}</p>
       ${(g.tags || []).length ? `<p class="tag-row">${g.tags.map((k) => `<span class="chip">${esc(tagLabel(k))}</span>`).join("")}</p>` : ""}
+      ${HVLoans.enabled ? `<div id="loan-box" class="loan-box"></div>` : ""}
       <p class="description">${esc(loc(g.description))}</p>
       ${renderLinks(g.links)}`;
+    renderLoanBox(g);
     document.title = `${gameName(g)} · ${t("siteName")}`;
     if (!els.dialog.open) els.dialog.showModal();
   }
@@ -178,9 +391,11 @@
     document.title = t("siteName");
     els.langToggle.textContent = t("toggle");
     els.langToggle.setAttribute("aria-label", t("toggleLabel"));
+    renderAdminBar();
     if (!loaded) return;
     renderCats();
     renderTags();
+    renderLoanFilter();
     renderGrid();
     if (els.dialog.open) openGame(currentGameId()); // re-render open popup in the new language
   }
@@ -200,6 +415,13 @@
     renderCats();
     renderGrid();
   });
+  els.loanFilter.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-loan]");
+    if (!btn) return;
+    activeLoan = btn.dataset.loan || null;
+    renderLoanFilter();
+    renderGrid();
+  });
   els.langToggle.addEventListener("click", () => HVI18n.toggle());
   HVI18n.onChange(renderAll);
   els.dialog.addEventListener("close", () => {
@@ -209,7 +431,112 @@
   els.dialog.addEventListener("click", (e) => {
     if (e.target === els.dialog || e.target.closest("[data-close]")) els.dialog.close();
   });
+
+  // Admin actions inside the popup.
+  els.detailBody.addEventListener("toggle", (e) => {
+    const g = games.find((x) => x.id === currentGameId());
+    if (g && e.target.matches("[data-history]") && e.target.open) loadHistory(g, e.target);
+  }, true);
+  els.detailBody.addEventListener("submit", async (e) => {
+    const copiesForm = e.target.closest("[data-copies]");
+    if (copiesForm) {
+      e.preventDefault();
+      const g = games.find((x) => x.id === currentGameId());
+      const sets = {
+        present: parseInt(copiesForm.elements.present.value, 10) || 0,
+        storage: parseInt(copiesForm.elements.storage.value, 10) || 0,
+      };
+      if (!g) return;
+      const total = sets.present + sets.storage;
+      if (total > 99 || total < outOf(g)) {
+        renderLoanBox(g, total < outOf(g) ? t("copiesTooFew") : t("setsTotalRange"));
+        return;
+      }
+      copiesForm.querySelector("button").disabled = true;
+      try {
+        await HVLoans.saveGameInfo(g.id, sets);
+        await refreshLoans();
+      } catch (err) {
+        renderLoanBox(g, loanErrorText(err));
+        if (err.status === 401) renderAdminBar();
+      }
+      return;
+    }
+    const form = e.target.closest("[data-loan-lend]");
+    if (!form) return;
+    e.preventDefault();
+    const g = games.find((x) => x.id === currentGameId());
+    const borrower = form.elements.borrower.value.trim();
+    if (!g || !borrower) return;
+    form.querySelector("button").disabled = true;
+    try {
+      await HVLoans.lend(g.id, borrower, form.elements.due.value, parseInt(form.elements.quantity.value, 10) || 1);
+      await refreshLoans();
+    } catch (err) {
+      renderLoanBox(g, loanErrorText(err));
+      if (err.status === 401) renderAdminBar();
+    }
+  });
+  els.detailBody.addEventListener("click", async (e) => {
+    const btn = e.target.closest("[data-loan-return]");
+    if (!btn) return;
+    const g = games.find((x) => x.id === currentGameId());
+    if (!g || !confirm(t("loanReturnConfirm", { name: gameName(g), borrower: btn.dataset.borrower }))) return;
+    btn.disabled = true;
+    try {
+      await HVLoans.returnLoan(btn.dataset.loanReturn);
+      await refreshLoans();
+    } catch (err) {
+      renderLoanBox(g, loanErrorText(err));
+      if (err.status === 401) renderAdminBar();
+    }
+  });
+
+  // Admin sign-in / sign-out.
+  els.adminBar.addEventListener("click", (e) => {
+    if (e.target.closest("[data-signin]")) {
+      els.loginError.textContent = "";
+      els.login.showModal();
+    } else if (e.target.closest("[data-signout]")) {
+      HVLoans.signOut();
+      renderAll();
+    }
+  });
+  els.login.addEventListener("click", (e) => {
+    if (e.target === els.login || e.target.closest("[data-login-cancel]")) els.login.close();
+  });
+  els.loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const f = els.loginForm.elements;
+    els.loginError.textContent = "";
+    try {
+      await HVLoans.signIn(f.email.value.trim(), f.password.value);
+      f.password.value = "";
+      if (!(await HVLoans.isAdmin())) {
+        HVLoans.signOut();
+        els.loginError.textContent = t("notAdmin");
+        return;
+      }
+      els.login.close();
+      renderAll();
+    } catch (err) {
+      els.loginError.textContent = t("signInError", { msg: err.message });
+    }
+  });
+
   window.addEventListener("hashchange", route);
+  // Pick up loans made on another device when the tab comes back into view.
+  document.addEventListener("visibilitychange", () => document.visibilityState === "visible" && refreshLoans());
+
+  // A remembered sign-in is re-checked on load, in case the account was removed from the admin list.
+  if (HVLoans.enabled && HVLoans.user) {
+    HVLoans.isAdmin()
+      .then((ok) => ok || Promise.reject())
+      .catch(() => {
+        HVLoans.signOut();
+        renderAll();
+      });
+  }
 
   renderAll();
   HVData.getCatalog()
@@ -220,6 +547,7 @@
       els.status.removeAttribute("data-i18n"); // status text is managed by renderGrid from now on
       renderAll();
       route();
+      refreshLoans();
     })
     .catch((err) => {
       els.status.removeAttribute("data-i18n");

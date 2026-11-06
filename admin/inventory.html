@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>桌游库存 Inventory</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="../images/favicon-48.png" type="image/png">
+  <link rel="apple-touch-icon" href="../images/apple-touch-icon.png">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    label { font-size: 0.9rem; }
+    .hint { font-weight: 400; color: var(--muted); font-size: 0.85rem; }
+    button.btn { padding: 8px 14px; border-radius: 10px; border: 1px solid var(--accent); background: var(--accent); color: #fff; font: inherit; cursor: pointer; }
+    button.btn.ghost { background: transparent; color: var(--accent); }
+    button.btn:disabled { opacity: 0.5; cursor: default; }
+    select, input[type="number"] { padding: 6px 8px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); font: inherit; }
+    .gate { max-width: 420px; margin: 24px 0; padding: 20px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+    .gate h2 { margin: 0 0 6px; font-size: 1.2rem; }
+    .gate form { display: grid; gap: 12px; margin-top: 12px; }
+    .gate label { display: grid; gap: 4px; font-weight: 600; }
+
+    .toolbar { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: end; margin: 16px 0 10px; }
+    .toolbar label { display: grid; gap: 4px; color: var(--muted); }
+    .toolbar input[type="search"] { min-width: 220px; margin: 0; }
+    .bulk { display: grid; gap: 10px; padding: 12px; border: 1px dashed var(--border); border-radius: 10px; background: var(--surface); margin-bottom: 10px; }
+    .bulk .head { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
+    .bulk .group { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; }
+    .bulk .group > b { min-width: 150px; font-weight: 600; }
+    .bulk input[type="number"] { width: 64px; }
+
+    .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+    th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    th { position: sticky; top: 0; background: var(--bg); font-weight: 600; white-space: nowrap; z-index: 1; }
+    tbody tr:hover { background: var(--accent-soft); }
+    tr.changed { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+    tr.invalid td { background: color-mix(in srgb, var(--danger) 14%, transparent); }
+    td.name small { display: block; color: var(--muted); }
+    td.num, th.num { text-align: center; }
+    td input[type="number"] { width: 64px; }
+    td.total { font-weight: 600; }
+    .out { color: var(--danger); font-weight: 600; }
+    .muted { color: var(--muted); }
+
+    .savebar { position: sticky; bottom: 0; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between;
+      margin-top: 12px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); box-shadow: 0 -2px 10px rgb(0 0 0 / 0.08); }
+    .savebar .msg { font-weight: 600; }
+    .savebar .msg.ok { color: var(--ok); }
+    .savebar .msg.err { color: var(--danger); }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <main class="wrap" style="padding-top:24px; padding-bottom:40px">
+    <p><a href="../">← 返回桌游列表 Back to games</a> · <a href="editor.html">桌游录入助手 Game entry helper</a></p>
+    <h1>桌游库存 <small style="font-weight:400; color:var(--muted)">Inventory</small></h1>
+
+    <!-- Admin sign-in (Supabase), shared with the games page. -->
+    <section id="gate" class="gate" hidden>
+      <h2>管理员登录 <small class="hint">Admin sign in</small></h2>
+      <p class="hint">此页面仅限管理员使用。This page is for admins only.</p>
+      <form id="gate-form">
+        <label>邮箱 Email <input name="email" type="email" autocomplete="username" required></label>
+        <label>密码 Password <input name="password" type="password" autocomplete="current-password" required></label>
+        <p id="gate-error" class="form-error" role="alert"></p>
+        <div><button class="btn" type="submit">登录 Sign in</button></div>
+      </form>
+    </section>
+    <p id="status" class="hint">正在验证登录…… Checking sign-in…</p>
+
+    <div id="app" hidden>
+      <p id="who" class="hint"></p>
+      <p class="hint">每款游戏分别填写 <b>在场</b> 和 <b>仓库</b> 的套数，合计就是拥有的套数。已送出、遗失或卖掉的游戏填 0。修改后点 <b>保存全部</b>。<br>
+        For each game, enter how many sets are <b>present</b> and how many are in <b>storage</b>; together they are the sets owned. Use 0 for games given away, lost or sold. Then click <b>Save all</b>.</p>
+
+      <div class="toolbar">
+        <label>搜索 Search <input id="q" type="search" placeholder="名称 Name"></label>
+        <label>位置 Location
+          <select id="f-loc">
+            <option value="">全部 All</option>
+            <option value="present">📍 有在场的 Has sets present</option>
+            <option value="storage">📦 有在仓库的 Has sets in storage</option>
+            <option value="none">⚪ 暂无（0 套）None (0 sets)</option>
+          </select>
+        </label>
+        <label>排序 Sort
+          <select id="sort">
+            <option value="zh">中文名 Chinese name</option>
+            <option value="en">英文名 English name</option>
+          </select>
+        </label>
+        <span id="count" class="hint"></span>
+      </div>
+
+      <div class="bulk">
+        <div class="head">
+          <b>批量修改 Bulk edit</b>
+          <span id="sel-count" class="hint">已选 0 Selected</span>
+          <button class="link-btn" type="button" id="clear-sel">取消选择 Clear selection</button>
+        </div>
+        <div class="group">
+          <b>设置套数 Set sets</b>
+          📍 在场 <input id="bulk-present" type="number" min="0" max="99" value="1">
+          📦 仓库 <input id="bulk-storage" type="number" min="0" max="99" value="0">
+          <button class="btn ghost" type="button" id="sets-sel">应用到选中 Apply to selected</button>
+          <button class="btn" type="button" id="sets-all">应用到全部 Apply to all</button>
+        </div>
+        <div class="group">
+          <b>全部套数移到 Move all sets to</b>
+          <select id="bulk-move">
+            <option value="present">📍 在场 Present</option>
+            <option value="storage">📦 仓库 Storage</option>
+          </select>
+          <button class="btn ghost" type="button" id="move-sel">应用到选中 Apply to selected</button>
+          <button class="btn" type="button" id="move-all">应用到全部 Apply to all</button>
+          <span class="hint">保持每款游戏的总套数不变 Keeps each game's total</span>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th><input type="checkbox" id="sel-all" aria-label="全选 Select all shown"></th>
+              <th>名称 Name</th>
+              <th>分类 Category</th>
+              <th class="num">借出中<br>On loan</th>
+              <th class="num">📍 在场<br>Present</th>
+              <th class="num">📦 仓库<br>Storage</th>
+              <th class="num">合计<br>Total</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+
+      <div class="savebar">
+        <span id="save-msg" class="msg"></span>
+        <span>
+          <button class="btn ghost" type="button" id="undo" disabled>撤销修改 Undo changes</button>
+          <button class="btn" type="button" id="save" disabled>保存全部 Save all</button>
+        </span>
+      </div>
+    </div>
+  </main>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/loans.js"></script>
+  <script>
+    (() => {
+      const $ = (id) => document.getElementById(id);
+      const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+      const CATS = { euro: "德式", american: "美式", party: "聚会", card: "卡牌", abstract: "抽象", family: "亲子", puzzle: "解谜", war: "战棋", roleplay: "扮演" };
+      const nameZh = (g) => (typeof g.name === "string" ? g.name : g.name.zh || g.name.en);
+      const nameEn = (g) => (typeof g.name === "string" ? g.name : g.name.en || g.name.zh);
+      const DEFAULT = { present: 1, storage: 0 };
+
+      let games = [];
+      let saved = {};    // game id -> { present, storage } as stored in Supabase
+      let edits = {};    // game id -> { present, storage } changed on this page, not saved yet
+      let onLoan = {};   // game id -> sets currently on loan
+      const selected = new Set();
+
+      const current = (id) => edits[id] || saved[id] || DEFAULT;
+      const totalOf = (id) => current(id).present + current(id).storage;
+      const isChanged = (id) => {
+        const e = edits[id];
+        if (!e) return false;
+        const s = saved[id] || DEFAULT;
+        return e.present !== s.present || e.storage !== s.storage;
+      };
+      const isInvalid = (id) => {
+        const { present, storage } = current(id);
+        const ok = (n) => Number.isInteger(n) && n >= 0 && n <= 99;
+        const total = present + storage;
+        return !ok(present) || !ok(storage) || total > 99 || total < (onLoan[id] || 0);
+      };
+      function setEdit(id, sets) {
+        edits[id] = { ...current(id), ...sets };
+        if (!isChanged(id)) delete edits[id];
+      }
+
+      function visible() {
+        const q = $("q").value.trim().toLowerCase();
+        const loc = $("f-loc").value;
+        const by = $("sort").value;
+        return games
+          .filter((g) => (!q || `${nameZh(g)} ${nameEn(g)} ${g.id}`.toLowerCase().includes(q)) && (!loc || (loc === "none" ? totalOf(g.id) === 0 : current(g.id)[loc] > 0)))
+          .sort((a, b) => (by === "en" ? nameEn(a).localeCompare(nameEn(b), "en") : nameZh(a).localeCompare(nameZh(b), "zh-CN")));
+      }
+
+      function rowClass(id) {
+        return [isChanged(id) && "changed", isInvalid(id) && "invalid"].filter(Boolean).join(" ");
+      }
+
+      function render() {
+        const list = visible();
+        $("rows").innerHTML = list
+          .map((g) => {
+            const c = current(g.id);
+            const out = onLoan[g.id] || 0;
+            const [main, sub] = $("sort").value === "en" ? [nameEn(g), nameZh(g)] : [nameZh(g), nameEn(g)];
+            return `<tr data-id="${esc(g.id)}" class="${rowClass(g.id)}">
+              <td><input type="checkbox" data-sel ${selected.has(g.id) ? "checked" : ""} aria-label="${esc(main)}"></td>
+              <td class="name">${esc(main)}${sub !== main ? `<small>${esc(sub)}</small>` : ""}</td>
+              <td>${esc(CATS[g.category] || "其他")}</td>
+              <td class="num">${out ? `<span class="out">${out}</span>` : `<span class="muted">0</span>`}</td>
+              <td class="num"><input type="number" data-present min="0" max="99" step="1" value="${c.present}" aria-label="在场 Present"></td>
+              <td class="num"><input type="number" data-storage min="0" max="99" step="1" value="${c.storage}" aria-label="仓库 Storage"></td>
+              <td class="num total" data-total>${totalOf(g.id) || "⚪ 0"}</td>
+            </tr>`;
+          })
+          .join("");
+        updateCount();
+        $("sel-all").checked = list.length > 0 && list.every((g) => selected.has(g.id));
+        updateBars();
+      }
+
+      function updateCount() {
+        const shown = visible().length;
+        const sum = (k) => games.reduce((n, g) => n + current(g.id)[k], 0);
+        const p = sum("present"), s = sum("storage");
+        const none = games.filter((g) => totalOf(g.id) === 0).length;
+        $("count").textContent = `显示 ${shown} / ${games.length} 款 · 共 ${p + s} 套（在场 ${p}，仓库 ${s}）· 暂无 ${none} 款 · Showing ${shown} of ${games.length} games, ${p + s} sets (${p} present, ${s} in storage), ${none} with 0 sets`;
+      }
+
+      function updateBars() {
+        const changed = Object.keys(edits).filter(isChanged);
+        const bad = changed.filter(isInvalid);
+        $("sel-count").textContent = `已选 ${selected.size} Selected`;
+        $("save").disabled = !changed.length || bad.length > 0;
+        $("undo").disabled = !changed.length;
+        const msg = $("save-msg");
+        if (bad.length) {
+          msg.className = "msg err";
+          msg.textContent = `${bad.length} 项套数无效（合计 0–99，且不能少于借出中的套数）· ${bad.length} row(s) invalid: total must be 0–99 and at least the sets on loan`;
+        } else if (changed.length) {
+          msg.className = "msg";
+          msg.textContent = `${changed.length} 项未保存 · ${changed.length} unsaved change(s)`;
+        } else if (!msg.classList.contains("ok")) {
+          msg.className = "msg";
+          msg.textContent = "没有未保存的修改 · No unsaved changes";
+        }
+      }
+
+      // Row edits.
+      $("rows").addEventListener("input", (e) => {
+        const tr = e.target.closest("tr");
+        if (!tr) return;
+        const id = tr.dataset.id;
+        if (e.target.matches("[data-sel]")) {
+          e.target.checked ? selected.add(id) : selected.delete(id);
+          $("sel-all").checked = visible().every((g) => selected.has(g.id));
+          return updateBars();
+        }
+        if (e.target.matches("[data-present]")) setEdit(id, { present: Number(e.target.value) });
+        if (e.target.matches("[data-storage]")) setEdit(id, { storage: Number(e.target.value) });
+        $("save-msg").classList.remove("ok");
+        tr.className = rowClass(id);
+        tr.querySelector("[data-total]").textContent = totalOf(id) || "⚪ 0";
+        updateCount();
+        updateBars();
+      });
+      $("sel-all").addEventListener("change", (e) => {
+        for (const g of visible()) e.target.checked ? selected.add(g.id) : selected.delete(g.id);
+        render();
+      });
+      $("clear-sel").addEventListener("click", () => { selected.clear(); render(); });
+
+      // Bulk edits only change this page; "Save all" writes them. A game can't have fewer sets than are on loan,
+      // so those games get extra sets present to cover their loans (and the admin is told how many).
+      function bulk(ids, makeSets) {
+        let raised = 0;
+        for (const id of ids) {
+          const sets = makeSets(current(id));
+          const short = (onLoan[id] || 0) - (sets.present + sets.storage);
+          if (short > 0) {
+            sets.present += short;
+            raised++;
+          }
+          setEdit(id, sets);
+        }
+        render();
+        const msg = $("save-msg");
+        if (raised && !msg.classList.contains("err")) {
+          msg.textContent += ` · ${raised} 款游戏借出中的套数更多，已补足在场套数 · ${raised} game(s) given extra present sets to cover loans`;
+        }
+      }
+      const selectedIds = () => {
+        if (!selected.size) alert("请先勾选游戏。Tick some games first.");
+        return [...selected];
+      };
+      const confirmAll = (what) =>
+        confirm(`将所有 ${games.length} 款游戏${what}？之后仍需点“保存全部”。\nApply to all ${games.length} games? You still need to click “Save all” afterwards.`);
+
+      function bulkSets() {
+        const present = Number($("bulk-present").value), storage = Number($("bulk-storage").value);
+        const ok = (n) => Number.isInteger(n) && n >= 0 && n <= 99;
+        if (!ok(present) || !ok(storage) || present + storage > 99) {
+          alert("在场和仓库需为 0–99 的整数，合计不超过 99。Present and storage must be whole numbers, totalling at most 99.");
+          return null;
+        }
+        return { present, storage };
+      }
+      $("sets-sel").addEventListener("click", () => {
+        const s = bulkSets();
+        if (s) bulk(selectedIds(), () => ({ ...s }));
+      });
+      $("sets-all").addEventListener("click", () => {
+        const s = bulkSets();
+        if (s && confirmAll(`都设为 在场 ${s.present} 套、仓库 ${s.storage} 套`)) bulk(games.map((g) => g.id), () => ({ ...s }));
+      });
+      // Move every set of a game to one place, keeping its total.
+      const moveTo = (loc) => (c) => {
+        const total = c.present + c.storage;
+        return loc === "storage" ? { present: 0, storage: total } : { present: total, storage: 0 };
+      };
+      const moveName = () => $("bulk-move").selectedOptions[0].textContent;
+      $("move-sel").addEventListener("click", () => bulk(selectedIds(), moveTo($("bulk-move").value)));
+      $("move-all").addEventListener("click", () => {
+        if (confirmAll(`的全部套数移到 ${moveName()}`)) bulk(games.map((g) => g.id), moveTo($("bulk-move").value));
+      });
+
+      ["q", "f-loc", "sort"].forEach((id) => $(id).addEventListener("input", render));
+
+      $("undo").addEventListener("click", () => { edits = {}; render(); });
+      $("save").addEventListener("click", async () => {
+        const ids = Object.keys(edits).filter(isChanged);
+        if (!ids.length) return;
+        $("save").disabled = true;
+        const msg = $("save-msg");
+        msg.className = "msg";
+        msg.textContent = "正在保存…… Saving…";
+        try {
+          await HVLoans.saveGameInfoMany(ids.map((id) => ({ game_id: id, ...current(id) })));
+          await load();
+          edits = {};
+          msg.className = "msg ok";
+          msg.textContent = `✓ 已保存 ${ids.length} 项 · Saved ${ids.length} change(s)`;
+          render();
+        } catch (err) {
+          msg.className = "msg err";
+          msg.textContent =
+            err.code === "HVC02" ? "保存失败：有游戏的套数少于借出中的套数，未作任何修改。Nothing saved: a game has fewer sets than are on loan."
+            : err.status === 401 ? "登录已过期，请刷新页面重新登录。Your sign-in expired; reload and sign in again."
+            : `保存失败，未作任何修改 Nothing saved：${err.message}`;
+          updateBars();
+        }
+      });
+
+      async function load() {
+        const [info, loans] = await Promise.all([HVLoans.gameInfo(), HVLoans.active()]);
+        saved = info;
+        onLoan = Object.fromEntries(Object.entries(loans).map(([id, list]) => [id, list.reduce((n, l) => n + (l.quantity || 1), 0)]));
+      }
+
+      async function start() {
+        $("status").textContent = "正在加载…… Loading…";
+        const res = await fetch("../data/games.json", { cache: "no-cache" });
+        games = (await res.json()).games || [];
+        await load();
+        $("status").hidden = true;
+        $("app").hidden = false;
+        $("who").innerHTML = `管理员 Admin：${esc(HVLoans.user)} · <button class="link-btn" type="button" id="signout">退出 Sign out</button>`;
+        $("signout").onclick = () => { HVLoans.signOut(); location.reload(); };
+        render();
+      }
+
+      // Admin gate (same sign-in as the games page).
+      function lock(message = "") {
+        $("status").hidden = true;
+        $("app").hidden = true;
+        $("gate").hidden = false;
+        $("gate-error").textContent = message;
+      }
+      async function check() {
+        if (!HVLoans.enabled) {
+          $("status").textContent = "⚠ Supabase 尚未配置（见 docs/SUPABASE.md）。Supabase isn't set up yet (see docs/SUPABASE.md).";
+          return;
+        }
+        if (!HVLoans.user) return lock();
+        try {
+          if (!(await HVLoans.isAdmin())) {
+            HVLoans.signOut();
+            return lock("这个账号不是管理员。This account is not an admin.");
+          }
+          $("gate").hidden = true;
+          await start();
+        } catch (err) {
+          if (err.status === 401) {
+            HVLoans.signOut();
+            return lock(`无法验证登录，请重新登录。Please sign in again. (${err.message})`);
+          }
+          $("status").hidden = false;
+          $("status").textContent = `加载失败 Couldn't load：${err.message}`;
+        }
+      }
+      $("gate-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const f = e.target.elements;
+        $("gate-error").textContent = "";
+        try {
+          await HVLoans.signIn(f.email.value.trim(), f.password.value);
+          f.password.value = "";
+          await check();
+        } catch (err) {
+          $("gate-error").textContent = `登录失败 Sign-in failed：${err.message}`;
+        }
+      });
+      window.addEventListener("beforeunload", (e) => {
+        if (Object.keys(edits).some(isChanged)) e.preventDefault();
+      });
+      check();
+    })();
+  </script>
+</body>
+</html>

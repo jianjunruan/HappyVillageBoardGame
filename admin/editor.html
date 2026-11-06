@@ -21,12 +21,36 @@
     pre { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px; overflow: auto; font-size: 0.85rem; }
     .preview img { width: 100%; max-width: 320px; aspect-ratio: 4/3; object-fit: cover; border-radius: 10px; background: var(--accent-soft); }
     @media (max-width: 640px) { .link-row { grid-template-columns: 1fr; } }
+    .gate { max-width: 420px; margin: 24px 0; padding: 20px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+    .gate h2 { margin: 0 0 6px; font-size: 1.2rem; }
+    .gate h2 small { font-weight: 400; color: var(--muted); font-size: 0.9rem; }
+    .gate-form { margin: 12px 0 0; }
+    [hidden] { display: none !important; }
   </style>
 </head>
 <body>
   <main class="wrap" style="padding-top:24px; padding-bottom:40px">
-    <p><a href="../">← 返回桌游列表 Back to games</a></p>
+    <p><a href="../">← 返回桌游列表 Back to games</a> · <a href="inventory.html">桌游库存 Inventory</a></p>
     <h1>桌游录入助手 <small style="font-weight:400; color:var(--muted)">Game entry helper</small></h1>
+
+    <!-- Admin sign-in (Supabase). Shown until an admin signs in; the editor below stays hidden. -->
+    <section id="gate" class="gate" hidden>
+      <h2>管理员登录 <small>Admin sign in</small></h2>
+      <p class="hint">此页面仅限管理员使用。请使用 Supabase 管理员账号登录（与桌游列表页的管理员登录相同）。<br>
+        This page is for admins only. Sign in with your Supabase admin account (the same one used on the games page).</p>
+      <form id="gate-form" class="gate-form">
+        <label>邮箱 Email <input name="email" type="email" autocomplete="username" required></label>
+        <label>密码 Password <input name="password" type="password" autocomplete="current-password" required></label>
+        <p id="gate-error" class="form-error" role="alert"></p>
+        <div><button class="btn" type="submit">登录 Sign in</button></div>
+      </form>
+    </section>
+    <p id="gate-checking" class="hint">正在验证登录…… Checking sign-in…</p>
+
+    <div id="editor" hidden>
+    <p id="who" class="hint" hidden></p>
+    <p id="unprotected" class="form-error" hidden>⚠ 登录保护尚未启用：请先按 docs/SUPABASE.md 配置 Supabase。
+      Sign-in protection is off until Supabase is set up (see docs/SUPABASE.md).</p>
     <p class="tagline">填写表单，复制生成的内容，粘贴到 <code>data/games.json</code> 的 <code>"games"</code> 列表中（条目之间用英文逗号分隔）。此页面不会保存任何内容。<br>
       Fill in the form, copy the result, and paste it into the <code>"games"</code> list in <code>data/games.json</code> (separate entries with a comma). Nothing here is saved.</p>
 
@@ -82,9 +106,76 @@
       <pre id="tags-out"></pre>
       <button class="btn" data-copy="tags-out">复制 Copy</button>
     </div>
+    </div><!-- #editor -->
   </main>
 
+  <script src="../js/config.js"></script>
+  <script src="../js/loans.js"></script>
   <script src="../js/media.js"></script>
+  <script>
+    // Admin gate: the editor is shown only to accounts in the Supabase admin list.
+    // The sign-in is shared with the games page (same browser storage), so signing in on either unlocks both.
+    (() => {
+      const gate = document.getElementById("gate");
+      const gateForm = document.getElementById("gate-form");
+      const gateError = document.getElementById("gate-error");
+      const checking = document.getElementById("gate-checking");
+      const editor = document.getElementById("editor");
+      const who = document.getElementById("who");
+
+      function unlock() {
+        checking.hidden = true;
+        gate.hidden = true;
+        editor.hidden = false;
+        if (HVLoans.user) {
+          who.hidden = false;
+          who.innerHTML = "";
+          who.append(`管理员 Admin：${HVLoans.user} · `);
+          const out = Object.assign(document.createElement("button"), { type: "button", className: "link-btn", textContent: "退出 Sign out" });
+          out.onclick = () => { HVLoans.signOut(); lock(); };
+          who.append(out);
+        }
+      }
+      function lock(message = "") {
+        checking.hidden = true;
+        editor.hidden = true;
+        who.hidden = true;
+        gate.hidden = false;
+        gateError.textContent = message;
+      }
+      async function check() {
+        if (!HVLoans.enabled) {
+          document.getElementById("unprotected").hidden = false;
+          return unlock();
+        }
+        if (!HVLoans.user) return lock();
+        try {
+          if (await HVLoans.isAdmin()) return unlock();
+          HVLoans.signOut();
+          lock("这个账号不是管理员。This account is not an admin.");
+        } catch (err) {
+          HVLoans.signOut();
+          lock(`无法验证登录，请重新登录。Couldn't verify your sign-in, please sign in again. (${err.message})`);
+        }
+      }
+      gateForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        gateError.textContent = "";
+        const btn = gateForm.querySelector("button");
+        btn.disabled = true;
+        try {
+          await HVLoans.signIn(gateForm.elements.email.value.trim(), gateForm.elements.password.value);
+          gateForm.elements.password.value = "";
+          await check();
+        } catch (err) {
+          gateError.textContent = `登录失败 Sign-in failed：${err.message}`;
+        } finally {
+          btn.disabled = false;
+        }
+      });
+      check();
+    })();
+  </script>
   <script>
     const f = document.getElementById("f");
     const linksEl = document.getElementById("links");
