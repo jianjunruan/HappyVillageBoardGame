@@ -64,12 +64,14 @@ The anon key is designed to be public. It only lets visitors do what the rules i
 - You can also view, fix or export all loans in Supabase → **Table Editor → loans**.
 
 ## Rulebooks (PDF)
+Uploaded rulebooks are the club's own copies, so the site always names them **欢乐小镇规则书 / Happy Village rulebook** (links, preview, buttons and the inventory page).
+
 Running [`supabase/schema.sql`](../supabase/schema.sql) also creates a public Storage bucket called **rulebooks** (PDF only, max 50 MB per file) where anyone can read files and only admins can upload, replace or delete.
-- **Upload:** signed in as admin, open a game's popup → **📖 规则书 PDF** → choose the file → **上传规则书**. Or use the **📖 规则书** column on **库存管理 Inventory** (**⬆ 上传** / **替换**); uploads there happen right away.
-- Each game has one rulebook, saved as `rulebooks/<game id>.pdf`. Uploading again replaces it; **删除规则书** removes it.
-- Everyone sees a **📖 规则书（PDF）** link in the game's popup as soon as a file exists. No editing of `data/games.json` is needed.
-- **Expansions share the base game's rulebook.** Games with `"rulebookFrom": "<base game id>"` in `data/games.json` (all expansions and the two storage boxes) automatically show **📖 基础版《…》规则书**, so upload the base game's rulebook once. If an expansion also has its own rulebook, upload it on the expansion and both links show. Standalone spin-offs (e.g. 方舟保护区, 克苏鲁情书) and other editions keep their own.
-- The inventory page can filter **有规则书 / 没有规则书** to see which games still need one.
+- **Upload:** signed in as admin, open a game's popup → **📖 欢乐小镇规则书 PDF** → choose the file → **上传欢乐小镇规则书**. Or use the **📖 欢乐小镇规则书** column on **库存管理 Inventory** (**⬆ 上传** / **替换**); uploads there happen right away.
+- Each game has one rulebook, saved as `rulebooks/<game id>.pdf`. Uploading again replaces it; **删除欢乐小镇规则书** removes it.
+- Everyone sees a **📖 欢乐小镇规则书（PDF）** link in the game's popup as soon as a file exists. No editing of `data/games.json` is needed.
+- **Expansions share the base game's rulebook.** Games with `"rulebookFrom": "<base game id>"` in `data/games.json` (all expansions and the two storage boxes) automatically show **📖 基础版《…》欢乐小镇规则书**, so upload the base game's rulebook once. If an expansion also has its own rulebook, upload it on the expansion and both links show. Standalone spin-offs (e.g. 方舟保护区, 克苏鲁情书) and other editions keep their own.
+- The inventory page can filter **有欢乐小镇规则书 / 没有欢乐小镇规则书** to see which games still need one.
 - Free plan: about 1 GB of files in total and about 5 GB of downloads a month. Compress large scanned PDFs first (e.g. ilovepdf.com → Compress).
 
 ## Things to know

@@ -86,8 +86,8 @@
             <option value="storage">📦 有在仓库的 Has sets in storage</option>
             <option value="owner">🏠 有在拥有者处的 Has sets with owner</option>
             <option value="has-owner">👤 有拥有者的 Has an owner</option>
-            <option value="book">📖 有规则书（含基础版）Has a rulebook (incl. base game's)</option>
-            <option value="no-book">📖 没有规则书 No rulebook</option>
+            <option value="book">📖 有欢乐小镇规则书（含基础版）Has a Happy Village rulebook (incl. base game's)</option>
+            <option value="no-book">📖 没有欢乐小镇规则书 No Happy Village rulebook</option>
             <option value="none">⚪ 暂无（0 套）None (0 sets)</option>
           </select>
         </label>
@@ -145,7 +145,7 @@
               <th class="num">📦 仓库<br>Storage</th>
               <th class="num">🏠 拥有者处<br>With owner</th>
               <th class="num">合计<br>Total</th>
-              <th>📖 规则书<br>Rulebook</th>
+              <th>📖 欢乐小镇规则书<br>Happy Village rulebook</th>
             </tr>
           </thead>
           <tbody id="rows"></tbody>
@@ -292,9 +292,9 @@
         const mb = b && b.size ? ` <small class="muted">${(b.size / 1048576).toFixed(1)} MB</small>` : "";
         const baseName = base && nameZh(games.find((x) => x.id === base));
         return (b
-          ? `<a href="${esc(HVLoans.rulebookUrl(id, b))}" target="_blank" rel="noopener">📖 查看 View</a>${mb} · <button class="link-btn" type="button" data-book-pick>替换 Replace</button>`
+          ? `<a href="${esc(HVLoans.rulebookUrl(id, b))}" target="_blank" rel="noopener">📖 欢乐小镇规则书 View</a>${mb} · <button class="link-btn" type="button" data-book-pick>替换 Replace</button>`
           : base
-            ? `<a href="${esc(HVLoans.rulebookUrl(base, books[base]))}" target="_blank" rel="noopener" title="基础版 Base game">↪ 用《${esc(baseName)}》</a> · <button class="link-btn" type="button" data-book-pick>⬆ 上传自己的 Upload own</button>`
+            ? `<a href="${esc(HVLoans.rulebookUrl(base, books[base]))}" target="_blank" rel="noopener" title="基础版 Base game">↪ 用《${esc(baseName)}》欢乐小镇规则书</a> · <button class="link-btn" type="button" data-book-pick>⬆ 上传自己的 Upload own</button>`
             : `<button class="link-btn" type="button" data-book-pick>⬆ 上传 Upload</button>`) +
           `<input type="file" accept="application/pdf,.pdf" data-book-file hidden>`;
       }
@@ -313,7 +313,7 @@
             err.code === "rulebook-not-pdf" ? "请选择 PDF 文件。Please choose a PDF file."
             : err.code === "rulebook-too-big" ? "文件超过 50 MB，请先压缩。The file is over 50 MB; please compress it first."
             : err.status === 401 ? "登录已过期，请刷新页面重新登录。Your sign-in expired; reload and sign in again."
-            : `上传失败 Upload failed：${err.message}`
+            : `欢乐小镇规则书上传失败 Upload failed：${err.message}`
           );
         }
         // A base game's upload also changes its expansions' cells.
