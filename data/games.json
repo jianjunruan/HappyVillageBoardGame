@@ -2083,6 +2083,7 @@
       "id": "flip-7",
       "name": { "zh": "7连翻", "en": "Flip 7" },
       "image": "images/flip-7.jpg",
+      "scorer": "flip7.html",
       "description": {
         "zh": "一张张翻牌，但不能翻出重复的数字！牌堆里只有一张 1、两张 2、三张 3……还有加分、复活、冻结对手等特殊牌。见好就收，还是继续冒险凑够 7 张不同数字拿大奖？先达到 200 分者获胜。设计师：Eric Olsen（2024）。（BGA 在线版支持 3–12 人。）\n\n适合：人多的轻松聚会。",
         "en": "Flip cards one by one without flipping the same number twice. There is one 1, two 2s, three 3s and so on, plus special cards that add points, save you or freeze a player. Bank your points, or push for seven different numbers and the big bonus? First to 200 points wins. Designed by Eric Olsen (2024). (BGA online version: 3–12 players.)\n\nGreat for: big, relaxed groups."

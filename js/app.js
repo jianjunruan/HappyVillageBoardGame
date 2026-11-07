@@ -429,6 +429,7 @@
       <h2 id="detail-title">${esc(gameName(g))}</h2>
       <p class="meta">${meta(g).join(" · ")}</p>
       ${(g.tags || []).length ? `<p class="tag-row">${g.tags.map((k) => `<span class="chip">${esc(tagLabel(k))}</span>`).join("")}</p>` : ""}
+      ${g.scorer ? `<p class="scorer-link"><a class="btn" href="${esc(g.scorer)}">🧮 ${esc(t("scorer"))}</a></p>` : ""}
       ${HVLoans.enabled ? `<div id="loan-box" class="loan-box"></div><div id="pdf-preview" class="pdf-preview" hidden></div>` : ""}
       <p class="description">${esc(loc(g.description))}</p>
       ${renderLinks(g.links)}`;

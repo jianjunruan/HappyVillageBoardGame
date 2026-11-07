@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>7连翻 计分板 · 欢乐小镇桌游</title>
+  <meta name="description" content="Flip 7 计分板和战绩记录。Flip 7 scorer and game records for Happy Village Board Games.">
+  <link rel="icon" href="images/favicon-48.png" type="image/png">
+  <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/flip7.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <div class="title-row">
+        <h1><a class="f7-home" href="index.html#/game/flip-7"><img class="logo" src="images/logo.png" alt="" width="56" height="56"></a>
+          <span class="f7-logo">FLIP <span class="seven">7</span></span> <span id="f7-title"></span></h1>
+        <div class="header-actions">
+          <a id="f7-back" class="admin-btn" href="index.html#/game/flip-7"></a>
+          <button id="lang-toggle" class="lang-toggle" type="button">EN</button>
+        </div>
+      </div>
+      <nav class="tag-row f7-tabs" id="f7-tabs"></nav>
+    </div>
+  </header>
+
+  <main class="wrap f7-main">
+    <section id="tab-score" class="f7-tab"></section>
+    <section id="tab-records" class="f7-tab" hidden></section>
+    <section id="tab-leaders" class="f7-tab" hidden></section>
+  </main>
+
+  <!-- One player's cards for one round -->
+  <dialog id="f7-sheet" class="f7-sheet" aria-labelledby="sh-who">
+    <div class="sh-head">
+      <div>
+        <div class="who" id="sh-who"></div>
+        <div class="sub" id="sh-sub"></div>
+      </div>
+      <div class="live" id="sh-live" aria-live="polite">0</div>
+    </div>
+    <div class="breakdown" id="sh-break"></div>
+    <div class="label"><span id="sh-nums-label"></span> <span id="sh-count">0 / 7</span></div>
+    <div class="nums" id="sh-nums"></div>
+    <div class="label"><span id="sh-mods-label"></span></div>
+    <div class="mods" id="sh-mods"></div>
+    <button class="bustbtn" id="sh-bust" type="button" aria-pressed="false"></button>
+    <div class="manual">
+      <label for="sh-manual" id="sh-manual-label"></label>
+      <input id="sh-manual" type="number" inputmode="numeric">
+    </div>
+    <div class="sh-foot">
+      <button class="btn ghost" id="sh-cancel" type="button"></button>
+      <button class="btn" id="sh-save" type="button"></button>
+    </div>
+  </dialog>
+
+  <datalist id="f7-names"></datalist>
+
+  <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/loans.js"></script>
+  <script src="js/flip7.js"></script>
+</body>
+</html>

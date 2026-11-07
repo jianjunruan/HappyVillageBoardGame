@@ -77,6 +77,13 @@ Running [`supabase/schema.sql`](../supabase/schema.sql) also creates a public St
 - The inventory page can filter **有欢乐小镇规则书 / 没有欢乐小镇规则书** to see which games still need one.
 - Free plan: about 1 GB of files in total and about 5 GB of downloads a month. Compress large scanned PDFs first (e.g. ilovepdf.com → Compress).
 
+## Score records (Flip 7)
+Running [`supabase/schema.sql`](../supabase/schema.sql) also creates the **game_scores** table used by the Flip 7 scorer, [`flip7.html`](../flip7.html). Open it from the 7连翻 popup → **🧮 计分板 & 战绩记录**.
+- **🧮 计分:** enter the players and target (200 by default). Each round, tap a player and pick the cards they kept: number cards, +2…+10, ×2, or 爆牌. Seven number cards add the +15 Flip 7 bonus automatically, and you can also type a score instead. When someone reaches the target, tap **💾 保存到战绩记录**; **提前结束这局** ends a game early. The game in progress is kept in that browser only, so a refresh doesn't lose it.
+- **📜 战绩记录:** every saved game, newest first, with each round's scores. Anyone can see them and filter by player name.
+- **🏆 排行榜:** wins, games, win rate, best and average score, Flip 7s and busts per player. Players are matched by name (capital letters don't matter), and the name boxes suggest names from past games, so use the same name each time.
+- **No sign-in is needed to save,** so anyone can add a record. A saved record can't be changed from the website. Only a signed-in admin sees **删除** on the records tab (e.g. for a test game or a duplicate). The database also refuses more than 30 new records a minute, to stop floods.
+
 ## Things to know
 - **Borrower names are public.** Anyone visiting the site can see who has a game. Use first names or nicknames if that's a concern.
 - **Free plan pause:** Supabase pauses free projects after about a week with no activity. Loans and rulebooks then fail to load (the site shows "借用状态暂时无法加载" and everything else still works). The GitHub Actions job [`.github/workflows/keep-supabase-awake.yml`](../.github/workflows/keep-supabase-awake.yml) prevents this by reading one row every 3 days. Check it under the repo's **Actions** tab (you can also click **Run workflow** to test it). GitHub turns off scheduled jobs in a repo with no commits for 60 days; if that happens, click **Enable workflow** on the Actions tab. If the project does get paused, open the Supabase dashboard and click **Restore project**.

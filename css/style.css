@@ -182,6 +182,8 @@ dialog article { padding: 0 24px 28px; }
 }
 .hero { display: block; width: calc(100% + 48px); height: 380px; max-height: 50vh; margin: 0 -24px 16px; padding: 16px; object-fit: contain; background: var(--img-bg); }
 .description { white-space: pre-line; }
+.scorer-link { margin: 14px 0 0; }
+.scorer-link .btn { display: inline-block; text-decoration: none; }
 
 .video { margin: 20px 0 0; }
 .frame { position: relative; aspect-ratio: 16 / 9; background: #000; border-radius: 10px; overflow: hidden; }

@@ -197,6 +197,67 @@ drop policy if exists "Admins can delete rulebooks" on storage.objects;
 create policy "Admins can delete rulebooks" on storage.objects
   for delete to authenticated using (bucket_id = 'rulebooks' and public.is_admin());
 
+-- Game score records (e.g. the Flip 7 scorer, flip7.html). Anyone can save a finished game and everyone can see them;
+-- records can't be changed afterwards, and only admins can delete one (e.g. a test or a duplicate).
+create table if not exists public.game_scores (
+  id bigint generated always as identity primary key,
+  game_id text not null check (char_length(game_id) between 1 and 100),  -- the game's "id" in data/games.json
+  played_at timestamptz not null default now(),
+  target integer check (target between 1 and 100000),                      -- points needed to win (Flip 7: 200)
+  -- [{ "name": "小明", "total": 213 }, ...] in seating order
+  players jsonb not null,
+  -- one array per round, one cell per player (same order): { "s": score, "b": true if bust, "f": true if Flip 7 }
+  rounds jsonb not null default '[]',
+  winner text not null check (char_length(winner) between 1 and 400),    -- names joined with "、" on a tie
+  top_score integer not null,
+  round_count integer not null check (round_count between 0 and 500)
+);
+create index if not exists game_scores_by_game on public.game_scores (game_id, played_at desc);
+
+-- Checks the shape of a record, and slows down floods: at most 30 records a minute across the whole site.
+create or replace function public.check_game_score()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+declare
+  p jsonb;
+begin
+  new.played_at := now();  -- always the time it was saved
+  if jsonb_typeof(new.players) <> 'array' or jsonb_array_length(new.players) not between 1 and 30 then
+    raise exception 'players must list 1 to 30 players' using errcode = 'HVS01';
+  end if;
+  for p in select * from jsonb_array_elements(new.players) loop
+    if jsonb_typeof(p -> 'name') <> 'string' or char_length(trim(p ->> 'name')) not between 1 and 30
+       or jsonb_typeof(p -> 'total') <> 'number' then
+      raise exception 'each player needs a name (1-30 characters) and a total' using errcode = 'HVS01';
+    end if;
+  end loop;
+  if jsonb_typeof(new.rounds) <> 'array' or jsonb_array_length(new.rounds) > 500 or pg_column_size(new.rounds) > 100000 then
+    raise exception 'too many rounds' using errcode = 'HVS01';
+  end if;
+  perform pg_advisory_xact_lock(hashtext('hv-scores'));
+  if (select count(*) from public.game_scores where played_at > now() - interval '1 minute') >= 30 then
+    raise exception 'Too many records saved just now, try again in a minute' using errcode = 'HVS02';
+  end if;
+  return new;
+end;
+$$;
+drop trigger if exists game_scores_check on public.game_scores;
+create trigger game_scores_check before insert on public.game_scores
+  for each row execute function public.check_game_score();
+
+alter table public.game_scores enable row level security;
+drop policy if exists "Anyone can view scores" on public.game_scores;
+create policy "Anyone can view scores" on public.game_scores
+  for select using (true);
+drop policy if exists "Anyone can save scores" on public.game_scores;
+create policy "Anyone can save scores" on public.game_scores
+  for insert to anon, authenticated with check (true);
+drop policy if exists "Admins can delete scores" on public.game_scores;
+create policy "Admins can delete scores" on public.game_scores
+  for delete to authenticated using (public.is_admin());
+
 -- Open the tables to the website. Needed when "Automatically expose new tables" is off
 -- (recommended); harmless if it is on. The policies above still decide which rows each user can see or change.
 -- public.admins gets no grants, so the website can never read or change the admin list.
@@ -206,4 +267,7 @@ grant insert (game_id, borrower, due_date, quantity, loaned_at) on public.loans 
 grant update (returned_at) on public.loans to authenticated;
 grant insert (game_id, copies, storage_copies, owner, owner_copies, rulebook_from) on public.game_copies to authenticated;
 grant update (game_id, copies, storage_copies, owner, owner_copies, rulebook_from) on public.game_copies to authenticated;  -- "insert or update" (upsert) needs every column
+grant select on public.game_scores to anon, authenticated;
+grant insert (game_id, target, players, rounds, winner, top_score, round_count) on public.game_scores to anon, authenticated;
+grant delete on public.game_scores to authenticated;  -- the policy above limits it to admins
 grant execute on function public.is_admin() to anon, authenticated;

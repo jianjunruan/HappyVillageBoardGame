@@ -45,6 +45,7 @@ All games live in **`data/games.json`**.
 | `category` | yes | `"euro"` (德式), `"american"` (美式), `"party"` (聚会), `"card"` (卡牌), `"abstract"` (抽象), `"family"` (亲子), `"puzzle"` (解谜), `"war"` (战棋) or `"roleplay"` (扮演). Decides which section the game appears in. Games without one show under "其他 / Other". |
 | `weight` | yes | Difficulty on BGG's 1–5 scale (the "Weight" on the game's BoardGameGeek page), e.g. `2.9`. Groups the game into 入门 Light (under 2), 轻中度 Medium-light (2–2.75), 中重度 Medium-heavy (2.75–3.5) or 重度 Heavy (3.5+). |
 | `series` | no | Keeps related games next to each other within a difficulty band: give the base game, its expansions and other editions the same value, normally the base game's `id` (e.g. `"terraforming-mars"`). The base game is shown first, then the rest by difficulty. |
+| `scorer` | no | A scorer page for this game, shown as a **🧮 计分板 & 战绩记录** button in its popup (e.g. `"flip7.html"`). |
 | `rulebookFrom` | no | Default rulebook sharing: the `id` of the game whose Happy Village rulebook this one also shows (e.g. an expansion → `"terraforming-mars"`). Admins can change it on the site (game popup → 🔗, or 库存管理), which overrides this value. |
 | `age` | no | Minimum age only, e.g. `"10"`. The site adds "岁以上" or "Ages 10+". |
 | `tags` | no | Tag keys, e.g. `["Strategy", "Family"]`. Translations live in the `"tags"` section at the top of the file. |
@@ -73,6 +74,8 @@ All games live in **`data/games.json`**.
 
 The site can show which games are lent out and to whom, and admins can lend and return games from each game's popup. Admins sign in from the top-right button, which only appears when the address ends in `?admin=1`. Loans are stored in a free Supabase database. The feature stays hidden until `supabaseUrl` and `supabaseAnonKey` are set in `js/config.js`. Setup steps: [docs/SUPABASE.md](docs/SUPABASE.md).
 
+Flip 7 has a scorer with shared game records and a leaderboard ([flip7.html](flip7.html), linked from its popup), stored in the same Supabase project. Any game can link to a scorer page with the `"scorer"` field.
+
 ## Run locally
 
 The site loads `data/games.json` with `fetch`, so it won't work if you double-click `index.html`. Run a tiny web server instead:
@@ -91,6 +94,7 @@ You can also put the folder in `C:\xampp\htdocs\` and open `http://localhost/Hap
 
 ```
 index.html          Game catalogue (search, tag filter, detail popup)
+flip7.html          Flip 7 scorer, game records and leaderboard (js/flip7.js, css/flip7.css)
 css/style.css       Styles (light and dark mode)
 js/config.js        Site settings: Supabase connection for loans; apiBase for a future server
 js/i18n.js          Chinese / English interface text and language switching
@@ -104,5 +108,5 @@ admin/inventory.html Admin list of all games: bulk-edit sets owned and location 
 admin/editor.html   Form that generates a games.json entry (admin sign-in required once Supabase is set up)
 docs/ROADMAP.md     Phase 2 plan: events, accounts, guest registration, admin
 docs/SUPABASE.md    How to set up the loans database
-supabase/schema.sql Loans table and access rules (run once in Supabase)
+supabase/schema.sql Loan, inventory and score tables plus access rules (run in Supabase; safe to re-run)
 ```
