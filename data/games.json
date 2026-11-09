@@ -3913,6 +3913,106 @@
           "url": "https://boardgamegeek.com/boardgame/375459/speakeasy"
         }
       ]
+    },
+    {
+      "id": "shipyard-2nd-edition",
+      "name": { "zh": "船厂：第二版", "en": "Shipyard (Second Edition)" },
+      "image": "images/shipyard-2nd-edition.jpg",
+      "description": {
+        "zh": "19 世纪，海运越来越重要，商行和海军都在订造新船，你经营一家造船厂。每回合从环形行动轨道上选一张行动卡：雇工人、买船上设备、拿船头船尾和船身、租运河……用过的行动卡会移到最前面，下回合不能再选同一个。造好的船会下水试航，按速度、船员、设备和安全得分，游戏结束时再结算政府合同。第二版重新设计了美术，规则更顺畅。设计师：Vladimír Suchý（2023）。\n\n适合：喜欢中重度经济和规划的玩家。",
+        "en": "In the 19th century, sea transport is booming and both companies and navies want new ships, so you run a shipyard. Each turn, pick an action card from the rondel-style action track: hire workers, buy equipment, take bows, sterns and middle pieces, rent a canal and more. The card you used jumps to the front, so you can't take the same action twice in a row. Finished ships go on a test cruise, scoring for speed, crew, equipment and safety, and government contracts score at the end. The second edition has new art and smoother rules. Designed by Vladimír Suchý (2023).\n\nGreat for: fans of medium-heavy economic planning games."
+      },
+      "players": "1–4",
+      "playtime": "30",
+      "age": "12",
+      "category": "euro",
+      "weight": 3.26,
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=shipyard+second+edition+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/393179/shipyard-second-edition"
+        }
+      ]
+    },
+    {
+      "id": "endeavor-deep-sea",
+      "name": { "zh": "奋进号：深海", "en": "Endeavor: Deep Sea" },
+      "image": "images/endeavor-deep-sea.jpg",
+      "description": {
+        "zh": "《奋进号》系列的新作，舞台换到现代海洋。你领导一家独立海洋研究所，招募各领域专家，用他们的能力探索新海域、研究潜水点、发表生态论文、发起保护行动，同时维持海洋生态的平衡。规则比前作更精简，每局有不同的场景目标，变化很多。2024 年 Origins 最佳重度策略游戏奖。设计师：Carl de Visser、Jarratt Gray（2024）。支持单人模式。\n\n适合：喜欢中度策略、想要一款耐玩德式的玩家。",
+        "en": "The follow-up to Endeavor: Age of Sail, set in the modern ocean. You head an independent research institute: recruit experts and use their abilities to explore new locations, research dive sites, publish ecological papers and launch conservation efforts, all while keeping marine life in balance. The rules are more streamlined than earlier Endeavor games, and scenario goals make every game different. 2024 Origins Award for Best Heavy Strategy Game. Designed by Carl de Visser and Jarratt Gray (2024). Includes a solo mode.\n\nGreat for: players who want a replayable medium-weight strategy game."
+      },
+      "players": "1–4",
+      "playtime": "20–30",
+      "age": "14",
+      "category": "euro",
+      "weight": 2.93,
+      "tags": ["Strategy", "Euro"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=endeavor+deep+sea+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/367966/endeavor-deep-sea"
+        }
+      ]
+    },
+    {
+      "id": "behind",
+      "name": { "zh": "谜图背后", "en": "Behind" },
+      "image": "images/behind.jpg",
+      "description": {
+        "zh": "一款合作解谜游戏：观察、拼合、揭晓！盒子里有三个独立的场景（博物馆盗窃案、两位科学家的神奇机器、通往宇宙的象形文字浮雕），每个场景的逻辑都不一样。大家只能看着板块正面的线索，推理出它们该怎么拼在一起；卡住了可以按顺序翻开提示卡。拼好以后把所有板块翻过来，背面会组成一幅完整的画，对了就一目了然。一个场景约 45–90 分钟，人数不限，玩完一个场景就不能重玩。2025 年法国 As d'Or 年度游戏（进阶类）。设计师：Cédric Millet（2024）。\n\n适合：喜欢拼图和推理、一起动脑的朋友或家庭。",
+        "en": "A cooperative puzzle: analyse, assemble, admire! The box has three separate scenes (a museum theft, two scientists and an incredible machine, and a hieroglyph bas-relief said to open a door to the cosmos), each with its own logic. Using only the clues on the front of the tiles, work out how they fit together; if you get stuck, turn over the hint cards in order. When you're done, flip every tile over and the backs form a complete picture, so you can see at once if you got it right. Each scene takes about 45–90 minutes with any number of players, and once solved it can't be replayed. 2025 As d'Or game of the year (Initié). Designed by Cédric Millet (2024).\n\nGreat for: friends or families who love jigsaws and deduction."
+      },
+      "players": "1–99",
+      "playtime": "15–30",
+      "age": "10",
+      "category": "puzzle",
+      "weight": 1.7,
+      "tags": ["Co-op", "Deduction"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=behind+kyf+puzzle+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/423787/behind"
+        }
+      ]
+    },
+    {
+      "id": "majolica",
+      "name": { "zh": "马约利卡", "en": "Majolica" },
+      "image": "images/majolica.jpg",
+      "description": {
+        "zh": "维多利亚时代，彩釉陶砖“马约利卡”大量生产并传到远东。轮流从 4×4 方阵的外侧推入并拿取一排瓷砖，放进自己的四个作坊之一；作坊里各色瓷砖的比例符合要求时，就能完成设计卡，剩下的瓷砖还能转到下一个作坊继续用。选砖、摆放设计卡、高效“回收”剩余瓷砖是获胜关键。这是修订版：机制改进、全新美术。设计师：王誉（Yu Wang，2024；初版 2018）。\n\n适合：喜欢《花砖物语》这类颜值高、规则简单的拼砖游戏的玩家。",
+        "en": "In the Victorian era, colourful glazed majolica tiles were mass-produced and spread to the Far East. Take turns collecting tiles from the outer sides of a 4×4 grid and placing them in one of your four workshops. When a workshop's colour ratio matches its requirement, deliver the tiles to a design card and carry the leftovers to the next workshop. Choosing tiles, placing your design cards and recycling leftovers efficiently are the keys to winning. This is the revised edition, with improved rules and all-new art. Designed by Yu Wang (2024; first edition 2018).\n\nGreat for: fans of pretty, easy-to-learn tile games like Azul."
+      },
+      "players": "2–4",
+      "playtime": "10–15",
+      "age": "10",
+      "category": "abstract",
+      "weight": 2,
+      "tags": ["Abstract", "Family"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=majolica+revised+edition+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/402366/majolica-revised-edition"
+        }
+      ]
     }
   ]
 }
