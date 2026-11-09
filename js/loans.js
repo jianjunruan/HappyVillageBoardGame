@@ -12,6 +12,9 @@ window.HVLoans = (() => {
   const RULEBOOKS = "rulebooks";
   const RULEBOOK_MAX = 50 * 1024 * 1024; // the free plan's per-file limit
   const rulebookPath = (gameId) => `${RULEBOOKS}/${encodeURIComponent(gameId)}.pdf`;
+  // Event organizers (负责人) and their QR code pictures.
+  const STAFF_FIELDS = "id,name,phone,wechat,xhs,wechat_qr,xhs_qr";
+  const QR_BUCKET = "staff-qr";
 
   function readSession() {
     try {
@@ -88,8 +91,15 @@ window.HVLoans = (() => {
   async function request(path, { method = "GET", body, admin = false, prefer } = {}) {
     // Public reads send only the apikey header, which works with both the newer publishable key (sb_publishable_…)
     // and the legacy anon key. Admin calls add the signed-in user's token.
+    // admin: "ifSignedIn" sends the token only when someone is signed in (for reads admins see more of).
     const headers = { apikey: supabaseAnonKey, "Content-Type": "application/json" };
-    if (admin) headers.Authorization = `Bearer ${await accessToken()}`;
+    if (admin === "ifSignedIn") {
+      if (session) {
+        try {
+          headers.Authorization = `Bearer ${await accessToken()}`;
+        } catch {}
+      }
+    } else if (admin) headers.Authorization = `Bearer ${await accessToken()}`;
     if (prefer) headers.Prefer = prefer;
     const res = await fetch(base + path, { method, headers, body: body ? JSON.stringify(body) : undefined, cache: "no-store" });
     return parse(res);
@@ -106,6 +116,16 @@ window.HVLoans = (() => {
       body = JSON.stringify(json);
     }
     return parse(await fetch(base + "/storage/v1" + path, { method, headers, body, cache: "no-store" }));
+  }
+
+  // Deletes one row as an admin. "select=id" keeps the reply to columns the website may read.
+  async function adminDelete(table, id) {
+    const rows = await request(`/rest/v1/${table}?id=eq.${encodeURIComponent(id)}&select=id`, {
+      method: "DELETE",
+      admin: true,
+      prefer: "return=representation",
+    });
+    if (!rows.length) throw Object.assign(new Error("Nothing deleted"), { code: "nothing-updated" });
   }
 
   return {
@@ -215,13 +235,24 @@ window.HVLoans = (() => {
       });
       return rows[0];
     },
-    // Score records (table game_scores), newest first. Anyone can read and save; only admins can delete.
+    // Score records (table game_scores), newest first. Anyone can read and save; only admins can change or delete.
     scores: (gameId, limit = 500) =>
       request(`/rest/v1/game_scores?game_id=eq.${encodeURIComponent(gameId)}&order=played_at.desc&limit=${limit}` +
         "&select=id,game_id,played_at,played_on,details,target,players,rounds,winner,top_score,round_count"),
     // record: { game_id, target, players: [{ name, total }], rounds: [[{ s, b, f }, ...], ...], winner, top_score, round_count }
     async saveScore(record) {
       const rows = await request("/rest/v1/game_scores", { method: "POST", prefer: "return=representation", body: record });
+      return rows[0];
+    },
+    // changes: any of { played_on, details, target, players, rounds, winner, top_score, round_count }
+    async updateScore(id, changes) {
+      const rows = await request(`/rest/v1/game_scores?id=eq.${encodeURIComponent(id)}`, {
+        method: "PATCH",
+        admin: true,
+        prefer: "return=representation",
+        body: changes,
+      });
+      if (!rows.length) throw Object.assign(new Error("Nothing updated"), { code: "nothing-updated" });
       return rows[0];
     },
     async deleteScore(id) {
@@ -232,6 +263,124 @@ window.HVLoans = (() => {
       });
       if (!rows.length) throw Object.assign(new Error("Nothing deleted"), { code: "nothing-updated" });
     },
+    // ---------- events and sign-ups (events.html) ----------
+    // Every event with its tables and how many joined each: [{ id, title, event_date, start_time, description,
+    // event_tables: [{ id, on_site, max_players, event_players: [{ id }] }] }], soonest first.
+    events: () =>
+      request("/rest/v1/events?order=event_date.asc,start_time.asc.nullsfirst,id.asc" +
+        "&select=id,title,event_date,start_time,description,event_tables(id,game_id,game_name,on_site,max_players,event_players(id))"),
+    // The next upcoming events (from `fromDay`, "YYYY-MM-DD"), with their tables and main organizer, for the home page.
+    upcomingEvents: (fromDay, limit = 2) =>
+      request(`/rest/v1/events?event_date=gte.${fromDay}&order=event_date.asc,start_time.asc.nullsfirst,id.asc&limit=${limit}` +
+        "&select=id,title,event_date,start_time,event_tables(id,event_players(id)),event_staff(is_lead,staff(name))"),
+    // One event with its tables, players and organizers, or null. Organizers are null for visitors once the event is
+    // over (see the staff policy in schema.sql).
+    async event(id) {
+      const rows = await request(`/rest/v1/events?id=eq.${encodeURIComponent(id)}` +
+        "&select=id,title,event_date,start_time,description," +
+        "event_tables(id,game_id,game_name,on_site,max_players,note,created_at,event_players(id,name,joined_at))," +
+        "event_staff(is_lead,sort,staff(id,name,phone,wechat,xhs,wechat_qr,xhs_qr))", { admin: "ifSignedIn" });
+      const ev = rows[0] || null;
+      if (ev) {
+        ev.event_staff = (ev.event_staff || []).sort((a, b) => b.is_lead - a.is_lead || a.sort - b.sort);
+        ev.event_tables.sort((a, b) => a.created_at.localeCompare(b.created_at) || a.id - b.id);
+        for (const t of ev.event_tables) t.event_players.sort((a, b) => a.joined_at.localeCompare(b.joined_at) || a.id - b.id);
+      }
+      return ev;
+    },
+    // fields: { title, event_date, start_time, description }. With an id it changes that event. Admins only.
+    async saveEvent(fields, id = null) {
+      const rows = await request(id ? `/rest/v1/events?id=eq.${encodeURIComponent(id)}` : "/rest/v1/events", {
+        method: id ? "PATCH" : "POST",
+        admin: true,
+        prefer: "return=representation",
+        body: fields,
+      });
+      if (!rows.length) throw Object.assign(new Error("Nothing saved"), { code: "nothing-updated" });
+      return rows[0];
+    },
+    deleteEvent: (id) => adminDelete("events", id),
+    // table: { game_id, game_name, on_site, max_players, note }. Returns { table_id, player_id }.
+    openTable: (eventId, table, name, token) =>
+      request("/rest/v1/rpc/open_event_table", {
+        method: "POST",
+        body: {
+          p_event: eventId,
+          p_game_id: table.game_id || null,
+          p_game_name: table.game_name,
+          p_on_site: Boolean(table.on_site),
+          p_max_players: table.max_players || null,
+          p_note: table.note || "",
+          p_name: name,
+          p_token: token,
+        },
+      }),
+    // Returns the new player id.
+    joinTable: (tableId, name, token) =>
+      request("/rest/v1/rpc/join_event_table", { method: "POST", body: { p_table: tableId, p_name: name, p_token: token } }),
+    // Returns true if this browser's sign-up was removed.
+    leaveTable: (playerId, token) =>
+      request("/rest/v1/rpc/leave_event_table", { method: "POST", body: { p_player: playerId, p_token: token } }),
+    // Admins: change a table (any of { game_name, on_site, max_players, note }), remove a table or one player.
+    async updateTable(id, changes) {
+      const rows = await request(`/rest/v1/event_tables?id=eq.${encodeURIComponent(id)}&select=id`, {
+        method: "PATCH",
+        admin: true,
+        prefer: "return=representation",
+        body: changes,
+      });
+      if (!rows.length) throw Object.assign(new Error("Nothing updated"), { code: "nothing-updated" });
+    },
+    deleteTable: (id) => adminDelete("event_tables", id),
+    removePlayer: (id) => adminDelete("event_players", id),
+    // ---------- event organizers (负责人), admins only ----------
+    staffList: () => request(`/rest/v1/staff?select=${STAFF_FIELDS}&order=name.asc,id.asc`, { admin: true }),
+    // fields: { name, phone, wechat, xhs, wechat_qr, xhs_qr }. With an id it changes that person.
+    async saveStaff(fields, id = null) {
+      const rows = await request(id ? `/rest/v1/staff?id=eq.${encodeURIComponent(id)}&select=${STAFF_FIELDS}` : `/rest/v1/staff?select=${STAFF_FIELDS}`, {
+        method: id ? "PATCH" : "POST",
+        admin: true,
+        prefer: "return=representation",
+        body: fields,
+      });
+      if (!rows.length) throw Object.assign(new Error("Nothing saved"), { code: "nothing-updated" });
+      return rows[0];
+    },
+    deleteStaff: (id) => adminDelete("staff", id),
+    // Event templates (a saved name and description), admins only.
+    templates: () => request("/rest/v1/event_templates?select=id,title,description&order=title.asc,id.asc", { admin: true }),
+    // fields: { title, description }. With an id it replaces that template.
+    async saveTemplate(fields, id = null) {
+      const body = id ? { ...fields, updated_at: new Date().toISOString() } : fields;
+      const rows = await request(id ? `/rest/v1/event_templates?id=eq.${encodeURIComponent(id)}&select=id,title,description` : "/rest/v1/event_templates?select=id,title,description", {
+        method: id ? "PATCH" : "POST",
+        admin: true,
+        prefer: "return=representation",
+        body,
+      });
+      if (!rows.length) throw Object.assign(new Error("Nothing saved"), { code: "nothing-updated" });
+      return rows[0];
+    },
+    deleteTemplate: (id) => adminDelete("event_templates", id),
+    // One main organizer and the deputies (in order) for an event.
+    setEventStaff: (eventId, leadId, deputyIds) =>
+      request("/rest/v1/rpc/set_event_staff", { method: "POST", admin: true, body: { p_event: eventId, p_lead: leadId, p_deputies: deputyIds } }),
+    // QR code pictures in the public "staff-qr" bucket, under random names. Returns the stored name.
+    async uploadQr(blob) {
+      const ext = blob.type === "image/png" ? "png" : blob.type === "image/webp" ? "webp" : "jpg";
+      const bytes = new Uint8Array(12);
+      crypto.getRandomValues(bytes);
+      const name = [...bytes].map((b) => b.toString(16).padStart(2, "0")).join("") + "." + ext;
+      await storage(`/object/${QR_BUCKET}/${name}`, {
+        method: "POST",
+        admin: true,
+        body: blob,
+        headers: { "Content-Type": blob.type || "image/jpeg", "cache-control": "max-age=31536000" },
+      });
+      return name;
+    },
+    deleteQr: (name) => storage(`/object/${QR_BUCKET}/${encodeURIComponent(name)}`, { method: "DELETE", admin: true }),
+    qrUrl: (name) => `${base}/storage/v1/object/public/${QR_BUCKET}/${encodeURIComponent(name)}`,
     async returnLoan(loanId) {
       const rows = await request(`/rest/v1/loans?id=eq.${encodeURIComponent(loanId)}&returned_at=is.null`, {
         method: "PATCH",

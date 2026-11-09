@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>活动报名 · 欢乐小镇桌游</title>
+  <meta name="description" content="欢乐小镇桌游活动：看看有哪些活动，加入别人开的桌或者自己开一桌。Happy Village Board Games events: join a table or open one.">
+  <link rel="icon" href="images/favicon-48.png" type="image/png">
+  <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/datepicker.css">
+  <link rel="stylesheet" href="css/events.css">
+</head>
+<body>
+  <!-- Events list (events.html) and one event (events.html?id=<id>); see js/events.js -->
+  <header class="site-header">
+    <div class="wrap">
+      <div class="title-row">
+        <h1><a class="ev-home" href="index.html"><img class="logo" src="images/logo.png" alt="" width="56" height="56"></a>
+          <span id="ev-title"></span></h1>
+        <div class="header-actions">
+          <span id="admin-bar" class="admin-bar" hidden></span>
+          <a id="ev-back" class="admin-btn" href="index.html"></a>
+          <button id="lang-toggle" class="lang-toggle" type="button">EN</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap ev-main" id="ev-main" aria-live="polite"></main>
+
+  <dialog id="ev-dlg" class="ev-sheet" aria-labelledby="ev-dlg-title"></dialog>
+
+  <dialog id="login" class="login" aria-labelledby="login-title">
+    <form id="login-form" class="login-form">
+      <h2 id="login-title"></h2>
+      <label><span id="login-email"></span><input name="email" type="email" autocomplete="username" required></label>
+      <label><span id="login-password"></span><input name="password" type="password" autocomplete="current-password" required></label>
+      <p id="login-error" class="form-error" role="alert"></p>
+      <div class="form-actions">
+        <button type="button" class="btn ghost" data-login-cancel></button>
+        <button type="submit" class="btn" data-login-submit></button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/media.js"></script>
+  <script src="js/loans.js"></script>
+  <script src="js/datepicker.js"></script>
+  <script src="js/events.js"></script>
+</body>
+</html>

@@ -197,8 +197,8 @@ drop policy if exists "Admins can delete rulebooks" on storage.objects;
 create policy "Admins can delete rulebooks" on storage.objects
   for delete to authenticated using (bucket_id = 'rulebooks' and public.is_admin());
 
--- Game score records (e.g. the Flip 7 scorer, flip7.html). Anyone can save a finished game and everyone can see them;
--- records can't be changed afterwards, and only admins can delete one (e.g. a test or a duplicate).
+-- Game score records (the Flip 7 scorer and score.html). Anyone can save a finished game and everyone can see them;
+-- only admins can change or delete a record afterwards (e.g. fix a name, or remove a test or a duplicate).
 create table if not exists public.game_scores (
   id bigint generated always as identity primary key,
   game_id text not null check (char_length(game_id) between 1 and 100),  -- the game's "id" in data/games.json
@@ -219,7 +219,7 @@ alter table public.game_scores add column if not exists played_on date;
 alter table public.game_scores add column if not exists details jsonb not null default '{}';
 create index if not exists game_scores_by_game on public.game_scores (game_id, played_at desc);
 
--- Checks the shape of a record, and slows down floods: at most 30 records a minute across the whole site.
+-- Checks the shape of a record (new or changed), and slows down floods: at most 30 new records a minute across the site.
 create or replace function public.check_game_score()
 returns trigger
 language plpgsql
@@ -228,7 +228,12 @@ as $$
 declare
   p jsonb;
 begin
-  new.played_at := now();  -- always the time it was saved
+  if tg_op = 'INSERT' then
+    new.played_at := now();  -- always the time it was first saved
+  else
+    new.played_at := old.played_at;
+    new.game_id := old.game_id;  -- a record stays with its game
+  end if;
   if jsonb_typeof(new.players) <> 'array' or jsonb_array_length(new.players) not between 1 and 30 then
     raise exception 'players must list 1 to 30 players' using errcode = 'HVS01';
   end if;
@@ -250,15 +255,17 @@ begin
   if new.played_on is not null and (new.played_on < date '2000-01-01' or new.played_on > current_date + 1) then
     raise exception 'the game date can not be in the future' using errcode = 'HVS01';
   end if;
-  perform pg_advisory_xact_lock(hashtext('hv-scores'));
-  if (select count(*) from public.game_scores where played_at > now() - interval '1 minute') >= 30 then
-    raise exception 'Too many records saved just now, try again in a minute' using errcode = 'HVS02';
+  if tg_op = 'INSERT' then
+    perform pg_advisory_xact_lock(hashtext('hv-scores'));
+    if (select count(*) from public.game_scores where played_at > now() - interval '1 minute') >= 30 then
+      raise exception 'Too many records saved just now, try again in a minute' using errcode = 'HVS02';
+    end if;
   end if;
   return new;
 end;
 $$;
 drop trigger if exists game_scores_check on public.game_scores;
-create trigger game_scores_check before insert on public.game_scores
+create trigger game_scores_check before insert or update on public.game_scores
   for each row execute function public.check_game_score();
 
 alter table public.game_scores enable row level security;
@@ -268,6 +275,9 @@ create policy "Anyone can view scores" on public.game_scores
 drop policy if exists "Anyone can save scores" on public.game_scores;
 create policy "Anyone can save scores" on public.game_scores
   for insert to anon, authenticated with check (true);
+drop policy if exists "Admins can change scores" on public.game_scores;
+create policy "Admins can change scores" on public.game_scores
+  for update to authenticated using (public.is_admin()) with check (public.is_admin());
 drop policy if exists "Admins can delete scores" on public.game_scores;
 create policy "Admins can delete scores" on public.game_scores
   for delete to authenticated using (public.is_admin());
@@ -283,5 +293,297 @@ grant insert (game_id, copies, storage_copies, owner, owner_copies, rulebook_fro
 grant update (game_id, copies, storage_copies, owner, owner_copies, rulebook_from) on public.game_copies to authenticated;  -- "insert or update" (upsert) needs every column
 grant select on public.game_scores to anon, authenticated;
 grant insert (game_id, played_on, details, target, players, rounds, winner, top_score, round_count) on public.game_scores to anon, authenticated;
+grant update (played_on, details, target, players, rounds, winner, top_score, round_count) on public.game_scores to authenticated;  -- admins only (policy above)
 grant delete on public.game_scores to authenticated;  -- the policy above limits it to admins
 grant execute on function public.is_admin() to anon, authenticated;
+
+-- ---------------------------------------------------------------------------------------------------------------
+-- Events and sign-ups (events.html). Admins publish events; at an event anyone can open a table for a game
+-- (from the catalogue or typed in) or join one. Visitors have no accounts: each browser makes a random secret
+-- ("token") and sends it when joining, and only that secret can take the person off the table again.
+create table if not exists public.events (
+  id bigint generated always as identity primary key,
+  title text not null check (char_length(trim(title)) between 1 and 80),
+  event_date date not null,
+  start_time time,                                         -- optional
+  description text not null default '' check (char_length(description) <= 2000),
+  created_at timestamptz not null default now()
+);
+create index if not exists events_by_date on public.events (event_date);
+
+create table if not exists public.event_tables (
+  id bigint generated always as identity primary key,
+  event_id bigint not null references public.events (id) on delete cascade,
+  game_id text check (game_id is null or char_length(game_id) <= 100),  -- the game's "id" in data/games.json; null = typed in
+  game_name text not null check (char_length(trim(game_name)) between 1 and 80),
+  on_site boolean not null default true,                   -- the game is at the venue (false: someone has to bring it)
+  max_players integer check (max_players is null or max_players between 1 and 30),  -- null = no limit
+  note text not null default '' check (char_length(note) <= 200),
+  created_at timestamptz not null default now()
+);
+create index if not exists event_tables_by_event on public.event_tables (event_id);
+
+create table if not exists public.event_players (
+  id bigint generated always as identity primary key,
+  table_id bigint not null references public.event_tables (id) on delete cascade,
+  name text not null check (char_length(trim(name)) between 1 and 30),
+  joined_at timestamptz not null default now(),
+  token text not null check (char_length(token) between 16 and 100)  -- the browser's secret; never readable from the website
+);
+create index if not exists event_players_by_table on public.event_players (table_id);
+create unique index if not exists event_players_one_name on public.event_players (table_id, lower(trim(name)));
+
+-- Checks shared by the sign-up functions: the event exists and is not over (one day of slack for time zones),
+-- and at most 60 sign-ups a minute across the site.
+create or replace function public.event_signup_guard(p_event bigint)
+returns void
+language plpgsql
+set search_path = ''
+as $$
+declare
+  d date;
+begin
+  select event_date into d from public.events where id = p_event;
+  if d is null then
+    raise exception 'event not found' using errcode = 'HVE01';
+  end if;
+  if d < current_date - 1 then
+    raise exception 'this event is over' using errcode = 'HVE01';
+  end if;
+  perform pg_advisory_xact_lock(hashtext('hv-event-signups'));
+  if (select count(*) from public.event_players where joined_at > now() - interval '1 minute') >= 60 then
+    raise exception 'Too many sign-ups just now, try again in a minute' using errcode = 'HVE04';
+  end if;
+end;
+$$;
+
+-- Opens a table and seats the person who opened it. Returns { "table_id": …, "player_id": … }.
+create or replace function public.open_event_table(p_event bigint, p_game_id text, p_game_name text, p_on_site boolean,
+  p_max_players integer, p_note text, p_name text, p_token text)
+returns jsonb
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  t bigint;
+  p bigint;
+begin
+  perform public.event_signup_guard(p_event);
+  if (select count(*) from public.event_tables where event_id = p_event) >= 100 then
+    raise exception 'too many tables at this event' using errcode = 'HVE05';
+  end if;
+  insert into public.event_tables (event_id, game_id, game_name, on_site, max_players, note)
+  values (p_event, nullif(trim(p_game_id), ''), trim(p_game_name), coalesce(p_on_site, false), p_max_players, coalesce(trim(p_note), ''))
+  returning id into t;
+  insert into public.event_players (table_id, name, token) values (t, trim(p_name), p_token) returning id into p;
+  return jsonb_build_object('table_id', t, 'player_id', p);
+end;
+$$;
+
+-- Joins a table. Returns the new player id.
+create or replace function public.join_event_table(p_table bigint, p_name text, p_token text)
+returns bigint
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  ev bigint;
+  cap integer;
+  p bigint;
+begin
+  select event_id, max_players into ev, cap from public.event_tables where id = p_table for update;
+  if ev is null then
+    raise exception 'table not found' using errcode = 'HVE01';
+  end if;
+  perform public.event_signup_guard(ev);
+  if cap is not null and (select count(*) from public.event_players where table_id = p_table) >= cap then
+    raise exception 'this table is full' using errcode = 'HVE02';
+  end if;
+  if exists (select 1 from public.event_players where table_id = p_table and lower(trim(name)) = lower(trim(p_name))) then
+    raise exception 'someone with this name already joined' using errcode = 'HVE03';
+  end if;
+  insert into public.event_players (table_id, name, token) values (p_table, trim(p_name), p_token) returning id into p;
+  return p;
+end;
+$$;
+
+-- Leaves a table (only with the secret used to join). A table nobody is left at is removed. Returns true if it worked.
+create or replace function public.leave_event_table(p_player bigint, p_token text)
+returns boolean
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  t bigint;
+begin
+  delete from public.event_players where id = p_player and token = p_token returning table_id into t;
+  if t is null then
+    return false;
+  end if;
+  delete from public.event_tables where id = t and not exists (select 1 from public.event_players where table_id = t);
+  return true;
+end;
+$$;
+
+alter table public.events enable row level security;
+alter table public.event_tables enable row level security;
+alter table public.event_players enable row level security;
+drop policy if exists "Anyone can view events" on public.events;
+create policy "Anyone can view events" on public.events for select using (true);
+drop policy if exists "Admins can add events" on public.events;
+create policy "Admins can add events" on public.events for insert to authenticated with check (public.is_admin());
+drop policy if exists "Admins can change events" on public.events;
+create policy "Admins can change events" on public.events
+  for update to authenticated using (public.is_admin()) with check (public.is_admin());
+drop policy if exists "Admins can delete events" on public.events;
+create policy "Admins can delete events" on public.events for delete to authenticated using (public.is_admin());
+drop policy if exists "Anyone can view event tables" on public.event_tables;
+create policy "Anyone can view event tables" on public.event_tables for select using (true);
+drop policy if exists "Admins can change event tables" on public.event_tables;
+create policy "Admins can change event tables" on public.event_tables
+  for update to authenticated using (public.is_admin()) with check (public.is_admin());
+drop policy if exists "Admins can delete event tables" on public.event_tables;
+create policy "Admins can delete event tables" on public.event_tables for delete to authenticated using (public.is_admin());
+drop policy if exists "Anyone can view event players" on public.event_players;
+create policy "Anyone can view event players" on public.event_players for select using (true);
+drop policy if exists "Admins can remove event players" on public.event_players;
+create policy "Admins can remove event players" on public.event_players for delete to authenticated using (public.is_admin());
+
+-- Visitors open and join tables only through the functions above (no direct inserts).
+grant select on public.events, public.event_tables to anon, authenticated;
+grant select (id, table_id, name, joined_at) on public.event_players to anon, authenticated;  -- not the token
+grant insert (title, event_date, start_time, description) on public.events to authenticated;
+grant update (title, event_date, start_time, description) on public.events to authenticated;
+grant delete on public.events to authenticated;
+grant update (game_name, on_site, max_players, note) on public.event_tables to authenticated;
+grant delete on public.event_tables, public.event_players to authenticated;
+revoke execute on function public.event_signup_guard(bigint) from public, anon, authenticated;
+revoke execute on function public.open_event_table(bigint, text, text, boolean, integer, text, text, text) from public;
+revoke execute on function public.join_event_table(bigint, text, text) from public;
+revoke execute on function public.leave_event_table(bigint, text) from public;
+grant execute on function public.open_event_table(bigint, text, text, boolean, integer, text, text, text) to anon, authenticated;
+grant execute on function public.join_event_table(bigint, text, text) to anon, authenticated;
+grant execute on function public.leave_event_table(bigint, text) to anon, authenticated;
+
+-- ---------------------------------------------------------------------------------------------------------------
+-- Event organizers (负责人). Only admins can see the list and manage it. Each event has one main organizer and any
+-- number of deputies. Visitors see an organizer's contact details only while they are assigned to an event that is
+-- coming up (or was yesterday or today), so the details don't stay public after the event.
+create table if not exists public.staff (
+  id bigint generated always as identity primary key,
+  name text not null check (char_length(trim(name)) between 1 and 30),
+  phone text not null default '' check (char_length(phone) <= 30),
+  wechat text not null default '' check (char_length(wechat) <= 60),
+  xhs text not null default '' check (char_length(xhs) <= 60),           -- 小红书号
+  wechat_qr text check (wechat_qr is null or char_length(wechat_qr) <= 200),  -- path in the "staff-qr" bucket
+  xhs_qr text check (xhs_qr is null or char_length(xhs_qr) <= 200),
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.event_staff (
+  event_id bigint not null references public.events (id) on delete cascade,
+  staff_id bigint not null references public.staff (id) on delete cascade,
+  is_lead boolean not null default false,                -- the main organizer (主负责人)
+  sort integer not null default 0,
+  primary key (event_id, staff_id)
+);
+create unique index if not exists event_staff_one_lead on public.event_staff (event_id) where is_lead;
+create index if not exists event_staff_by_staff on public.event_staff (staff_id);
+
+alter table public.staff enable row level security;
+alter table public.event_staff enable row level security;
+drop policy if exists "Admins and current event visitors can view staff" on public.staff;
+create policy "Admins and current event visitors can view staff" on public.staff for select using (
+  public.is_admin() or exists (
+    select 1 from public.event_staff es join public.events e on e.id = es.event_id
+    where es.staff_id = staff.id and e.event_date >= current_date - 1));
+drop policy if exists "Admins can add staff" on public.staff;
+create policy "Admins can add staff" on public.staff for insert to authenticated with check (public.is_admin());
+drop policy if exists "Admins can change staff" on public.staff;
+create policy "Admins can change staff" on public.staff
+  for update to authenticated using (public.is_admin()) with check (public.is_admin());
+drop policy if exists "Admins can delete staff" on public.staff;
+create policy "Admins can delete staff" on public.staff for delete to authenticated using (public.is_admin());
+drop policy if exists "Anyone can view event staff" on public.event_staff;
+create policy "Anyone can view event staff" on public.event_staff for select using (true);
+
+-- Sets an event's organizers in one go (admins only): one main organizer and the deputies, in order.
+create or replace function public.set_event_staff(p_event bigint, p_lead bigint, p_deputies bigint[])
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if not public.is_admin() then
+    raise exception 'admins only' using errcode = '42501';
+  end if;
+  if p_lead is null then
+    raise exception 'an event needs a main organizer' using errcode = 'HVE06';
+  end if;
+  delete from public.event_staff where event_id = p_event;
+  insert into public.event_staff (event_id, staff_id, is_lead, sort) values (p_event, p_lead, true, 0);
+  insert into public.event_staff (event_id, staff_id, is_lead, sort)
+  select p_event, d, false, o::integer
+  from unnest(coalesce(p_deputies, '{}')) with ordinality as x(d, o)
+  where d is not null and d <> p_lead
+  on conflict do nothing;
+end;
+$$;
+
+grant select on public.staff, public.event_staff to anon, authenticated;
+grant insert (name, phone, wechat, xhs, wechat_qr, xhs_qr) on public.staff to authenticated;
+grant update (name, phone, wechat, xhs, wechat_qr, xhs_qr) on public.staff to authenticated;
+grant delete on public.staff to authenticated;
+revoke execute on function public.set_event_staff(bigint, bigint, bigint[]) from public, anon;
+grant execute on function public.set_event_staff(bigint, bigint, bigint[]) to authenticated;
+
+-- QR codes (微信 / 小红书): a public bucket so event pages can show them. Files get random names and the bucket
+-- can't be listed by visitors; only admins can upload, replace or delete.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('staff-qr', 'staff-qr', true, 5242880, array['image/png', 'image/jpeg', 'image/webp'])
+on conflict (id) do update
+  set public = true, file_size_limit = excluded.file_size_limit, allowed_mime_types = excluded.allowed_mime_types;
+drop policy if exists "Admins can list staff QR codes" on storage.objects;
+create policy "Admins can list staff QR codes" on storage.objects
+  for select to authenticated using (bucket_id = 'staff-qr' and public.is_admin());
+drop policy if exists "Admins can upload staff QR codes" on storage.objects;
+create policy "Admins can upload staff QR codes" on storage.objects
+  for insert to authenticated with check (bucket_id = 'staff-qr' and public.is_admin());
+drop policy if exists "Admins can replace staff QR codes" on storage.objects;
+create policy "Admins can replace staff QR codes" on storage.objects
+  for update to authenticated using (bucket_id = 'staff-qr' and public.is_admin())
+  with check (bucket_id = 'staff-qr' and public.is_admin());
+drop policy if exists "Admins can delete staff QR codes" on storage.objects;
+create policy "Admins can delete staff QR codes" on storage.objects
+  for delete to authenticated using (bucket_id = 'staff-qr' and public.is_admin());
+
+-- ---------------------------------------------------------------------------------------------------------------
+-- Event templates: a saved event name and description, to fill in the event form quickly. Admins only.
+-- One template per name (not case-sensitive); saving under an existing name replaces it.
+create table if not exists public.event_templates (
+  id bigint generated always as identity primary key,
+  title text not null check (char_length(trim(title)) between 1 and 80),
+  description text not null default '' check (char_length(description) <= 2000),
+  updated_at timestamptz not null default now()
+);
+create unique index if not exists event_templates_one_name on public.event_templates (lower(trim(title)));
+alter table public.event_templates enable row level security;
+drop policy if exists "Admins can view event templates" on public.event_templates;
+create policy "Admins can view event templates" on public.event_templates
+  for select to authenticated using (public.is_admin());
+drop policy if exists "Admins can add event templates" on public.event_templates;
+create policy "Admins can add event templates" on public.event_templates
+  for insert to authenticated with check (public.is_admin());
+drop policy if exists "Admins can change event templates" on public.event_templates;
+create policy "Admins can change event templates" on public.event_templates
+  for update to authenticated using (public.is_admin()) with check (public.is_admin());
+drop policy if exists "Admins can delete event templates" on public.event_templates;
+create policy "Admins can delete event templates" on public.event_templates
+  for delete to authenticated using (public.is_admin());
+grant select, delete on public.event_templates to authenticated;
+grant insert (title, description) on public.event_templates to authenticated;
+grant update (title, description, updated_at) on public.event_templates to authenticated;

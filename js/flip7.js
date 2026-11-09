@@ -82,6 +82,12 @@
       delete: "删除",
       deleteConfirm: "删除这条记录？删除后不能恢复。",
       deleteFailed: "删除失败：{msg}",
+      edit: "编辑",
+      editNames: "修改玩家名字（分数来自每轮明细，不能在这里改）",
+      saveNames: "保存",
+      cancel2: "取消",
+      needName2: "名字不能为空（最多 30 个字）。",
+      updateFailed: "修改失败：{msg}",
       lbPlayer: "玩家",
       lbGames: "局数",
       lbWins: "胜场",
@@ -168,6 +174,12 @@
       delete: "Delete",
       deleteConfirm: "Delete this record? This can't be undone.",
       deleteFailed: "Couldn't delete: {msg}",
+      edit: "Edit",
+      editNames: "Change player names (scores come from the rounds and can't be changed here)",
+      saveNames: "Save",
+      cancel2: "Cancel",
+      needName2: "Names can't be empty (30 characters at most).",
+      updateFailed: "Couldn't save the changes: {msg}",
       lbPlayer: "Player",
       lbGames: "Games",
       lbWins: "Wins",
@@ -599,6 +611,7 @@
   let loadingRecords = false;
   let isAdmin = false;
   let filter = "";
+  let editRecId = null; // admins: the record whose player names are being changed
 
   async function loadRecords(force = false) {
     if (!HVLoans.enabled) return renderRecords();
@@ -642,12 +655,18 @@
       : "";
     return `<article class="f7-rec">
       <div class="f7-rec-head"><b>${esc(tr("won", { names: joinNames(String(r.winner).split("、")) }))}</b><time datetime="${esc(r.played_at)}">${esc(fmtTime(r.played_at))}</time></div>
-      <ol class="f7-rec-players">${sorted
+      ${String(editRecId) === String(r.id)
+        ? `<form class="f7-name-edit" data-names-form="${esc(r.id)}"><p class="f7-hint">${esc(tr("editNames"))}</p>
+            ${players.map((p, pi) => `<label><input name="n${pi}" value="${esc(p.name)}" maxlength="30" list="f7-names" autocomplete="off"> <span>${esc(tr("points", { n: p.total }))}</span></label>`).join("")}
+            <p class="f7-msg is-err" role="alert"></p>
+            <div class="f7-actions"><button class="btn" type="submit">${esc(tr("saveNames"))}</button><button class="btn ghost" type="button" data-cancel-names>${esc(tr("cancel2"))}</button></div>
+          </form>`
+        : `<ol class="f7-rec-players">${sorted
         .map((p) => `<li class="${p.total === r.top_score ? "is-win" : ""}">${esc(p.name)} · ${esc(tr("points", { n: p.total }))}</li>`)
-        .join("")}</ol>
+        .join("")}</ol>`}
       ${table}
       <div class="f7-rec-foot"><span>${esc(tr("roundsTarget", { n: r.round_count, t: r.target ?? "–" }))}</span>
-        ${isAdmin ? `<button class="link-btn" type="button" data-del-rec="${esc(r.id)}">${esc(tr("delete"))}</button>` : ""}</div>
+        ${isAdmin ? `<span class="f7-admin-acts"><button class="link-btn" type="button" data-edit-rec="${esc(r.id)}">${esc(tr("edit"))}</button><button class="link-btn" type="button" data-del-rec="${esc(r.id)}">${esc(tr("delete"))}</button></span>` : ""}</div>
     </article>`;
   }
 
@@ -733,6 +752,18 @@
 
   document.querySelector(".f7-main").addEventListener("click", async (e) => {
     if (e.target.closest("[data-retry]")) return loadRecords(true);
+    const ed = e.target.closest("[data-edit-rec]");
+    if (ed) {
+      editRecId = ed.dataset.editRec;
+      renderRecordList();
+      const first = document.querySelector(`[data-names-form="${editRecId}"] input`);
+      if (first) first.focus();
+      return;
+    }
+    if (e.target.closest("[data-cancel-names]")) {
+      editRecId = null;
+      return renderRecordList();
+    }
     const del = e.target.closest("[data-del-rec]");
     if (!del || !confirm(tr("deleteConfirm"))) return;
     del.disabled = true;
@@ -743,6 +774,32 @@
     } catch (err) {
       del.disabled = false;
       alert(tr("deleteFailed", { msg: errText(err) }));
+    }
+  });
+
+  // Admins: save changed player names (the winner's name follows).
+  document.querySelector(".f7-main").addEventListener("submit", async (e) => {
+    const form = e.target.closest("[data-names-form]");
+    if (!form) return;
+    e.preventDefault();
+    const r = (records || []).find((x) => String(x.id) === form.dataset.namesForm);
+    if (!r) return;
+    const names = (r.players || []).map((_, pi) => form.elements[`n${pi}`].value.trim());
+    const err = form.querySelector(".f7-msg");
+    if (names.some((n) => !n || n.length > 30)) return void (err.textContent = tr("needName2"));
+    const players = r.players.map((p, pi) => ({ ...p, name: names[pi] }));
+    const winner = players.filter((p) => p.total === r.top_score).map((p) => p.name).join("、");
+    const btn = form.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    try {
+      const row = await HVLoans.updateScore(r.id, { players, winner });
+      records = records.map((x) => (String(x.id) === String(r.id) ? { ...x, ...row } : x));
+      editRecId = null;
+      renderRecords();
+      fillNameList();
+    } catch (ex) {
+      btn.disabled = false;
+      err.textContent = tr("updateFailed", { msg: errText(ex) });
     }
   });
 

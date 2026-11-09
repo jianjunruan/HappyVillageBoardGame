@@ -76,6 +76,8 @@ The site can show which games are lent out and to whom, and admins can lend and 
 
 Flip 7 has a round-by-round scorer ([flip7.html](flip7.html)). Other games use one shared scoreboard page, [score.html?game=<id>](score.html): each player's final score plus the game's own choices (e.g. 大创造时代's faction and terrain, SETI's organization, colour and alien species), with records, an overall leaderboard and a wins leaderboard. All are stored in the same Supabase project and linked from the game's popup through the `"scorer"` field. A game's choices are set in `js/scoreboards/<id>.js`.
 
+Events ([events.html](events.html), the **📅 活动报名** button): admins publish events with a name, date and description. The name and description can be saved as a template and filled in from one later. At an event, anyone can join a table or open a new one for a game from the catalogue, or type a game in. Each table shows whether the game is at the venue. Each event has a main organizer and optional deputies, chosen from an organizer list that only admins can see; their phone, WeChat, Xiaohongshu and QR codes show on the event page. The home page shows the next 1–2 events at the top. Setup and details: [docs/SUPABASE.md](docs/SUPABASE.md#events-and-sign-ups-活动报名).
+
 ## Run locally
 
 The site loads `data/games.json` with `fetch`, so it won't work if you double-click `index.html`. Run a tiny web server instead:
@@ -95,8 +97,10 @@ You can also put the folder in `C:\xampp\htdocs\` and open `http://localhost/Hap
 ```
 index.html          Game catalogue (search, tag filter, detail popup)
 flip7.html          Flip 7 scorer, game records and leaderboard (js/flip7.js, css/flip7.css)
+events.html         Events and sign-ups: events.html, events.html?id=<id>, organizers: events.html?staff (js/events.js, css/events.css)
+js/home-events.js   The upcoming-events banner at the top of the home page
 score.html          Scoreboard for any game: score.html?game=<id> (js/scoreboard.js, css/scoreboard.css)
-js/scoreboards/     Each game's scoreboard choices (age-of-innovation.js, seti.js)
+js/scoreboards/     Each game's scoreboard choices (age-of-innovation.js, seti.js, ark-nova.js)
 aoi.html            Old link; redirects to the 大创造时代 scoreboard
 css/style.css       Styles (light and dark mode)
 js/config.js        Site settings: Supabase connection for loans; apiBase for a future server

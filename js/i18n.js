@@ -132,6 +132,7 @@ window.HVI18n = (() => {
       adminSignedIn: "管理员：{email}",
       adminSignOut: "退出",
       inventory: "库存管理",
+      events: "📅 活动报名",
       email: "邮箱",
       password: "密码",
       signIn: "登录",
@@ -266,6 +267,7 @@ window.HVI18n = (() => {
       adminSignedIn: "Admin: {email}",
       adminSignOut: "Sign out",
       inventory: "Inventory",
+      events: "📅 Events",
       email: "Email",
       password: "Password",
       signIn: "Sign in",
@@ -279,9 +281,14 @@ window.HVI18n = (() => {
     },
   };
 
+  // The site always opens in Chinese; a switch to English only lasts for this tab (sessionStorage),
+  // so moving between pages keeps it but a new visit starts in Chinese again.
+  try {
+    localStorage.removeItem(STORE_KEY); // older versions remembered the choice forever
+  } catch {}
   function readStored() {
     try {
-      return localStorage.getItem(STORE_KEY);
+      return sessionStorage.getItem(STORE_KEY);
     } catch {
       return null;
     }
@@ -315,7 +322,7 @@ window.HVI18n = (() => {
     if (!LANGS.includes(next) || next === lang) return;
     lang = next;
     try {
-      localStorage.setItem(STORE_KEY, lang);
+      sessionStorage.setItem(STORE_KEY, lang);
     } catch {}
     apply();
     listeners.forEach((fn) => fn(lang));

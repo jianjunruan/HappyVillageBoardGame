@@ -7,6 +7,7 @@
 // Config:
 //   name:         { zh, en }       game name for the header (default: the name in data/games.json)
 //   maxPlayers:   number           (default 6)
+//   minScore:     number           lowest score allowed (default 0; e.g. -999 for games where scores can be negative)
 //   playerFields: [field]          choices made by each player, saved on each player in "players"
 //   gameFields:   [field]          choices about the whole game, saved in "details"
 // A field:
@@ -19,6 +20,8 @@
 //   max           (chips) how many can be picked
 //   statsTitle    { zh, en }       heading of this field's table on the leaderboard (omit for no table)
 //   favLabel      { zh, en }       (one cards field) adds a "favourite …" column to the players table
+//   allowCustom   (cards) true: players can also type a name that isn't in the list (saved as that text)
+//   groups        (cards) [{ key, label: { zh, en } }]: headings in the picker; each option names its group with "group"
 //   options       [{ key, name: { zh, en }, img, icon, color, rows: [{ label: { zh, en }, text: { zh, en } }], summary: { zh, en }, note: { zh, en } }]
 //                 img: picture; icon: emoji when there's no picture; color: accent colour;
 //                 rows: text on the card (cards); summary: one line shown on the button once picked (default: last row);
@@ -49,6 +52,10 @@
       pickSub: "已被其他玩家选走的不能再选。",
       takenBy: "已被 {name} 选",
       upTo: "最多选 {n} 个",
+      customLabel: "列表里没有？手动填写",
+      customPh: "输入{label}名称",
+      customUse: "使用",
+      customTag: "手动填写",
       close: "关闭",
       removePlayer: "移除玩家 {n}",
       addPlayer: "＋ 添加玩家",
@@ -59,7 +66,7 @@
       saved: "✓ 已保存！",
       viewRecords: "查看战绩记录",
       needName: "请填写第 {n} 位玩家的名字。",
-      needScore: "请填写 {name} 的得分（0–9999 的整数）。",
+      needScore: "请填写 {name} 的得分（{min}–{max} 的整数）。",
       futureDate: "游戏日期不能晚于今天。",
       needDate: "请选择游戏日期。",
       clear: "清空表格",
@@ -79,6 +86,12 @@
       gamesCount: "共 {n} 局",
       points: "{n} 分",
       delete: "删除",
+      edit: "编辑",
+      editing: "✏️ 正在修改 {date} 的记录（管理员）",
+      cancelEdit: "取消修改",
+      saveEdit: "💾 保存修改",
+      updated: "✓ 已修改",
+      updateFailed: "修改失败：{msg}",
       deleteConfirm: "删除这条记录？删除后不能恢复。",
       deleteFailed: "删除失败：{msg}",
       lbTotal: "总榜（累计得分）",
@@ -114,6 +127,10 @@
       pickSub: "Options another player has taken can't be picked.",
       takenBy: "Taken by {name}",
       upTo: "Pick up to {n}",
+      customLabel: "Not in the list? Type it in",
+      customPh: "{label} name",
+      customUse: "Use",
+      customTag: "Typed in",
       close: "Close",
       removePlayer: "Remove player {n}",
       addPlayer: "+ Add player",
@@ -124,7 +141,7 @@
       saved: "✓ Saved!",
       viewRecords: "View records",
       needName: "Enter a name for player {n}.",
-      needScore: "Enter a score for {name} (a whole number from 0 to 9999).",
+      needScore: "Enter a score for {name} (a whole number from {min} to {max}).",
       futureDate: "The date can't be later than today.",
       needDate: "Pick the date played.",
       clear: "Clear form",
@@ -144,6 +161,12 @@
       gamesCount: "{n} games",
       points: "{n} pts",
       delete: "Delete",
+      edit: "Edit",
+      editing: "✏️ Editing the record from {date} (admin)",
+      cancelEdit: "Cancel editing",
+      saveEdit: "💾 Save changes",
+      updated: "✓ Changes saved",
+      updateFailed: "Couldn't save the changes: {msg}",
       deleteConfirm: "Delete this record? This can't be undone.",
       deleteFailed: "Couldn't delete: {msg}",
       lbTotal: "Overall (total points)",
@@ -216,12 +239,16 @@
     }
   }
   function store() {
+    if (editing) return; // changes to a saved record aren't kept as the draft
     try {
       localStorage.setItem(KEY, JSON.stringify(F));
     } catch {}
   }
   let F = null;
-  let saveState = null; // null | "saving" | "saved" | { err }
+  let saveState = null; // null | "saving" | "saved" | "updated" | { err }
+  // Admins can load a saved record into the form to change it; the visitor's own draft waits in draftAside.
+  let editing = null; // { id, day } while changing a saved record
+  let draftAside = null;
 
   // ---------- tabs ----------
   const TABS = ["score", "records", "leaders"];
@@ -245,7 +272,9 @@
   };
 
   function cardsFieldHtml(field, p, i) {
-    const o = optOf(field, p[field.key]);
+    const v = p[field.key];
+    // A typed-in value (allowCustom) shows as a pseudo-option.
+    const o = optOf(field, v) || (v ? { key: v, name: v, icon: "✏️", color: "#8a8f96", summary: { zh: tr("customTag"), en: tr("customTag") } } : null);
     const id = `f-${field.key}-${i}`;
     const summary = o ? L(o.summary) || L((o.rows || []).slice(-1)[0]?.text) : "";
     return `<div class="sb-f"><span id="${id}">${esc(L(field.label))}</span>
@@ -282,7 +311,7 @@
         <label class="sb-f sb-name"><span>${esc(tr("name"))}</span>
           <input data-i="${i}" data-k="name" value="${esc(p.name)}" maxlength="30" list="sb-names" autocomplete="off" placeholder="${esc(tr("playerN", { n }))}"></label>
         <label class="sb-f sb-score"><span>${esc(tr("score"))}</span>
-          <input data-i="${i}" data-k="score" value="${esc(p.score)}" type="number" inputmode="numeric" min="0" max="${MAX_SCORE}" step="1"></label>
+          <input data-i="${i}" data-k="score" value="${esc(p.score)}" type="number" inputmode="${CFG.minScore < 0 ? "text" : "numeric"}" min="${CFG.minScore}" max="${MAX_SCORE}" step="1"></label>
       </div>
       ${pFields().map((f) => (f.type === "cards" ? cardsFieldHtml(f, p, i) : swatchFieldHtml(f, p, i))).join("")}
     </fieldset>`;
@@ -308,11 +337,15 @@
     const el = $("tab-score");
     let msg = "";
     if (!HVLoans.enabled) msg = `<p class="f7-msg">${esc(tr("noBackend"))}</p>`;
+    else if (saveState === "updated") msg = `<p class="f7-msg is-ok" role="status">${esc(tr("updated"))} · <a href="#records">${esc(tr("viewRecords"))}</a></p>`;
     else if (saveState === "saved") msg = `<p class="f7-msg is-ok" role="status">${esc(tr("saved"))} · <a href="#records">${esc(tr("viewRecords"))}</a></p>`;
     else if (saveState && saveState.err) msg = `<p class="f7-msg is-err" role="alert">${esc(saveState.err)}</p>`;
     const optional = [...pFields(), ...gFields()].map((f) => L(f.label));
     const hint = optional.length ? tr("hintOptional", { fields: optional.join(HVI18n.lang === "zh" ? "、" : ", ") }) : tr("hintBase");
-    el.innerHTML = `
+    const banner = editing
+      ? `<div class="sb-editing" role="status"><span>${esc(tr("editing", { date: fmtDay(editing.day) }))}</span><button class="link-btn" type="button" id="cancel-edit">${esc(tr("cancelEdit"))}</button></div>`
+      : "";
+    el.innerHTML = `${banner}
       <h2 id="date-l">${esc(tr("date"))}</h2>
       <input type="hidden" id="sb-date" value="${esc(F.date)}" data-datepicker data-max="today" data-size="lg" data-labelledby="date-l">
       ${gameFieldsHtml()}
@@ -320,14 +353,14 @@
       <div class="sb-players">${F.players.map(playerHtml).join("")}</div>
       <button class="f7-dashed" type="button" id="add-p" ${F.players.length >= CFG.maxPlayers ? "disabled" : ""}>${esc(tr("addPlayer"))}</button>
       <p class="f7-hint">${esc(hint)}</p>
-      <p style="margin-top:20px"><button class="btn f7-wide" type="button" id="save-rec" ${saveState === "saving" || !HVLoans.enabled ? "disabled" : ""}>${esc(tr(saveState === "saving" ? "saving" : "save"))}</button></p>
+      <p style="margin-top:20px"><button class="btn f7-wide" type="button" id="save-rec" ${saveState === "saving" || !HVLoans.enabled ? "disabled" : ""}>${esc(tr(saveState === "saving" ? "saving" : editing ? "saveEdit" : "save"))}</button></p>
       ${msg}
-      <p style="text-align:center"><button class="link-btn" type="button" id="clear-form">${esc(tr("clear"))}</button></p>`;
+      <p style="text-align:center">${editing ? `<button class="link-btn" type="button" id="cancel-edit">${esc(tr("cancelEdit"))}</button>` : `<button class="link-btn" type="button" id="clear-form">${esc(tr("clear"))}</button>`}</p>`;
     HVDatePicker.enhance(el);
   }
 
   function clearMsg() {
-    if (saveState === "saved" || (saveState && saveState.err)) {
+    if (saveState === "saved" || saveState === "updated" || (saveState && saveState.err)) {
       saveState = null;
       const m = $("tab-score").querySelector(".f7-msg");
       if (m) m.remove();
@@ -383,6 +416,7 @@
         renderForm();
         return refocus(`[data-i="${F.players.length - 1}"][data-k="name"]`);
       }
+      if (b.id === "cancel-edit") return stopEditing(true);
       if (b.id === "clear-form") {
         if (!confirm(tr("clearConfirm"))) return;
         F = blank();
@@ -418,7 +452,17 @@
         <button type="button" class="sb-x" data-close aria-label="${esc(tr("close"))}">×</button>
       </div>
       <button type="button" class="sb-none${cur ? "" : " is-on"}" data-opt="" aria-pressed="${!cur}">${esc(tr("none"))}</button>
-      <div class="sb-card-grid" role="group" aria-labelledby="pick-title">${field.options
+      ${field.allowCustom ? `<form class="sb-custom" data-custom-form>
+        <label for="sb-custom-in">${esc(tr("customLabel"))}</label>
+        <div><input id="sb-custom-in" maxlength="30" autocomplete="off" value="${esc(cur && !optOf(field, cur) ? cur : "")}" placeholder="${esc(tr("customPh", { label: L(field.label) }))}">
+        <button class="btn" type="submit">${esc(tr("customUse"))}</button></div>
+      </form>` : ""}
+      ${(field.groups || [{ key: undefined }])
+        .map((g) => {
+          const opts = field.options.filter((o) => !field.groups || o.group === g.key);
+          if (!opts.length) return "";
+          return `${g.label ? `<h3 class="sb-group" id="grp-${esc(g.key)}">${esc(L(g.label))} <span class="count">${opts.length}</span></h3>` : ""}
+      <div class="sb-card-grid" role="group" aria-labelledby="${g.label ? `grp-${esc(g.key)}` : "pick-title"}">${opts
         .map((o) => {
           const by = taken.get(o.key);
           return `<button type="button" class="sb-card${cur === o.key ? " is-on" : ""}" data-opt="${esc(o.key)}" aria-pressed="${cur === o.key}" style="--c:${esc(o.color || "var(--accent)")}"${by ? " disabled" : ""}>
@@ -428,22 +472,44 @@
           </button>`;
         })
         .join("")}</div>`;
+        })
+        .join("")}`;
   }
   function wirePicker() {
     const dlg = $("sb-pick");
-    dlg.addEventListener("click", (e) => {
-      if (e.target === dlg) return dlg.close();
-      const b = e.target.closest("button");
-      if (!b || b.disabled) return;
-      if (b.hasAttribute("data-close")) return dlg.close();
-      if (b.dataset.opt === undefined || !pick) return;
-      F.players[pick.i][pick.field.key] = b.dataset.opt;
+    const choose = (v) => {
+      F.players[pick.i][pick.field.key] = v;
       clearMsg();
       store();
       dlg.close();
       renderForm();
       const back = $("tab-score").querySelector(`[data-pick="${pick.field.key}"][data-i="${pick.i}"]`);
       if (back) back.focus();
+    };
+    dlg.addEventListener("submit", (e) => {
+      if (!e.target.matches("[data-custom-form]") || !pick) return;
+      e.preventDefault();
+      const text = $("sb-custom-in").value.trim().slice(0, 30);
+      if (!text) return $("sb-custom-in").focus();
+      // Typing a listed name picks that option, so stats don't split.
+      // Names match with or without a "Map 14:" / "地图 14：" prefix or (…) note, and "地图14" / "map 14" alone also match.
+      const norm = (n) => String(n).toLowerCase().replace(/[\s（）()]/g, "");
+      const forms = (n) => {
+        const m = String(n).match(/^(.*?\d+[a-z]?)\s*[:：]\s*(.+)$/i);
+        const base = String(n).replace(/[（(].*?[)）]/g, "");
+        return [n, base, ...(m ? [m[1], m[2]] : [])].map(norm);
+      };
+      const want = norm(text);
+      const match = pick.field.options.find((o) => [o.name.zh, o.name.en].some((n) => n && forms(n).includes(want)));
+      choose(match ? match.key : text);
+    });
+    dlg.addEventListener("click", (e) => {
+      if (e.target === dlg) return dlg.close();
+      const b = e.target.closest("button");
+      if (!b || b.disabled) return;
+      if (b.hasAttribute("data-close")) return dlg.close();
+      if (b.dataset.opt === undefined || !pick) return;
+      choose(b.dataset.opt);
     });
   }
 
@@ -455,7 +521,7 @@
       const p = F.players[i];
       if (!p.name.trim()) return tr("needName", { n: i + 1 });
       const s = Number(p.score);
-      if (p.score === "" || !Number.isInteger(s) || s < 0 || s > MAX_SCORE) return tr("needScore", { name: p.name.trim() });
+      if (p.score === "" || !Number.isInteger(s) || s < CFG.minScore || s > MAX_SCORE) return tr("needScore", { name: p.name.trim(), min: CFG.minScore, max: MAX_SCORE });
     }
     return null;
   }
@@ -489,6 +555,21 @@
     }
     saveState = "saving";
     renderForm();
+    if (editing) {
+      try {
+        const { game_id, ...changes } = toRecord();
+        const row = await HVLoans.updateScore(editing.id, { details: {}, ...changes });
+        if (records) records = records.map((r) => (String(r.id) === String(editing.id) ? { ...r, ...row } : r));
+        stopEditing(false);
+        saveState = "updated";
+        renderForm();
+        renderRecords();
+      } catch (err) {
+        saveState = { err: tr("updateFailed", { msg: errText(err) }) };
+        renderForm();
+      }
+      return;
+    }
     try {
       await HVLoans.saveScore(toRecord());
       // Ready for the next game: same players and date; scores and choices cleared.
@@ -500,6 +581,30 @@
       saveState = { err: tr("saveFailed", { msg: errText(err) }) };
     }
     renderForm();
+  }
+
+  // ---------- changing a saved record (admins) ----------
+  function startEditing(r) {
+    if (!editing) draftAside = F;
+    const details = r.details && typeof r.details === "object" ? r.details : {};
+    editing = { id: r.id, day: dayOf(r) };
+    F = {
+      date: dayOf(r),
+      dateSetOn: today(),
+      players: (r.players || []).map((p) => ({ ...blankPlayer(), ...Object.fromEntries(pFields().map((f) => [f.key, p[f.key] || ""])), name: String(p.name || ""), score: String(p.total ?? "") })),
+      extra: { ...blankExtra(), ...Object.fromEntries(gFields().map((f) => [f.key, Array.isArray(details[f.key]) ? details[f.key].slice() : []])) },
+    };
+    saveState = null;
+    renderForm();
+    location.hash = "#score";
+    window.scrollTo(0, 0);
+  }
+  function stopEditing(show) {
+    editing = null;
+    F = draftAside || blank();
+    draftAside = null;
+    saveState = null;
+    if (show) renderForm();
   }
 
   // ---------- records ----------
@@ -568,7 +673,7 @@
           })
           .join("")}</tbody>
       </table>
-      ${isAdmin ? `<div class="f7-rec-foot"><span></span><button class="link-btn" type="button" data-del-rec="${esc(r.id)}">${esc(tr("delete"))}</button></div>` : ""}
+      ${isAdmin ? `<div class="f7-rec-foot"><span></span><span class="sb-admin-acts"><button class="link-btn" type="button" data-edit-rec="${esc(r.id)}">${esc(tr("edit"))}</button><button class="link-btn" type="button" data-del-rec="${esc(r.id)}">${esc(tr("delete"))}</button></span></div>` : ""}
     </article>`;
   }
 
@@ -697,12 +802,19 @@
   function wireRecords() {
     document.querySelector(".f7-main").addEventListener("click", async (e) => {
       if (e.target.closest("[data-retry]")) return loadRecords(true);
+      const ed = e.target.closest("[data-edit-rec]");
+      if (ed) {
+        const r = (records || []).find((x) => String(x.id) === ed.dataset.editRec);
+        if (r) startEditing(r);
+        return;
+      }
       const del = e.target.closest("[data-del-rec]");
       if (!del || !confirm(tr("deleteConfirm"))) return;
       del.disabled = true;
       try {
         await HVLoans.deleteScore(del.dataset.delRec);
         records = records.filter((r) => String(r.id) !== del.dataset.delRec);
+        if (editing && String(editing.id) === del.dataset.delRec) stopEditing(true);
         renderRecords();
       } catch (err) {
         del.disabled = false;
@@ -749,7 +861,7 @@
     const [data] = await Promise.all([fetch("data/games.json").then((r) => r.json()).catch(() => null), loadScript(`js/scoreboards/${GAME_ID}.js`)]);
     const game = data && (data.games || []).find((g) => g.id === GAME_ID);
     if (!game && !CONFIGS[GAME_ID]) return fail(tr("noGame"));
-    CFG = { maxPlayers: 6, playerFields: [], gameFields: [], ...(CONFIGS[GAME_ID] || {}) };
+    CFG = { maxPlayers: 6, minScore: 0, playerFields: [], gameFields: [], ...(CONFIGS[GAME_ID] || {}) };
     gameName = CFG.name || (game && (typeof game.name === "string" ? { zh: game.name, en: game.name } : game.name)) || { zh: GAME_ID, en: GAME_ID };
     const back = `index.html#/game/${encodeURIComponent(GAME_ID)}`;
     $("sb-back").href = back;

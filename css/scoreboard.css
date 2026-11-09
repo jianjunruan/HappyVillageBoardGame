@@ -124,3 +124,16 @@ i.sb-dot { width: 14px; height: 14px; vertical-align: -2px; margin: 0 9px 0 3px;
   .sb-card, .sb-swatch, .sb-chip { transition: none; }
 }
 #sb-title, .sb-title { font-size: 0.6em; color: var(--muted); font-weight: 600; }
+
+/* card picker: typed-in option and group headings */
+.sb-custom { margin-top: 10px; padding: 10px 12px; border: 1px dashed var(--border); border-radius: 10px; display: grid; gap: 6px; }
+.sb-custom label { font-size: 0.85rem; color: var(--muted); font-weight: 600; }
+.sb-custom div { display: flex; gap: 8px; }
+.sb-custom input { flex: 1; min-width: 0; padding: 8px 10px; font: inherit; }
+.sb-custom .btn { flex: none; }
+.sb-group { font-size: 0.95rem; margin: 16px 0 0; color: var(--text); }
+.sb-group .count { color: var(--muted); font-weight: 400; font-size: 0.85em; }
+
+/* admins changing a saved record */
+.sb-editing { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; margin: 16px 0 0; padding: 10px 14px; border-radius: var(--radius); background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+.sb-admin-acts { display: inline-flex; gap: 14px; }

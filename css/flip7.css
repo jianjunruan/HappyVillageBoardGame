@@ -129,3 +129,11 @@ dialog.f7-sheet { width: min(560px, calc(100vw - 16px)); padding: 16px; }
 /* leaderboard */
 .f7-table.f7-lb td:first-child { color: var(--text); font-weight: 600; }
 .f7-table.f7-lb td.f7-medal { width: 2em; }
+
+/* admins: change player names in a saved record */
+.f7-admin-acts { display: inline-flex; gap: 14px; }
+.f7-name-edit { display: grid; gap: 6px; margin-top: 8px; }
+.f7-name-edit label { display: flex; align-items: center; gap: 8px; }
+.f7-name-edit input { flex: 1; min-width: 0; padding: 7px 10px; font: inherit; }
+.f7-name-edit label span { color: var(--muted); font-size: 0.88rem; white-space: nowrap; }
+.f7-name-edit .f7-actions { display: flex; gap: 8px; }

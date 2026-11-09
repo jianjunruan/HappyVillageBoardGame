@@ -2544,6 +2544,7 @@
     {
       "id": "ark-nova-marine-worlds",
       "name": { "zh": "方舟动物园：海洋世界", "en": "Ark Nova: Marine Worlds" },
+      "scorer": "score.html?game=ark-nova",
       "image": "images/ark-nova-marine-worlds.jpg",
       "description": {
         "zh": "《方舟动物园》的扩展。加入海洋动物，必须养在临水建造的特殊水族馆中；约一半是珊瑚礁生物，每放入一只都会触发所有珊瑚礁生物的能力。还加入新的行动卡、大学、奖励板块和终局计分卡。（扩展，需要基础游戏才能玩。）设计师：Mathias Wigge（2023）。",
@@ -2571,6 +2572,7 @@
     {
       "id": "ark-nova",
       "name": { "zh": "方舟动物园", "en": "Ark Nova" },
+      "scorer": "score.html?game=ark-nova",
       "image": "images/ark-nova.jpg",
       "description": {
         "zh": "规划并设计一座现代化、科学管理的动物园。建造围栏、安置动物、支持世界各地的保护项目，借助专家和特殊建筑打造最成功的动物园。每人 5 张行动卡，卡牌位置决定行动强度。BGG 排名前列的重策游戏。设计师：Mathias Wigge（2021）。\n\n适合：喜欢重度策略的玩家。",

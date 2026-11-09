@@ -285,3 +285,30 @@ dialog.login { width: min(380px, calc(100vw - 24px)); }
 .login-form h2 { margin: 0; font-size: 1.2rem; }
 .login-form label { display: grid; gap: 4px; font-size: 0.9rem; color: var(--muted); }
 .form-actions { display: flex; justify-content: flex-end; gap: 10px; }
+
+/* Events banner on the home page (js/home-events.js) */
+.home-events {
+  margin: 16px 0 4px; padding: 14px; border-radius: var(--radius); color: #fff;
+  background: linear-gradient(135deg, var(--accent) 0%, #e8913a 100%); box-shadow: 0 6px 20px rgb(210 96 47 / 0.28);
+}
+.home-events.is-empty { padding: 0; background: none; box-shadow: none; }
+.he-none { display: block; padding: 10px 14px; border-radius: 12px; border: 2px dashed var(--accent); color: var(--accent); font-weight: 700; text-decoration: none; }
+.he-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.he-head h2 { margin: 0; font-size: 1.2rem; }
+.he-head a { color: #fff; font-weight: 700; white-space: nowrap; }
+.he-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; }
+.he-card { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 12px; background: var(--surface); color: var(--text); text-decoration: none; min-width: 0; transition: transform 0.15s; }
+.he-card:hover, .he-card:focus-visible { transform: translateY(-2px); }
+.he-cal { flex: none; width: 52px; height: 58px; border-radius: 10px; display: grid; place-items: center; align-content: center; background: var(--accent-soft); color: var(--accent); line-height: 1.1; }
+.he-cal small { font-size: 0.72rem; font-weight: 700; }
+.he-cal b { font-size: 1.5rem; }
+.he-body { flex: 1; display: grid; gap: 2px; min-width: 0; }
+.he-name { font-weight: 800; font-size: 1.05rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.he-when, .he-meta { color: var(--muted); font-size: 0.86rem; }
+.he-rel { display: inline-block; padding: 0 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-weight: 700; font-size: 0.78rem; }
+.he-rel.is-now { background: var(--ok); color: #fff; }
+.he-go { flex: none; padding: 7px 12px; border-radius: 10px; background: var(--accent); color: #fff; font-weight: 700; font-size: 0.9rem; white-space: nowrap; }
+@media (max-width: 520px) {
+  .he-list { grid-template-columns: 1fr; }
+  .he-go { padding: 6px 10px; font-size: 0.85rem; }
+}
