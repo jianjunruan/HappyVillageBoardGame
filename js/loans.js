@@ -278,12 +278,16 @@ window.HVLoans = (() => {
     async event(id) {
       const rows = await request(`/rest/v1/events?id=eq.${encodeURIComponent(id)}` +
         "&select=id,title,event_date,start_time,description," +
-        "event_tables(id,game_id,game_name,on_site,max_players,note,created_at,event_players(id,name,joined_at))," +
+        "event_tables(id,game_id,game_name,on_site,max_players,note,created_at,start_time,host_player,event_players(id,name,joined_at))," +
         "event_staff(is_lead,sort,staff(id,name,phone,wechat,xhs,wechat_qr,xhs_qr))", { admin: "ifSignedIn" });
       const ev = rows[0] || null;
       if (ev) {
         ev.event_staff = (ev.event_staff || []).sort((a, b) => b.is_lead - a.is_lead || a.sort - b.sort);
-        ev.event_tables.sort((a, b) => a.created_at.localeCompare(b.created_at) || a.id - b.id);
+        // Earliest start first; tables without a start time after those, in the order they were opened.
+        ev.event_tables.sort(
+          (a, b) => (a.start_time == null) - (b.start_time == null) || (a.start_time || "").localeCompare(b.start_time || "") ||
+            a.created_at.localeCompare(b.created_at) || a.id - b.id
+        );
         for (const t of ev.event_tables) t.event_players.sort((a, b) => a.joined_at.localeCompare(b.joined_at) || a.id - b.id);
       }
       return ev;
@@ -300,7 +304,7 @@ window.HVLoans = (() => {
       return rows[0];
     },
     deleteEvent: (id) => adminDelete("events", id),
-    // table: { game_id, game_name, on_site, max_players, note }. Returns { table_id, player_id }.
+    // table: { game_id, game_name, on_site, max_players, note, start_time ("HH:MM" or null) }. Returns { table_id, player_id }.
     openTable: (eventId, table, name, token) =>
       request("/rest/v1/rpc/open_event_table", {
         method: "POST",
@@ -313,8 +317,12 @@ window.HVLoans = (() => {
           p_note: table.note || "",
           p_name: name,
           p_token: token,
+          p_start_time: table.start_time || null,
         },
       }),
+    // Deletes a table this browser opened. Returns false if it didn't open it.
+    deleteOwnTable: (tableId, token) =>
+      request("/rest/v1/rpc/delete_event_table", { method: "POST", body: { p_table: tableId, p_token: token } }),
     // Returns the new player id.
     joinTable: (tableId, name, token) =>
       request("/rest/v1/rpc/join_event_table", { method: "POST", body: { p_table: tableId, p_name: name, p_token: token } }),

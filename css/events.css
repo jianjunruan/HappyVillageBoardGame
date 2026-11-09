@@ -162,3 +162,4 @@ dialog.ev-sheet { width: min(560px, calc(100vw - 16px)); padding: 16px; }
 p.ev-tpl { margin: 0; color: var(--muted); }
 .ev-tpl-save { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px; margin: -4px 0 0; }
 .ev-tpl-save .ev-msg { margin: 0; font-size: 0.88rem; }
+.ev-badge.is-time { background: var(--surface); color: var(--text); border-color: var(--accent); }

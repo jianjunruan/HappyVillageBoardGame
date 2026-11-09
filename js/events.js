@@ -65,6 +65,12 @@
       markOnSite: "标为在现场",
       markNotOnSite: "标为不在现场",
       host: "开桌",
+      startsAt: "🕒 {t} 开",
+      tableTime: "几点开（可不填）",
+      deleteOwn: "删除这桌",
+      deleteOwnConfirm: "删除你开的「{game}」这一桌？已加入的人也会一起移除。",
+      notHost: "只有开桌的人或管理员可以删除这一桌。",
+      tableDeleted: "✓ 已删除这一桌",
       // dialogs
       close: "关闭",
       cancel: "取消",
@@ -229,6 +235,12 @@
       markOnSite: "Mark at the venue",
       markNotOnSite: "Mark not at the venue",
       host: "host",
+      startsAt: "🕒 Starts {t}",
+      tableTime: "Start time (optional)",
+      deleteOwn: "Delete table",
+      deleteOwnConfirm: "Delete your {game} table? Everyone who joined is removed too.",
+      notHost: "Only the person who opened this table, or an admin, can delete it.",
+      tableDeleted: "✓ Table deleted",
       close: "Close",
       cancel: "Cancel",
       pickGame: "Pick a game",
@@ -376,6 +388,9 @@
   let mine = new Set(store.get("hv-event-mine", []));
   const saveMine = () => store.set("hv-event-mine", [...mine].slice(-300));
   const myName = () => store.get("hv-event-name", "");
+  // Tables this browser opened: it can delete them (the database checks the browser's secret too).
+  let hosted = new Set(store.get("hv-event-hosted", []));
+  const saveHosted = () => store.set("hv-event-hosted", [...hosted].slice(-300));
 
   // ---------- dates ----------
   const pad = (n) => String(n).padStart(2, "0");
@@ -443,6 +458,7 @@
   function errText(err) {
     const code = err && err.code;
     if (code === "leave-gone") return tr("leaveGone");
+    if (code === "not-host") return tr("notHost");
     if (code === "HVE06") return tr("needLead");
     if (code === "qr-not-image") return tr("qrNotImage");
     if (code === "HVE01") return tr("errOver");
@@ -562,10 +578,13 @@
     const img = g ? HVMedia.imageUrl(g.image) : null;
     const seat = t.max_players != null ? tr("seats", { n: players.length, max: t.max_players }) : tr("seatsOpen", { n: players.length });
     const title = g ? `<a href="index.html#/game/${encodeURIComponent(g.id)}">${esc(name)}</a>` : esc(name);
+    // Tables from before the host was recorded: the first to join opened it.
+    const hostId = t.host_player != null ? t.host_player : players[0] && players[0].id;
+    const iOpened = hosted.has(t.id);
     const chips = players
-      .map((p, i) => {
+      .map((p) => {
         const me = mine.has(p.id);
-        return `<span class="ev-player${me ? " is-me" : ""}">${esc(p.name)}${i === 0 ? ` <small>· ${esc(tr("host"))}</small>` : ""}${me ? ` <small>(${esc(tr("me"))})</small>` : ""}${
+        return `<span class="ev-player${me ? " is-me" : ""}">${esc(p.name)}${p.id === hostId ? ` <small>· ${esc(tr("host"))}</small>` : ""}${me ? ` <small>(${esc(tr("me"))})</small>` : ""}${
           isAdmin ? `<button type="button" class="ev-x" data-remove-player="${p.id}" data-name="${esc(p.name)}" aria-label="${esc(tr("removePlayer", { name: p.name }))}">✕</button>` : ""
         }</span>`;
       })
@@ -583,6 +602,7 @@
           <h3>${title}</h3>
           <p class="ev-badges">
             <span class="ev-badge ${t.on_site ? "is-on" : "is-off"}"${t.on_site ? "" : ` title="${esc(tr("notOnSiteHint"))}"`}>${esc(tr(t.on_site ? "onSite" : "notOnSite"))}</span>
+            ${t.start_time ? `<span class="ev-badge is-time">${esc(tr("startsAt", { t: fmtTime(t.start_time) }))}</span>` : ""}
             ${g ? "" : `<span class="ev-badge is-custom">${esc(tr("custom"))}</span>`}
             <span class="ev-seats">${esc(seat)}</span>
           </p>
@@ -591,6 +611,7 @@
         <div class="ev-table-act">${action}</div>
       </div>
       <div class="ev-players">${chips}</div>
+      ${iOpened && !isAdmin && !over ? `<div class="ev-admin-row"><button class="link-btn" type="button" data-delete-own="${t.id}">${esc(tr("deleteOwn"))}</button></div>` : ""}
       ${isAdmin ? `<div class="ev-admin-row">
         <button class="link-btn" type="button" data-toggle-site="${t.id}" data-on="${t.on_site ? 1 : 0}">${esc(tr(t.on_site ? "markNotOnSite" : "markOnSite"))}</button>
         <button class="link-btn" type="button" data-delete-table="${t.id}">${esc(tr("deleteTable"))}</button>
@@ -749,9 +770,10 @@
           ${D.game.id ? `<small class="ev-hint">${esc(tr("whereHint"))}</small>` : ""}
         </fieldset>
         <div class="ev-row">
+          <label class="ev-field ev-time"><span>${esc(tr("tableTime"))}</span><input name="time" type="time" value="${esc(D.time || "")}"></label>
           <label class="ev-field ev-max"><span>${esc(tr("maxPlayers"))}</span><input name="max" type="number" inputmode="numeric" min="1" max="30" placeholder="${esc(tr("maxPh"))}" value="${esc(D.max ?? "")}"></label>
-          <label class="ev-field"><span>${esc(tr("note"))}</span><input name="note" maxlength="200" placeholder="${esc(tr("notePh"))}" value="${esc(D.note)}"></label>
         </div>
+        <label class="ev-field"><span>${esc(tr("note"))}</span><input name="note" maxlength="200" placeholder="${esc(tr("notePh"))}" value="${esc(D.note)}"></label>
         ${nameField()}
         ${errLine()}
         <div class="form-actions"><button class="btn ghost" type="button" data-close>${esc(tr("cancel"))}</button><button class="btn" type="submit"${busy ? " disabled" : ""}>${esc(busy ? tr("saving") : tr("openSubmit"))}</button></div>
@@ -934,7 +956,7 @@
     const f = dlg.querySelector("form.ev-form");
     if (!f || !D) return;
     const v = (n) => (f.elements[n] ? f.elements[n].value : undefined);
-    if (D.mode === "open") Object.assign(D, { onSite: v("site") === "1", max: v("max"), note: v("note"), name: v("name") });
+    if (D.mode === "open") Object.assign(D, { onSite: v("site") === "1", time: v("time"), max: v("max"), note: v("note"), name: v("name") });
     if (D.mode === "join") D.name = v("name");
     if (D.mode === "event") {
       Object.assign(D, { title: v("title"), date: v("date"), time: v("time"), desc: v("desc") });
@@ -1009,7 +1031,8 @@
   }
 
   function startOpen() {
-    openDialog({ mode: "open", step: "pick", q: "", custom: "", game: null, onSite: true, max: "", note: "", name: myName(), err: "" });
+    // The start time begins as the event's own start time; the host can change or clear it.
+    openDialog({ mode: "open", step: "pick", q: "", custom: "", game: null, onSite: true, time: ev && ev.start_time ? fmtTime(ev.start_time) : "", max: "", note: "", name: myName(), err: "" });
   }
   function chooseGame(game) {
     const g = game.id && gameById(game.id);
@@ -1057,9 +1080,16 @@
     const g = D.game.id && gameById(D.game.id);
     const gameName = g ? (typeof g.name === "string" ? g.name : g.name.zh || g.name.en) : D.game.custom;
     await submit(async () => {
-      const r = await HVLoans.openTable(EVENT_ID, { game_id: g ? g.id : null, game_name: gameName, on_site: D.onSite, max_players: max ? Number(max) : null, note: D.note }, name, token());
+      const r = await HVLoans.openTable(
+        EVENT_ID,
+        { game_id: g ? g.id : null, game_name: gameName, on_site: D.onSite, max_players: max ? Number(max) : null, note: D.note, start_time: D.time || null },
+        name,
+        token()
+      );
       store.set("hv-event-name", name);
       rememberMine(r.player_id);
+      hosted.add(r.table_id);
+      saveHosted();
       flash = null;
     });
   }
@@ -1193,6 +1223,17 @@
         saveMine();
         if (!ok) throw Object.assign(new Error("gone"), { code: "leave-gone" });
       });
+    }
+    if (b.dataset.deleteOwn) {
+      const t = tableOf(b.dataset.deleteOwn);
+      if (!confirm(tr("deleteOwnConfirm", { game: t ? tableName(t) : "" }))) return;
+      const id = Number(b.dataset.deleteOwn);
+      return void act(async () => {
+        const ok = await HVLoans.deleteOwnTable(id, token());
+        hosted.delete(id);
+        saveHosted();
+        if (!ok) throw Object.assign(new Error("not host"), { code: "not-host" });
+      }, tr("tableDeleted"));
     }
     if (b.dataset.removePlayer) {
       if (!confirm(tr("removeConfirm", { name: b.dataset.name }))) return;

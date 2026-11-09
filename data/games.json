@@ -4018,6 +4018,56 @@
           "url": "https://boardgamegeek.com/boardgame/402366/majolica-revised-edition"
         }
       ]
+    },
+    {
+      "id": "beast",
+      "name": { "zh": "巨兽猎踪", "en": "Beast" },
+      "image": "images/beast.jpg",
+      "description": {
+        "zh": "北欧传说风格的荒野里，一位玩家扮演巨兽，其余玩家是猎人。巨兽用方向牌在森林、沼泽和洞穴之间秘密移动，所到之处只留下痕迹，真实位置要等猎人搜到它或它主动出击时才会暴露。猎人们要合作，用轮抽来的行动牌移动、搜索和攻击，一步步缩小范围；巨兽则要藏好踪迹，伺机出击。紧张的“躲猫猫”式隐藏移动与推理。设计师：Aron Midhall、Elon Midhall、Assar Pettersson（Studio Midhall，2023）。\n\n适合：喜欢一对多、隐藏移动和心理博弈的玩家，例如《苏格兰场》《德古拉之怒》的爱好者。",
+        "en": "In a wilderness inspired by Norse legend, one player is the Beast and the others are hunters. The Beast moves in secret across forests, swamps and caverns using direction cards, leaving only tracks behind; its real position is revealed only when a hunter searches the right place or the Beast attacks. The hunters work together, drafting action cards to move, search and attack as they close in, while the Beast hides its trail and strikes when it can. Tense hidden-movement deduction. Designed by Aron Midhall, Elon Midhall and Assar Pettersson (Studio Midhall, 2023).\n\nGreat for: fans of one-versus-many, hidden movement and mind games, like Scotland Yard or Fury of Dracula."
+      },
+      "players": "2–4",
+      "playtime": "30",
+      "age": "14",
+      "category": "american",
+      "weight": 3,
+      "tags": ["Thematic", "Deduction", "Strategy"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=beast+board+game+studio+midhall+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/281549/beast"
+        }
+      ]
+    },
+    {
+      "id": "arboretum",
+      "name": { "zh": "树木园", "en": "Arboretum" },
+      "image": "images/arboretum.jpg",
+      "description": {
+        "zh": "用 10 种树木、80 张卡牌打造你的植物园小径。每回合抽 2 张、在自己面前种下 1 张、弃 1 张；小径从某种树开始、以同一种树结束，并且数字一路递增，才能得分。难点在于：计分时只有手里这种颜色点数总和最高的人才能为它计分，所以种下的同时还得留牌在手——卡牌留着计分还是打出去，每一步都很纠结。设计师：Dan Cassar（2015）。\n\n适合：喜欢规则简单但很“烧脑”的卡牌游戏的玩家，2 人对战尤其精彩。",
+        "en": "Build garden paths with 80 cards of 10 tree species. Each turn, draw 2 cards, plant 1 in front of you and discard 1. A path scores when it starts and ends with the same species and its numbers keep rising. The catch: at scoring, only the player holding the highest total of that colour in hand may score it, so you must keep cards back while you plant, and every card is a hard choice. Designed by Dan Cassar (2015).\n\nGreat for: players who like simple rules with agonising decisions; excellent with 2."
+      },
+      "players": "2–4",
+      "playtime": "10",
+      "age": "10",
+      "category": "card",
+      "weight": 2.1,
+      "tags": ["Cards", "Strategy"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=arboretum+card+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/140934/arboretum"
+        }
+      ]
     }
   ]
 }

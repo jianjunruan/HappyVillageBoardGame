@@ -322,6 +322,12 @@ create table if not exists public.event_tables (
   created_at timestamptz not null default now()
 );
 create index if not exists event_tables_by_event on public.event_tables (event_id);
+-- When the game starts (几点开), optional.
+alter table public.event_tables add column if not exists start_time time;
+-- Who opened the table: their browser's secret (never readable from the website) and their sign-up. Only that browser
+-- or an admin can delete the table. Tables opened before this was added have no host_token: only admins can delete them.
+alter table public.event_tables add column if not exists host_token text;
+alter table public.event_tables add column if not exists host_player bigint;
 
 create table if not exists public.event_players (
   id bigint generated always as identity primary key,
@@ -358,8 +364,10 @@ end;
 $$;
 
 -- Opens a table and seats the person who opened it. Returns { "table_id": …, "player_id": … }.
+-- (The older version without a start time is removed so the website can't call it.)
+drop function if exists public.open_event_table(bigint, text, text, boolean, integer, text, text, text);
 create or replace function public.open_event_table(p_event bigint, p_game_id text, p_game_name text, p_on_site boolean,
-  p_max_players integer, p_note text, p_name text, p_token text)
+  p_max_players integer, p_note text, p_name text, p_token text, p_start_time time default null)
 returns jsonb
 language plpgsql
 security definer
@@ -373,10 +381,15 @@ begin
   if (select count(*) from public.event_tables where event_id = p_event) >= 100 then
     raise exception 'too many tables at this event' using errcode = 'HVE05';
   end if;
-  insert into public.event_tables (event_id, game_id, game_name, on_site, max_players, note)
-  values (p_event, nullif(trim(p_game_id), ''), trim(p_game_name), coalesce(p_on_site, false), p_max_players, coalesce(trim(p_note), ''))
+  if p_token is null or char_length(p_token) not between 16 and 100 then
+    raise exception 'missing browser secret' using errcode = 'HVE05';
+  end if;
+  insert into public.event_tables (event_id, game_id, game_name, on_site, max_players, note, start_time, host_token)
+  values (p_event, nullif(trim(p_game_id), ''), trim(p_game_name), coalesce(p_on_site, false), p_max_players,
+          coalesce(trim(p_note), ''), p_start_time, p_token)
   returning id into t;
   insert into public.event_players (table_id, name, token) values (t, trim(p_name), p_token) returning id into p;
+  update public.event_tables set host_player = p where id = t;
   return jsonb_build_object('table_id', t, 'player_id', p);
 end;
 $$;
@@ -409,7 +422,8 @@ begin
 end;
 $$;
 
--- Leaves a table (only with the secret used to join). A table nobody is left at is removed. Returns true if it worked.
+-- Leaves a table (only with the secret used to join). Returns true if it worked. Leaving never deletes someone
+-- else's table: only when the person who opened it leaves and nobody is left is the table removed.
 create or replace function public.leave_event_table(p_player bigint, p_token text)
 returns boolean
 language plpgsql
@@ -423,8 +437,28 @@ begin
   if t is null then
     return false;
   end if;
-  delete from public.event_tables where id = t and not exists (select 1 from public.event_players where table_id = t);
+  delete from public.event_tables
+  where id = t and host_token = p_token and not exists (select 1 from public.event_players where table_id = t);
   return true;
+end;
+$$;
+
+-- Deletes a table and its sign-ups; only the browser that opened it (admins delete tables directly).
+-- Returns true if it worked, false if this browser didn't open the table.
+create or replace function public.delete_event_table(p_table bigint, p_token text)
+returns boolean
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  t bigint;
+begin
+  if p_token is null or char_length(p_token) < 16 then
+    return false;
+  end if;
+  delete from public.event_tables where id = p_table and host_token = p_token returning id into t;
+  return t is not null;
 end;
 $$;
 
@@ -453,7 +487,11 @@ drop policy if exists "Admins can remove event players" on public.event_players;
 create policy "Admins can remove event players" on public.event_players for delete to authenticated using (public.is_admin());
 
 -- Visitors open and join tables only through the functions above (no direct inserts).
-grant select on public.events, public.event_tables to anon, authenticated;
+grant select on public.events to anon, authenticated;
+-- Every column except host_token (an older version of this file granted the whole table, so take that back first).
+revoke select on public.event_tables from anon, authenticated;
+grant select (id, event_id, game_id, game_name, on_site, max_players, note, created_at, start_time, host_player)
+  on public.event_tables to anon, authenticated;
 grant select (id, table_id, name, joined_at) on public.event_players to anon, authenticated;  -- not the token
 grant insert (title, event_date, start_time, description) on public.events to authenticated;
 grant update (title, event_date, start_time, description) on public.events to authenticated;
@@ -461,12 +499,14 @@ grant delete on public.events to authenticated;
 grant update (game_name, on_site, max_players, note) on public.event_tables to authenticated;
 grant delete on public.event_tables, public.event_players to authenticated;
 revoke execute on function public.event_signup_guard(bigint) from public, anon, authenticated;
-revoke execute on function public.open_event_table(bigint, text, text, boolean, integer, text, text, text) from public;
+revoke execute on function public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time) from public;
 revoke execute on function public.join_event_table(bigint, text, text) from public;
 revoke execute on function public.leave_event_table(bigint, text) from public;
-grant execute on function public.open_event_table(bigint, text, text, boolean, integer, text, text, text) to anon, authenticated;
+revoke execute on function public.delete_event_table(bigint, text) from public;
+grant execute on function public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time) to anon, authenticated;
 grant execute on function public.join_event_table(bigint, text, text) to anon, authenticated;
 grant execute on function public.leave_event_table(bigint, text) to anon, authenticated;
+grant execute on function public.delete_event_table(bigint, text) to anon, authenticated;
 
 -- ---------------------------------------------------------------------------------------------------------------
 -- Event organizers (负责人). Only admins can see the list and manage it. Each event has one main organizer and any
