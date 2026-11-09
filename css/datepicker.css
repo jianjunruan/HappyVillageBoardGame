@@ -1,0 +1,89 @@
+/* Calendar date picker (js/datepicker.js). Uses the colour tokens from style.css. */
+:root { --dp-grad: linear-gradient(135deg, var(--accent) 0%, #e8a33c 100%); }
+
+/* the button that shows the chosen date */
+.dp-btn {
+  display: flex; align-items: center; gap: 10px; width: 100%; min-width: 0; padding: 6px 10px; text-align: left;
+  font: inherit; color: var(--text); border: 1px solid var(--border); border-radius: 10px; background: var(--surface);
+  cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s;
+}
+.dp-btn:hover { border-color: var(--accent); }
+.dp-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.dp-btn > i { margin-left: auto; font-style: normal; font-size: 1.1rem; flex: none; }
+.dp-ico { flex: none; width: 36px; border-radius: 7px; overflow: hidden; text-align: center; display: grid; box-shadow: 0 1px 4px rgb(0 0 0 / 0.2); }
+.dp-ico small { background: var(--dp-grad); color: #fff; font-size: 0.62rem; font-weight: 700; line-height: 1.5; white-space: nowrap; overflow: hidden; }
+.dp-ico b { font-size: 1.05rem; line-height: 1.45; color: var(--text); background: var(--surface); }
+.dp-ico.is-empty small { background: var(--border); }
+.dp-ico.is-empty b { color: var(--muted); }
+.dp-txt { display: grid; min-width: 0; line-height: 1.3; }
+.dp-txt b { color: var(--text); font-weight: 600; font-size: 0.92rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dp-txt small { color: var(--accent); font-weight: 600; font-size: 0.78rem; }
+.dp-txt .dp-ph { color: var(--muted); font-weight: 400; }
+/* larger version */
+.dp-btn.dp-lg { gap: 12px; padding: 10px 14px; border-radius: var(--radius); box-shadow: var(--shadow); }
+.dp-lg .dp-ico { width: 52px; border-radius: 10px; }
+.dp-lg .dp-ico small { font-size: 0.72rem; padding: 1px 0; }
+.dp-lg .dp-ico b { font-size: 1.5rem; }
+.dp-lg .dp-txt b { font-size: 1.05rem; white-space: normal; }
+.dp-lg .dp-txt small { font-size: 0.85rem; }
+.dp-lg > i { font-size: 1.3rem; }
+
+/* the calendar */
+dialog.dp-dlg {
+  width: min(380px, calc(100vw - 16px)); padding: 0; overflow: hidden; border: 0; border-radius: 20px;
+  background: var(--surface); color: var(--text); box-shadow: 0 24px 60px rgb(0 0 0 / 0.35);
+}
+dialog.dp-dlg::backdrop { background: rgb(20 12 6 / 0.55); backdrop-filter: blur(3px); }
+dialog.dp-dlg[open] { animation: dp-in 0.22s ease-out; }
+@keyframes dp-in { from { opacity: 0; transform: translateY(16px) scale(0.98); } }
+@media (max-width: 600px) {
+  dialog.dp-dlg { margin: auto 0 0; width: 100vw; max-width: 100vw; border-radius: 22px 22px 0 0; padding-bottom: env(safe-area-inset-bottom, 0px); }
+}
+.dp-hero {
+  position: relative; padding: 18px 56px 16px 20px; color: #fff;
+  background: radial-gradient(circle at 85% -20%, rgb(255 255 255 / 0.35), transparent 45%), linear-gradient(135deg, var(--accent) 0%, #e8a33c 55%, #7b4bc4 130%);
+}
+.dp-big { font-size: 2rem; font-weight: 800; line-height: 1.15; text-shadow: 0 2px 8px rgb(0 0 0 / 0.2); }
+.dp-sub { opacity: 0.92; font-weight: 600; margin-top: 4px; }
+.dp-x { position: absolute; top: 10px; right: 10px; width: 34px; height: 34px; border: 0; border-radius: 50%; background: rgb(255 255 255 / 0.22); color: #fff; font-size: 1.3rem; line-height: 1; cursor: pointer; }
+.dp-x:hover { background: rgb(255 255 255 / 0.35); }
+.dp-nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 14px 4px; }
+.dp-title { border: 0; background: transparent; color: var(--text); font: inherit; font-size: 1.05rem; font-weight: 700; padding: 6px 10px; border-radius: 999px; cursor: pointer; }
+.dp-title:hover { background: var(--accent-soft); color: var(--accent); }
+.dp-title span { font-size: 0.75em; color: var(--muted); }
+.dp-arrow { width: 38px; height: 38px; flex: none; border: 1px solid var(--border); border-radius: 50%; background: var(--surface); color: var(--text); font-size: 1.3rem; line-height: 1; cursor: pointer; }
+.dp-arrow:hover:not(:disabled) { background: var(--accent-soft); color: var(--accent); }
+.dp-arrow:disabled { opacity: 0.3; cursor: not-allowed; }
+.dp-wk, .dp-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; padding: 0 14px; }
+.dp-wk { padding-top: 6px; padding-bottom: 4px; }
+.dp-wk span { text-align: center; font-size: 0.8rem; font-weight: 700; color: var(--muted); }
+.dp-wk .is-wkend, .dp-day.is-wkend { color: var(--accent); }
+.dp-day {
+  aspect-ratio: 1; border: 0; border-radius: 50%; background: transparent; color: var(--text); font: inherit; font-weight: 600;
+  cursor: pointer; transition: transform 0.12s, background 0.12s;
+}
+.dp-day:hover:not(:disabled) { background: var(--accent-soft); transform: scale(1.08); }
+.dp-day.is-today { box-shadow: inset 0 0 0 2px var(--accent); }
+.dp-day.is-sel { background: var(--dp-grad); color: #fff; font-weight: 800; box-shadow: 0 4px 14px rgb(214 100 40 / 0.45); }
+.dp-day:disabled { opacity: 0.25; cursor: not-allowed; }
+.dp-day:focus-visible, .dp-mon:focus-visible, .dp-chip:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.dp-day.is-pop { animation: dp-pop 0.2s ease-out; background: var(--dp-grad); color: #fff; }
+@keyframes dp-pop { 50% { transform: scale(1.25); } }
+.dp-months { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 8px 14px 4px; }
+.dp-mon { padding: 14px 0; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--text); font: inherit; font-weight: 700; cursor: pointer; }
+.dp-mon:hover:not(:disabled) { background: var(--accent-soft); color: var(--accent); }
+.dp-mon.is-sel { background: var(--dp-grad); color: #fff; border-color: transparent; }
+.dp-mon:disabled { opacity: 0.3; cursor: not-allowed; }
+.from-right { animation: dp-slide-r 0.2s ease-out; }
+.from-left { animation: dp-slide-l 0.2s ease-out; }
+@keyframes dp-slide-r { from { opacity: 0; transform: translateX(24px); } }
+@keyframes dp-slide-l { from { opacity: 0; transform: translateX(-24px); } }
+.dp-quick { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 12px 14px 16px; }
+.dp-chip { padding: 6px 14px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); color: var(--text); font: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+.dp-chip:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.dp-chip:disabled { opacity: 0.35; cursor: not-allowed; }
+.dp-chip.is-clear { color: var(--muted); border-style: dashed; }
+@media (prefers-reduced-motion: reduce) {
+  dialog.dp-dlg[open], .from-right, .from-left, .dp-day.is-pop { animation: none; }
+  .dp-day { transition: none; }
+}

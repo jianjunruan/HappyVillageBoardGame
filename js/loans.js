@@ -218,7 +218,7 @@ window.HVLoans = (() => {
     // Score records (table game_scores), newest first. Anyone can read and save; only admins can delete.
     scores: (gameId, limit = 500) =>
       request(`/rest/v1/game_scores?game_id=eq.${encodeURIComponent(gameId)}&order=played_at.desc&limit=${limit}` +
-        "&select=id,game_id,played_at,target,players,rounds,winner,top_score,round_count"),
+        "&select=id,game_id,played_at,played_on,details,target,players,rounds,winner,top_score,round_count"),
     // record: { game_id, target, players: [{ name, total }], rounds: [[{ s, b, f }, ...], ...], winner, top_score, round_count }
     async saveScore(record) {
       const rows = await request("/rest/v1/game_scores", { method: "POST", prefer: "return=representation", body: record });

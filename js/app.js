@@ -325,8 +325,8 @@
         ? `<form class="loan-form lend-form" data-loan-lend>
              <label>${esc(t("loanBorrower"))}<input name="borrower" required maxlength="60" autocomplete="off"></label>
              ${qty}
-             <label>${esc(t("loanDateLabel"))}<input name="loaned" type="date" value="${todayYmd()}" max="${todayYmd()}" required></label>
-             <label>${esc(t("loanDueLabel"))}<input name="due" type="date"></label>
+             <label class="date-field">${esc(t("loanDateLabel"))}<input name="loaned" type="hidden" value="${todayYmd()}" data-datepicker data-max="today"></label>
+             <label class="date-field">${esc(t("loanDueLabel"))}<input name="due" type="hidden" value="" data-datepicker data-optional data-min-field="loaned" data-quick="week,2weeks,month" data-placeholder="${esc(t("loanDueNone"))}"></label>
              <button class="btn" type="submit">${esc(t("loanLend"))}</button>
            </form>`
         : "";
@@ -357,6 +357,7 @@
         <details class="loan-history" data-history><summary>${esc(t("loanHistory"))}</summary><ul><li>…</li></ul></details>`;
     }
     box.innerHTML = loanStatusHtml(g, isAdmin) + admin;
+    HVDatePicker.enhance(box);
   }
 
   async function loadHistory(g, details) {

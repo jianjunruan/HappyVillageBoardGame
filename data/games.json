@@ -1905,6 +1905,7 @@
     {
       "id": "seti-space-agencies",
       "name": { "zh": "星空觅迹：群星计画", "en": "SETI: Space Agencies" },
+      "scorer": "score.html?game=seti",
       "image": "images/seti-space-agencies.jpg",
       "description": {
         "zh": "《星空觅迹》（SETI）的扩展。加入 11 个各具特色的机构——从私营科技公司到全球科研网络——每个都有独特能力和起始条件；还加入信号标记和 3 种新外星种族。（扩展，需要基础游戏才能玩。）设计师：Tomáš Holek（2025）。",
@@ -1990,6 +1991,7 @@
     {
       "id": "age-of-innovation",
       "name": { "zh": "大创造时代", "en": "Age of Innovation" },
+      "scorer": "score.html?game=age-of-innovation",
       "image": "images/age-of-innovation.jpg",
       "description": {
         "zh": "《神秘大地》世界观下的独立作品。12 个各具特色的种族，在多种地形上建造建筑并连成城市。每局组合不同的种族、家园和能力，变化丰富。设计师：Helge Ostertag（2023）。\n\n适合：喜欢重度策略的玩家。",
@@ -3557,6 +3559,7 @@
     {
       "id": "seti",
       "name": { "zh": "星空觅迹：探寻地外文明计划", "en": "SETI: Search for Extraterrestrial Intelligence" },
+      "scorer": "score.html?game=seti",
       "image": "images/seti.jpg",
       "description": {
         "zh": "你领导一个科研机构，寻找地球以外的生命迹象。发射探测器探索太阳系的行星和卫星，用望远镜扫描星区收集信号，分析数据并发表理论。随着发现积累，神秘的外星种族会逐渐揭开面纱，带来新的规则。灵感来自真实的太空探索技术。设计师：Tomáš Holek（2024）。\n\n适合：喜欢重度策略和太空题材的玩家。",

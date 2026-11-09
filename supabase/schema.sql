@@ -205,6 +205,7 @@ create table if not exists public.game_scores (
   played_at timestamptz not null default now(),
   target integer check (target between 1 and 100000),                      -- points needed to win (Flip 7: 200)
   -- [{ "name": "小明", "total": 213 }, ...] in seating order
+  -- (Age of Innovation also has optional "faction" and "terrain" keys, e.g. "monks" and "lake")
   players jsonb not null,
   -- one array per round, one cell per player (same order): { "s": score, "b": true if bust, "f": true if Flip 7 }
   rounds jsonb not null default '[]',
@@ -212,6 +213,10 @@ create table if not exists public.game_scores (
   top_score integer not null,
   round_count integer not null check (round_count between 0 and 500)
 );
+-- The day the game was played (picked by the player, today by default). Older Flip 7 records leave it empty.
+alter table public.game_scores add column if not exists played_on date;
+-- Choices about the whole game, e.g. SETI's alien species: { "aliens": ["mascamites", "anomalies"] }.
+alter table public.game_scores add column if not exists details jsonb not null default '{}';
 create index if not exists game_scores_by_game on public.game_scores (game_id, played_at desc);
 
 -- Checks the shape of a record, and slows down floods: at most 30 records a minute across the whole site.
@@ -232,9 +237,18 @@ begin
        or jsonb_typeof(p -> 'total') <> 'number' then
       raise exception 'each player needs a name (1-30 characters) and a total' using errcode = 'HVS01';
     end if;
+    if char_length(coalesce(p ->> 'faction', '')) > 40 or char_length(coalesce(p ->> 'terrain', '')) > 40 then
+      raise exception 'faction and terrain must be 40 characters or fewer' using errcode = 'HVS01';
+    end if;
   end loop;
   if jsonb_typeof(new.rounds) <> 'array' or jsonb_array_length(new.rounds) > 500 or pg_column_size(new.rounds) > 100000 then
     raise exception 'too many rounds' using errcode = 'HVS01';
+  end if;
+  if jsonb_typeof(new.details) <> 'object' or pg_column_size(new.details) > 4000 then
+    raise exception 'details must be a small object' using errcode = 'HVS01';
+  end if;
+  if new.played_on is not null and (new.played_on < date '2000-01-01' or new.played_on > current_date + 1) then
+    raise exception 'the game date can not be in the future' using errcode = 'HVS01';
   end if;
   perform pg_advisory_xact_lock(hashtext('hv-scores'));
   if (select count(*) from public.game_scores where played_at > now() - interval '1 minute') >= 30 then
@@ -268,6 +282,6 @@ grant update (returned_at) on public.loans to authenticated;
 grant insert (game_id, copies, storage_copies, owner, owner_copies, rulebook_from) on public.game_copies to authenticated;
 grant update (game_id, copies, storage_copies, owner, owner_copies, rulebook_from) on public.game_copies to authenticated;  -- "insert or update" (upsert) needs every column
 grant select on public.game_scores to anon, authenticated;
-grant insert (game_id, target, players, rounds, winner, top_score, round_count) on public.game_scores to anon, authenticated;
+grant insert (game_id, played_on, details, target, players, rounds, winner, top_score, round_count) on public.game_scores to anon, authenticated;
 grant delete on public.game_scores to authenticated;  -- the policy above limits it to admins
 grant execute on function public.is_admin() to anon, authenticated;

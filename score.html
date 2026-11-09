@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>积分榜 · 欢乐小镇桌游</title>
+  <meta name="description" content="桌游积分榜和战绩记录。Board game scoreboards and game records for Happy Village Board Games.">
+  <link rel="icon" href="images/favicon-48.png" type="image/png">
+  <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/flip7.css">
+  <link rel="stylesheet" href="css/datepicker.css">
+  <link rel="stylesheet" href="css/scoreboard.css">
+</head>
+<body>
+  <!-- One page for every game's scoreboard: score.html?game=<id> (see js/scoreboard.js) -->
+  <header class="site-header">
+    <div class="wrap">
+      <div class="title-row">
+        <h1><a class="f7-home" id="sb-home" href="index.html"><img class="logo" src="images/logo.png" alt="" width="56" height="56"></a>
+          <span id="sb-name"></span> <span id="sb-title" class="sb-title"></span></h1>
+        <div class="header-actions">
+          <a id="sb-back" class="admin-btn" href="index.html"></a>
+          <button id="lang-toggle" class="lang-toggle" type="button">EN</button>
+        </div>
+      </div>
+      <nav class="tag-row f7-tabs" id="sb-tabs"></nav>
+    </div>
+  </header>
+
+  <main class="wrap f7-main">
+    <section id="tab-score" class="f7-tab"></section>
+    <section id="tab-records" class="f7-tab" hidden></section>
+    <section id="tab-leaders" class="f7-tab" hidden></section>
+  </main>
+
+  <dialog id="sb-pick" class="f7-sheet sb-pick-dlg" aria-labelledby="pick-title"></dialog>
+  <datalist id="sb-names"></datalist>
+
+  <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/loans.js"></script>
+  <script src="js/datepicker.js"></script>
+  <script src="js/scoreboard.js"></script>
+</body>
+</html>
