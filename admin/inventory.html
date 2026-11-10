@@ -21,8 +21,10 @@
     .gate label { display: grid; gap: 4px; font-weight: 600; }
 
     .toolbar { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: end; margin: 16px 0 10px; }
-    .toolbar label { display: grid; gap: 4px; color: var(--muted); }
-    .toolbar input[type="search"] { min-width: 220px; margin: 0; }
+    .toolbar label { display: grid; grid-template-columns: minmax(0, auto); gap: 4px; color: var(--muted); min-width: 0; max-width: 100%; }
+    .toolbar input[type="search"] { min-width: min(220px, 100%); margin: 0; }
+    .toolbar select { width: 100%; max-width: 100%; }  /* long options would otherwise widen the page on phones */
+    .bulk input, .bulk select { max-width: 100%; }
     .bulk { display: grid; gap: 10px; padding: 12px; border: 1px dashed var(--border); border-radius: 10px; background: var(--surface); margin-bottom: 10px; }
     .bulk .head { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
     .bulk .group { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; }

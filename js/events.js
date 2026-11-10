@@ -470,8 +470,10 @@
   // "14:00–18:00", "14:00", or "" (an end earlier than the start just means past midnight).
   const timeRange = (e) => (e.start_time ? fmtTime(e.start_time) + (e.end_time ? "–" + fmtTime(e.end_time) : "") : "");
   // The event's own map link, or a Google Maps search for its place; "" when it has neither.
+  // Only https links are used, even if something else got into the database (the database also checks this).
   const mapLink = (e) =>
-    e.map_url || (e.location ? "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(e.location) : "");
+    (/^https:\/\//i.test(e.map_url || "") ? e.map_url : "") ||
+    (e.location ? "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(e.location) : "");
   // Map links typed without https:// (e.g. "maps.app.goo.gl/…") get it added; http:// becomes https://.
   const cleanMapUrl = (u) => {
     u = String(u || "").trim();
