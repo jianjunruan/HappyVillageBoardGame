@@ -89,6 +89,40 @@
       timeSave: "💾 保存时间",
       timeSaved: "✓ 时间已更新",
       leaveTitle: "退出「{game}」这一桌",
+      wishTitle: "💡 期望活动",
+      wishIntro: "想参加什么样的活动？告诉我们！",
+      wishNote: "备注：我们会根据情况决定是否采纳举办，提交期望活动不代表一定会举办。",
+      wishAdd: "＋ 提议活动",
+      wishEmpty: "还没有人提议，来提第一个吧！",
+      wishFormTitle: "提议期望活动",
+      wishName: "你的名字",
+      wishWhat: "期望活动名称",
+      wishWhatPh: "例如：狼人杀之夜、新手教学日",
+      wishDesc: "活动简介（可不填）",
+      wishDescPh: "想怎么玩、大概什么时候、适合谁……",
+      wishSubmit: "💡 提交",
+      wishThanks: "✓ 谢谢！你的期望活动已提交。",
+      wishAdopted: "✓ 已采纳",
+      wishBy: "{name} 提议 · {date}",
+      wishRejected: "未采纳",
+      wishAdopt: "✓ 采纳",
+      wishReject: "✕ 不采纳",
+      wishReopen: "改回待定",
+      wishDelete: "删除",
+      wishEdit: "修改",
+      wishMine: "我提议的",
+      wishEditTitle: "修改期望活动",
+      wishSaved: "✓ 已保存修改",
+      wishDeleted: "✓ 已删除这个期望活动",
+      wishNotMine: "只有提议的人（同一个浏览器或同一个账号）或管理员可以这样做。",
+      vote: "🙋 我也想参加 +1",
+      voted: "✓ 我也想参加",
+      votes: "{n} 人想参加",
+      voteNo: "已不采纳，不能再 +1",
+      errWishDeclined: "这个期望活动没有被采纳，不能再 +1。",
+      wishDeleteConfirm: "删除期望活动「{title}」？",
+      needWishTitle: "请填写期望活动名称。",
+      errWishFlood: "刚才提交的人太多了，请一分钟后再试。",
       changeHost: "更换开桌人",
       hostTitle: "「{game}」的开桌人",
       hostWho: "选一位桌上的玩家当开桌人：",
@@ -288,6 +322,40 @@
       timeSave: "💾 Save time",
       timeSaved: "✓ Time updated",
       leaveTitle: "Leave the {game} table",
+      wishTitle: "💡 Event wishes",
+      wishIntro: "What kind of event would you like? Tell us!",
+      wishNote: "Note: we decide case by case whether to hold a suggested event. Suggesting one doesn't mean it will happen.",
+      wishAdd: "+ Suggest an event",
+      wishEmpty: "No suggestions yet. Be the first!",
+      wishFormTitle: "Suggest an event",
+      wishName: "Your name",
+      wishWhat: "Event name",
+      wishWhatPh: "e.g. Werewolf night, Beginners' day",
+      wishDesc: "Description (optional)",
+      wishDescPh: "How you'd like to play, roughly when, who it's for…",
+      wishSubmit: "💡 Send",
+      wishThanks: "✓ Thanks! Your suggestion was sent.",
+      wishAdopted: "✓ Adopted",
+      wishBy: "Suggested by {name} · {date}",
+      wishRejected: "Declined",
+      wishAdopt: "✓ Adopt",
+      wishReject: "✕ Decline",
+      wishReopen: "Back to undecided",
+      wishDelete: "Delete",
+      wishEdit: "Edit",
+      wishMine: "Mine",
+      wishEditTitle: "Edit suggestion",
+      wishSaved: "✓ Changes saved",
+      wishDeleted: "✓ Suggestion deleted",
+      wishNotMine: "Only the person who suggested it (same browser or account) or an admin can do that.",
+      vote: "🙋 I'd join too +1",
+      voted: "✓ I'd join",
+      votes: "{n} want to join",
+      voteNo: "Declined, no more +1",
+      errWishDeclined: "This suggestion was declined, so it can't get more +1s.",
+      wishDeleteConfirm: "Delete the suggestion \"{title}\"?",
+      needWishTitle: "Please enter the event name.",
+      errWishFlood: "Too many suggestions just now. Please try again in a minute.",
       changeHost: "Change host",
       hostTitle: "Host of {game}",
       hostWho: "Pick a player at this table to be the host:",
@@ -534,6 +602,9 @@
     if (code === "HVE06") return tr("needLead");
     if (code === "HVE07") return tr("errJoined");
     if (code === "HVE08") return tr("cantDelete");
+    if (code === "HVW01") return tr("errWishFlood");
+    if (code === "HVW02") return tr("errWishDeclined");
+    if (code === "wish-not-mine") return tr("wishNotMine");
     if (code === "qr-not-image") return tr("qrNotImage");
     if (code === "HVE01") return tr("errOver");
     if (code === "HVE02") return tr("errFull");
@@ -556,12 +627,24 @@
   let flash = null; // { text, ok } shown above the tables once
   let busy = false;
 
+  let wishes = null; // event wishes (期望活动), shown on the events list
+  let wishMine = new Set(); // ids this browser / account suggested
+  let wishVoted = new Set(); // ids this browser / account gave a +1
   async function load() {
     loadErr = null;
     try {
       if (STAFF_VIEW) {
         if (isAdmin) staffRows = await HVLoans.staffList();
-      } else if (EVENT_ID == null) events = await HVLoans.events();
+      } else if (EVENT_ID == null) {
+        let st;
+        [events, wishes, st] = await Promise.all([
+          HVLoans.events(),
+          HVLoans.wishes().catch(() => null),
+          HVLoans.wishState(token()).catch(() => null),
+        ]);
+        wishMine = new Set(((st && st.mine) || []).map(Number));
+        wishVoted = new Set(((st && st.voted) || []).map(Number));
+      }
       else {
         ev = await HVLoans.event(EVENT_ID);
         // A signed-in player's sign-ups count as theirs on any device.
@@ -647,7 +730,53 @@
         ${isAdmin ? `<span class="ev-head-acts"><a class="btn ghost" href="events.html?staff">${esc(tr("staffBtn"))}</a><button class="btn" type="button" data-new-event>${esc(tr("newEvent"))}</button></span>` : ""}
       </div>
       ${up.length ? `<div class="ev-list">${up.map(eventCard).join("")}</div>` : `<p class="ev-empty">${esc(tr("noUpcoming"))}</p>`}
+      ${wishSection()}
       ${past.length ? `<details class="ev-past"><summary>${esc(tr("past", { n: past.length }))}</summary><div class="ev-list">${past.map(eventCard).join("")}</div></details>` : ""}`;
+    // events.html#wishes (from the home page): the section only exists now, so scroll to it once.
+    if (location.hash === "#wishes" && !scrolledToWishes && $("wishes")) {
+      scrolledToWishes = true;
+      $("wishes").scrollIntoView();
+    }
+  }
+  let scrolledToWishes = false;
+
+  // ---------- event wishes (期望活动) ----------
+  function wishCard(w) {
+    const st = w.status;
+    const mineW = wishMine.has(w.id);
+    const voted = wishVoted.has(w.id);
+    const badge = st === "adopted" ? `<span class="ev-wish-badge">${esc(tr("wishAdopted"))}</span>`
+      : st === "rejected" ? `<span class="ev-wish-badge is-no">${esc(tr("wishRejected"))}</span>` : "";
+    // A declined wish keeps its votes but takes no new ones (taking a vote back still works).
+    const canVote = st !== "rejected" || voted;
+    const voteBtn = `<button class="ev-vote${voted ? " is-on" : ""}" type="button" data-wish-vote="${w.id}" aria-pressed="${voted}"${canVote ? "" : " disabled"}>${esc(tr(voted ? "voted" : canVote ? "vote" : "voteNo"))}</button>`;
+    const admin = isAdmin
+      ? [st !== "adopted" && `<button class="link-btn" type="button" data-wish-status="adopted" data-id="${w.id}">${esc(tr("wishAdopt"))}</button>`,
+         st !== "rejected" && `<button class="link-btn" type="button" data-wish-status="rejected" data-id="${w.id}">${esc(tr("wishReject"))}</button>`,
+         st !== "open" && `<button class="link-btn" type="button" data-wish-status="open" data-id="${w.id}">${esc(tr("wishReopen"))}</button>`]
+          .filter(Boolean).join("")
+      : "";
+    const own = mineW ? `<button class="link-btn" type="button" data-wish-edit="${w.id}">${esc(tr("wishEdit"))}</button>` : "";
+    const del = mineW || isAdmin ? `<button class="link-btn" type="button" data-wish-delete="${w.id}">${esc(tr("wishDelete"))}</button>` : "";
+    return `<article class="ev-wish${st === "adopted" ? " is-adopted" : st === "rejected" ? " is-rejected" : ""}${mineW ? " is-mine" : ""}">
+      <div class="ev-wish-top"><h3>${esc(w.title)}</h3>${badge}${mineW ? `<span class="ev-wish-mine">${esc(tr("wishMine"))}</span>` : ""}</div>
+      ${w.description ? `<p class="ev-wish-desc">${esc(w.description)}</p>` : ""}
+      <p class="ev-wish-by">${esc(tr("wishBy", { name: w.name, date: fmtDate(w.created_at.slice(0, 10)) }))}</p>
+      <div class="ev-wish-vote">${voteBtn}<span class="ev-wish-count">${esc(tr("votes", { n: w.votes || 0 }))}</span></div>
+      ${admin || own || del ? `<p class="ev-admin-row">${own}${admin}${del}</p>` : ""}
+    </article>`;
+  }
+  // Most votes first (the server's order); declined ones at the end.
+  const wishOrder = (list) => [...list.filter((w) => w.status !== "rejected"), ...list.filter((w) => w.status === "rejected")];
+  function wishSection() {
+    if (wishes == null) return ""; // not set up yet (or couldn't load): leave the page as it was
+    return `<section class="ev-wishes" id="wishes" aria-labelledby="ev-wishes-title">
+      <div class="ev-head"><h2 id="ev-wishes-title">${esc(tr("wishTitle"))}</h2><button class="btn" type="button" data-wish-add>${esc(tr("wishAdd"))}</button></div>
+      <p class="ev-hint">${esc(tr("wishIntro"))}</p>
+      <p class="ev-wish-note">${esc(tr("wishNote"))}</p>
+      ${flash ? `<p class="ev-msg ${flash.ok ? "is-ok" : "is-err"}" role="status">${esc(flash.text)}</p>` : ""}
+      ${wishes.length ? `<div class="ev-wish-list">${wishOrder(wishes).map(wishCard).join("")}</div>` : `<p class="ev-empty">${esc(tr("wishEmpty"))}</p>`}
+    </section>`;
   }
 
   function tableCard(t, over) {
@@ -817,6 +946,7 @@
     if (D.mode === "time") return renderTimeForm();
     if (D.mode === "leave") return renderLeaveForm();
     if (D.mode === "host") return renderHostForm();
+    if (D.mode === "wish") return renderWishForm();
   }
 
   const norm = (s) => String(s || "").toLowerCase().replace(/[\s·:：\-–—'’!！?？.,，、()（）]/g, "");
@@ -1114,6 +1244,38 @@
         <div class="form-actions"><button class="btn ghost" type="button" data-close>${esc(tr("cancel"))}</button><button class="btn" type="submit"${busy ? " disabled" : ""}>${esc(busy ? tr("leaving") : tr("leaveSubmit"))}</button></div>
       </form>`;
   }
+  // Anyone: suggest an event (期望活动).
+  function renderWishForm() {
+    dlg.innerHTML = `${head(tr(D.id ? "wishEditTitle" : "wishFormTitle"))}
+      <form class="ev-form" data-wish-form novalidate>
+        <p class="ev-wish-note">${esc(tr("wishNote"))}</p>
+        <label class="ev-field"><span>${esc(tr("wishName"))}</span><input name="name" maxlength="30" autocomplete="nickname" placeholder="${esc(tr("namePh"))}" value="${esc(D.name)}" required${D.name ? "" : " autofocus"}></label>
+        <label class="ev-field"><span>${esc(tr("wishWhat"))}</span><input name="title" maxlength="80" placeholder="${esc(tr("wishWhatPh"))}" value="${esc(D.title)}" required${D.name ? " autofocus" : ""}></label>
+        <label class="ev-field"><span>${esc(tr("wishDesc"))}</span><textarea name="desc" rows="4" maxlength="1000" placeholder="${esc(tr("wishDescPh"))}">${esc(D.desc)}</textarea></label>
+        ${errLine()}
+        <div class="form-actions"><button class="btn ghost" type="button" data-close>${esc(tr("cancel"))}</button><button class="btn" type="submit"${busy ? " disabled" : ""}>${esc(busy ? tr("saving") : tr("wishSubmit"))}</button></div>
+      </form>`;
+  }
+  async function submitWish() {
+    readForm();
+    D.err = "";
+    const name = checkName();
+    const title = String(D.title || "").trim().slice(0, 80);
+    if (name && !title) D.err = tr("needWishTitle");
+    if (!name || D.err) return renderDialog();
+    const desc = String(D.desc || "").trim().slice(0, 1000);
+    const id = D.id;
+    await submit(async () => {
+      if (id) {
+        if (!(await HVLoans.updateWish(id, name, title, desc, token()))) throw Object.assign(new Error("not mine"), { code: "wish-not-mine" });
+        flash = { text: tr("wishSaved"), ok: true };
+      } else {
+        await HVLoans.addWish(name, title, desc, token());
+        flash = { text: tr("wishThanks"), ok: true };
+      }
+      store.set("hv-event-name", name);
+    });
+  }
   // Admins: pick another player at the table to be its host.
   function renderHostForm() {
     const t = ev && ev.event_tables.find((x) => x.id === D.table);
@@ -1188,6 +1350,7 @@
     if (D.mode === "time") D.time = v("time");
     if (D.mode === "leave") D.next = (f.querySelector("input[name=next]:checked") || {}).value || "";
     if (D.mode === "host") D.host = (f.querySelector("input[name=host]:checked") || {}).value || "";
+    if (D.mode === "wish") Object.assign(D, { name: v("name"), title: v("title"), desc: v("desc") });
     if (D.mode === "event") {
       Object.assign(D, { title: v("title"), date: v("date"), time: v("time"), end: v("end"), place: v("place"), map: v("map") });
       if (f.querySelector("[data-rich]")) D.desc = HVRich.value(f.querySelector("[data-rich]"));
@@ -1407,6 +1570,23 @@
     });
   }
 
+  // "我也想参加 +1": only this wish's numbers change, so no full reload.
+  async function toggleVote(id, btn) {
+    if (busy) return;
+    busy = true;
+    btn.disabled = true;
+    try {
+      const r = await HVLoans.toggleWishVote(id, token());
+      const w = wishes.find((x) => x.id === id);
+      if (w) w.votes = r.votes;
+      r.voted ? wishVoted.add(id) : wishVoted.delete(id);
+      flash = null;
+    } catch (err) {
+      flash = { text: errText(err), ok: false };
+    }
+    busy = false;
+    render();
+  }
   // Admin and "leave" actions on the page; errors show above the tables.
   async function act(fn, okText) {
     if (busy) return;
@@ -1446,6 +1626,24 @@
       });
     }
     if (b.hasAttribute("data-new-event")) return openEventForm(null);
+    if (b.hasAttribute("data-wish-add")) return openDialog({ mode: "wish", name: myName(), title: "", desc: "", err: "" });
+    if (b.dataset.wishStatus) return void act(() => HVLoans.setWishStatus(Number(b.dataset.id), b.dataset.wishStatus));
+    if (b.dataset.wishEdit) {
+      const w = (wishes || []).find((x) => x.id === Number(b.dataset.wishEdit));
+      if (w) openDialog({ mode: "wish", id: w.id, name: w.name, title: w.title, desc: w.description, err: "" });
+      return;
+    }
+    if (b.dataset.wishDelete) {
+      const w = (wishes || []).find((x) => x.id === Number(b.dataset.wishDelete));
+      if (!w || !confirm(tr("wishDeleteConfirm", { title: w.title }))) return;
+      // The person who suggested it deletes it with their browser secret / account; admins delete directly.
+      return void act(async () => {
+        if (wishMine.has(w.id)) {
+          if (!(await HVLoans.deleteOwnWish(w.id, token()))) throw Object.assign(new Error("not mine"), { code: "wish-not-mine" });
+        } else await HVLoans.deleteWish(w.id);
+      }, tr("wishDeleted"));
+    }
+    if (b.dataset.wishVote) return void toggleVote(Number(b.dataset.wishVote), b);
     if (b.hasAttribute("data-edit-event")) return openEventForm(ev);
     if (b.hasAttribute("data-delete-event")) {
       if (!confirm(tr("deleteEventConfirm", { title: ev.title }))) return;
@@ -1597,6 +1795,7 @@
     if (f.hasAttribute("data-time-form")) return void submitTime();
     if (f.hasAttribute("data-leave-form")) return void submitLeave();
     if (f.hasAttribute("data-host-form")) return void submitHost();
+    if (f.hasAttribute("data-wish-form")) return void submitWish();
   });
   // "close" arrives a moment later, so ignore it if another dialog has been opened since.
   dlg.addEventListener("cancel", (e) => {

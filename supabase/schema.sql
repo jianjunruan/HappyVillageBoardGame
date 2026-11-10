@@ -632,6 +632,197 @@ revoke execute on function public.set_event_table_host(bigint, bigint) from publ
 grant execute on function public.set_event_table_host(bigint, bigint) to authenticated;  -- checks is_admin() itself
 
 -- ---------------------------------------------------------------------------------------------------------------
+-- Event wishes (期望活动): anyone can suggest an event they'd like (their name, the event's name, a short description).
+-- Everyone can see them. The person who suggested one can change or delete it (from the same browser, or signed in
+-- with the same account); admins adopt (已采纳) or decline (未采纳) it, or delete it. Suggesting doesn't mean it will
+-- be held. Anyone can add a "我也想参加 +1" vote, once per browser / account.
+create table if not exists public.event_wishes (
+  id bigint generated always as identity primary key,
+  name text not null check (char_length(trim(name)) between 1 and 30),
+  title text not null check (char_length(trim(title)) between 1 and 80),
+  description text not null default '' check (char_length(description) <= 1000),
+  status text not null default 'open',
+  created_at timestamptz not null default now(),
+  user_id uuid references auth.users (id) on delete set null  -- the account that suggested it; never readable
+);
+-- 'open' (待定), 'adopted' (已采纳) or 'rejected' (未采纳). (The first version had no 'rejected'.)
+alter table public.event_wishes drop constraint if exists event_wishes_status_check;
+alter table public.event_wishes add constraint event_wishes_status_check check (status in ('open', 'adopted', 'rejected'));
+-- The suggesting browser's secret (like event sign-ups); never readable. Lets them change or delete it.
+alter table public.event_wishes add column if not exists token text;
+-- How many "+1" votes it has (kept up to date by toggle_event_wish_vote).
+alter table public.event_wishes add column if not exists votes integer not null default 0;
+create index if not exists event_wishes_by_date on public.event_wishes (created_at desc);
+
+-- One "+1" per browser secret, and one per signed-in account. Never readable from the website.
+create table if not exists public.event_wish_votes (
+  id bigint generated always as identity primary key,
+  wish_id bigint not null references public.event_wishes (id) on delete cascade,
+  token text not null check (char_length(token) between 16 and 100),
+  user_id uuid references auth.users (id) on delete set null,
+  created_at timestamptz not null default now()
+);
+create unique index if not exists event_wish_votes_one_per_browser on public.event_wish_votes (wish_id, token);
+create unique index if not exists event_wish_votes_one_per_account on public.event_wish_votes (wish_id, user_id) where user_id is not null;
+alter table public.event_wish_votes enable row level security;  -- no policies, no grants: only the functions below use it
+revoke all on public.event_wish_votes from anon, authenticated;
+
+-- Adds a wish (plain text). At most 20 a minute across the site. Returns the new id.
+-- (The first version had no browser secret; it is removed so the website can't call it.)
+drop function if exists public.add_event_wish(text, text, text);
+create or replace function public.add_event_wish(p_name text, p_title text, p_description text, p_token text)
+returns bigint
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  w bigint;
+begin
+  if p_token is null or char_length(p_token) not between 16 and 100 then
+    raise exception 'missing browser secret' using errcode = 'HVW03';
+  end if;
+  perform pg_advisory_xact_lock(hashtext('hv-event-wishes'));
+  if (select count(*) from public.event_wishes where created_at > now() - interval '1 minute') >= 20 then
+    raise exception 'Too many suggestions just now, try again in a minute' using errcode = 'HVW01';
+  end if;
+  insert into public.event_wishes (name, title, description, token, user_id)
+  values (trim(p_name), trim(p_title), trim(coalesce(p_description, '')), p_token, auth.uid())
+  returning id into w;
+  return w;
+end;
+$$;
+
+-- True when the caller suggested this wish: same browser secret, or the same signed-in account.
+create or replace function public.is_event_wish_owner(p_token_saved text, p_user_saved uuid, p_token text)
+returns boolean
+language sql
+stable
+set search_path = ''
+as $$
+  select (p_token is not null and char_length(p_token) >= 16 and p_token_saved = p_token)
+      or (auth.uid() is not null and p_user_saved = auth.uid());
+$$;
+
+-- The person who suggested a wish changes it. Returns true if it worked, false if the caller didn't suggest it.
+create or replace function public.update_event_wish(p_wish bigint, p_token text, p_name text, p_title text, p_description text)
+returns boolean
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  w bigint;
+begin
+  update public.event_wishes
+  set name = trim(p_name), title = trim(p_title), description = trim(coalesce(p_description, ''))
+  where id = p_wish and public.is_event_wish_owner(token, user_id, p_token)
+  returning id into w;
+  return w is not null;
+end;
+$$;
+
+-- The person who suggested a wish deletes it (admins delete directly). Returns true if it worked.
+create or replace function public.delete_event_wish(p_wish bigint, p_token text)
+returns boolean
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  w bigint;
+begin
+  delete from public.event_wishes
+  where id = p_wish and public.is_event_wish_owner(token, user_id, p_token)
+  returning id into w;
+  return w is not null;
+end;
+$$;
+
+-- Adds this browser's / account's "+1" to a wish, or takes it back if it's already there.
+-- Returns { "voted": true/false, "votes": <new count> }. Declined wishes can't get new votes (HVW02).
+-- At most 120 new votes a minute across the site.
+create or replace function public.toggle_event_wish_vote(p_wish bigint, p_token text)
+returns jsonb
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  st text;
+  v bigint;
+  n integer;
+begin
+  if p_token is null or char_length(p_token) not between 16 and 100 then
+    raise exception 'missing browser secret' using errcode = 'HVW03';
+  end if;
+  select status into st from public.event_wishes where id = p_wish for update;
+  if st is null then
+    raise exception 'wish not found' using errcode = 'HVW04';
+  end if;
+  select id into v from public.event_wish_votes
+  where wish_id = p_wish and (token = p_token or (auth.uid() is not null and user_id = auth.uid()))
+  limit 1;
+  if v is not null then
+    delete from public.event_wish_votes
+    where wish_id = p_wish and (token = p_token or (auth.uid() is not null and user_id = auth.uid()));
+  else
+    if st = 'rejected' then
+      raise exception 'this wish was declined' using errcode = 'HVW02';
+    end if;
+    perform pg_advisory_xact_lock(hashtext('hv-event-wish-votes'));
+    if (select count(*) from public.event_wish_votes where created_at > now() - interval '1 minute') >= 120 then
+      raise exception 'Too many votes just now, try again in a minute' using errcode = 'HVW01';
+    end if;
+    insert into public.event_wish_votes (wish_id, token, user_id) values (p_wish, p_token, auth.uid());
+  end if;
+  select count(*) into n from public.event_wish_votes where wish_id = p_wish;
+  update public.event_wishes set votes = n where id = p_wish;
+  return jsonb_build_object('voted', v is null, 'votes', n);
+end;
+$$;
+
+-- Which wishes this browser / account suggested and voted for: { "mine": [ids], "voted": [ids] }.
+create or replace function public.my_event_wish_state(p_token text)
+returns jsonb
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select jsonb_build_object(
+    'mine', coalesce((select jsonb_agg(id) from public.event_wishes w
+                      where public.is_event_wish_owner(w.token, w.user_id, p_token)), '[]'::jsonb),
+    'voted', coalesce((select jsonb_agg(distinct wish_id) from public.event_wish_votes x
+                       where (p_token is not null and char_length(p_token) >= 16 and x.token = p_token)
+                          or (auth.uid() is not null and x.user_id = auth.uid())), '[]'::jsonb));
+$$;
+
+alter table public.event_wishes enable row level security;
+drop policy if exists "Anyone can view event wishes" on public.event_wishes;
+create policy "Anyone can view event wishes" on public.event_wishes for select using (true);
+drop policy if exists "Admins can change event wishes" on public.event_wishes;
+create policy "Admins can change event wishes" on public.event_wishes
+  for update to authenticated using (public.is_admin()) with check (public.is_admin());
+drop policy if exists "Admins can delete event wishes" on public.event_wishes;
+create policy "Admins can delete event wishes" on public.event_wishes for delete to authenticated using (public.is_admin());
+revoke all on public.event_wishes from anon, authenticated;
+grant select (id, name, title, description, status, votes, created_at) on public.event_wishes to anon, authenticated;  -- not user_id or token
+grant update (status) on public.event_wishes to authenticated;  -- admins only (policy)
+grant delete on public.event_wishes to authenticated;           -- admins only (policy)
+revoke execute on function public.add_event_wish(text, text, text, text) from public;
+revoke execute on function public.is_event_wish_owner(text, uuid, text) from public, anon, authenticated;
+revoke execute on function public.update_event_wish(bigint, text, text, text, text) from public;
+revoke execute on function public.delete_event_wish(bigint, text) from public;
+revoke execute on function public.toggle_event_wish_vote(bigint, text) from public;
+revoke execute on function public.my_event_wish_state(text) from public;
+grant execute on function public.add_event_wish(text, text, text, text) to anon, authenticated;
+grant execute on function public.update_event_wish(bigint, text, text, text, text) to anon, authenticated;
+grant execute on function public.delete_event_wish(bigint, text) to anon, authenticated;
+grant execute on function public.toggle_event_wish_vote(bigint, text) to anon, authenticated;
+grant execute on function public.my_event_wish_state(text) to anon, authenticated;
+
+-- ---------------------------------------------------------------------------------------------------------------
 -- Event organizers (负责人). Only admins can see the list and manage it. Each event has one main organizer and any
 -- number of deputies. Visitors see an organizer's contact details only while they are assigned to an event that is
 -- coming up (or was yesterday or today), so the details don't stay public after the event.

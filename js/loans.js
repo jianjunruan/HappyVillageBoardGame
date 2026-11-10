@@ -412,6 +412,30 @@ window.HVLoans = (() => {
         admin: "ifSignedIn",
         body: nextId ? { p_player: playerId, p_token: token, p_next: nextId } : { p_player: playerId, p_token: token },
       }),
+    // ---------- event wishes (期望活动) ----------
+    // Most "+1" votes first, then newest: [{ id, name, title, description, status: "open" | "adopted" | "rejected",
+    // votes, created_at }]. Optional limit.
+    wishes: (limit) =>
+      request("/rest/v1/event_wishes?select=id,name,title,description,status,votes,created_at&order=votes.desc,created_at.desc,id.desc" + (limit ? `&limit=${limit}` : "")),
+    // Anyone (the browser's secret, and the account when signed in, let them change or delete it later). Returns the new id.
+    addWish: (name, title, description, token) =>
+      request("/rest/v1/rpc/add_event_wish", { method: "POST", admin: "ifSignedIn", body: { p_name: name, p_title: title, p_description: description, p_token: token } }),
+    // The person who suggested it. Return false if this browser / account didn't suggest it.
+    updateWish: (id, name, title, description, token) =>
+      request("/rest/v1/rpc/update_event_wish", { method: "POST", admin: "ifSignedIn", body: { p_wish: id, p_token: token, p_name: name, p_title: title, p_description: description } }),
+    deleteOwnWish: (id, token) =>
+      request("/rest/v1/rpc/delete_event_wish", { method: "POST", admin: "ifSignedIn", body: { p_wish: id, p_token: token } }),
+    // "我也想参加 +1": adds this browser's / account's vote, or takes it back. Returns { voted, votes }.
+    toggleWishVote: (id, token) =>
+      request("/rest/v1/rpc/toggle_event_wish_vote", { method: "POST", admin: "ifSignedIn", body: { p_wish: id, p_token: token } }),
+    // Which wishes this browser / account suggested and voted for: { mine: [ids], voted: [ids] }.
+    wishState: (token) => request("/rest/v1/rpc/my_event_wish_state", { method: "POST", admin: "ifSignedIn", body: { p_token: token } }),
+    // Admins: adopt ("adopted"), decline ("rejected") or undecided again ("open"), or delete.
+    async setWishStatus(id, status) {
+      const rows = await request(`/rest/v1/event_wishes?id=eq.${encodeURIComponent(id)}&select=id`, { method: "PATCH", admin: true, prefer: "return=representation", body: { status } });
+      if (!rows.length) throw Object.assign(new Error("Nothing updated"), { code: "nothing-updated" });
+    },
+    deleteWish: (id) => adminDelete("event_wishes", id),
     // Admins: make another player at the table its host. Returns false if that player isn't at the table (any more).
     setTableHost: (tableId, playerId) =>
       request("/rest/v1/rpc/set_event_table_host", { method: "POST", admin: true, body: { p_table: tableId, p_player: playerId } }),

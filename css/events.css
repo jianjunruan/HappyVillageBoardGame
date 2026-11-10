@@ -192,3 +192,27 @@ p.ev-tpl { margin: 0; color: var(--muted); }
 /* Event organizers in order (负责人1, 负责人2, …) */
 .ev-slots { display: grid; gap: 8px; }
 .ev-slot { display: grid; grid-template-columns: 5.5em 1fr; align-items: center; gap: 8px; color: var(--text); font-weight: 600; }
+
+/* Event wishes (期望活动) */
+.ev-wishes { margin-top: 8px; }
+.ev-wishes > .ev-hint { font-size: 0.92rem; }
+.ev-wish-note { margin: 6px 0 12px; padding: 8px 12px; border-left: 3px solid var(--accent); border-radius: 6px; background: var(--accent-soft); color: var(--text); font-size: 0.88rem; }
+.ev-wish-list { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.ev-wish { padding: 12px 14px; border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); min-width: 0; }
+.ev-wish.is-adopted { outline: 2px solid var(--ok); }
+.ev-wish-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ev-wish-top h3 { margin: 0; font-size: 1.02rem; overflow-wrap: anywhere; }
+.ev-wish-badge { padding: 0 9px; border-radius: 999px; background: var(--ok); color: #fff; font-size: 0.78rem; font-weight: 700; }
+.ev-wish-desc { margin: 6px 0 0; white-space: pre-line; overflow-wrap: anywhere; font-size: 0.92rem; }
+.ev-wish-by { margin: 6px 0 0; color: var(--muted); font-size: 0.82rem; }
+.ev-wish { display: flex; flex-direction: column; }
+.ev-wish.is-rejected { opacity: 0.6; }
+.ev-wish.is-mine { box-shadow: var(--shadow), inset 3px 0 0 var(--accent); }
+.ev-wish-badge.is-no { background: var(--border); color: var(--muted); }
+.ev-wish-mine { padding: 0 8px; border-radius: 999px; border: 1px solid var(--accent); color: var(--accent); font-size: 0.75rem; font-weight: 700; }
+.ev-wish-vote { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; margin-top: auto; padding-top: 10px; }
+.ev-vote { padding: 6px 12px; border: 1px solid var(--accent); border-radius: 999px; background: var(--surface); color: var(--accent); font: inherit; font-size: 0.88rem; font-weight: 700; cursor: pointer; }
+.ev-vote:hover:not(:disabled) { background: var(--accent-soft); }
+.ev-vote.is-on { background: var(--accent); color: #fff; }
+.ev-vote:disabled { border-color: var(--border); color: var(--muted); cursor: not-allowed; }
+.ev-wish-count { color: var(--muted); font-size: 0.85rem; font-weight: 600; }
