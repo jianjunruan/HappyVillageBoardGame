@@ -163,7 +163,7 @@
         <div class="ac-actions">
           <a class="btn" href="${esc(next)}">${esc(next === "profile.html" ? tr("toProfile") : "→ " + next.replace(/\.html.*/, ""))}</a>
           <button class="btn ghost" type="button" data-go="newpw">${esc(tr("changePw"))}</button>
-          <button class="btn ghost" type="button" data-signout>${esc(tr("signOut"))}</button>
+          <button class="btn signout" type="button" data-signout>${esc(tr("signOut"))}</button>
         </div></section>`;
       return;
     }

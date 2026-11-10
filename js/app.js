@@ -410,7 +410,7 @@
   }
 
   // The admin button only appears with ?admin in the address (e.g. index.html?admin=1),
-  // or while an admin is signed in, so they can always sign out.
+  // or while an admin is signed in. Signing out is the red 退出登录 button in the header (js/account-link.js).
   // Not case-sensitive: ?admin=1, ?Admin=1 and ?ADMIN all work.
   const adminParam = [...new URLSearchParams(location.search).keys()].some((k) => k.toLowerCase() === "admin");
   function renderAdminBar() {
@@ -419,7 +419,7 @@
     if (!show) return void (els.adminBar.innerHTML = "");
     const who = HVLoans.user && esc(t("adminSignedIn", { email: HVLoans.user }));
     els.adminBar.innerHTML = adminOK
-      ? `<span class="admin-who" title="${who}">${who}</span><a class="admin-btn" href="admin/inventory.html">${esc(t("inventory"))}</a><button class="admin-btn" type="button" data-signout title="${who}">${esc(t("adminSignOut"))}</button>`
+      ? `<span class="admin-who" title="${who}">${who}</span><a class="admin-btn" href="admin/inventory.html">${esc(t("inventory"))}</a>`
       : `<button class="admin-btn" type="button" data-signin>${esc(t("adminLogin"))}</button>`;
   }
 
@@ -660,16 +660,11 @@
     }
   });
 
-  // Admin sign-in / sign-out.
+  // Admin sign-in (signing out: the header button in js/account-link.js).
   els.adminBar.addEventListener("click", (e) => {
     if (e.target.closest("[data-signin]")) {
       els.loginError.textContent = "";
       els.login.showModal();
-    } else if (e.target.closest("[data-signout]")) {
-      HVLoans.signOut();
-      adminOK = false;
-      renderAll();
-      window.dispatchEvent(new Event("hv-auth-change"));
     }
   });
   els.login.addEventListener("click", (e) => {

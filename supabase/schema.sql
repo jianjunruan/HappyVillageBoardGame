@@ -310,6 +310,17 @@ create table if not exists public.events (
   created_at timestamptz not null default now()
 );
 create index if not exists events_by_date on public.events (event_date);
+-- When the event ends (optional; earlier than the start means it runs past midnight), where it is, and an optional
+-- map link (e.g. a Google Maps share link). Without a link the website searches Google Maps for the location.
+-- The description can be formatted (font, size, colour…), stored as cleaned HTML, so it may be longer than the
+-- text alone: up to 20000 characters (the first version allowed 2000).
+alter table public.events drop constraint if exists events_description_check;
+alter table public.events drop constraint if exists events_description_length;
+alter table public.events add constraint events_description_length check (char_length(description) <= 20000);
+alter table public.events add column if not exists end_time time;
+alter table public.events add column if not exists location text not null default '' check (char_length(location) <= 200);
+alter table public.events add column if not exists map_url text not null default ''
+  check (map_url = '' or (char_length(map_url) <= 500 and map_url ~* '^https://'));
 
 create table if not exists public.event_tables (
   id bigint generated always as identity primary key,
@@ -523,9 +534,33 @@ begin
 end;
 $$;
 
--- Deletes a table and its sign-ups; only the browser that opened it (admins delete tables directly).
--- Returns true if it worked, false if this browser didn't open the table.
+-- Deletes a table; only its current host (admins delete tables directly), and only while nobody else has joined it
+-- (with other players there, the host can leave instead and hand the table over).
+-- Returns true if it worked, false if the caller isn't the host; raises HVE08 if other players are still there.
 create or replace function public.delete_event_table(p_table bigint, p_token text)
+returns boolean
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  tb record;
+begin
+  select id, host_token, host_player into tb from public.event_tables where id = p_table for update;
+  if tb.id is null or not public.is_event_table_host(tb.id, tb.host_token, tb.host_player, p_token) then
+    return false;
+  end if;
+  if exists (select 1 from public.event_players where table_id = tb.id and id <> tb.host_player) then
+    raise exception 'other players are still at this table' using errcode = 'HVE08';
+  end if;
+  delete from public.event_tables where id = tb.id;
+  return true;
+end;
+$$;
+
+-- Admins make another player at a table its host (开桌人). Returns true if it worked, false if that player isn't
+-- at the table. The host's browser secret moves with it, so the new host can manage the table from their device.
+create or replace function public.set_event_table_host(p_table bigint, p_player bigint)
 returns boolean
 language plpgsql
 security definer
@@ -534,9 +569,13 @@ as $$
 declare
   t bigint;
 begin
-  delete from public.event_tables
-  where id = p_table and public.is_event_table_host(id, host_token, host_player, p_token)
-  returning id into t;
+  if not public.is_admin() then
+    raise exception 'admins only' using errcode = '42501';
+  end if;
+  update public.event_tables et set host_player = p.id, host_token = p.token
+  from public.event_players p
+  where et.id = p_table and p.id = p_player and p.table_id = p_table
+  returning et.id into t;
   return t is not null;
 end;
 $$;
@@ -572,8 +611,8 @@ revoke select on public.event_tables from anon, authenticated;
 grant select (id, event_id, game_id, game_name, on_site, max_players, note, created_at, start_time, host_player)
   on public.event_tables to anon, authenticated;
 grant select (id, table_id, name, joined_at) on public.event_players to anon, authenticated;  -- not the token
-grant insert (title, event_date, start_time, description) on public.events to authenticated;
-grant update (title, event_date, start_time, description) on public.events to authenticated;
+grant insert (title, event_date, start_time, end_time, location, map_url, description) on public.events to authenticated;
+grant update (title, event_date, start_time, end_time, location, map_url, description) on public.events to authenticated;
 grant delete on public.events to authenticated;
 grant update (game_name, on_site, max_players, note, start_time) on public.event_tables to authenticated;  -- admins only (policy)
 grant delete on public.event_tables, public.event_players to authenticated;
@@ -589,6 +628,8 @@ grant execute on function public.open_event_table(bigint, text, text, boolean, i
 grant execute on function public.join_event_table(bigint, text, text) to anon, authenticated;
 grant execute on function public.leave_event_table(bigint, text, bigint) to anon, authenticated;
 grant execute on function public.delete_event_table(bigint, text) to anon, authenticated;
+revoke execute on function public.set_event_table_host(bigint, bigint) from public, anon;
+grant execute on function public.set_event_table_host(bigint, bigint) to authenticated;  -- checks is_admin() itself
 
 -- ---------------------------------------------------------------------------------------------------------------
 -- Event organizers (负责人). Only admins can see the list and manage it. Each event has one main organizer and any
@@ -684,7 +725,8 @@ create policy "Admins can delete staff QR codes" on storage.objects
   for delete to authenticated using (bucket_id = 'staff-qr' and public.is_admin());
 
 -- ---------------------------------------------------------------------------------------------------------------
--- Event templates: a saved event name and description, to fill in the event form quickly. Admins only.
+-- Event templates: a saved event name, description, start and end time, place and map link, to fill in the event
+-- form quickly. Admins only.
 -- One template per name (not case-sensitive); saving under an existing name replaces it.
 create table if not exists public.event_templates (
   id bigint generated always as identity primary key,
@@ -692,6 +734,14 @@ create table if not exists public.event_templates (
   description text not null default '' check (char_length(description) <= 2000),
   updated_at timestamptz not null default now()
 );
+alter table public.event_templates add column if not exists location text not null default '' check (char_length(location) <= 200);
+alter table public.event_templates add column if not exists map_url text not null default ''
+  check (map_url = '' or (char_length(map_url) <= 500 and map_url ~* '^https://'));
+alter table public.event_templates drop constraint if exists event_templates_description_check;
+alter table public.event_templates drop constraint if exists event_templates_description_length;
+alter table public.event_templates add constraint event_templates_description_length check (char_length(description) <= 20000);
+alter table public.event_templates add column if not exists start_time time;
+alter table public.event_templates add column if not exists end_time time;
 create unique index if not exists event_templates_one_name on public.event_templates (lower(trim(title)));
 alter table public.event_templates enable row level security;
 drop policy if exists "Admins can view event templates" on public.event_templates;
@@ -707,8 +757,8 @@ drop policy if exists "Admins can delete event templates" on public.event_templa
 create policy "Admins can delete event templates" on public.event_templates
   for delete to authenticated using (public.is_admin());
 grant select, delete on public.event_templates to authenticated;
-grant insert (title, description) on public.event_templates to authenticated;
-grant update (title, description, updated_at) on public.event_templates to authenticated;
+grant insert (title, description, start_time, end_time, location, map_url) on public.event_templates to authenticated;
+grant update (title, description, start_time, end_time, location, map_url, updated_at) on public.event_templates to authenticated;
 
 -- ---------------------------------------------------------------------------------------------------------------
 -- Player accounts (account.html, profile.html). Anyone can sign up with an email and password (Supabase Auth).

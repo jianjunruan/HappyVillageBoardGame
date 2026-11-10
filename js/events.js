@@ -36,8 +36,19 @@
       evTitlePh: "例如：周六桌游夜",
       evDate: "日期",
       evTime: "开始时间（可不填）",
+      evEnd: "结束时间（可不填）",
+      evPlace: "活动地点（可不填）",
+      evPlacePh: "例如：欢乐小镇活动室，XX 路 123 号",
+      evMap: "地图链接（可不填）",
+      evMapPh: "粘贴 Google 地图的分享链接",
+      evMapHint: "不填的话，点活动地点会在 Google 地图里搜索这个地址。",
+      badMap: "地图链接要以 https:// 开头，例如 https://maps.app.goo.gl/…",
+      needStart: "填了结束时间，也请填开始时间。",
+      openMap: "在 Google 地图打开",
+      mapShort: "地图",
       evDesc: "简介说明（可不填）",
-      evDescPh: "地点、时间安排、注意事项……",
+      evDescPh: "时间安排、注意事项……（可以用上面的按键改字体、字号、颜色）",
+      descTooLong: "简介太长了，请删减一些（或少用一些格式）。",
       evSave: "💾 发布",
       evSaveEdit: "💾 保存修改",
       needTitle: "请填写活动名称。",
@@ -68,7 +79,8 @@
       startsAt: "🕒 {t} 开",
       tableTime: "几点开（可不填）",
       deleteOwn: "删除这桌",
-      deleteOwnConfirm: "删除你开的「{game}」这一桌？已加入的人也会一起移除。",
+      deleteOwnConfirm: "删除你开的「{game}」这一桌？",
+      cantDelete: "桌上还有其他玩家，不能删除。想离开的话可以点「退出」，把开桌人交给别人。",
       notHost: "只有这一桌的开桌人或管理员可以这样做（开桌人可能已经换人了）。",
       tableDeleted: "✓ 已删除这一桌",
       editTime: "修改时间",
@@ -77,6 +89,13 @@
       timeSave: "💾 保存时间",
       timeSaved: "✓ 时间已更新",
       leaveTitle: "退出「{game}」这一桌",
+      changeHost: "更换开桌人",
+      hostTitle: "「{game}」的开桌人",
+      hostWho: "选一位桌上的玩家当开桌人：",
+      hostNow: "（现在的开桌人）",
+      hostSave: "💾 确认更换",
+      hostSaved: "✓ 已更换开桌人为「{name}」",
+      hostGone: "没能更换：这位玩家已经不在这一桌了。",
       leaveWho: "你是开桌人，退出后谁来接手？",
       leaveDefault: "不指定：按加入顺序，由「{name}」接手",
       leaveSubmit: "确认退出",
@@ -122,7 +141,6 @@
       failed: "操作失败：{msg}",
       // admin sign-in
       adminLogin: "管理员登录",
-      adminSignOut: "退出登录",
       email: "邮箱",
       password: "密码",
       signIn: "登录",
@@ -156,12 +174,12 @@
       staffSave: "💾 保存",
       adminOnly: "负责人名单只有管理员可以查看，请先登录。",
       backToEvents: "← 返回活动",
-      lead: "主负责人",
-      deputy: "副负责人",
-      leadField: "当日主负责人",
-      leadPick: "选择主负责人",
-      deputiesField: "副负责人（可多选，可不选）",
-      needLead: "请选择当日主负责人。",
+      staffN: "负责人{n}",
+      leadField: "当日负责人",
+      leadHint: "负责人1 必选；选好一位后会出现下一位，按顺序显示在活动页上。",
+      slotPick: "选择负责人",
+      slotNone: "（不选）",
+      needLead: "请选择负责人1。",
       noStaffYet: "还没有负责人，请先在「👥 负责人」里添加。",
       manageStaff: "管理负责人名单",
       contacts: "当日负责人",
@@ -178,9 +196,9 @@
       // templates
       tplImport: "📋 从模板导入",
       tplPick: "选择模板……",
-      tplNone: "还没有模板。填好活动名称和简介后，可以点下面的「存为模板」。",
-      tplReplace: "用模板「{name}」替换当前填写的活动名称和简介？",
-      tplSave: "💾 把名称和简介存为模板",
+      tplNone: "还没有模板。填好活动名称、简介、时间和地点后，可以点下面的「存为模板」。",
+      tplReplace: "用模板「{name}」替换当前填写的活动名称、简介、时间和地点？",
+      tplSave: "💾 把名称、简介、时间和地点存为模板",
       tplSaved: "✓ 已存为模板「{name}」",
       tplOverwrite: "已经有叫「{name}」的模板了，用现在的简介替换它？",
       tplDelete: "删除这个模板",
@@ -217,8 +235,19 @@
       evTitlePh: "e.g. Saturday game night",
       evDate: "Date",
       evTime: "Start time (optional)",
+      evEnd: "End time (optional)",
+      evPlace: "Place (optional)",
+      evPlacePh: "e.g. Happy Village club room, 123 Main St",
+      evMap: "Map link (optional)",
+      evMapPh: "Paste a Google Maps share link",
+      evMapHint: "Without a link, tapping the place searches for it on Google Maps.",
+      badMap: "The map link must start with https://, e.g. https://maps.app.goo.gl/…",
+      needStart: "Please add a start time too, since there's an end time.",
+      openMap: "Open in Google Maps",
+      mapShort: "Map",
       evDesc: "Description (optional)",
-      evDescPh: "Place, schedule, things to know…",
+      evDescPh: "Schedule, things to know… (use the buttons above for font, size and colour)",
+      descTooLong: "The description is too long. Please shorten it (or use less formatting).",
       evSave: "💾 Publish",
       evSaveEdit: "💾 Save changes",
       needTitle: "Please enter the event name.",
@@ -249,7 +278,8 @@
       startsAt: "🕒 Starts {t}",
       tableTime: "Start time (optional)",
       deleteOwn: "Delete table",
-      deleteOwnConfirm: "Delete your {game} table? Everyone who joined is removed too.",
+      deleteOwnConfirm: "Delete your {game} table?",
+      cantDelete: "Other players are at this table, so it can't be deleted. To go, use \"Leave\" and hand the table to someone else.",
       notHost: "Only this table's host or an admin can do that (the host may have changed).",
       tableDeleted: "✓ Table deleted",
       editTime: "Change time",
@@ -258,6 +288,13 @@
       timeSave: "💾 Save time",
       timeSaved: "✓ Time updated",
       leaveTitle: "Leave the {game} table",
+      changeHost: "Change host",
+      hostTitle: "Host of {game}",
+      hostWho: "Pick a player at this table to be the host:",
+      hostNow: "(current host)",
+      hostSave: "💾 Change host",
+      hostSaved: "✓ {name} is now the host",
+      hostGone: "Couldn't change: that player is no longer at this table.",
       leaveWho: "You're the host. Who takes over after you leave?",
       leaveDefault: "No preference: next to join, {name}",
       leaveSubmit: "Leave",
@@ -300,7 +337,6 @@
       errOffline: "Couldn't connect. Check your connection and try again.",
       failed: "Something went wrong: {msg}",
       adminLogin: "Admin sign-in",
-      adminSignOut: "Sign out",
       email: "Email",
       password: "Password",
       signIn: "Sign in",
@@ -333,12 +369,12 @@
       staffSave: "💾 Save",
       adminOnly: "Only admins can see the organizers. Please sign in.",
       backToEvents: "← Back to events",
-      lead: "Main organizer",
-      deputy: "Deputy",
-      leadField: "Main organizer on the day",
-      leadPick: "Choose the main organizer",
-      deputiesField: "Deputies (any number, optional)",
-      needLead: "Please choose the main organizer for the day.",
+      staffN: "Organizer {n}",
+      leadField: "Organizers on the day",
+      leadHint: "Organizer 1 is required. Pick one and the next appears; they show on the event page in this order.",
+      slotPick: "Choose an organizer",
+      slotNone: "(none)",
+      needLead: "Please choose Organizer 1.",
       noStaffYet: "No organizers yet. Add them under \"👥 Organizers\" first.",
       manageStaff: "Manage organizers",
       contacts: "Organizers on the day",
@@ -354,9 +390,9 @@
       qrTap: "On a phone, press and hold the picture to scan the QR code.",
       tplImport: "📋 Use a template",
       tplPick: "Choose a template…",
-      tplNone: "No templates yet. Fill in the name and description, then use \"Save as template\" below.",
-      tplReplace: "Replace the name and description you've filled in with the template \"{name}\"?",
-      tplSave: "💾 Save name and description as a template",
+      tplNone: "No templates yet. Fill in the name, description, times and place, then use \"Save as template\" below.",
+      tplReplace: "Replace the name, description, times and place you've filled in with the template \"{name}\"?",
+      tplSave: "💾 Save name, description, times and place as a template",
       tplSaved: "✓ Saved as template \"{name}\"",
       tplOverwrite: "A template called \"{name}\" already exists. Replace it with this description?",
       tplDelete: "Delete this template",
@@ -431,6 +467,19 @@
     return new Intl.DateTimeFormat(lang() === "zh" ? "zh-CN" : "en-GB", opts).format(d);
   }
   const fmtTime = (t) => (t ? t.slice(0, 5) : "");
+  // "14:00–18:00", "14:00", or "" (an end earlier than the start just means past midnight).
+  const timeRange = (e) => (e.start_time ? fmtTime(e.start_time) + (e.end_time ? "–" + fmtTime(e.end_time) : "") : "");
+  // The event's own map link, or a Google Maps search for its place; "" when it has neither.
+  const mapLink = (e) =>
+    e.map_url || (e.location ? "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(e.location) : "");
+  // Map links typed without https:// (e.g. "maps.app.goo.gl/…") get it added; http:// becomes https://.
+  const cleanMapUrl = (u) => {
+    u = String(u || "").trim();
+    if (!u) return "";
+    if (/^http:\/\//i.test(u)) return "https://" + u.slice(7);
+    if (!/^[a-z][a-z0-9+.-]*:/i.test(u) && /^[^\s/]+\.[^\s]+$/.test(u)) return "https://" + u;
+    return u;
+  };
   function relDay(s) {
     const n = daysAway(s);
     if (n < 0) return { text: tr("over"), cls: "is-over" };
@@ -478,9 +527,11 @@
   function errText(err) {
     const code = err && err.code;
     if (code === "leave-gone") return tr("leaveGone");
+    if (code === "host-gone") return tr("hostGone");
     if (code === "not-host") return tr("notHost");
     if (code === "HVE06") return tr("needLead");
     if (code === "HVE07") return tr("errJoined");
+    if (code === "HVE08") return tr("cantDelete");
     if (code === "qr-not-image") return tr("qrNotImage");
     if (code === "HVE01") return tr("errOver");
     if (code === "HVE02") return tr("errFull");
@@ -576,8 +627,9 @@
       <span class="ev-cal" aria-hidden="true"><small>${esc(new Intl.DateTimeFormat(lang() === "zh" ? "zh-CN" : "en-GB", { month: "short" }).format(d))}</small><b>${d.getDate()}</b></span>
       <span class="ev-card-body">
         <span class="ev-card-title">${esc(e.title)}</span>
-        <span class="ev-when">${esc(fmtDate(e.event_date))}${e.start_time ? ` · ${esc(fmtTime(e.start_time))}` : ""} <span class="ev-rel ${rel.cls}">${esc(rel.text)}</span></span>
-        ${e.description ? `<span class="ev-card-desc">${esc(e.description)}</span>` : ""}
+        <span class="ev-when">${esc(fmtDate(e.event_date))}${e.start_time ? ` · ${esc(timeRange(e))}` : ""} <span class="ev-rel ${rel.cls}">${esc(rel.text)}</span></span>
+        ${e.location ? `<span class="ev-card-place">📍 ${esc(e.location)}</span>` : ""}
+        ${e.description ? `<span class="ev-card-desc">${esc(HVRich.text(e.description))}</span>` : ""}
         <span class="ev-card-stats">${esc(stats(e))}</span>
         ${shown.length ? `<span class="ev-card-games">${shown.map((n) => `<span class="chip">${esc(n)}</span>`).join("")}${games.length > shown.length ? `<span class="chip">+${games.length - shown.length}</span>` : ""}</span>` : ""}
       </span>
@@ -641,18 +693,19 @@
       <div class="ev-players">${chips}</div>
       ${iHost && !isAdmin && !over ? `<div class="ev-admin-row">
         <button class="link-btn" type="button" data-edit-time="${t.id}">${esc(tr("editTime"))}</button>
-        <button class="link-btn" type="button" data-delete-own="${t.id}">${esc(tr("deleteOwn"))}</button>
+        ${players.length > 1 ? `<span class="ev-hint">${esc(tr("cantDelete"))}</span>` : `<button class="link-btn" type="button" data-delete-own="${t.id}">${esc(tr("deleteOwn"))}</button>`}
       </div>` : ""}
       ${isAdmin ? `<div class="ev-admin-row">
         <button class="link-btn" type="button" data-edit-time="${t.id}">${esc(tr("editTime"))}</button>
+        ${players.length > 1 ? `<button class="link-btn" type="button" data-change-host="${t.id}">${esc(tr("changeHost"))}</button>` : ""}
         <button class="link-btn" type="button" data-toggle-site="${t.id}" data-on="${t.on_site ? 1 : 0}">${esc(tr(t.on_site ? "markNotOnSite" : "markOnSite"))}</button>
         <button class="link-btn" type="button" data-delete-table="${t.id}">${esc(tr("deleteTable"))}</button>
       </div>` : ""}
     </article>`;
   }
   // ---------- organizers (负责人) ----------
-  // One person's contact card. role: "lead" | "deputy" | null; admin: show edit/delete (organizers page).
-  function staffCard(s, role, admin) {
+  // One person's contact card. n: their number at the event (负责人1, 2, …) or null; admin: show edit/delete (organizers page).
+  function staffCard(s, n, admin) {
     const copyBtn = (v) => `<button class="ev-copy" type="button" data-copy="${esc(v)}">${esc(tr("copy"))}</button>`;
     const qr = (path, kind) =>
       path
@@ -660,8 +713,8 @@
             <img src="${esc(HVLoans.qrUrl(path))}" alt="${esc(tr("qrOf", { name: s.name, kind: tr(kind) }))}" loading="lazy"><small>${esc(tr(kind))}</small></button>`
         : "";
     const qrs = qr(s.wechat_qr, "wechatQr") + qr(s.xhs_qr, "xhsQr");
-    return `<article class="ev-staff${role === "lead" ? " is-lead" : ""}">
-      <div class="ev-staff-top"><b>${esc(s.name)}</b>${role ? `<span class="ev-role">${esc(tr(role))}</span>` : ""}</div>
+    return `<article class="ev-staff">
+      <div class="ev-staff-top"><b>${esc(s.name)}</b>${n ? `<span class="ev-role">${esc(tr("staffN", { n }))}</span>` : ""}</div>
       <ul class="ev-contact">
         ${s.phone ? `<li><span>📞 ${esc(tr("phone"))}</span><a href="tel:${esc(s.phone.replace(/[^\d+]/g, ""))}">${esc(s.phone)}</a></li>` : ""}
         ${s.wechat ? `<li><span><img class="ev-ico-wx" src="images/wechat.svg" alt=""> ${esc(tr("wechat"))}</span><b>${esc(s.wechat)}</b>${copyBtn(s.wechat)}</li>` : ""}
@@ -679,7 +732,7 @@
     if (!people.length) return "";
     return `<section class="ev-contacts">
       <div class="ev-head"><h2>${esc(tr("contacts"))}</h2></div>
-      <div class="ev-staff-grid">${people.map((x) => staffCard(x.staff, x.is_lead ? "lead" : "deputy")).join("")}</div>
+      <div class="ev-staff-grid">${people.map((x, i) => staffCard(x.staff, i + 1)).join("")}</div>
     </section>`;
   }
   function renderStaffPage() {
@@ -696,6 +749,15 @@
       ${staffRows.length ? `<div class="ev-staff-grid">${staffRows.map((s) => staffCard(s, null, true)).join("")}</div>` : `<p class="ev-empty">${esc(tr("staffEmpty"))}</p>`}`;
   }
 
+  // 📍 The place, linking to Google Maps (or the event's own map link).
+  function placeLine(e) {
+    const url = mapLink(e);
+    if (!url) return "";
+    const a = (text, cls) => `<a class="${cls}" href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>`;
+    return e.location
+      ? `<p class="ev-where">📍 ${a(e.location, "ev-place")} ${a(tr("mapShort") + " ↗", "ev-map-btn")}</p>`
+      : `<p class="ev-where">📍 ${a(tr("openMap") + " ↗", "ev-place")}</p>`;
+  }
   function renderEvent() {
     if (!ev) {
       main.innerHTML = loaded
@@ -711,8 +773,9 @@
       <p class="ev-crumb"><a href="events.html">${esc(tr("allEvents"))}</a></p>
       <section class="ev-hero">
         <h2>${esc(ev.title)}</h2>
-        <p class="ev-when">📅 ${esc(fmtDate(ev.event_date, true))}${ev.start_time ? ` · 🕒 ${esc(fmtTime(ev.start_time))}` : ""} <span class="ev-rel ${rel.cls}">${esc(rel.text)}</span></p>
-        ${ev.description ? `<p class="ev-desc">${esc(ev.description)}</p>` : ""}
+        <p class="ev-when">📅 ${esc(fmtDate(ev.event_date, true))}${ev.start_time ? ` · 🕒 ${esc(timeRange(ev))}` : ""} <span class="ev-rel ${rel.cls}">${esc(rel.text)}</span></p>
+        ${placeLine(ev)}
+        ${ev.description ? `<div class="ev-desc rt-content">${HVRich.html(ev.description)}</div>` : ""}
         ${isAdmin ? `<p class="ev-admin-row"><button class="link-btn" type="button" data-edit-event>${esc(tr("editEvent"))}</button><button class="link-btn" type="button" data-delete-event>${esc(tr("deleteEvent"))}</button></p>` : ""}
       </section>
       ${staffSection(ev)}
@@ -751,6 +814,7 @@
     if (D.mode === "qr") return renderQr();
     if (D.mode === "time") return renderTimeForm();
     if (D.mode === "leave") return renderLeaveForm();
+    if (D.mode === "host") return renderHostForm();
   }
 
   const norm = (s) => String(s || "").toLowerCase().replace(/[\s·:：\-–—'’!！?？.,，、()（）]/g, "");
@@ -832,14 +896,20 @@
         <div class="ev-row">
           <label class="ev-field date-field"><span>${esc(tr("evDate"))}</span><input type="hidden" name="date" value="${esc(D.date)}" data-datepicker data-quick="today,week,2weeks,month"></label>
           <label class="ev-field ev-time"><span>${esc(tr("evTime"))}</span><input name="time" type="time" value="${esc(D.time)}"></label>
+          <label class="ev-field ev-time"><span>${esc(tr("evEnd"))}</span><input name="end" type="time" value="${esc(D.end)}"></label>
         </div>
-        <label class="ev-field"><span>${esc(tr("evDesc"))}</span><textarea name="desc" rows="5" maxlength="2000" placeholder="${esc(tr("evDescPh"))}">${esc(D.desc)}</textarea></label>
+        <label class="ev-field"><span>${esc(tr("evPlace"))}</span><input name="place" maxlength="200" placeholder="${esc(tr("evPlacePh"))}" value="${esc(D.place)}"></label>
+        <label class="ev-field"><span>${esc(tr("evMap"))}</span><input name="map" type="url" inputmode="url" maxlength="500" placeholder="${esc(tr("evMapPh"))}" value="${esc(D.map)}"><small class="ev-hint">${esc(tr("evMapHint"))}</small></label>
+        <div class="ev-field"><span id="ev-desc-label">${esc(tr("evDesc"))}</span>${HVRich.editorHtml(D.desc, tr("evDescPh"))}</div>
         <p class="ev-tpl-save"><button class="btn ghost btn-sm" type="button" data-tpl-save>${esc(tr("tplSave"))}</button>${D.tplMsg ? `<span class="ev-msg ${D.tplMsg.ok ? "is-ok" : "is-err"}" role="status">${esc(D.tplMsg.text)}</span>` : ""}</p>
         ${staffPickers()}
         ${errLine()}
         <div class="form-actions"><button class="btn ghost" type="button" data-close>${esc(tr("cancel"))}</button><button class="btn" type="submit"${busy ? " disabled" : ""}>${esc(busy ? tr("saving") : tr(D.id ? "evSaveEdit" : "evSave"))}</button></div>
       </form>`;
     HVDatePicker.enhance(dlg);
+    const rich = dlg.querySelector("[data-rich]");
+    rich.querySelector(".rt-edit").setAttribute("aria-labelledby", "ev-desc-label");
+    HVRich.mount(rich);
   }
   // Event templates: pick one to fill in the name and description.
   function templatePicker() {
@@ -864,13 +934,19 @@
       D.tplSel = "";
       return renderDialog();
     }
-    const filled = String(D.title || "").trim() || String(D.desc || "").trim();
-    const differs = !sameName(D.title, t.title) || String(D.desc || "").trim() !== t.description.trim();
+    const tPlace = t.location || "";
+    const tMap = t.map_url || "";
+    const tTime = fmtTime(t.start_time);
+    const tEnd = fmtTime(t.end_time);
+    const filled = [D.title, D.desc, D.place, D.map].some((x) => String(x || "").trim());
+    const differs = !sameName(D.title, t.title) || String(D.desc || "").trim() !== t.description.trim() ||
+      String(D.place || "").trim() !== tPlace.trim() || String(D.map || "").trim() !== tMap.trim() ||
+      (D.time || "") !== tTime || (D.end || "") !== tEnd;
     if (filled && differs && !confirm(tr("tplReplace", { name: t.title }))) {
       D.tplSel = prev; // puts the select back
       return renderDialog();
     }
-    Object.assign(D, { tplSel: String(t.id), title: t.title, desc: t.description });
+    Object.assign(D, { tplSel: String(t.id), title: t.title, desc: t.description, place: tPlace, map: tMap, time: tTime, end: tEnd });
     renderDialog();
   }
   async function saveTemplate() {
@@ -880,13 +956,37 @@
       D.tplMsg = { text: tr("needTitle"), ok: false };
       return renderDialog();
     }
+    if (D.end && !D.time) {
+      D.tplMsg = { text: tr("needStart"), ok: false };
+      return renderDialog();
+    }
+    if (String(D.desc || "").length > 20000) {
+      D.tplMsg = { text: tr("descTooLong"), ok: false };
+      return renderDialog();
+    }
+    const map = cleanMapUrl(D.map);
+    if (map && !/^https:\/\/\S+$/i.test(map)) {
+      D.tplMsg = { text: tr("badMap"), ok: false };
+      return renderDialog();
+    }
+    D.map = map;
     const existing = (D.tpls || []).find((t) => sameName(t.title, title));
     if (existing && !confirm(tr("tplOverwrite", { name: existing.title }))) return;
     const state = D;
     let row = null;
     let fail = null;
     try {
-      row = await HVLoans.saveTemplate({ title, description: String(state.desc || "").trim() }, existing ? existing.id : null);
+      row = await HVLoans.saveTemplate(
+        {
+          title,
+          description: String(state.desc || "").trim(),
+          start_time: state.time || null,
+          end_time: state.end || null,
+          location: String(state.place || "").trim().slice(0, 200),
+          map_url: map,
+        },
+        existing ? existing.id : null
+      );
     } catch (err) {
       fail = err;
     }
@@ -918,20 +1018,29 @@
     if (D === state) renderDialog();
   }
 
-  // The event's organizers: one main organizer (required) and any deputies, from the organizers list.
+  // The event's organizers in order: 负责人1 (required), 负责人2, … One dropdown per chosen person, plus an empty one
+  // for the next while anyone is left. Each dropdown leaves out the people chosen in the others.
   function staffPickers() {
     const manage = `<a href="events.html?staff">${esc(tr("manageStaff"))}</a>`;
     if (!D.staff) return `<p class="ev-hint">${esc(tr("leadField"))}: ${esc(tr("loading"))}</p>`;
     if (!D.staff.length) return `<p class="ev-msg is-err">${esc(tr("noStaffYet"))} ${manage}</p>`;
-    const lead = String(D.lead || "");
-    const others = D.staff.filter((s) => String(s.id) !== lead);
-    return `<label class="ev-field"><span>${esc(tr("leadField"))}</span>
-        <select name="lead" required><option value="">${esc(tr("leadPick"))}</option>${D.staff
-          .map((s) => `<option value="${s.id}"${String(s.id) === lead ? " selected" : ""}>${esc(s.name)}</option>`)
-          .join("")}</select></label>
-      ${others.length ? `<fieldset class="ev-field" data-deps><legend>${esc(tr("deputiesField"))}</legend><div class="ev-checks">${others
-        .map((s) => `<label><input type="checkbox" name="dep" value="${s.id}"${D.deps.includes(String(s.id)) ? " checked" : ""}><span>${esc(s.name)}</span></label>`)
-        .join("")}</div></fieldset>` : ""}
+    const known = new Set(D.staff.map((x) => String(x.id)));
+    const slots = D.slots.filter((id) => known.has(id));
+    const shown = slots.length < D.staff.length ? [...slots, ""] : slots;
+    const pickers = shown
+      .map((id, i) => {
+        const taken = new Set(slots.filter((x, j) => j !== i));
+        return `<label class="ev-slot"><span>${esc(tr("staffN", { n: i + 1 }))}</span>
+          <select name="slot"${i === 0 ? " required" : ""}><option value="">${esc(i === 0 ? tr("slotPick") : tr("slotNone"))}</option>${D.staff
+            .filter((x) => !taken.has(String(x.id)))
+            .map((x) => `<option value="${x.id}"${String(x.id) === id ? " selected" : ""}>${esc(x.name)}</option>`)
+            .join("")}</select></label>`;
+      })
+      .join("");
+    return `<fieldset class="ev-field" data-slots><legend>${esc(tr("leadField"))}</legend>
+        <div class="ev-slots">${pickers}</div>
+        <small class="ev-hint">${esc(tr("leadHint"))}</small>
+      </fieldset>
       <p class="ev-hint">${manage}</p>`;
   }
   // The organizer form. Each QR code: { path (saved), file (new picture), url (preview), removed }.
@@ -1003,6 +1112,33 @@
         <div class="form-actions"><button class="btn ghost" type="button" data-close>${esc(tr("cancel"))}</button><button class="btn" type="submit"${busy ? " disabled" : ""}>${esc(busy ? tr("leaving") : tr("leaveSubmit"))}</button></div>
       </form>`;
   }
+  // Admins: pick another player at the table to be its host.
+  function renderHostForm() {
+    const t = ev && ev.event_tables.find((x) => x.id === D.table);
+    if (!t || t.event_players.length < 2) return closeDialog();
+    const hostId = t.host_player != null ? t.host_player : t.event_players[0].id;
+    const opts = t.event_players
+      .map((p) => `<label class="ev-leave-opt"><input type="radio" name="host" value="${p.id}"${String(D.host) === String(p.id) ? " checked" : ""}><span>${esc(p.name)}${p.id === hostId ? ` <small>${esc(tr("hostNow"))}</small>` : ""}</span></label>`)
+      .join("");
+    dlg.innerHTML = `${head(tr("hostTitle", { game: tableName(t) }))}
+      <form class="ev-form" data-host-form novalidate>
+        <fieldset class="ev-field"><legend>${esc(tr("hostWho"))}</legend><div class="ev-leave-list">${opts}</div></fieldset>
+        ${errLine()}
+        <div class="form-actions"><button class="btn ghost" type="button" data-close>${esc(tr("cancel"))}</button><button class="btn" type="submit"${busy ? " disabled" : ""}>${esc(busy ? tr("saving") : tr("hostSave"))}</button></div>
+      </form>`;
+  }
+  async function submitHost() {
+    readForm();
+    D.err = "";
+    const t = ev && ev.event_tables.find((x) => x.id === D.table);
+    const p = t && t.event_players.find((x) => String(x.id) === String(D.host));
+    if (!p) return closeDialog();
+    if (p.id === t.host_player) return closeDialog(); // nothing changes
+    await submit(async () => {
+      if (!(await HVLoans.setTableHost(t.id, p.id))) throw Object.assign(new Error("gone"), { code: "host-gone" });
+      flash = { text: tr("hostSaved", { name: p.name }), ok: true };
+    });
+  }
   async function submitLeave() {
     readForm();
     D.err = "";
@@ -1049,25 +1185,28 @@
     if (D.mode === "join") D.name = v("name");
     if (D.mode === "time") D.time = v("time");
     if (D.mode === "leave") D.next = (f.querySelector("input[name=next]:checked") || {}).value || "";
+    if (D.mode === "host") D.host = (f.querySelector("input[name=host]:checked") || {}).value || "";
     if (D.mode === "event") {
-      Object.assign(D, { title: v("title"), date: v("date"), time: v("time"), desc: v("desc") });
-      if (f.elements.lead) D.lead = f.elements.lead.value;
+      Object.assign(D, { title: v("title"), date: v("date"), time: v("time"), end: v("end"), place: v("place"), map: v("map") });
+      if (f.querySelector("[data-rich]")) D.desc = HVRich.value(f.querySelector("[data-rich]"));
       if (f.elements.tpl) D.tplSel = f.elements.tpl.value;
-      if (f.querySelector("[data-deps]")) D.deps = [...f.querySelectorAll("input[name=dep]:checked")].map((x) => x.value);
+      // Chosen organizers in order, without gaps or repeats.
+      if (f.querySelector("[data-slots]")) D.slots = [...new Set([...f.querySelectorAll("select[name=slot]")].map((x) => x.value).filter(Boolean))];
     }
     if (D.mode === "staff") Object.assign(D, { name: v("name"), phone: v("phone"), wechat: v("wechat"), xhs: v("xhs") });
   }
   function openEventForm(e) {
-    const lead = e && (e.event_staff || []).find((x) => x.is_lead);
     openDialog({
       mode: "event",
       id: e ? e.id : null,
       title: e ? e.title : "",
       date: e ? e.event_date : todayYmd(),
       time: e ? fmtTime(e.start_time) : "",
+      end: e ? fmtTime(e.end_time) : "",
+      place: e ? e.location || "" : "",
+      map: e ? e.map_url || "" : "",
       desc: e ? e.description : "",
-      lead: lead ? String(lead.staff_id ?? (lead.staff && lead.staff.id) ?? "") : "",
-      deps: e ? e.event_staff.filter((x) => !x.is_lead && x.staff).map((x) => String(x.staff.id)) : [],
+      slots: e ? (e.event_staff || []).filter((x) => x.staff).map((x) => String(x.staff.id)) : [], // already in order
       staff: null,
       tpls: null,
       tplSel: "",
@@ -1200,16 +1339,30 @@
     const title = String(D.title || "").trim();
     if (!title) D.err = tr("needTitle");
     else if (!/^\d{4}-\d{2}-\d{2}$/.test(D.date || "")) D.err = tr("needDate");
+    else if (D.end && !D.time) D.err = tr("needStart");
+    else if (String(D.desc || "").length > 20000) D.err = tr("descTooLong");
+    else if ((D.map = cleanMapUrl(D.map)) && !/^https:\/\/\S+$/i.test(D.map)) D.err = tr("badMap");
     else if (!D.staff) D.err = tr("loading");
     else if (!D.staff.length) D.err = tr("noStaffYet");
-    else if (!D.lead) D.err = tr("needLead");
+    else if (!D.slots.length) D.err = tr("needLead");
     if (D.err) return renderDialog();
     const wasNew = !D.id;
-    const lead = Number(D.lead);
-    const deps = D.deps.map(Number).filter((x) => x && x !== lead);
+    const lead = Number(D.slots[0]); // 负责人1 (stored as the main organizer); the rest keep their order
+    const deps = D.slots.slice(1).map(Number);
     const state = D;
     await submit(async () => {
-      const row = await HVLoans.saveEvent({ title, event_date: state.date, start_time: state.time || null, description: String(state.desc || "").trim() }, state.id);
+      const row = await HVLoans.saveEvent(
+        {
+          title,
+          event_date: state.date,
+          start_time: state.time || null,
+          end_time: state.end || null,
+          location: String(state.place || "").trim().slice(0, 200),
+          map_url: state.map || "",
+          description: String(state.desc || "").trim(),
+        },
+        state.id
+      );
       state.id = row.id; // a retry after a failed organizer save changes this event instead of adding another
       await HVLoans.setEventStaff(row.id, lead, deps);
       if (wasNew) location.href = `events.html?id=${row.id}`;
@@ -1326,6 +1479,11 @@
         if (!ok) throw Object.assign(new Error("not host"), { code: "not-host" });
       }, tr("tableDeleted"));
     }
+    if (b.dataset.changeHost) {
+      const t = tableOf(b.dataset.changeHost);
+      if (t) openDialog({ mode: "host", table: t.id, host: String(t.host_player != null ? t.host_player : t.event_players[0].id), err: "" });
+      return;
+    }
     if (b.dataset.editTime) {
       const t = tableOf(b.dataset.editTime);
       if (t) openDialog({ mode: "time", table: t.id, time: fmtTime(t.start_time), err: "" });
@@ -1367,7 +1525,7 @@
   dlg.addEventListener("change", async (e) => {
     if (!D) return;
     const t = e.target;
-    if (t.name === "lead") {
+    if (t.name === "slot") {
       readForm();
       return renderDialog();
     }
@@ -1388,8 +1546,10 @@
       if (D === state) renderDialog();
     }
   });
+  // Forms close only with ✕ or 取消, so a stray click outside (or Esc) doesn't lose what was typed.
+  // The enlarged QR code isn't a form: a click outside or Esc closes it.
   dlg.addEventListener("click", (e) => {
-    if (e.target === dlg || e.target.closest("[data-close]")) return closeDialog();
+    if (e.target.closest("[data-close]") || (e.target === dlg && D && D.mode === "qr")) return closeDialog();
     if (e.target.closest("[data-tpl-save]") && D) return void saveTemplate();
     if (e.target.closest("[data-tpl-delete]") && D) return void deleteTemplate();
     const rm = e.target.closest("[data-qr-remove]");
@@ -1434,8 +1594,12 @@
     if (f.hasAttribute("data-staff-form")) return void submitStaff();
     if (f.hasAttribute("data-time-form")) return void submitTime();
     if (f.hasAttribute("data-leave-form")) return void submitLeave();
+    if (f.hasAttribute("data-host-form")) return void submitHost();
   });
   // "close" arrives a moment later, so ignore it if another dialog has been opened since.
+  dlg.addEventListener("cancel", (e) => {
+    if (!D || D.mode !== "qr") e.preventDefault();
+  });
   dlg.addEventListener("close", () => {
     if (!dlg.open && !busy) D = null;
   });
@@ -1449,7 +1613,7 @@
     bar.hidden = !show;
     if (!show) return void (bar.innerHTML = "");
     bar.innerHTML = isAdmin
-      ? `<span class="admin-who" title="${esc(HVLoans.user)}">${esc(HVLoans.user)}</span><button class="admin-btn" type="button" data-signout>${esc(tr("adminSignOut"))}</button>`
+      ? `<span class="admin-who" title="${esc(HVLoans.user)}">${esc(HVLoans.user)}</span>` // signing out: the header button (js/account-link.js)
       : `<button class="admin-btn" type="button" data-signin>${esc(tr("adminLogin"))}</button>`;
   }
   function renderLogin() {
@@ -1463,18 +1627,13 @@
     if (e.target.closest("[data-signin]")) {
       $("login-error").textContent = "";
       $("login").showModal();
-    } else if (e.target.closest("[data-signout]")) {
-      HVLoans.signOut();
-      isAdmin = false;
-      staffRows = null;
-      profileName = "";
-      render();
-      window.dispatchEvent(new Event("hv-auth-change"));
     }
   });
+  // Like the other forms: closes only with 取消.
   $("login").addEventListener("click", (e) => {
-    if (e.target === $("login") || e.target.closest("[data-login-cancel]")) $("login").close();
+    if (e.target.closest("[data-login-cancel]")) $("login").close();
   });
+  $("login").addEventListener("cancel", (e) => e.preventDefault());
   $("login-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     const f = e.target.elements;

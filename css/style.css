@@ -270,13 +270,19 @@ dialog article { padding: 0 24px 28px; }
 .btn.ghost { background: transparent; color: var(--accent); }
 .btn:disabled { opacity: 0.6; cursor: wait; }
 .link-btn { padding: 0; border: none; background: none; color: var(--accent); font: inherit; text-decoration: underline; cursor: pointer; }
+/* Every 退出登录 / Sign out button is red so it's easy to find. */
+/* The same deep red in light and dark mode, so the white text stays readable. */
+.admin-btn.signout, .btn.signout { border-color: #c0392b; background: #c0392b; color: #fff; }
+.admin-btn.signout:hover, .btn.signout:hover { border-color: #a93226; background: #a93226; }
+.admin-btn.signout[hidden] { display: none; }
+.link-btn.signout { color: var(--danger); font-weight: 600; }
 .admin-bar { display: flex; align-items: center; gap: 8px; }
 .admin-bar[hidden] { display: none; }
 .admin-who { color: var(--muted); font-size: 0.85rem; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 @media (max-width: 520px) {
   .admin-who { display: none; }
   .title-row { flex-wrap: wrap; row-gap: 8px; }
-  .header-actions { gap: 6px; order: -1; width: 100%; justify-content: flex-end; }
+  .header-actions { gap: 6px; order: -1; width: 100%; justify-content: flex-end; flex-wrap: wrap; }
   .header-actions .lang-toggle, .header-actions .admin-btn { min-width: 0; padding: 6px 10px; font-size: 0.85rem; }
 }
 

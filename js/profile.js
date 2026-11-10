@@ -272,7 +272,7 @@
       </div>
       <p class="pf-bio${profile.bio ? "" : " is-empty"}">${esc(profile.bio || tr("noBio"))}</p>
       ${flash ? `<p class="ac-msg is-ok" role="status">${esc(flash)}</p>` : ""}
-      ${own && !editing ? `<div class="ac-actions"><button class="btn" type="button" data-edit>${esc(tr("edit"))}</button><a class="btn ghost" href="account.html">${esc(tr("account"))}</a><button class="btn ghost" type="button" data-signout>${esc(tr("signOut"))}</button></div>` : ""}
+      ${own && !editing ? `<div class="ac-actions"><button class="btn" type="button" data-edit>${esc(tr("edit"))}</button><a class="btn ghost" href="account.html">${esc(tr("account"))}</a><button class="btn signout" type="button" data-signout>${esc(tr("signOut"))}</button></div>` : ""}
     </section>`;
   }
 

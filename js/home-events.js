@@ -48,13 +48,15 @@
     const rel = n === 0 ? tr("today") : n === 1 ? tr("tomorrow") : tr("inDays", { n });
     const tables = e.event_tables || [];
     const people = tables.reduce((s, t) => s + (t.event_players || []).length, 0);
-    const lead = (e.event_staff || []).find((x) => x.is_lead && x.staff);
+    // 负责人1 (or, if that person was deleted, the first one left).
+    const lead = (e.event_staff || []).filter((x) => x.staff).sort((a, b) => b.is_lead - a.is_lead || a.sort - b.sort)[0];
     const when = new Intl.DateTimeFormat(locale(), { month: HVI18n.lang === "zh" ? "long" : "short", day: "numeric", weekday: "short" }).format(d);
     return `<a class="he-card" href="events.html?id=${e.id}">
       <span class="he-cal" aria-hidden="true"><small>${esc(new Intl.DateTimeFormat(locale(), { month: "short" }).format(d))}</small><b>${d.getDate()}</b></span>
       <span class="he-body">
         <span class="he-name">${esc(e.title)}</span>
-        <span class="he-when">${esc(when)}${e.start_time ? ` · ${esc(e.start_time.slice(0, 5))}` : ""} <span class="he-rel${n <= 1 ? " is-now" : ""}">${esc(rel)}</span></span>
+        <span class="he-when">${esc(when)}${e.start_time ? ` · ${esc(e.start_time.slice(0, 5))}${e.end_time ? "–" + esc(e.end_time.slice(0, 5)) : ""}` : ""} <span class="he-rel${n <= 1 ? " is-now" : ""}">${esc(rel)}</span></span>
+        ${e.location ? `<span class="he-meta">📍 ${esc(e.location)}</span>` : ""}
         <span class="he-meta">${esc(tables.length ? tr("tables", { n: tables.length, p: people }) : tr("noTables"))}</span>
         ${lead ? `<span class="he-meta">${esc(tr("lead", { name: lead.staff.name }))}</span>` : ""}
       </span>

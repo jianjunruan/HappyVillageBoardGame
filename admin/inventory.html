@@ -543,7 +543,7 @@
         await load();
         $("status").hidden = true;
         $("app").hidden = false;
-        $("who").innerHTML = `管理员 Admin：${esc(HVLoans.user)} · <button class="link-btn" type="button" id="signout">退出 Sign out</button>`;
+        $("who").innerHTML = `管理员 Admin：${esc(HVLoans.user)} · <button class="link-btn signout" type="button" id="signout">退出登录 Sign out</button>`;
         $("signout").onclick = () => { HVLoans.signOut(); location.reload(); };
         render();
       }

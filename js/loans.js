@@ -338,20 +338,20 @@ window.HVLoans = (() => {
       if (!rows.length) throw Object.assign(new Error("Nothing deleted"), { code: "nothing-updated" });
     },
     // ---------- events and sign-ups (events.html) ----------
-    // Every event with its tables and how many joined each: [{ id, title, event_date, start_time, description,
+    // Every event with its tables and how many joined each: [{ id, title, event_date, start_time, end_time, location, description,
     // event_tables: [{ id, on_site, max_players, event_players: [{ id }] }] }], soonest first.
     events: () =>
       request("/rest/v1/events?order=event_date.asc,start_time.asc.nullsfirst,id.asc" +
-        "&select=id,title,event_date,start_time,description,event_tables(id,game_id,game_name,on_site,max_players,event_players(id))"),
+        "&select=id,title,event_date,start_time,end_time,location,description,event_tables(id,game_id,game_name,on_site,max_players,event_players(id))"),
     // The next upcoming events (from `fromDay`, "YYYY-MM-DD"), with their tables and main organizer, for the home page.
     upcomingEvents: (fromDay, limit = 2) =>
       request(`/rest/v1/events?event_date=gte.${fromDay}&order=event_date.asc,start_time.asc.nullsfirst,id.asc&limit=${limit}` +
-        "&select=id,title,event_date,start_time,event_tables(id,event_players(id)),event_staff(is_lead,staff(name))"),
+        "&select=id,title,event_date,start_time,end_time,location,event_tables(id,event_players(id)),event_staff(is_lead,sort,staff(name))"),
     // One event with its tables, players and organizers, or null. Organizers are null for visitors once the event is
     // over (see the staff policy in schema.sql).
     async event(id) {
       const rows = await request(`/rest/v1/events?id=eq.${encodeURIComponent(id)}` +
-        "&select=id,title,event_date,start_time,description," +
+        "&select=id,title,event_date,start_time,end_time,location,map_url,description," +
         "event_tables(id,game_id,game_name,on_site,max_players,note,created_at,start_time,host_player,event_players(id,name,joined_at))," +
         "event_staff(is_lead,sort,staff(id,name,phone,wechat,xhs,wechat_qr,xhs_qr))", { admin: "ifSignedIn" });
       const ev = rows[0] || null;
@@ -366,7 +366,7 @@ window.HVLoans = (() => {
       }
       return ev;
     },
-    // fields: { title, event_date, start_time, description }. With an id it changes that event. Admins only.
+    // fields: { title, event_date, start_time, end_time, location, map_url, description }. With an id it changes that event. Admins only.
     async saveEvent(fields, id = null) {
       const rows = await request(id ? `/rest/v1/events?id=eq.${encodeURIComponent(id)}` : "/rest/v1/events", {
         method: id ? "PATCH" : "POST",
@@ -412,6 +412,9 @@ window.HVLoans = (() => {
         admin: "ifSignedIn",
         body: nextId ? { p_player: playerId, p_token: token, p_next: nextId } : { p_player: playerId, p_token: token },
       }),
+    // Admins: make another player at the table its host. Returns false if that player isn't at the table (any more).
+    setTableHost: (tableId, playerId) =>
+      request("/rest/v1/rpc/set_event_table_host", { method: "POST", admin: true, body: { p_table: tableId, p_player: playerId } }),
     // Admins: change a table (any of { game_name, on_site, max_players, note }), remove a table or one player.
     async updateTable(id, changes) {
       const rows = await request(`/rest/v1/event_tables?id=eq.${encodeURIComponent(id)}&select=id`, {
@@ -438,12 +441,12 @@ window.HVLoans = (() => {
       return rows[0];
     },
     deleteStaff: (id) => adminDelete("staff", id),
-    // Event templates (a saved name and description), admins only.
-    templates: () => request("/rest/v1/event_templates?select=id,title,description&order=title.asc,id.asc", { admin: true }),
-    // fields: { title, description }. With an id it replaces that template.
+    // Event templates (a saved name, description, times, place and map link), admins only.
+    templates: () => request("/rest/v1/event_templates?select=id,title,description,start_time,end_time,location,map_url&order=title.asc,id.asc", { admin: true }),
+    // fields: { title, description, start_time, end_time, location, map_url }. With an id it replaces that template.
     async saveTemplate(fields, id = null) {
       const body = id ? { ...fields, updated_at: new Date().toISOString() } : fields;
-      const rows = await request(id ? `/rest/v1/event_templates?id=eq.${encodeURIComponent(id)}&select=id,title,description` : "/rest/v1/event_templates?select=id,title,description", {
+      const rows = await request(id ? `/rest/v1/event_templates?id=eq.${encodeURIComponent(id)}&select=id,title,description,start_time,end_time,location,map_url` : "/rest/v1/event_templates?select=id,title,description,start_time,end_time,location,map_url", {
         method: id ? "PATCH" : "POST",
         admin: true,
         prefer: "return=representation",

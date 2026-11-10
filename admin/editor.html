@@ -131,7 +131,7 @@
           who.hidden = false;
           who.innerHTML = "";
           who.append(`管理员 Admin：${HVLoans.user} · `);
-          const out = Object.assign(document.createElement("button"), { type: "button", className: "link-btn", textContent: "退出 Sign out" });
+          const out = Object.assign(document.createElement("button"), { type: "button", className: "link-btn signout", textContent: "退出登录 Sign out" });
           out.onclick = () => { HVLoans.signOut(); lock(); };
           who.append(out);
         }
