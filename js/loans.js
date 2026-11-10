@@ -320,7 +320,10 @@ window.HVLoans = (() => {
           p_start_time: table.start_time || null,
         },
       }),
-    // Deletes a table this browser opened. Returns false if it didn't open it.
+    // Changes a table's start time ("HH:MM" or null) as its current host. Returns false if this browser isn't the host.
+    setTableTime: (tableId, token, time) =>
+      request("/rest/v1/rpc/set_event_table_time", { method: "POST", body: { p_table: tableId, p_token: token, p_start_time: time || null } }),
+    // Deletes a table this browser is the host of. Returns false if it isn't.
     deleteOwnTable: (tableId, token) =>
       request("/rest/v1/rpc/delete_event_table", { method: "POST", body: { p_table: tableId, p_token: token } }),
     // Returns the new player id.

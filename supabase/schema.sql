@@ -339,6 +339,33 @@ create table if not exists public.event_players (
 create index if not exists event_players_by_table on public.event_players (table_id);
 create unique index if not exists event_players_one_name on public.event_players (table_id, lower(trim(name)));
 
+-- Tables opened before the host was recorded: the first person who joined is the host.
+update public.event_tables t
+set host_player = p.id, host_token = p.token
+from (select distinct on (table_id) id, table_id, token from public.event_players order by table_id, joined_at, id) p
+where p.table_id = t.id and t.host_player is null;
+
+-- When the host leaves (or an admin removes them), the next person by joining order becomes the host, and so on.
+create or replace function public.pass_event_table_host()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  nxt record;
+begin
+  if exists (select 1 from public.event_tables where id = old.table_id and host_player = old.id) then
+    select id, token into nxt from public.event_players where table_id = old.table_id order by joined_at, id limit 1;
+    update public.event_tables set host_player = nxt.id, host_token = nxt.token where id = old.table_id;  -- null when empty
+  end if;
+  return old;
+end;
+$$;
+drop trigger if exists event_players_pass_host on public.event_players;
+create trigger event_players_pass_host after delete on public.event_players
+  for each row execute function public.pass_event_table_host();
+
 -- Checks shared by the sign-up functions: the event exists and is not over (one day of slack for time zones),
 -- and at most 60 sign-ups a minute across the site.
 create or replace function public.event_signup_guard(p_event bigint)
@@ -422,8 +449,8 @@ begin
 end;
 $$;
 
--- Leaves a table (only with the secret used to join). Returns true if it worked. Leaving never deletes someone
--- else's table: only when the person who opened it leaves and nobody is left is the table removed.
+-- Leaves a table (only with the secret used to join). Returns true if it worked. If the host leaves, the next person
+-- becomes the host (trigger above), so the last one to leave is always the host, and then the table is removed.
 create or replace function public.leave_event_table(p_player bigint, p_token text)
 returns boolean
 language plpgsql
@@ -437,9 +464,27 @@ begin
   if t is null then
     return false;
   end if;
-  delete from public.event_tables
-  where id = t and host_token = p_token and not exists (select 1 from public.event_players where table_id = t);
+  delete from public.event_tables where id = t and not exists (select 1 from public.event_players where table_id = t);
   return true;
+end;
+$$;
+
+-- Changes a table's start time (null clears it); only the current host's browser (admins change tables directly).
+-- Returns true if it worked, false if this browser isn't the host.
+create or replace function public.set_event_table_time(p_table bigint, p_token text, p_start_time time)
+returns boolean
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  t bigint;
+begin
+  if p_token is null or char_length(p_token) < 16 then
+    return false;
+  end if;
+  update public.event_tables set start_time = p_start_time where id = p_table and host_token = p_token returning id into t;
+  return t is not null;
 end;
 $$;
 
@@ -496,13 +541,15 @@ grant select (id, table_id, name, joined_at) on public.event_players to anon, au
 grant insert (title, event_date, start_time, description) on public.events to authenticated;
 grant update (title, event_date, start_time, description) on public.events to authenticated;
 grant delete on public.events to authenticated;
-grant update (game_name, on_site, max_players, note) on public.event_tables to authenticated;
+grant update (game_name, on_site, max_players, note, start_time) on public.event_tables to authenticated;  -- admins only (policy)
 grant delete on public.event_tables, public.event_players to authenticated;
 revoke execute on function public.event_signup_guard(bigint) from public, anon, authenticated;
 revoke execute on function public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time) from public;
 revoke execute on function public.join_event_table(bigint, text, text) from public;
 revoke execute on function public.leave_event_table(bigint, text) from public;
 revoke execute on function public.delete_event_table(bigint, text) from public;
+revoke execute on function public.set_event_table_time(bigint, text, time) from public;
+grant execute on function public.set_event_table_time(bigint, text, time) to anon, authenticated;
 grant execute on function public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time) to anon, authenticated;
 grant execute on function public.join_event_table(bigint, text, text) to anon, authenticated;
 grant execute on function public.leave_event_table(bigint, text) to anon, authenticated;

@@ -69,8 +69,14 @@
       tableTime: "几点开（可不填）",
       deleteOwn: "删除这桌",
       deleteOwnConfirm: "删除你开的「{game}」这一桌？已加入的人也会一起移除。",
-      notHost: "只有开桌的人或管理员可以删除这一桌。",
+      notHost: "只有这一桌的开桌人或管理员可以这样做（开桌人可能已经换人了）。",
       tableDeleted: "✓ 已删除这一桌",
+      editTime: "修改时间",
+      timeTitle: "「{game}」几点开",
+      timeHint: "清空表示不定时间。",
+      timeSave: "💾 保存时间",
+      timeSaved: "✓ 时间已更新",
+      leaveHandOver: "你是开桌人，退出后由「{name}」接手。",
       // dialogs
       close: "关闭",
       cancel: "取消",
@@ -239,8 +245,14 @@
       tableTime: "Start time (optional)",
       deleteOwn: "Delete table",
       deleteOwnConfirm: "Delete your {game} table? Everyone who joined is removed too.",
-      notHost: "Only the person who opened this table, or an admin, can delete it.",
+      notHost: "Only this table's host or an admin can do that (the host may have changed).",
       tableDeleted: "✓ Table deleted",
+      editTime: "Change time",
+      timeTitle: "When does {game} start?",
+      timeHint: "Leave it empty for no set time.",
+      timeSave: "💾 Save time",
+      timeSaved: "✓ Time updated",
+      leaveHandOver: "You're the host. {name} will take over after you leave.",
       close: "Close",
       cancel: "Cancel",
       pickGame: "Pick a game",
@@ -388,9 +400,6 @@
   let mine = new Set(store.get("hv-event-mine", []));
   const saveMine = () => store.set("hv-event-mine", [...mine].slice(-300));
   const myName = () => store.get("hv-event-name", "");
-  // Tables this browser opened: it can delete them (the database checks the browser's secret too).
-  let hosted = new Set(store.get("hv-event-hosted", []));
-  const saveHosted = () => store.set("hv-event-hosted", [...hosted].slice(-300));
 
   // ---------- dates ----------
   const pad = (n) => String(n).padStart(2, "0");
@@ -579,8 +588,9 @@
     const seat = t.max_players != null ? tr("seats", { n: players.length, max: t.max_players }) : tr("seatsOpen", { n: players.length });
     const title = g ? `<a href="index.html#/game/${encodeURIComponent(g.id)}">${esc(name)}</a>` : esc(name);
     // Tables from before the host was recorded: the first to join opened it.
+    // The current host (the one who opened it, or whoever took over after they left).
     const hostId = t.host_player != null ? t.host_player : players[0] && players[0].id;
-    const iOpened = hosted.has(t.id);
+    const iHost = hostId != null && mine.has(hostId);
     const chips = players
       .map((p) => {
         const me = mine.has(p.id);
@@ -611,8 +621,12 @@
         <div class="ev-table-act">${action}</div>
       </div>
       <div class="ev-players">${chips}</div>
-      ${iOpened && !isAdmin && !over ? `<div class="ev-admin-row"><button class="link-btn" type="button" data-delete-own="${t.id}">${esc(tr("deleteOwn"))}</button></div>` : ""}
+      ${iHost && !isAdmin && !over ? `<div class="ev-admin-row">
+        <button class="link-btn" type="button" data-edit-time="${t.id}">${esc(tr("editTime"))}</button>
+        <button class="link-btn" type="button" data-delete-own="${t.id}">${esc(tr("deleteOwn"))}</button>
+      </div>` : ""}
       ${isAdmin ? `<div class="ev-admin-row">
+        <button class="link-btn" type="button" data-edit-time="${t.id}">${esc(tr("editTime"))}</button>
         <button class="link-btn" type="button" data-toggle-site="${t.id}" data-on="${t.on_site ? 1 : 0}">${esc(tr(t.on_site ? "markNotOnSite" : "markOnSite"))}</button>
         <button class="link-btn" type="button" data-delete-table="${t.id}">${esc(tr("deleteTable"))}</button>
       </div>` : ""}
@@ -717,6 +731,7 @@
     if (D.mode === "event") return renderEventForm();
     if (D.mode === "staff") return renderStaffForm();
     if (D.mode === "qr") return renderQr();
+    if (D.mode === "time") return renderTimeForm();
   }
 
   const norm = (s) => String(s || "").toLowerCase().replace(/[\s·:：\-–—'’!！?？.,，、()（）]/g, "");
@@ -926,6 +941,29 @@
         <div class="form-actions"><button class="btn ghost" type="button" data-close>${esc(tr("cancel"))}</button><button class="btn" type="submit"${busy ? " disabled" : ""}>${esc(busy ? tr("saving") : tr("staffSave"))}</button></div>
       </form>`;
   }
+  // A table's start time (its host or an admin).
+  function renderTimeForm() {
+    const t = ev && ev.event_tables.find((x) => x.id === D.table);
+    if (!t) return closeDialog();
+    dlg.innerHTML = `${head(tr("timeTitle", { game: tableName(t) }))}
+      <form class="ev-form" data-time-form novalidate>
+        <label class="ev-field ev-time"><span>${esc(tr("tableTime"))}</span><input name="time" type="time" value="${esc(D.time || "")}" autofocus></label>
+        <p class="ev-hint">${esc(tr("timeHint"))}</p>
+        ${errLine()}
+        <div class="form-actions"><button class="btn ghost" type="button" data-close>${esc(tr("cancel"))}</button><button class="btn" type="submit"${busy ? " disabled" : ""}>${esc(busy ? tr("saving") : tr("timeSave"))}</button></div>
+      </form>`;
+  }
+  async function submitTime() {
+    readForm();
+    D.err = "";
+    const id = D.table;
+    const time = D.time || null;
+    await submit(async () => {
+      if (isAdmin) await HVLoans.updateTable(id, { start_time: time });
+      else if (!(await HVLoans.setTableTime(id, token(), time))) throw Object.assign(new Error("not host"), { code: "not-host" });
+      flash = { text: tr("timeSaved"), ok: true };
+    });
+  }
   function renderQr() {
     dlg.innerHTML = `${head(D.title)}
       <img class="ev-qr-big" src="${esc(D.url)}" alt="${esc(D.title)}">
@@ -958,6 +996,7 @@
     const v = (n) => (f.elements[n] ? f.elements[n].value : undefined);
     if (D.mode === "open") Object.assign(D, { onSite: v("site") === "1", time: v("time"), max: v("max"), note: v("note"), name: v("name") });
     if (D.mode === "join") D.name = v("name");
+    if (D.mode === "time") D.time = v("time");
     if (D.mode === "event") {
       Object.assign(D, { title: v("title"), date: v("date"), time: v("time"), desc: v("desc") });
       if (f.elements.lead) D.lead = f.elements.lead.value;
@@ -1088,8 +1127,6 @@
       );
       store.set("hv-event-name", name);
       rememberMine(r.player_id);
-      hosted.add(r.table_id);
-      saveHosted();
       flash = null;
     });
   }
@@ -1215,8 +1252,11 @@
     if (b.dataset.join) return openDialog({ mode: "join", table: Number(b.dataset.join), name: myName(), err: "" });
     if (b.dataset.leave) {
       const t = tableOf(b.dataset.table);
-      if (!confirm(tr("leaveConfirm", { game: t ? tableName(t) : "" }))) return;
       const pid = Number(b.dataset.leave);
+      // The host leaving hands the table to the next person who joined.
+      const next = t && t.host_player === pid && t.event_players.find((p) => p.id !== pid);
+      const msg = tr("leaveConfirm", { game: t ? tableName(t) : "" }) + (next ? "\n" + tr("leaveHandOver", { name: next.name }) : "");
+      if (!confirm(msg)) return;
       return void act(async () => {
         const ok = await HVLoans.leaveTable(pid, token());
         mine.delete(pid);
@@ -1230,10 +1270,13 @@
       const id = Number(b.dataset.deleteOwn);
       return void act(async () => {
         const ok = await HVLoans.deleteOwnTable(id, token());
-        hosted.delete(id);
-        saveHosted();
         if (!ok) throw Object.assign(new Error("not host"), { code: "not-host" });
       }, tr("tableDeleted"));
+    }
+    if (b.dataset.editTime) {
+      const t = tableOf(b.dataset.editTime);
+      if (t) openDialog({ mode: "time", table: t.id, time: fmtTime(t.start_time), err: "" });
+      return;
     }
     if (b.dataset.removePlayer) {
       if (!confirm(tr("removeConfirm", { name: b.dataset.name }))) return;
@@ -1336,6 +1379,7 @@
     if (f.hasAttribute("data-join-form")) return void submitJoin();
     if (f.hasAttribute("data-event-form")) return void submitEvent();
     if (f.hasAttribute("data-staff-form")) return void submitStaff();
+    if (f.hasAttribute("data-time-form")) return void submitTime();
   });
   // "close" arrives a moment later, so ignore it if another dialog has been opened since.
   dlg.addEventListener("close", () => {
