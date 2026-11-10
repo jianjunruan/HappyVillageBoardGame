@@ -404,9 +404,14 @@ window.HVLoans = (() => {
     // Returns the new player id.
     joinTable: (tableId, name, token) =>
       request("/rest/v1/rpc/join_event_table", { method: "POST", admin: "ifSignedIn", body: { p_table: tableId, p_name: name, p_token: token } }),
-    // Returns true if this browser's sign-up was removed.
-    leaveTable: (playerId, token) =>
-      request("/rest/v1/rpc/leave_event_table", { method: "POST", admin: "ifSignedIn", body: { p_player: playerId, p_token: token } }),
+    // Returns true if this browser's sign-up was removed. A host can name the player who takes over (nextId);
+    // without one, the next person who joined does.
+    leaveTable: (playerId, token, nextId) =>
+      request("/rest/v1/rpc/leave_event_table", {
+        method: "POST",
+        admin: "ifSignedIn",
+        body: nextId ? { p_player: playerId, p_token: token, p_next: nextId } : { p_player: playerId, p_token: token },
+      }),
     // Admins: change a table (any of { game_name, on_site, max_players, note }), remove a table or one player.
     async updateTable(id, changes) {
       const rows = await request(`/rest/v1/event_tables?id=eq.${encodeURIComponent(id)}&select=id`, {

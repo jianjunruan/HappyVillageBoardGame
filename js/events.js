@@ -76,7 +76,11 @@
       timeHint: "清空表示不定时间。",
       timeSave: "💾 保存时间",
       timeSaved: "✓ 时间已更新",
-      leaveHandOver: "你是开桌人，退出后由「{name}」接手。",
+      leaveTitle: "退出「{game}」这一桌",
+      leaveWho: "你是开桌人，退出后谁来接手？",
+      leaveDefault: "不指定：按加入顺序，由「{name}」接手",
+      leaveSubmit: "确认退出",
+      leaving: "正在退出…",
       // dialogs
       close: "关闭",
       cancel: "取消",
@@ -253,7 +257,11 @@
       timeHint: "Leave it empty for no set time.",
       timeSave: "💾 Save time",
       timeSaved: "✓ Time updated",
-      leaveHandOver: "You're the host. {name} will take over after you leave.",
+      leaveTitle: "Leave the {game} table",
+      leaveWho: "You're the host. Who takes over after you leave?",
+      leaveDefault: "No preference: next to join, {name}",
+      leaveSubmit: "Leave",
+      leaving: "Leaving…",
       close: "Close",
       cancel: "Cancel",
       pickGame: "Pick a game",
@@ -742,6 +750,7 @@
     if (D.mode === "staff") return renderStaffForm();
     if (D.mode === "qr") return renderQr();
     if (D.mode === "time") return renderTimeForm();
+    if (D.mode === "leave") return renderLeaveForm();
   }
 
   const norm = (s) => String(s || "").toLowerCase().replace(/[\s·:：\-–—'’!！?？.,，、()（）]/g, "");
@@ -974,6 +983,38 @@
       flash = { text: tr("timeSaved"), ok: true };
     });
   }
+  // The host leaving a table with other players: pick who takes over, or leave it to joining order.
+  function renderLeaveForm() {
+    const t = ev && ev.event_tables.find((x) => x.id === D.table);
+    const others = t ? t.event_players.filter((p) => p.id !== D.player) : [];
+    if (!others.length) return closeDialog();
+    const opt = (value, label) =>
+      `<label class="ev-leave-opt"><input type="radio" name="next" value="${value}"${String(D.next) === String(value) ? " checked" : ""}><span>${esc(label)}</span></label>`;
+    dlg.innerHTML = `${head(tr("leaveTitle", { game: tableName(t) }))}
+      <form class="ev-form" data-leave-form novalidate>
+        <fieldset class="ev-field">
+          <legend>${esc(tr("leaveWho"))}</legend>
+          <div class="ev-leave-list">
+            ${opt("", tr("leaveDefault", { name: others[0].name }))}
+            ${others.map((p) => opt(p.id, p.name)).join("")}
+          </div>
+        </fieldset>
+        ${errLine()}
+        <div class="form-actions"><button class="btn ghost" type="button" data-close>${esc(tr("cancel"))}</button><button class="btn" type="submit"${busy ? " disabled" : ""}>${esc(busy ? tr("leaving") : tr("leaveSubmit"))}</button></div>
+      </form>`;
+  }
+  async function submitLeave() {
+    readForm();
+    D.err = "";
+    const pid = D.player;
+    const next = D.next ? Number(D.next) : null;
+    await submit(async () => {
+      const ok = await HVLoans.leaveTable(pid, token(), next);
+      mine.delete(pid);
+      saveMine();
+      if (!ok) throw Object.assign(new Error("gone"), { code: "leave-gone" });
+    });
+  }
   function renderQr() {
     dlg.innerHTML = `${head(D.title)}
       <img class="ev-qr-big" src="${esc(D.url)}" alt="${esc(D.title)}">
@@ -1007,6 +1048,7 @@
     if (D.mode === "open") Object.assign(D, { onSite: v("site") === "1", time: v("time"), max: v("max"), note: v("note"), name: v("name") });
     if (D.mode === "join") D.name = v("name");
     if (D.mode === "time") D.time = v("time");
+    if (D.mode === "leave") D.next = (f.querySelector("input[name=next]:checked") || {}).value || "";
     if (D.mode === "event") {
       Object.assign(D, { title: v("title"), date: v("date"), time: v("time"), desc: v("desc") });
       if (f.elements.lead) D.lead = f.elements.lead.value;
@@ -1263,10 +1305,11 @@
     if (b.dataset.leave) {
       const t = tableOf(b.dataset.table);
       const pid = Number(b.dataset.leave);
-      // The host leaving hands the table to the next person who joined.
-      const next = t && t.host_player === pid && t.event_players.find((p) => p.id !== pid);
-      const msg = tr("leaveConfirm", { game: t ? tableName(t) : "" }) + (next ? "\n" + tr("leaveHandOver", { name: next.name }) : "");
-      if (!confirm(msg)) return;
+      // The host leaving a table with others picks who takes over (default: the next person who joined).
+      if (t && t.host_player === pid && t.event_players.some((p) => p.id !== pid)) {
+        return openDialog({ mode: "leave", table: t.id, player: pid, next: "", err: "" });
+      }
+      if (!confirm(tr("leaveConfirm", { game: t ? tableName(t) : "" }))) return;
       return void act(async () => {
         const ok = await HVLoans.leaveTable(pid, token());
         mine.delete(pid);
@@ -1390,6 +1433,7 @@
     if (f.hasAttribute("data-event-form")) return void submitEvent();
     if (f.hasAttribute("data-staff-form")) return void submitStaff();
     if (f.hasAttribute("data-time-form")) return void submitTime();
+    if (f.hasAttribute("data-leave-form")) return void submitLeave();
   });
   // "close" arrives a moment later, so ignore it if another dialog has been opened since.
   dlg.addEventListener("close", () => {

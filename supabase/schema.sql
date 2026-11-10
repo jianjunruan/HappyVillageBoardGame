@@ -457,9 +457,11 @@ begin
 end;
 $$;
 
--- Leaves a table (only with the secret used to join). Returns true if it worked. If the host leaves, the next person
--- becomes the host (trigger above), so the last one to leave is always the host, and then the table is removed.
-create or replace function public.leave_event_table(p_player bigint, p_token text)
+-- Leaves a table (only with the secret used to join). Returns true if it worked. A host who leaves can hand the table
+-- to another player there (p_next); otherwise the next person by joining order becomes the host (trigger above), so
+-- the last one to leave is always the host, and then the table is removed.
+drop function if exists public.leave_event_table(bigint, text);
+create or replace function public.leave_event_table(p_player bigint, p_token text, p_next bigint default null)
 returns boolean
 language plpgsql
 security definer
@@ -467,14 +469,24 @@ set search_path = ''
 as $$
 declare
   t bigint;
+  nxt record;
 begin
   -- The browser's secret, or the signed-in account that signed up.
-  delete from public.event_players
+  select table_id into t from public.event_players
   where id = p_player and (token = p_token or (user_id is not null and user_id = auth.uid()))
-  returning table_id into t;
+  for update;
   if t is null then
     return false;
   end if;
+  -- The host chose who takes over: hand it over first, so the trigger leaves it alone.
+  if p_next is not null and p_next <> p_player
+     and exists (select 1 from public.event_tables where id = t and host_player = p_player) then
+    select id, token into nxt from public.event_players where id = p_next and table_id = t;
+    if nxt.id is not null then
+      update public.event_tables set host_player = nxt.id, host_token = nxt.token where id = t;
+    end if;
+  end if;
+  delete from public.event_players where id = p_player;
   delete from public.event_tables where id = t and not exists (select 1 from public.event_players where table_id = t);
   return true;
 end;
@@ -568,14 +580,14 @@ grant delete on public.event_tables, public.event_players to authenticated;
 revoke execute on function public.event_signup_guard(bigint) from public, anon, authenticated;
 revoke execute on function public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time) from public;
 revoke execute on function public.join_event_table(bigint, text, text) from public;
-revoke execute on function public.leave_event_table(bigint, text) from public;
+revoke execute on function public.leave_event_table(bigint, text, bigint) from public;
 revoke execute on function public.delete_event_table(bigint, text) from public;
 revoke execute on function public.set_event_table_time(bigint, text, time) from public;
 grant execute on function public.set_event_table_time(bigint, text, time) to anon, authenticated;
 revoke execute on function public.is_event_table_host(bigint, text, bigint, text) from public, anon, authenticated;
 grant execute on function public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time) to anon, authenticated;
 grant execute on function public.join_event_table(bigint, text, text) to anon, authenticated;
-grant execute on function public.leave_event_table(bigint, text) to anon, authenticated;
+grant execute on function public.leave_event_table(bigint, text, bigint) to anon, authenticated;
 grant execute on function public.delete_event_table(bigint, text) to anon, authenticated;
 
 -- ---------------------------------------------------------------------------------------------------------------

@@ -119,6 +119,13 @@ dialog.ev-sheet { width: min(560px, calc(100vw - 16px)); padding: 16px; }
 .ev-seg span { display: block; padding: 9px 12px; border: 1px solid var(--border); border-radius: 10px; text-align: center; color: var(--text); font-weight: 600; cursor: pointer; }
 .ev-seg input:checked + span { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
 .ev-seg input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 1px; }
+/* Host leaving: who takes over */
+.ev-leave-list { display: grid; gap: 8px; }
+.ev-leave-opt { position: relative; }
+.ev-leave-opt input { position: absolute; opacity: 0; pointer-events: none; }
+.ev-leave-opt span { display: block; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; color: var(--text); cursor: pointer; overflow-wrap: anywhere; }
+.ev-leave-opt input:checked + span { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.ev-leave-opt input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 1px; }
 
 /* organizers (负责人) */
 .ev-head-acts { display: flex; flex-wrap: wrap; gap: 8px; }
