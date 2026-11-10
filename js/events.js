@@ -646,8 +646,8 @@
       <div class="ev-staff-top"><b>${esc(s.name)}</b>${role ? `<span class="ev-role">${esc(tr(role))}</span>` : ""}</div>
       <ul class="ev-contact">
         ${s.phone ? `<li><span>📞 ${esc(tr("phone"))}</span><a href="tel:${esc(s.phone.replace(/[^\d+]/g, ""))}">${esc(s.phone)}</a></li>` : ""}
-        ${s.wechat ? `<li><span>💬 ${esc(tr("wechat"))}</span><b>${esc(s.wechat)}</b>${copyBtn(s.wechat)}</li>` : ""}
-        ${s.xhs ? `<li><span>📕 ${esc(tr("xhs"))}</span><b>${esc(s.xhs)}</b>${copyBtn(s.xhs)}</li>` : ""}
+        ${s.wechat ? `<li><span><img class="ev-ico-wx" src="images/wechat.svg" alt=""> ${esc(tr("wechat"))}</span><b>${esc(s.wechat)}</b>${copyBtn(s.wechat)}</li>` : ""}
+        ${s.xhs ? `<li><span><img class="ev-ico-xhs" src="images/xiaohongshu.png" alt=""> ${esc(tr("xhs"))}</span><b>${esc(s.xhs)}</b>${copyBtn(s.xhs)}</li>` : ""}
       </ul>
       ${qrs ? `<div class="ev-qrs">${qrs}</div>` : ""}
       ${admin ? `<p class="ev-admin-row"><button class="link-btn" type="button" data-staff-edit="${s.id}">${esc(tr("edit"))}</button><button class="link-btn" type="button" data-staff-delete="${s.id}">${esc(tr("delete"))}</button></p>` : ""}

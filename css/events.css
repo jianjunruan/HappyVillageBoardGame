@@ -163,3 +163,7 @@ p.ev-tpl { margin: 0; color: var(--muted); }
 .ev-tpl-save { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px; margin: -4px 0 0; }
 .ev-tpl-save .ev-msg { margin: 0; font-size: 0.88rem; }
 .ev-badge.is-time { background: var(--surface); color: var(--text); border-color: var(--accent); }
+/* WeChat logo: images/wechat.svg is the white mark from weixin.qq.com, shown on the green of its official favicon */
+.ev-ico-wx { display: inline-block; width: 1.25em; height: 1.25em; padding: 0.2em; border-radius: 0.3em; background: #1aad19; vertical-align: -0.3em; box-sizing: border-box; }
+/* Xiaohongshu logo: images/xiaohongshu.png is the official app icon (App Store, published by Xingin) */
+.ev-ico-xhs { display: inline-block; width: 1.25em; height: 1.25em; border-radius: 0.3em; vertical-align: -0.3em; }
