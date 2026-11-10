@@ -27,6 +27,7 @@
   let info = {}; // sets per location by game id: { present, storage }; games not listed have 1 set, present
   let loansFailed = false;
   let loansLoaded = false;
+  let adminOK = false; // the signed-in account is an admin (player accounts can be signed in too)
 
   // Sections and difficulty bands (BGG weight, 1–5), in display order.
   const CATEGORIES = ["euro", "american", "party", "card", "abstract", "family", "puzzle", "war", "roleplay"];
@@ -304,7 +305,7 @@
       box.innerHTML = `<p class="loan-status">${esc(t("loanLoadError"))}</p>`;
       return;
     }
-    const isAdmin = Boolean(HVLoans.user);
+    const isAdmin = adminOK;
     let admin = "";
     if (isAdmin) {
       const left = leftOf(g);
@@ -413,11 +414,11 @@
   // Not case-sensitive: ?admin=1, ?Admin=1 and ?ADMIN all work.
   const adminParam = [...new URLSearchParams(location.search).keys()].some((k) => k.toLowerCase() === "admin");
   function renderAdminBar() {
-    const show = HVLoans.enabled && (adminParam || Boolean(HVLoans.user));
+    const show = HVLoans.enabled && (adminParam || adminOK);
     els.adminBar.hidden = !show;
     if (!show) return void (els.adminBar.innerHTML = "");
     const who = HVLoans.user && esc(t("adminSignedIn", { email: HVLoans.user }));
-    els.adminBar.innerHTML = HVLoans.user
+    els.adminBar.innerHTML = adminOK
       ? `<span class="admin-who" title="${who}">${who}</span><a class="admin-btn" href="admin/inventory.html">${esc(t("inventory"))}</a><button class="admin-btn" type="button" data-signout title="${who}">${esc(t("adminSignOut"))}</button>`
       : `<button class="admin-btn" type="button" data-signin>${esc(t("adminLogin"))}</button>`;
   }
@@ -666,7 +667,9 @@
       els.login.showModal();
     } else if (e.target.closest("[data-signout]")) {
       HVLoans.signOut();
+      adminOK = false;
       renderAll();
+      window.dispatchEvent(new Event("hv-auth-change"));
     }
   });
   els.login.addEventListener("click", (e) => {
@@ -682,10 +685,13 @@
       if (!(await HVLoans.isAdmin())) {
         HVLoans.signOut();
         els.loginError.textContent = t("notAdmin");
+        window.dispatchEvent(new Event("hv-auth-change"));
         return;
       }
+      adminOK = true;
       els.login.close();
       renderAll();
+      window.dispatchEvent(new Event("hv-auth-change"));
     } catch (err) {
       els.loginError.textContent = t("signInError", { msg: err.message });
     }
@@ -695,14 +701,15 @@
   // Pick up loans made on another device when the tab comes back into view.
   document.addEventListener("visibilitychange", () => document.visibilityState === "visible" && refreshLoans());
 
-  // A remembered sign-in is re-checked on load, in case the account was removed from the admin list.
+  // A remembered sign-in may be an admin or a player account; only admins get the admin tools.
+  // (Asked of the database on every load, in case the account was removed from the admin list.)
   if (HVLoans.enabled && HVLoans.user) {
     HVLoans.isAdmin()
-      .then((ok) => ok || Promise.reject())
-      .catch(() => {
-        HVLoans.signOut();
+      .then((ok) => {
+        adminOK = ok;
         renderAll();
-      });
+      })
+      .catch(() => {});
   }
 
   renderAll();

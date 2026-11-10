@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>登录 / 注册 · 欢乐小镇桌游</title>
+  <meta name="description" content="登录或注册欢乐小镇桌游账号。Sign in or create a Happy Village Board Games account.">
+  <link rel="icon" href="images/favicon-48.png" type="image/png">
+  <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/account.css">
+</head>
+<body>
+  <!-- Sign in, sign up, password reset and the landing page for email links (see js/account.js) -->
+  <header class="site-header">
+    <div class="wrap">
+      <div class="title-row">
+        <h1><a class="ac-home" href="index.html"><img class="logo" src="images/logo.png" alt="" width="56" height="56"></a>
+          <span id="ac-title"></span></h1>
+        <div class="header-actions">
+          <a id="ac-back" class="admin-btn" href="index.html"></a>
+          <button id="lang-toggle" class="lang-toggle" type="button">EN</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap ac-main" id="ac-main" aria-live="polite"></main>
+
+  <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/loans.js"></script>
+  <script src="js/account.js"></script>
+</body>
+</html>

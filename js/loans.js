@@ -53,12 +53,34 @@ window.HVLoans = (() => {
       body: JSON.stringify(body),
     });
     const data = await parse(res);
+    keepSession(data);
+  }
+  function keepSession(data) {
     saveSession({
       access: data.access_token,
       refresh: data.refresh_token,
-      expires: Date.now() + data.expires_in * 1000,
+      expires: Date.now() + Number(data.expires_in || 3600) * 1000,
       email: data.user && data.user.email,
+      id: data.user && data.user.id,
     });
+  }
+  // The signed-in user's id: saved at sign-in, or read from the token for sign-ins saved by older versions.
+  function userIdOf(s) {
+    if (!s) return null;
+    if (s.id) return s.id;
+    try {
+      const part = s.access.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+      return JSON.parse(decodeURIComponent(escape(atob(part)))).sub || null;
+    } catch {
+      return null;
+    }
+  }
+  // Auth API calls (sign-up, password reset); redirectTo is where the email link opens.
+  async function auth(path, { method = "POST", body, token, redirectTo } = {}) {
+    const headers = { apikey: supabaseAnonKey, "Content-Type": "application/json" };
+    if (token) headers.Authorization = `Bearer ${token}`;
+    const q = redirectTo ? `${path.includes("?") ? "&" : "?"}redirect_to=${encodeURIComponent(redirectTo)}` : "";
+    return parse(await fetch(`${base}/auth/v1${path}${q}`, { method, headers, body: body ? JSON.stringify(body) : undefined }));
   }
 
   // Refreshes the login a minute before it expires; a failed refresh signs the admin out.
@@ -133,7 +155,59 @@ window.HVLoans = (() => {
     get user() {
       return session && session.email;
     },
+    get userId() {
+      return userIdOf(session);
+    },
     signIn: (email, password) => signInWith("password", { email, password }),
+    // ---------- player accounts ----------
+    // Returns { signedIn: true } when the account can be used at once, or { confirm: true } when Supabase sent a
+    // confirmation email first (the "Confirm email" setting).
+    async signUp(email, password, redirectTo) {
+      const data = await auth("/signup", { body: { email, password }, redirectTo });
+      if (data && data.access_token) {
+        keepSession(data);
+        return { signedIn: true };
+      }
+      return { confirm: true };
+    },
+    // Sends a password reset email; its link opens redirectTo signed in, to choose a new password.
+    sendPasswordReset: (email, redirectTo) => auth("/recover", { body: { email }, redirectTo }),
+    // After an email link (sign-up confirmation or password reset) the address ends with
+    // #access_token=…&refresh_token=…&type=signup|recovery. Signs in from it and returns the type, or null.
+    async signInFromLink(hash) {
+      const h = new URLSearchParams(String(hash || "").replace(/^#/, ""));
+      if (h.get("error_description")) throw Object.assign(new Error(h.get("error_description")), { code: "link-error" });
+      const access = h.get("access_token");
+      if (!access) return null;
+      const user = await auth("/user", { method: "GET", token: access });
+      keepSession({ access_token: access, refresh_token: h.get("refresh_token"), expires_in: h.get("expires_in"), user });
+      return h.get("type") || "signup";
+    },
+    async changePassword(password) {
+      await auth("/user", { method: "PUT", token: await accessToken(), body: { password } });
+    },
+    // Profiles: { user_id, name, aliases: [], bio }. null when the player hasn't made one yet.
+    async profile(userId) {
+      const rows = await request(`/rest/v1/profiles?user_id=eq.${encodeURIComponent(userId)}&select=user_id,name,aliases,bio,created_at`);
+      return rows[0] || null;
+    },
+    // Saves the signed-in player's profile: { name, aliases, bio }.
+    async saveProfile(fields, exists) {
+      const id = userIdOf(session);
+      const rows = await request(exists ? `/rest/v1/profiles?user_id=eq.${encodeURIComponent(id)}&select=user_id,name,aliases,bio,created_at` : "/rest/v1/profiles?select=user_id,name,aliases,bio,created_at", {
+        method: exists ? "PATCH" : "POST",
+        admin: true,
+        prefer: "return=representation",
+        body: exists ? fields : { user_id: id, ...fields },
+      });
+      if (!rows.length) throw Object.assign(new Error("Nothing saved"), { code: "nothing-updated" });
+      return rows[0];
+    },
+    // Every saved game record with one of these player names, newest first.
+    playerScores: (names) => request("/rest/v1/rpc/player_scores", { method: "POST", body: { p_names: names } }),
+    // The signed-in player's event sign-ups, and their sign-up ids at one event.
+    mySignups: () => request("/rest/v1/rpc/my_event_signups", { method: "POST", admin: true, body: {} }),
+    myEventPlayerIds: (eventId) => request("/rest/v1/rpc/my_event_player_ids", { method: "POST", admin: true, body: { p_event: eventId } }),
     signOut() {
       if (session) {
         fetch(`${base}/auth/v1/logout`, {
@@ -308,6 +382,7 @@ window.HVLoans = (() => {
     openTable: (eventId, table, name, token) =>
       request("/rest/v1/rpc/open_event_table", {
         method: "POST",
+        admin: "ifSignedIn",
         body: {
           p_event: eventId,
           p_game_id: table.game_id || null,
@@ -322,16 +397,16 @@ window.HVLoans = (() => {
       }),
     // Changes a table's start time ("HH:MM" or null) as its current host. Returns false if this browser isn't the host.
     setTableTime: (tableId, token, time) =>
-      request("/rest/v1/rpc/set_event_table_time", { method: "POST", body: { p_table: tableId, p_token: token, p_start_time: time || null } }),
-    // Deletes a table this browser is the host of. Returns false if it isn't.
+      request("/rest/v1/rpc/set_event_table_time", { method: "POST", admin: "ifSignedIn", body: { p_table: tableId, p_token: token, p_start_time: time || null } }),
+    // Deletes a table this browser (or signed-in account) is the host of. Returns false if it isn't.
     deleteOwnTable: (tableId, token) =>
-      request("/rest/v1/rpc/delete_event_table", { method: "POST", body: { p_table: tableId, p_token: token } }),
+      request("/rest/v1/rpc/delete_event_table", { method: "POST", admin: "ifSignedIn", body: { p_table: tableId, p_token: token } }),
     // Returns the new player id.
     joinTable: (tableId, name, token) =>
-      request("/rest/v1/rpc/join_event_table", { method: "POST", body: { p_table: tableId, p_name: name, p_token: token } }),
+      request("/rest/v1/rpc/join_event_table", { method: "POST", admin: "ifSignedIn", body: { p_table: tableId, p_name: name, p_token: token } }),
     // Returns true if this browser's sign-up was removed.
     leaveTable: (playerId, token) =>
-      request("/rest/v1/rpc/leave_event_table", { method: "POST", body: { p_player: playerId, p_token: token } }),
+      request("/rest/v1/rpc/leave_event_table", { method: "POST", admin: "ifSignedIn", body: { p_player: playerId, p_token: token } }),
     // Admins: change a table (any of { game_name, on_site, max_players, note }), remove a table or one player.
     async updateTable(id, changes) {
       const rows = await request(`/rest/v1/event_tables?id=eq.${encodeURIComponent(id)}&select=id`, {

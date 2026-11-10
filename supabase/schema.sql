@@ -339,6 +339,11 @@ create table if not exists public.event_players (
 create index if not exists event_players_by_table on public.event_players (table_id);
 create unique index if not exists event_players_one_name on public.event_players (table_id, lower(trim(name)));
 
+-- The player account that signed up (when signed in). Lets them leave, or act as host, from any device.
+-- Never readable from the website.
+alter table public.event_players add column if not exists user_id uuid references auth.users (id) on delete set null;
+create index if not exists event_players_by_user on public.event_players (user_id) where user_id is not null;
+
 -- Tables opened before the host was recorded: the first person who joined is the host.
 update public.event_tables t
 set host_player = p.id, host_token = p.token
@@ -415,7 +420,7 @@ begin
   values (p_event, nullif(trim(p_game_id), ''), trim(p_game_name), coalesce(p_on_site, false), p_max_players,
           coalesce(trim(p_note), ''), p_start_time, p_token)
   returning id into t;
-  insert into public.event_players (table_id, name, token) values (t, trim(p_name), p_token) returning id into p;
+  insert into public.event_players (table_id, name, token, user_id) values (t, trim(p_name), p_token, auth.uid()) returning id into p;
   update public.event_tables set host_player = p where id = t;
   return jsonb_build_object('table_id', t, 'player_id', p);
 end;
@@ -444,7 +449,10 @@ begin
   if exists (select 1 from public.event_players where table_id = p_table and lower(trim(name)) = lower(trim(p_name))) then
     raise exception 'someone with this name already joined' using errcode = 'HVE03';
   end if;
-  insert into public.event_players (table_id, name, token) values (p_table, trim(p_name), p_token) returning id into p;
+  if auth.uid() is not null and exists (select 1 from public.event_players where table_id = p_table and user_id = auth.uid()) then
+    raise exception 'this account already joined this table' using errcode = 'HVE07';
+  end if;
+  insert into public.event_players (table_id, name, token, user_id) values (p_table, trim(p_name), p_token, auth.uid()) returning id into p;
   return p;
 end;
 $$;
@@ -460,13 +468,29 @@ as $$
 declare
   t bigint;
 begin
-  delete from public.event_players where id = p_player and token = p_token returning table_id into t;
+  -- The browser's secret, or the signed-in account that signed up.
+  delete from public.event_players
+  where id = p_player and (token = p_token or (user_id is not null and user_id = auth.uid()))
+  returning table_id into t;
   if t is null then
     return false;
   end if;
   delete from public.event_tables where id = t and not exists (select 1 from public.event_players where table_id = t);
   return true;
 end;
+$$;
+
+-- True when the caller is a table's current host: by the host's browser secret, or by the account they signed up with.
+create or replace function public.is_event_table_host(p_table bigint, p_host_token text, p_host_player bigint, p_token text)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select (p_token is not null and char_length(p_token) >= 16 and p_host_token = p_token)
+      or (auth.uid() is not null and exists (
+            select 1 from public.event_players where id = p_host_player and table_id = p_table and user_id = auth.uid()));
 $$;
 
 -- Changes a table's start time (null clears it); only the current host's browser (admins change tables directly).
@@ -480,10 +504,9 @@ as $$
 declare
   t bigint;
 begin
-  if p_token is null or char_length(p_token) < 16 then
-    return false;
-  end if;
-  update public.event_tables set start_time = p_start_time where id = p_table and host_token = p_token returning id into t;
+  update public.event_tables set start_time = p_start_time
+  where id = p_table and public.is_event_table_host(id, host_token, host_player, p_token)
+  returning id into t;
   return t is not null;
 end;
 $$;
@@ -499,10 +522,9 @@ as $$
 declare
   t bigint;
 begin
-  if p_token is null or char_length(p_token) < 16 then
-    return false;
-  end if;
-  delete from public.event_tables where id = p_table and host_token = p_token returning id into t;
+  delete from public.event_tables
+  where id = p_table and public.is_event_table_host(id, host_token, host_player, p_token)
+  returning id into t;
   return t is not null;
 end;
 $$;
@@ -550,6 +572,7 @@ revoke execute on function public.leave_event_table(bigint, text) from public;
 revoke execute on function public.delete_event_table(bigint, text) from public;
 revoke execute on function public.set_event_table_time(bigint, text, time) from public;
 grant execute on function public.set_event_table_time(bigint, text, time) to anon, authenticated;
+revoke execute on function public.is_event_table_host(bigint, text, bigint, text) from public, anon, authenticated;
 grant execute on function public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time) to anon, authenticated;
 grant execute on function public.join_event_table(bigint, text, text) to anon, authenticated;
 grant execute on function public.leave_event_table(bigint, text) to anon, authenticated;
@@ -674,3 +697,121 @@ create policy "Admins can delete event templates" on public.event_templates
 grant select, delete on public.event_templates to authenticated;
 grant insert (title, description) on public.event_templates to authenticated;
 grant update (title, description, updated_at) on public.event_templates to authenticated;
+
+-- ---------------------------------------------------------------------------------------------------------------
+-- Player accounts (account.html, profile.html). Anyone can sign up with an email and password (Supabase Auth).
+-- A profile has a nickname, up to 5 other names used on scoreboards, and a short bio. Profiles are public (never the
+-- email); only the owner (or an admin) can change one. Game records are matched to a player by these names, so each
+-- name can belong to only one account.
+create table if not exists public.profiles (
+  user_id uuid primary key references auth.users (id) on delete cascade,
+  name text not null check (char_length(trim(name)) between 1 and 30),
+  aliases text[] not null default '{}',
+  bio text not null default '' check (char_length(bio) <= 1000),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create or replace function public.check_profile()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  mine text[];
+begin
+  if tg_op = 'UPDATE' then
+    new.user_id := old.user_id;
+    new.created_at := old.created_at;
+  end if;
+  new.name := trim(new.name);
+  -- Other names: trimmed, no blanks, no repeats, not the nickname itself.
+  new.aliases := coalesce((
+    select array_agg(a order by a) from (
+      select distinct trim(x) as a from unnest(coalesce(new.aliases, '{}')) x
+      where trim(x) <> '' and lower(trim(x)) <> lower(new.name)) s), '{}');
+  if cardinality(new.aliases) > 5 or exists (select 1 from unnest(new.aliases) a where char_length(a) > 30) then
+    raise exception 'up to 5 other names, 30 characters each' using errcode = 'HVP01';
+  end if;
+  new.updated_at := now();
+  perform pg_advisory_xact_lock(hashtext('hv-profile-names'));
+  mine := array_append(new.aliases, new.name);
+  if exists (
+    select 1 from public.profiles p, unnest(array_append(p.aliases, p.name)) taken
+    where p.user_id <> new.user_id and lower(taken) in (select lower(m) from unnest(mine) m)) then
+    raise exception 'this name belongs to another account' using errcode = 'HVP02';
+  end if;
+  return new;
+end;
+$$;
+drop trigger if exists profiles_check on public.profiles;
+create trigger profiles_check before insert or update on public.profiles
+  for each row execute function public.check_profile();
+
+alter table public.profiles enable row level security;
+drop policy if exists "Anyone can view profiles" on public.profiles;
+create policy "Anyone can view profiles" on public.profiles for select using (true);
+drop policy if exists "Players can create their profile" on public.profiles;
+create policy "Players can create their profile" on public.profiles
+  for insert to authenticated with check (user_id = auth.uid());
+drop policy if exists "Players can change their profile" on public.profiles;
+create policy "Players can change their profile" on public.profiles
+  for update to authenticated using (user_id = auth.uid() or public.is_admin())
+  with check (user_id = auth.uid() or public.is_admin());
+drop policy if exists "Players can delete their profile" on public.profiles;
+create policy "Players can delete their profile" on public.profiles
+  for delete to authenticated using (user_id = auth.uid() or public.is_admin());
+grant select (user_id, name, aliases, bio, created_at, updated_at) on public.profiles to anon, authenticated;
+grant insert (user_id, name, aliases, bio) on public.profiles to authenticated;
+grant update (name, aliases, bio) on public.profiles to authenticated;
+grant delete on public.profiles to authenticated;
+
+-- Every saved game in which one of these names played (not case-sensitive), newest first. For profile pages.
+create or replace function public.player_scores(p_names text[])
+returns setof public.game_scores
+language sql
+stable
+set search_path = ''
+as $$
+  select s.* from public.game_scores s
+  where exists (
+    select 1 from jsonb_array_elements(s.players) pl
+    where lower(trim(pl ->> 'name')) in (select lower(trim(n)) from unnest(p_names) n where trim(n) <> ''))
+  order by coalesce(s.played_on, s.played_at::date) desc, s.played_at desc
+  limit 2000;
+$$;
+grant execute on function public.player_scores(text[]) to anon, authenticated;
+
+-- The signed-in player's event sign-ups (for their own profile page).
+create or replace function public.my_event_signups()
+returns table (event_id bigint, title text, event_date date, event_time time, table_id bigint, game_id text,
+               game_name text, table_time time, is_host boolean)
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select e.id, e.title, e.event_date, e.start_time, t.id, t.game_id, t.game_name, t.start_time, t.host_player = p.id
+  from public.event_players p
+  join public.event_tables t on t.id = p.table_id
+  join public.events e on e.id = t.event_id
+  where auth.uid() is not null and p.user_id = auth.uid()
+  order by e.event_date desc, t.start_time nulls last
+  limit 500;
+$$;
+-- The signed-in player's sign-ups at one event (so the page knows which are theirs on any device).
+create or replace function public.my_event_player_ids(p_event bigint)
+returns setof bigint
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select p.id from public.event_players p join public.event_tables t on t.id = p.table_id
+  where auth.uid() is not null and p.user_id = auth.uid() and t.event_id = p_event;
+$$;
+revoke execute on function public.my_event_signups() from public, anon;
+revoke execute on function public.my_event_player_ids(bigint) from public, anon;
+grant execute on function public.my_event_signups() to authenticated;
+grant execute on function public.my_event_player_ids(bigint) to authenticated;

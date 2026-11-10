@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>玩家主页 · 欢乐小镇桌游</title>
+  <meta name="description" content="欢乐小镇桌游玩家主页：个人简介、玩过的桌游和战绩。Happy Village Board Games player profile.">
+  <link rel="icon" href="images/favicon-48.png" type="image/png">
+  <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/account.css">
+</head>
+<body>
+  <!-- A player's profile: profile.html (your own) or profile.html?u=<user id> (see js/profile.js) -->
+  <header class="site-header">
+    <div class="wrap">
+      <div class="title-row">
+        <h1><a class="ac-home" href="index.html"><img class="logo" src="images/logo.png" alt="" width="56" height="56"></a>
+          <span id="pf-title"></span></h1>
+        <div class="header-actions">
+          <a id="pf-events" class="admin-btn" href="events.html"></a>
+          <a id="pf-back" class="admin-btn" href="index.html"></a>
+          <button id="lang-toggle" class="lang-toggle" type="button">EN</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap ac-main pf-main" id="pf-main" aria-live="polite"></main>
+
+  <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/media.js"></script>
+  <script src="js/loans.js"></script>
+  <script src="js/profile.js"></script>
+</body>
+</html>

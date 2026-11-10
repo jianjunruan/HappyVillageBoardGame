@@ -1,0 +1,58 @@
+/* Player accounts (account.html) and profiles (profile.html). Builds on style.css. */
+.ac-home { display: inline-flex; }
+.ac-main { max-width: 760px; padding-bottom: 48px; display: grid; gap: 14px; align-content: start; }
+.ac-card { padding: 18px; border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); min-width: 0; }
+.ac-card h2 { margin: 0 0 10px; font-size: 1.15rem; }
+.ac-card h3 { margin: 14px 0 6px; font-size: 1rem; }
+.ac-card details summary { cursor: pointer; color: var(--muted); font-weight: 600; margin-top: 10px; }
+.ac-msg { margin: 0; }
+.ac-msg.is-err { color: var(--danger); }
+.ac-msg.is-ok { color: var(--ok); }
+.ac-hint { color: var(--muted); font-size: 0.86rem; margin: 0; }
+.ac-form { display: grid; gap: 10px; }
+.ac-field { display: grid; gap: 4px; font-size: 0.9rem; color: var(--muted); }
+.ac-field input, .ac-field textarea { width: 100%; padding: 10px 12px; color: var(--text); }
+.ac-field textarea { resize: vertical; }
+.ac-form small.ac-hint { margin-top: -6px; }
+.ac-wide { width: 100%; padding: 12px; font-size: 1.05rem; margin-top: 4px; }
+.ac-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+.ac-tabs .chip { font-size: 0.95rem; padding: 6px 16px; font-weight: 600; }
+.ac-forgot { margin: 12px 0 0; text-align: right; font-size: 0.9rem; }
+.ac-who { font-weight: 600; margin: 0 0 10px; overflow-wrap: anywhere; }
+.ac-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.ac-actions a.btn { text-decoration: none; }
+@media (min-width: 640px) {
+  .ac-main:has(> .ac-card:only-child form[data-form]) { max-width: 440px; }
+}
+
+/* profile */
+.pf-hero { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; align-items: center; }
+.pf-avatar {
+  width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; font-size: 1.8rem; font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), #e8913a); color: #fff; grid-row: span 1;
+}
+.pf-who { min-width: 0; }
+.pf-who h2 { margin: 0; font-size: 1.4rem; overflow-wrap: anywhere; }
+.pf-aka, .pf-since { margin: 2px 0 0; color: var(--muted); font-size: 0.88rem; overflow-wrap: anywhere; }
+.pf-bio { grid-column: 1 / -1; margin: 8px 0 0; white-space: pre-line; overflow-wrap: anywhere; }
+.pf-bio.is-empty { color: var(--muted); font-style: italic; }
+.pf-hero .ac-msg, .pf-hero .ac-actions { grid-column: 1 / -1; }
+.pf-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; }
+.pf-tile { padding: 12px; border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); display: grid; gap: 2px; text-align: center; }
+.pf-tile b { font-size: 1.6rem; color: var(--accent); line-height: 1.2; }
+.pf-tile span { color: var(--muted); font-size: 0.85rem; }
+.pf-table-wrap { overflow-x: auto; margin: 0 -4px 8px; }
+.pf-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+.pf-table th, .pf-table td { padding: 8px 6px; text-align: right; border-bottom: 1px solid var(--border); white-space: nowrap; }
+.pf-table th:first-child, .pf-table td:first-child { text-align: left; white-space: normal; }
+.pf-table th { color: var(--muted); font-weight: 600; font-size: 0.82rem; }
+.pf-game { display: inline-flex; align-items: center; gap: 8px; color: inherit; text-decoration: none; font-weight: 600; min-width: 0; }
+.pf-game:hover span { text-decoration: underline; }
+.pf-thumb { width: 34px; height: 34px; flex: none; border-radius: 6px; object-fit: contain; background: var(--img-bg); }
+.pf-recent { list-style: none; margin: 0; padding: 0; display: grid; }
+.pf-recent li { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 12px; padding: 8px 0; border-bottom: 1px dashed var(--border); }
+.pf-recent li:last-child { border-bottom: 0; }
+.pf-recent li.is-won .pf-res b { color: var(--ok); }
+.pf-day { color: var(--muted); font-size: 0.85rem; min-width: 4.5em; }
+.pf-res { color: var(--muted); font-size: 0.88rem; margin-left: auto; }
+.pf-recent a:not(.pf-game) { font-weight: 600; }

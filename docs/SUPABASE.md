@@ -125,6 +125,35 @@ Re-run `supabase/schema.sql` once more for this. It adds the **staff** and **eve
 - **Privacy:** visitors can only read an organizer's details while that person is assigned to an event dated yesterday or later. After the event, the details disappear from the page; admins still see them. QR pictures have random file names and the bucket can't be listed, but anyone who has a picture's link can open it.
 - Deleting an organizer also takes them off their events. If they were an event's main organizer, edit that event and choose a new one.
 
+## Player accounts and profiles (注册 / 玩家主页)
+Players can create their own accounts. Re-run `supabase/schema.sql` once: it adds the **profiles** table, links event sign-ups to accounts, and adds the functions behind the profile page. Player accounts use the same Supabase Auth as admins. Only accounts listed in `public.admins` get admin tools; a player who signs in sees none.
+
+**Set up in the Supabase dashboard (Authentication):**
+1. **Sign In / Providers → Email:** keep **Enable email provider** and **Allow new users to sign up** on.
+2. **Confirm email:** choose one of these.
+   - **On** (the default): new players get a confirmation email and can sign in only after clicking its link.
+   - **Off:** new players are signed in immediately after signing up.
+
+   Supabase's built-in email service only sends a few emails an hour, which is fine for testing but not for a busy sign-up day. With it on, set up your own SMTP under **Emails → SMTP Settings**, or turn confirmation off. Password reset emails go through the same service.
+3. **URL Configuration:** set **Site URL** to the site's address (e.g. `https://<user>.github.io/<repo>/`), and add `https://<user>.github.io/<repo>/account.html` under **Redirect URLs**. Links in confirmation and password reset emails open `account.html`, which signs the player in. For local testing, add `http://localhost:…/account.html` too.
+
+**How it works:**
+- **📝 Sign up / sign in:** [account.html](../account.html), opened from the **👤 登录 / 注册** button on the home and events pages.
+  - Signing up asks for a **昵称** (nickname), an email and a password (at least 6 characters, entered twice). **忘记密码？** sends a reset email.
+  - Once signed in, the same page has **修改密码** and **退出登录**.
+- **👤 Profile:** [profile.html](../profile.html) is your own profile (the **👤 我的主页** button); `profile.html?u=<id>` shows anyone's.
+  - **Public:** the nickname, other names, bio, join date and game summary. The email is never shown.
+  - **Only the owner can edit it (✏️ 编辑资料).** Fields: **昵称**, **我在计分板上用过的其他名字** (up to 5) and **个人简介** (up to 1000 characters).
+- **Games summary:** built from the scoreboards (game_scores). Every saved game where a player's name is the nickname or one of the other names counts, ignoring upper/lower case. The summary shows:
+  - totals: games, wins, win rate, total points, and how many different games;
+  - **🎲 桌游总结:** one row per game, with plays, wins, best, average and last played;
+  - **📜 最近对局:** the last 15 games, with score, place and 🏆.
+
+  A win means having the top score in that game, and a shared top score counts as a win for each player. Each name can belong to only one account, so nobody can claim someone else's games; if a name is taken, the profile page says so. An admin can fix a wrongly claimed name in **Table Editor → profiles**.
+- **📅 我的活动报名 (only on your own profile):** event tables joined or opened while signed in, upcoming first.
+- **Events with an account:** the nickname fills in the name when joining or opening a table. Sign-ups are linked to the account, so a player who signed in can leave a table, or act as its host (修改时间 / 删除这桌), from any device. A signed-in player can join each table once.
+- **Deleting an account** isn't on the website. Delete the user under **Authentication → Users**: their profile is deleted with it, and their event sign-ups stay without the link.
+
 ## Things to know
 - **Borrower names are public.** Anyone visiting the site can see who has a game. Use first names or nicknames if that's a concern.
 - **Free plan pause:** Supabase pauses free projects after about a week with no activity. Loans and rulebooks then fail to load (the site shows "借用状态暂时无法加载" and everything else still works). The GitHub Actions job [`.github/workflows/keep-supabase-awake.yml`](../.github/workflows/keep-supabase-awake.yml) prevents this by reading one row every 3 days. Check it under the repo's **Actions** tab (you can also click **Run workflow** to test it). GitHub turns off scheduled jobs in a repo with no commits for 60 days; if that happens, click **Enable workflow** on the Actions tab. If the project does get paused, open the Supabase dashboard and click **Restore project**.

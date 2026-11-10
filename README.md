@@ -78,6 +78,8 @@ Flip 7 has a round-by-round scorer ([flip7.html](flip7.html)). Other games use o
 
 Events ([events.html](events.html), the **📅 活动报名** button): admins publish events with a name, date and description. The name and description can be saved as a template and filled in from one later. At an event, anyone can join a table or open a new one for a game from the catalogue, or type a game in. Each table shows whether the game is at the venue. Each event has a main organizer and optional deputies, chosen from an organizer list that only admins can see; their phone, WeChat, Xiaohongshu and QR codes show on the event page. The home page shows the next 1–2 events at the top. Setup and details: [docs/SUPABASE.md](docs/SUPABASE.md#events-and-sign-ups-活动报名).
 
+Player accounts ([account.html](account.html), the **👤 登录 / 注册** button): players sign up with an email and password and get a public profile ([profile.html](profile.html)) with a nickname and bio. The profile summarises their games from the scoreboards (matched by nickname and other names they've used): games played, wins, and per-game best and average scores, plus their event sign-ups. Setup: [docs/SUPABASE.md](docs/SUPABASE.md#player-accounts-and-profiles-注册--玩家主页).
+
 ## Run locally
 
 The site loads `data/games.json` with `fetch`, so it won't work if you double-click `index.html`. Run a tiny web server instead:
@@ -98,6 +100,9 @@ You can also put the folder in `C:\xampp\htdocs\` and open `http://localhost/Hap
 index.html          Game catalogue (search, tag filter, detail popup)
 flip7.html          Flip 7 scorer, game records and leaderboard (js/flip7.js, css/flip7.css)
 events.html         Events and sign-ups: events.html, events.html?id=<id>, organizers: events.html?staff (js/events.js, css/events.css)
+account.html        Player sign-in, sign-up, password reset (js/account.js, css/account.css)
+profile.html        Player profile with bio and games summary: profile.html, profile.html?u=<id> (js/profile.js)
+js/account-link.js  The 👤 登录 / 我的主页 button in page headers
 js/home-events.js   The upcoming-events banner at the top of the home page
 score.html          Scoreboard for any game: score.html?game=<id> (js/scoreboard.js, css/scoreboard.css)
 js/scoreboards/     Each game's scoreboard choices (age-of-innovation.js, seti.js, ark-nova.js)

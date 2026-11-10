@@ -109,6 +109,7 @@
       // errors
       errOver: "这个活动已经结束或不存在了。",
       errFull: "这一桌已经满了。",
+      errJoined: "你的账号已经在这一桌了。",
       errName: "这一桌已经有同名的人了，换个写法吧（比如加上姓氏）。",
       errBusy: "刚才报名的人太多了，请一分钟后再试。",
       errTooManyTables: "这个活动的桌数已经到上限了。",
@@ -283,6 +284,7 @@
       saving: "Saving…",
       errOver: "This event is over or no longer exists.",
       errFull: "This table is full.",
+      errJoined: "Your account has already joined this table.",
       errName: "Someone with this name already joined this table. Try another spelling (e.g. add your surname).",
       errBusy: "Lots of sign-ups just now. Please try again in a minute.",
       errTooManyTables: "This event already has the most tables allowed.",
@@ -399,7 +401,8 @@
   }
   let mine = new Set(store.get("hv-event-mine", []));
   const saveMine = () => store.set("hv-event-mine", [...mine].slice(-300));
-  const myName = () => store.get("hv-event-name", "");
+  let profileName = ""; // a signed-in player's nickname
+  const myName = () => store.get("hv-event-name", "") || profileName;
 
   // ---------- dates ----------
   const pad = (n) => String(n).padStart(2, "0");
@@ -469,6 +472,7 @@
     if (code === "leave-gone") return tr("leaveGone");
     if (code === "not-host") return tr("notHost");
     if (code === "HVE06") return tr("needLead");
+    if (code === "HVE07") return tr("errJoined");
     if (code === "qr-not-image") return tr("qrNotImage");
     if (code === "HVE01") return tr("errOver");
     if (code === "HVE02") return tr("errFull");
@@ -499,6 +503,12 @@
       } else if (EVENT_ID == null) events = await HVLoans.events();
       else {
         ev = await HVLoans.event(EVENT_ID);
+        // A signed-in player's sign-ups count as theirs on any device.
+        if (ev && HVLoans.user) {
+          try {
+            for (const id of await HVLoans.myEventPlayerIds(EVENT_ID)) rememberMine(Number(id));
+          } catch {}
+        }
         if (ev) {
           // Forget sign-ups that are gone (left elsewhere, or removed by an admin) — only for this event's tables.
           const here = new Set(ev.event_tables.flatMap((t) => t.event_players.map((p) => p.id)));
@@ -1390,10 +1400,11 @@
   const adminParam = [...new URLSearchParams(location.search).keys()].some((k) => k.toLowerCase() === "admin");
   function renderAdminBar() {
     const bar = $("admin-bar");
-    const show = HVLoans.enabled && (adminParam || Boolean(HVLoans.user));
+    // Player accounts can be signed in too; the admin bar is only for admins (or ?admin, to sign in as one).
+    const show = HVLoans.enabled && (adminParam || isAdmin);
     bar.hidden = !show;
     if (!show) return void (bar.innerHTML = "");
-    bar.innerHTML = HVLoans.user
+    bar.innerHTML = isAdmin
       ? `<span class="admin-who" title="${esc(HVLoans.user)}">${esc(HVLoans.user)}</span><button class="admin-btn" type="button" data-signout>${esc(tr("adminSignOut"))}</button>`
       : `<button class="admin-btn" type="button" data-signin>${esc(tr("adminLogin"))}</button>`;
   }
@@ -1412,7 +1423,9 @@
       HVLoans.signOut();
       isAdmin = false;
       staffRows = null;
+      profileName = "";
       render();
+      window.dispatchEvent(new Event("hv-auth-change"));
     }
   });
   $("login").addEventListener("click", (e) => {
@@ -1428,11 +1441,13 @@
       if (!(await HVLoans.isAdmin())) {
         HVLoans.signOut();
         $("login-error").textContent = tr("notAdmin");
+        window.dispatchEvent(new Event("hv-auth-change"));
         return;
       }
       isAdmin = true;
       adminChecked = true;
       $("login").close();
+      window.dispatchEvent(new Event("hv-auth-change"));
       load(); // admins see more (organizers list, organizers of past events)
     } catch (err) {
       $("login-error").textContent = tr("signInError", { msg: err.message });
@@ -1447,11 +1462,10 @@
   HVI18n.onChange(render);
   render();
   if (!HVLoans.enabled) return;
-  if (HVLoans.user)
+  if (HVLoans.user) {
     HVLoans.isAdmin()
       .then((yes) => {
         isAdmin = yes;
-        if (!yes) HVLoans.signOut();
       })
       .catch(() => {})
       .then(() => {
@@ -1459,6 +1473,10 @@
         if (STAFF_VIEW && isAdmin) load();
         else render();
       });
+    // A signed-in player's nickname fills in the name when joining or opening a table.
+    const uid = HVLoans.userId;
+    if (uid) HVLoans.profile(uid).then((p) => (profileName = (p && p.name) || ""), () => {});
+  }
   // The catalogue only matters for names and pictures, so the event shows first and fills in after.
   load();
   loadCatalog().then(render, render);
