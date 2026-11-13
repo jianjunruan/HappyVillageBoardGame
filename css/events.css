@@ -142,6 +142,7 @@ dialog.ev-sheet { width: min(560px, calc(100vw - 16px)); padding: 16px; }
 .ev-score-list { display: grid; gap: 8px; }
 .ev-score-row { display: flex; align-items: center; gap: 10px; padding: 6px 6px 6px 12px; border: 1px solid var(--border); border-radius: 10px; }
 .ev-score-row span { flex: 1; min-width: 0; overflow-wrap: anywhere; font-weight: 600; }
+.ev-score-row select { flex: none; max-width: 55%; padding: 8px 10px; color: var(--text); }
 .ev-score-row input { width: 110px; flex: none; padding: 8px 10px; font-size: 1.05rem; text-align: right; color: var(--text); }
 
 /* games played at a table (对局) */
@@ -155,6 +156,7 @@ dialog.ev-sheet { width: min(560px, calc(100vw - 16px)); padding: 16px; }
 .ev-game-head small { color: var(--muted); }
 .ev-game-state { margin-left: auto; font-size: 0.88rem; font-weight: 600; overflow-wrap: anywhere; }
 .ev-game.is-pending .ev-game-state { color: var(--accent); }
+.ev-game-state.is-lost { color: var(--danger); }
 .ev-game-players { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
 .ev-game-players li { display: inline-flex; gap: 6px; align-items: baseline; padding: 2px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border); font-size: 0.88rem; max-width: 100%; overflow-wrap: anywhere; }
 .ev-game-players li b { font-weight: 600; color: var(--muted); white-space: nowrap; }

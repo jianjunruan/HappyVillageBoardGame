@@ -44,7 +44,7 @@
       colGame: "桌游",
       colPlays: "局数",
       colWins: "胜场",
-      colBest: "最高分",
+      colBest: "最佳分数",
       colAvg: "平均分",
       colLast: "最近一次",
       recent: "📜 最近对局",
@@ -71,6 +71,7 @@
       rank: "第 {n} 名 / {m} 人",
       points: "{n} 分",
       won: "🏆 获胜",
+      lost: "未获胜",
       noGames: "还没有对局记录。在计分板保存对局时用你的昵称{aliases}，记录就会出现在这里。",
       noGamesAlias: "或其他名字",
       matchHint: "战绩按名字统计：计分板上名字为 {names} 的对局都算在这里。",
@@ -155,6 +156,7 @@
       rank: "#{n} of {m}",
       points: "{n} pts",
       won: "🏆 Won",
+      lost: "Lost",
       noGames: "No games yet. Save games on the scoreboards under your nickname{aliases}, and they'll show up here.",
       noGamesAlias: " or other names",
       matchHint: "Games are matched by name: scoreboard games with {names} count here.",
@@ -287,23 +289,37 @@
       const me = players.find((pl) => names.has(norm(pl.name)));
       if (!me || typeof me.total !== "number") continue;
       const day = r.played_on || ymd(new Date(r.played_at));
-      const rank = 1 + players.filter((pl) => typeof pl.total === "number" && pl.total > me.total).length;
+      // How the game was won (see js/scoreboard.js): scores (highest or lowest wins), or only who won (1 / 0).
+      const mode = (r.details && r.details.mode) || "high";
+      const low = mode === "low";
+      const scored = mode === "high" || low;
+      const rank = 1 + players.filter((pl) => typeof pl.total === "number" && (low ? pl.total < me.total : pl.total > me.total)).length;
       const won = me.total === r.top_score;
       plays++;
       if (won) wins++;
-      const g = (games[r.game_id] ||= { id: r.game_id, plays: 0, wins: 0, best: -Infinity, sum: 0, last: "", first: "" });
+      const g = (games[r.game_id] ||= { id: r.game_id, plays: 0, wins: 0, scored: 0, best: null, sum: 0, last: "", first: "" });
       g.plays++;
       if (won) g.wins++;
-      g.best = Math.max(g.best, me.total);
-      g.sum += me.total;
+      if (scored) {
+        // the best score is the lowest one in games where the lowest score wins
+        g.best = g.best == null ? me.total : low ? Math.min(g.best, me.total) : Math.max(g.best, me.total);
+        g.sum += me.total;
+        g.scored++;
+      }
       if (day > g.last) g.last = day;
       if (!g.first || day < g.first) g.first = day;
-      recent.push({ day, at: r.played_at, game: r.game_id, total: me.total, rank, count: players.length, won });
+      recent.push({ day, at: r.played_at, game: r.game_id, total: me.total, rank, count: players.length, won, scored, team: me.team || "" });
     }
     recent.sort((a, b) => b.day.localeCompare(a.day) || String(b.at).localeCompare(String(a.at)));
     // Most recently played first; same day: the one played more often.
     const list = Object.values(games).sort((a, b) => b.last.localeCompare(a.last) || b.plays - a.plays);
     return { plays, wins, list, recent };
+  }
+  // One game's result for the player: score and place, or (games without scores) their side and won / lost.
+  function resText(r) {
+    if (r.scored) return `${esc(tr("points", { n: r.total }))} · ${esc(tr("rank", { n: r.rank, m: r.count }))}${r.won ? ` <b>${esc(tr("won"))}</b>` : ""}`;
+    const side = r.team && ((catalog[r.game] && catalog[r.game].scoring && catalog[r.game].scoring.teams) || []).find((t) => t.key === r.team);
+    return `${side ? `${esc(L(side))} · ` : ""}${r.won ? `<b>${esc(tr("won"))}</b>` : esc(tr("lost"))}`;
   }
   const gameName = (id) => {
     const g = catalog[id];
@@ -402,7 +418,7 @@
           <tbody>${pageRows
             .map(
               (g) => `<tr><td><a class="pf-game" href="${esc(gameLink(g.id))}">${thumb(g.id)}<span>${esc(gameName(g.id))}</span></a></td>
-                <td>${g.plays}</td><td>${g.wins}</td><td>${esc(num(g.best))}</td><td>${esc(num(g.sum / g.plays))}</td><td>${esc(shortDay(g.last))}</td></tr>`
+                <td>${g.plays}</td><td>${g.wins}</td><td>${esc(g.scored ? num(g.best) : "–")}</td><td>${esc(g.scored ? num(g.sum / g.scored) : "–")}</td><td>${esc(shortDay(g.last))}</td></tr>`
             )
             .join("")}</tbody>
         </table></div>
@@ -417,7 +433,7 @@
             (r) => `<li class="${r.won ? "is-won" : ""}">
               <span class="pf-day">${esc(shortDay(r.day))}</span>
               <a class="pf-game" href="${esc(gameLink(r.game))}">${thumb(r.game)}<span>${esc(gameName(r.game))}</span></a>
-              <span class="pf-res">${esc(tr("points", { n: r.total }))} · ${esc(tr("rank", { n: r.rank, m: r.count }))}${r.won ? ` <b>${esc(tr("won"))}</b>` : ""}</span>
+              <span class="pf-res">${resText(r)}</span>
             </li>`
           )
           .join("")}</ul>
@@ -591,8 +607,8 @@
     const tiles = [
       [tr("colPlays"), g.plays],
       [tr("colWins"), g.wins],
-      [tr("colBest"), num(g.best)],
-      [tr("colAvg"), num(g.sum / g.plays)],
+      [tr("colBest"), g.scored ? num(g.best) : "–"],
+      [tr("colAvg"), g.scored ? num(g.sum / g.scored) : "–"],
       [tr("colFirst"), shortDay(g.first)],
       [tr("colLast"), shortDay(g.last)],
     ];
@@ -606,7 +622,7 @@
       <h3>${esc(tr("gameRecords", { n: rows.length }))}</h3>
       <ul class="pf-recent">${rows
         .map((r) => `<li class="${r.won ? "is-won" : ""}"><span class="pf-day">${esc(shortDay(r.day))}</span>
-          <span class="pf-res">${esc(tr("points", { n: r.total }))} · ${esc(tr("rank", { n: r.rank, m: r.count }))}${r.won ? ` <b>${esc(tr("won"))}</b>` : ""}</span></li>`)
+          <span class="pf-res">${resText(r)}</span></li>`)
         .join("")}</ul></div>`;
     dlg3d.scrollTop = 0;
   }

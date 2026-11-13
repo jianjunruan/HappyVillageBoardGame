@@ -90,6 +90,26 @@
       otherPh: "例如：小明",
       needOtherName: "请填写名字。",
       points: "{n} 分",
+      fillResult: "✏️ 填写结果",
+      editResult: "修改结果",
+      resultTitle: "第 {n} 局 · 填写结果",
+      notScored: "这款游戏不计分，不能记录对局。",
+      hintLowEv: "这款游戏分数最低的获胜。",
+      winWho: "谁赢了？（可以多选）",
+      sideOf: "{name} 的阵营",
+      whichSide: "哪一方获胜？",
+      coopResult: "结果",
+      coopWin: "✅ 合作成功",
+      coopLose: "❌ 合作失败",
+      optional: "（可不填）",
+      teamWon: "🏆 {team}获胜",
+      winTag: "获胜",
+      needWinnerEv: "请勾选至少一位获胜的玩家。",
+      needSide: "请给 {name} 选择阵营。",
+      needWinSide: "请选择哪一方获胜。",
+      needCoopEv: "请选择合作成功还是失败。",
+      badCoopScore: "{label}要是 {min}–{max} 的整数（也可以不填）。",
+      pickSide: "选择阵营",
       startGame: "▶ 开始对局",
       startAnother: "▶ 开始新的一局",
       gameN: "第 {n} 局",
@@ -374,6 +394,26 @@
       otherPh: "e.g. Sam",
       needOtherName: "Please enter a name.",
       points: "{n} pts",
+      fillResult: "✏️ Enter result",
+      editResult: "Change result",
+      resultTitle: "Game {n} · result",
+      notScored: "This game isn't scored, so its games can't be recorded.",
+      hintLowEv: "In this game the lowest score wins.",
+      winWho: "Who won? (pick one or more)",
+      sideOf: "{name}'s side",
+      whichSide: "Which side won?",
+      coopResult: "Result",
+      coopWin: "✅ We won",
+      coopLose: "❌ We lost",
+      optional: " (optional)",
+      teamWon: "🏆 {team} won",
+      winTag: "Won",
+      needWinnerEv: "Tick at least one winner.",
+      needSide: "Pick a side for {name}.",
+      needWinSide: "Pick the side that won.",
+      needCoopEv: "Pick whether you won or lost.",
+      badCoopScore: "{label} must be a whole number from {min} to {max} (or left empty).",
+      pickSide: "Pick a side",
       startGame: "▶ Start a game",
       startAnother: "▶ Start another game",
       gameN: "Game {n}",
@@ -997,6 +1037,15 @@
   // ---------- games played at a table (对局) ----------
   const nameKey = (n) => String(n || "").trim().toLowerCase();
   const scorerUrl = (g) => (g.scorer ? g.scorer : `score.html?game=${encodeURIComponent(g.id)}`);
+  // Expansions and other editions are recorded under their base game (the one their scorer page is for).
+  const recordGameId = (g) => (/score\.html\?game=([a-z0-9-]+)/.exec(g.scorer || "") || [])[1] || g.id;
+  const scoringOf = (g) => ((gameById(recordGameId(g)) || g).scoring || {});
+  const scorable = (g) => g && scoringOf(g).mode !== "none" && !(g.tags || []).includes("Accessory");
+  const recModeOf = (r) => (r.details && r.details.mode) || "high";
+  const sideName = (g, key) => {
+    const t = ((g && scoringOf(g).teams) || []).find((x) => x.key === key);
+    return t ? (lang() === "zh" ? t.zh : t.en) : key || "";
+  };
   const hostOf = (t) => (t.host_player != null ? t.host_player : t.event_players[0] && t.event_players[0].id);
   const iHostOf = (t) => hostOf(t) != null && mine.has(hostOf(t));
   const pendingGame = (t) => [...(t.event_games || [])].reverse().find((x) => x.game_scores.pending);
@@ -1014,18 +1063,30 @@
     const r = gm.game_scores;
     const pending = r.pending;
     const list = (r.players || []).map((p, i) => ({ ...p, i }));
-    if (!pending) list.sort((a, b) => b.total - a.total || a.i - b.i);
+    const mode = recModeOf(r);
+    const scored = mode === "high" || mode === "low";
+    const det = r.details || {};
+    const won = (p) => !pending && p.total === r.top_score && (mode !== "coop" || det.won);
+    if (!pending) list.sort((a, b) => (scored ? (mode === "low" ? a.total - b.total : b.total - a.total) : won(b) - won(a)) || a.i - b.i);
+    const state = pending ? tr("pendingScores")
+      : mode === "teams" ? tr("teamWon", { team: sideName(g, det.winTeam) })
+      : mode === "coop" ? `${tr(det.won ? "coopWin" : "coopLose")}${det.score != null ? ` · ${det.score}` : ""}`
+      : `🏆 ${String(r.winner).split("、").join(lang() === "zh" ? "、" : ", ")}`;
+    const val = (p) => (pending ? "–" : scored ? tr("points", { n: p.total }) : mode === "teams" ? sideName(g, p.team) : mode === "win" && won(p) ? tr("winTag") : "");
+    // the button follows how the game is scored now (a game with no result yet has no method saved)
+    const gmode = (g && scoringOf(g).mode) || "high";
+    const fillKey = gmode === "high" || gmode === "low" ? ["fillScores", "editScores"] : ["fillResult", "editResult"];
     const run = isAdmin || iHostOf(t);
     const acts = [
-      canScore(t, gm) ? `<button class="${pending ? "btn btn-sm" : "link-btn"}" type="button" data-score-game="${r.id}" data-table="${t.id}">${esc(tr(pending ? "fillScores" : "editScores"))}</button>` : "",
+      canScore(t, gm) ? `<button class="${pending ? "btn btn-sm" : "link-btn"}" type="button" data-score-game="${r.id}" data-table="${t.id}">${esc(tr(pending ? fillKey[0] : fillKey[1]))}</button>` : "",
       pending && run ? `<button class="link-btn" type="button" data-cancel-game="${r.id}" data-n="${n}">${esc(tr("cancelGame"))}</button>` : "",
-      !pending && g ? `<a class="link-btn" href="${esc(scorerUrl(g))}">${esc(tr("viewRecords"))}</a>` : "",
+      !pending && scorable(g) ? `<a class="link-btn" href="${esc(scorerUrl(g))}">${esc(tr("viewRecords"))}</a>` : "",
     ].filter(Boolean);
     return `<div class="ev-game${pending ? " is-pending" : ""}">
       <div class="ev-game-head"><b>${esc(tr("gameN", { n }))}</b><small>${esc(tr("gameAt", { t: new Date(gm.started_at).toLocaleTimeString(lang() === "zh" ? "zh-CN" : "en", { hour: "2-digit", minute: "2-digit" }) }))}</small>
-        <span class="ev-game-state">${pending ? esc(tr("pendingScores")) : `🏆 ${esc(String(r.winner).split("、").join(lang() === "zh" ? "、" : ", "))}`}</span></div>
+        <span class="ev-game-state${!pending && mode === "coop" && !det.won ? " is-lost" : ""}">${esc(state)}</span></div>
       <ol class="ev-game-players">${list
-        .map((p) => `<li class="${!pending && p.total === r.top_score ? "is-win" : ""}"><span>${esc(p.name)}</span><b>${pending ? "–" : esc(tr("points", { n: p.total }))}</b></li>`)
+        .map((p) => `<li class="${won(p) ? "is-win" : ""}"><span>${esc(p.name)}</span>${val(p) ? `<b>${esc(val(p))}</b>` : ""}</li>`)
         .join("")}</ol>
       ${acts.length ? `<div class="ev-game-acts">${acts.join("")}</div>` : ""}
     </div>`;
@@ -1036,11 +1097,12 @@
     const today = daysAway(ev.event_date) === 0;
     if (!games.length && !(run && !over)) return "";
     const btns = [
-      run && today && g ? `<button class="btn btn-sm" type="button" data-start-game="${t.id}">${esc(tr(games.length ? "startAnother" : "startGame"))}</button>` : "",
+      run && today && scorable(g) ? `<button class="btn btn-sm" type="button" data-start-game="${t.id}">${esc(tr(games.length ? "startAnother" : "startGame"))}</button>` : "",
       run && !over && !full ? `<button class="btn ghost btn-sm" type="button" data-add-player="${t.id}">${esc(tr("addPlayer"))}</button>` : "",
     ].filter(Boolean);
     let hint = "";
     if (run && !g) hint = tr("customNoRecord");
+    else if (run && !scorable(g)) hint = tr("notScored");
     else if (run && !today && !over && !games.length) hint = tr("gamesHintDay");
     else if (games.length && games.some((x) => x.game_scores.pending)) hint = tr("gamesHintWho");
     return `<section class="ev-games" aria-label="${esc(tr("gamesTitle"))}">
@@ -1522,7 +1584,9 @@
     }
     const n = (t.event_games || []).length + 1;
     await submit(async () => {
-      await HVLoans.startGame(t.id, token(), ids.length === t.event_players.length ? null : ids);
+      const g = t.game_id && gameById(t.game_id);
+      const rec = g ? recordGameId(g) : null;
+      await HVLoans.startGame(t.id, token(), ids.length === t.event_players.length ? null : ids, rec && rec !== t.game_id ? rec : null);
       flash = { text: tr("started", { n }), ok: true };
     });
   }
@@ -1563,13 +1627,37 @@
     const gm = t && (t.event_games || []).find((x) => x.score_id === D.score);
     if (!gm) return closeDialog();
     const n = t.event_games.indexOf(gm) + 1;
-    dlg.innerHTML = `${head(tr("scoreTitle", { n }))}
+    const g = t.game_id && gameById(t.game_id);
+    const sc = (g && scoringOf(g)) || {};
+    const players = gm.game_scores.players;
+    const radio = (name, value, label, on) => `<label class="ev-leave-opt"><input type="radio" name="${name}" value="${esc(value)}"${on ? " checked" : ""}><span>${esc(label)}</span></label>`;
+    let body;
+    if (D.mode2 === "win")
+      body = `<fieldset class="ev-field"><legend>${esc(tr("winWho"))}</legend><div class="ev-leave-list">${players
+        .map((p, i) => `<label class="ev-leave-opt"><input type="checkbox" name="w${i}"${D.won[i] ? " checked" : ""}><span>${esc(p.name)}</span></label>`)
+        .join("")}</div></fieldset>`;
+    else if (D.mode2 === "teams")
+      body = `<div class="ev-score-list">${players
+        .map((p, i) => `<label class="ev-score-row"><span>${esc(p.name)}</span><select name="t${i}" aria-label="${esc(tr("sideOf", { name: p.name }))}"><option value="">${esc(tr("pickSide"))}</option>${(sc.teams || [])
+          .map((x) => `<option value="${esc(x.key)}"${D.teams[i] === x.key ? " selected" : ""}>${esc(lang() === "zh" ? x.zh : x.en)}</option>`)
+          .join("")}</select></label>`)
+        .join("")}</div>
+        <fieldset class="ev-field"><legend>${esc(tr("whichSide"))}</legend><div class="ev-leave-list">${(sc.teams || [])
+          .map((x) => radio("winteam", x.key, "🏆 " + (lang() === "zh" ? x.zh : x.en), D.winTeam === x.key))
+          .join("")}</div></fieldset>`;
+    else if (D.mode2 === "coop")
+      body = `<fieldset class="ev-field"><legend>${esc(tr("coopResult"))}</legend><div class="ev-leave-list">${radio("coop", "yes", tr("coopWin"), D.coop === "yes")}${radio("coop", "no", tr("coopLose"), D.coop === "no")}</div></fieldset>
+        ${sc.score ? `<label class="ev-field"><span>${esc(lang() === "zh" ? sc.score.zh : sc.score.en)}${esc(tr("optional"))}</span><input name="cs" type="number" step="1" min="${sc.score.min ?? 0}" max="${sc.score.max ?? 9999}" value="${esc(D.coopScore)}"></label>` : ""}`;
+    else
+      body = `<div class="ev-score-list">${players
+        .map((p, i) => `<label class="ev-score-row"><span>${esc(p.name)}</span><input name="s${i}" type="number" step="1" min="-9999" max="9999" value="${esc(D.vals[i] ?? "")}"${i === 0 ? " autofocus" : ""}></label>`)
+        .join("")}</div>
+        <p class="ev-hint">${esc(D.mode2 === "low" ? tr("hintLowEv") : tr("scoreHint"))}</p>`;
+    const scored = D.mode2 === "high" || D.mode2 === "low";
+    dlg.innerHTML = `${head(tr(scored ? "scoreTitle" : "resultTitle", { n }))}
       <form class="ev-form" data-score-form novalidate>
         <p class="ev-hint">${esc(tableName(t))}</p>
-        <div class="ev-score-list">${gm.game_scores.players
-          .map((p, i) => `<label class="ev-score-row"><span>${esc(p.name)}</span><input name="s${i}" type="number" step="1" min="-9999" max="9999" value="${esc(D.vals[i] ?? "")}"${i === 0 ? " autofocus" : ""}></label>`)
-          .join("")}</div>
-        <p class="ev-hint">${esc(tr("scoreHint"))}</p>
+        ${body}
         ${errLine()}
         <div class="form-actions"><button class="btn ghost" type="button" data-close>${esc(tr("cancel"))}</button><button class="btn" type="submit"${busy ? " disabled" : ""}>${esc(busy ? tr("saving") : tr("scoreSave"))}</button></div>
       </form>`;
@@ -1581,20 +1669,49 @@
     const gm = t && (t.event_games || []).find((x) => x.score_id === D.score);
     if (!gm) return closeDialog();
     const players = gm.game_scores.players;
-    const totals = [];
-    for (let i = 0; i < players.length; i++) {
-      const v = String(D.vals[i] ?? "").trim();
-      if (!/^-?\d{1,4}$/.test(v)) {
-        D.err = tr("needScore", { name: players[i].name });
-        renderDialog();
-        const bad = dlg.querySelector(`input[name=s${i}]`);
-        if (bad) bad.focus();
-        return;
+    const g = t.game_id && gameById(t.game_id);
+    const sc = (g && scoringOf(g)) || {};
+    const mode = D.mode2;
+    const stop = (msg) => {
+      D.err = msg;
+      renderDialog();
+    };
+    let totals = [], teams = null, details = mode === "high" ? null : { mode };
+    if (mode === "high" || mode === "low") {
+      for (let i = 0; i < players.length; i++) {
+        const v = String(D.vals[i] ?? "").trim();
+        if (!/^-?\d{1,4}$/.test(v)) {
+          stop(tr("needScore", { name: players[i].name }));
+          const bad = dlg.querySelector(`input[name=s${i}]`);
+          if (bad) bad.focus();
+          return;
+        }
+        totals.push(Number(v));
       }
-      totals.push(Number(v));
+    } else if (mode === "win") {
+      if (!D.won.some(Boolean)) return stop(tr("needWinnerEv"));
+      totals = players.map((_, i) => (D.won[i] ? 1 : 0));
+    } else if (mode === "teams") {
+      const keys = (sc.teams || []).map((x) => x.key);
+      const missing = players.findIndex((_, i) => !keys.includes(D.teams[i]));
+      if (missing >= 0) return stop(tr("needSide", { name: players[missing].name }));
+      if (!keys.includes(D.winTeam)) return stop(tr("needWinSide"));
+      teams = players.map((_, i) => D.teams[i]);
+      totals = teams.map((k) => (k === D.winTeam ? 1 : 0));
+      details.winTeam = D.winTeam;
+    } else if (mode === "coop") {
+      if (!D.coop) return stop(tr("needCoopEv"));
+      totals = players.map(() => (D.coop === "yes" ? 1 : 0));
+      details.won = D.coop === "yes";
+      const v = String(D.coopScore ?? "").trim();
+      if (sc.score && v !== "") {
+        const min = sc.score.min ?? 0, max = sc.score.max ?? 9999;
+        if (!/^-?\d{1,4}$/.test(v) || Number(v) < min || Number(v) > max) return stop(tr("badCoopScore", { label: lang() === "zh" ? sc.score.zh : sc.score.en, min, max }));
+        details.score = Number(v);
+      }
     }
     await submit(async () => {
-      if (!(await HVLoans.setGameScores(gm.score_id, token(), totals))) throw Object.assign(new Error("not allowed"), { code: "score-not-allowed" });
+      if (!(await HVLoans.setGameScores(gm.score_id, token(), totals, teams, details))) throw Object.assign(new Error("not allowed"), { code: "score-not-allowed" });
       flash = { text: tr("scoresSaved"), ok: true };
     });
   }
@@ -1710,7 +1827,18 @@
       D.add = v("addname") || "";
     }
     if (D.mode === "add") Object.assign(D, { name: v("name"), toGame: Boolean(f.elements.togame && f.elements.togame.checked) });
-    if (D.mode === "score") D.vals = D.vals.map((_, i) => v("s" + i));
+    if (D.mode === "score") {
+      if (D.mode2 === "high" || D.mode2 === "low") D.vals = D.vals.map((_, i) => v("s" + i));
+      if (D.mode2 === "win") D.won = D.won.map((_, i) => Boolean(f.elements["w" + i] && f.elements["w" + i].checked));
+      if (D.mode2 === "teams") {
+        D.teams = D.teams.map((_, i) => v("t" + i) || "");
+        D.winTeam = (f.querySelector("input[name=winteam]:checked") || {}).value || "";
+      }
+      if (D.mode2 === "coop") {
+        D.coop = (f.querySelector("input[name=coop]:checked") || {}).value || "";
+        D.coopScore = v("cs") ?? "";
+      }
+    }
     if (D.mode === "event") {
       Object.assign(D, { title: v("title"), date: v("date"), time: v("time"), end: v("end"), place: v("place"), map: v("map") });
       if (f.querySelector("[data-rich]")) D.desc = HVRich.value(f.querySelector("[data-rich]"));
@@ -2062,7 +2190,26 @@
     if (b.dataset.scoreGame) {
       const t = tableOf(b.dataset.table);
       const gm = t && (t.event_games || []).find((x) => x.score_id === Number(b.dataset.scoreGame));
-      if (gm) openDialog({ mode: "score", table: t.id, score: gm.score_id, vals: gm.game_scores.players.map((p) => (gm.game_scores.pending ? "" : String(p.total))), err: "" });
+      if (gm) {
+        const r = gm.game_scores;
+        const g = t.game_id && gameById(t.game_id);
+        const mode2 = (g && scoringOf(g).mode) || "high";
+        const det = r.details || {};
+        const same = !r.pending && recModeOf(r) === mode2; // what's saved can fill the form
+        openDialog({
+          mode: "score",
+          mode2,
+          table: t.id,
+          score: gm.score_id,
+          vals: r.players.map((p) => (same ? String(p.total) : "")),
+          won: r.players.map((p) => same && p.total === r.top_score),
+          teams: r.players.map((p) => (same && p.team) || ""),
+          winTeam: (same && det.winTeam) || "",
+          coop: same && typeof det.won === "boolean" ? (det.won ? "yes" : "no") : "",
+          coopScore: same && det.score != null ? String(det.score) : "",
+          err: "",
+        });
+      }
       return;
     }
     if (b.dataset.cancelGame) {

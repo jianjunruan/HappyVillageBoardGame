@@ -89,6 +89,7 @@
     {
       "id": "codenames",
       "name": { "zh": "行动代号", "en": "Codenames" },
+      "scoring": { "mode": "teams", "teams": [{ "key": "red", "zh": "红队", "en": "Red team", "color": "#c0392b" }, { "key": "blue", "zh": "蓝队", "en": "Blue team", "color": "#2c6fbb" }] },
       "image": "images/codenames.jpg",
       "description": {
         "zh": "两队比赛找出自己的秘密特工。每队的间谍首领只能给出一个词作为提示，把桌上的几个词联系起来。猜的时候要小心——碰到刺客就立刻输掉！4 人以上分两队玩最好玩；2–3 人可用合作变体。设计师：Vlaada Chvátil（2015）。",
@@ -182,6 +183,7 @@
     {
       "id": "werewolves-characters",
       "name": { "zh": "米勒山谷狼人：特殊身份", "en": "The Werewolves of Miller's Hollow: Characters" },
+      "scorer": "score.html?game=werewolves-of-millers-hollow",
       "image": "images/werewolves-characters.jpg",
       "description": {
         "zh": "《米勒山谷狼人》的第三个扩展，包含 24 张卡牌、16 个新身份。双胞胎姐妹可以在夜里交换信息，天使带着自己的胜利目标出现，演员每天都能扮演其他角色，让局面更加扑朔迷离。（扩展，需要基础游戏才能玩。）设计师：Philippe des Pallières、Hervé Marly（2012）。",
@@ -209,6 +211,7 @@
     {
       "id": "werewolves-new-moon",
       "name": { "zh": "米勒山谷狼人：新月", "en": "The Werewolves of Miller's Hollow: New Moon" },
+      "scorer": "score.html?game=werewolves-of-millers-hollow",
       "image": "images/werewolves-new-moon.jpg",
       "description": {
         "zh": "《米勒山谷狼人》的第一个扩展：加入 36 张事件卡、5 个新村民身份（白痴、长老、吹笛人、替罪羊、守卫），以及 9 种新玩法变体。（扩展，需要基础游戏才能玩。）设计师：Philippe des Pallières、Hervé Marly（2005）。",
@@ -261,6 +264,7 @@
     {
       "id": "arkham-horror-lcg",
       "name": { "zh": "诡镇奇谈：卡牌版", "en": "Arkham Horror: The Card Game" },
+      "scoring": { "mode": "coop" },
       "image": "images/arkham-horror-lcg.jpg",
       "description": {
         "zh": "克苏鲁神话题材的合作卡牌游戏。每位玩家扮演一名调查员，围绕角色能力组建牌组，一起揭开阿卡姆镇的神秘阴谋，同时对抗自己内心的恐惧。多个剧本串联成完整的战役故事，选择会影响后续剧情。设计师：Nate French、MJ Newman（2016）。\n\n适合：喜欢剧情和组牌的玩家。",
@@ -287,6 +291,7 @@
     {
       "id": "arkham-dunwich-legacy-campaign",
       "name": {
+      "scorer": "score.html?game=arkham-horror-lcg",
         "zh": "诡镇奇谈：卡牌版 - 敦威治遗产 剧本扩展",
         "en": "Arkham Horror: The Card Game – The Dunwich Legacy: Campaign Expansion"
       },
@@ -317,6 +322,7 @@
     {
       "id": "arkham-path-to-carcosa-campaign",
       "name": {
+      "scorer": "score.html?game=arkham-horror-lcg",
         "zh": "诡镇奇谈：卡牌版 - 卡尔克萨之路 剧本扩展",
         "en": "Arkham Horror: The Card Game – The Path to Carcosa: Campaign Expansion"
       },
@@ -347,6 +353,7 @@
     {
       "id": "arkham-scarlet-keys-campaign",
       "name": {
+      "scorer": "score.html?game=arkham-horror-lcg",
         "zh": "诡镇奇谈：卡牌版 - 猩红钥匙 剧本扩展",
         "en": "Arkham Horror: The Card Game – The Scarlet Keys: Campaign Expansion"
       },
@@ -377,6 +384,7 @@
     {
       "id": "blades-and-rose",
       "name": { "zh": "血与刃的白蔷薇", "en": "Blades & Rose" },
+      "scoring": { "mode": "teams", "teams": [{ "key": "rose", "zh": "白蔷薇阵营", "en": "White Rose", "color": "#8b97a6" }, { "key": "blade", "zh": "血刃阵营", "en": "Blood Blades", "color": "#a61b29" }] },
       "image": "images/blades-and-rose.jpg",
       "description": {
         "zh": "白蔷薇即将复活。白蔷薇阵营要把足够多的信徒送进地下圣所，血刃阵营则要在夜里除掉他们——而一旦唯一的白蔷薇化身被杀，血刃阵营立刻获胜。节奏紧凑的身份推理游戏，靠谈判、虚张声势和推理取胜。设计师：Yu Wang（2023）。",
@@ -402,6 +410,7 @@
     {
       "id": "yin-yang-inn",
       "name": { "zh": "阴阳客栈", "en": "Yin Yang Inn" },
+      "scoring": { "mode": "win" },
       "image": "images/yin-yang-inn.jpg",
       "description": {
         "zh": "一款 5–13 人的中文聚会游戏（2022），适合人多的时候一起玩。",
@@ -539,6 +548,7 @@
     {
       "id": "turing-machine",
       "name": { "zh": "图灵机", "en": "Turing Machine" },
+      "scoring": { "mode": "win" },
       "image": "images/turing-machine.jpg",
       "description": {
         "zh": "一款不用电的“计算机”推理游戏。用独特的镂空卡片向机器提问，验证你的猜测，率先推理出三位密码的玩家获胜。题库丰富，难度可调，也能单人玩。设计师：Fabien Gridel、Yoann Levet（2022）。（BGA 在线版支持 1–12 人。）\n\n适合：喜欢逻辑解谜的玩家。",
@@ -572,6 +582,7 @@
     {
       "id": "ankh-2024",
       "name": { "zh": "安卡：生命之符", "en": "Ankh" },
+      "scoring": { "mode": "win" },
       "image": "images/ankh-2024.jpg",
       "description": { "zh": "一款 2–4 人的卡牌游戏（2024）。", "en": "A card game for 2–4 players (2024)." },
       "players": "2–4",
@@ -589,6 +600,7 @@
     {
       "id": "regicide",
       "name": { "zh": "弑君者", "en": "Regicide" },
+      "scoring": { "mode": "coop" },
       "image": "images/regicide.jpg",
       "description": {
         "zh": "用一副普通扑克牌就能玩的合作游戏。大家齐心协力打倒 12 个强大的敌人（J、Q、K），每回合出牌攻击，敌人也会反击，必须弃牌抵挡——挡不住所有人就一起输。交流受限，考验默契和战术。设计师：Paul Abrahams、Luke Badger、Andy Richdale（2020）。\n\n适合：喜欢合作和精打细算的玩家。",
@@ -713,6 +725,7 @@
     {
       "id": "arnak-expedition-leaders",
       "name": { "zh": "阿纳克遗迹：探险队长", "en": "Lost Ruins of Arnak: Expedition Leaders" },
+      "scorer": "score.html?game=lost-ruins-of-arnak",
       "image": "images/arnak-expedition-leaders.jpg",
       "description": {
         "zh": "《阿纳克遗迹》的扩展。每位玩家选择 6 位探险队长之一，各有独特能力、技能和起始牌组，带来不同策略。还加入新的研究轨道、新物品和神器卡。（扩展，需要基础游戏才能玩。）设计师：Elwen、Mín（2021）。",
@@ -765,6 +778,7 @@
     {
       "id": "blood-bound",
       "name": { "zh": "血契猎杀", "en": "Blood Bound" },
+      "scoring": { "mode": "teams", "teams": [{ "key": "beast", "zh": "野兽氏族", "en": "Beast clan", "color": "#7a5a2e" }, { "key": "rose", "zh": "玫瑰氏族", "en": "Rose clan", "color": "#c2185b" }, { "key": "inquisitor", "zh": "审判官", "en": "Inquisitor", "color": "#5e6a74" }] },
       "image": "images/blood-bound.jpg",
       "description": {
         "zh": "吸血鬼题材的身份推理游戏。玩家分属野兽氏族和玫瑰氏族（人数为单数时还有人类审判官），隐藏身份，试图找出并俘获对方的长老，或为保护己方长老而牺牲。每次攻击都会逐步揭示线索：谁在为谁而战？设计师：Kalle Krenzer（2013）。\n\n适合：喜欢推理和虚张声势的聚会。",
@@ -815,6 +829,7 @@
     {
       "id": "entropy-cat",
       "name": { "zh": "熵增猫", "en": "Entropy Cat" },
+      "scoring": { "mode": "win" },
       "image": "images/entropy-cat.jpg",
       "description": { "zh": "一款 2–5 人的猫咪主题卡牌游戏（2023）。", "en": "A cat-themed card game for 2–5 players (2023)." },
       "players": "2–5",
@@ -898,6 +913,7 @@
     {
       "id": "werewolf-2021-limited",
       "name": { "zh": "狼人杀2021限定版", "en": "Werewolf 2021 Limited Edition" },
+      "scoring": { "mode": "teams", "teams": [{ "key": "village", "zh": "好人阵营", "en": "Villagers", "color": "#2e7d4f" }, { "key": "wolves", "zh": "狼人阵营", "en": "Werewolves", "color": "#8e2b2b" }, { "key": "solo", "zh": "第三方", "en": "Others", "color": "#8a6d3b" }] },
       "image": "images/werewolf-2021-limited.jpg",
       "description": {
         "zh": "狼人杀 2021 限定版，8–13 人的身份推理聚会游戏。",
@@ -919,6 +935,7 @@
     {
       "id": "werewolves-of-millers-hollow",
       "name": { "zh": "米勒山谷狼人", "en": "The Werewolves of Miller's Hollow" },
+      "scoring": { "mode": "teams", "teams": [{ "key": "village", "zh": "好人阵营", "en": "Villagers", "color": "#2e7d4f" }, { "key": "wolves", "zh": "狼人阵营", "en": "Werewolves", "color": "#8e2b2b" }, { "key": "solo", "zh": "第三方", "en": "Others", "color": "#8a6d3b" }] },
       "image": "images/werewolves-of-millers-hollow.jpg",
       "description": {
         "zh": "经典身份推理游戏。村庄里藏着狼人，每位玩家秘密获得身份：狼人、普通村民，或预言家、女巫、猎人等特殊角色，由一名主持人控制流程。夜晚狼人秘密杀人，白天全村讨论并投票处决嫌疑人。村民要找出所有狼人，狼人则要吃掉村民。设计师：Philippe des Pallières、Hervé Marly（2001）。（BGA 在线版支持 8–12 人。）\n\n适合：人多的聚会。",
@@ -1020,6 +1037,7 @@
     {
       "id": "world-championship-russian-roulette",
       "name": { "zh": "赌命大赛", "en": "World Championship Russian Roulette" },
+      "scoring": { "mode": "win" },
       "image": "images/world-championship-russian-roulette.jpg",
       "description": {
         "zh": "黑色幽默的拼运气虚张声势游戏。你是“俄罗斯轮盘世界锦标赛”某支队伍的队长，所有人同时行动，不用等待。竞标你的队员能扣几次扳机，还能偷偷作弊少装子弹——先拿到 15 分或最后一个保住脑袋的队伍获胜。设计师：Anthony Burch（2017）。\n\n适合：喜欢欢乐吐槽的聚会。",
@@ -1070,6 +1088,7 @@
     {
       "id": "star-realms",
       "name": { "zh": "星域奇航", "en": "Star Realms" },
+      "scoring": { "mode": "win" },
       "image": "images/star-realms.jpg",
       "description": {
         "zh": "太空舰队对战的牌库构筑游戏。用战舰和基地产生交易点购买更强的卡牌，或产生战斗力攻击对手，把对方的权威值打到 0 就获胜。节奏快、互动强，一盒就能玩。设计师：Robert Dougherty、Darwin Kastle（2014）。\n\n适合：喜欢快节奏对战的两人。",
@@ -1095,6 +1114,7 @@
     {
       "id": "script-suspect-7",
       "name": { "zh": "剧本杀：第7号嫌疑人", "en": "Murder Mystery: Suspect No. 7" },
+      "scoring": { "mode": "none" },
       "image": "images/script-suspect-7.jpg",
       "description": {
         "zh": "一款 6 人剧本杀（2020）。每位玩家扮演一个角色，阅读剧本、搜集线索、互相盘问，最终找出真凶。",
@@ -1173,6 +1193,7 @@
     {
       "id": "mind-mgmt",
       "name": { "zh": "心灵特工", "en": "MIND MGMT: The Psychic Espionage \"Game\"" },
+      "scoring": { "mode": "teams", "teams": [{ "key": "agents", "zh": "叛逃特工", "en": "Rogue agents", "color": "#2c6fbb" }, { "key": "recruiter", "zh": "招募者", "en": "Recruiter", "color": "#8e2b2b" }] },
       "image": "images/mind-mgmt.jpg",
       "description": {
         "zh": "一对多的隐藏移动推理游戏，改编自同名漫画。一名玩家扮演 MIND MGMT 招募者，在地图上秘密移动并招募超能力者；其余玩家扮演叛逃特工，合作推理招募者的位置并将其抓获。独特的“SHIFT”机制会在多局之间逐步解锁新内容。设计师：Jay Cormier、Sen-Foong Lim（2021）。（BGA 在线版支持 2–5 人。）\n\n适合：喜欢推理和团队对抗的玩家。",
@@ -1206,6 +1227,7 @@
     {
       "id": "da-vinci-code",
       "name": { "zh": "终极密码", "en": "Da Vinci Code (Coda)" },
+      "scoring": { "mode": "win" },
       "image": "images/da-vinci-code.jpg",
       "description": {
         "zh": "每位玩家把数字牌按从小到大排列成自己的秘密密码。轮流猜对手某张牌的数字：猜对就揭开它，猜错就要揭开自己的一张。每回合新摸的数字牌能帮你缩小范围。最后一个密码没被破解的人获胜。设计师：Hiroaki Suzuki、Eiji Wakasugi（2002）。\n\n适合：亲子和朋友间的轻松推理。",
@@ -1257,6 +1279,7 @@
     {
       "id": "mountain-53",
       "name": { "zh": "垃圾山", "en": "Mountain 53 (Ab in die Tonne)" },
+      "scoring": { "mode": "low" },
       "image": "images/mountain-53.jpg",
       "description": {
         "zh": "大家都懒得倒垃圾，只想把垃圾往桶里越堆越高，等别人一不小心把它碰倒来收拾！每人用 1–10 的数字牌决定要往垃圾桶上堆几件垃圾，堆倒的人要拿走垃圾扣分。曾获挪威年度最佳儿童游戏。设计师：Carlo A. Rossi（2013）。\n\n适合：亲子和小朋友。",
@@ -1282,6 +1305,7 @@
     {
       "id": "arnak-missing-expedition",
       "name": { "zh": "阿纳克遗迹：失踪的探险队", "en": "Lost Ruins of Arnak: The Missing Expedition" },
+      "scorer": "score.html?game=lost-ruins-of-arnak",
       "image": "images/arnak-missing-expedition.jpg",
       "description": {
         "zh": "《阿纳克遗迹》的第二个扩展。追随线索查明库蒂尔教授和其他失踪探险者的下落。加入 2 位新队长、2 条新研究轨道，以及新的神器、物品和助手；还可以作为 1–2 人的剧情战役来体验。（扩展，需要基础游戏才能玩。）设计师：Elwen、Mín（2023）。",
@@ -1309,6 +1333,7 @@
     {
       "id": "the-message",
       "name": { "zh": "风声", "en": "The Message" },
+      "scoring": { "mode": "teams", "teams": [{ "key": "lurker", "zh": "潜伏战线", "en": "Undercover", "color": "#c0392b" }, { "key": "military", "zh": "军情处", "en": "Military", "color": "#2c6fbb" }, { "key": "neutral", "zh": "酱油", "en": "Bystander", "color": "#8a6d3b" }] },
       "image": "images/the-message.jpg",
       "description": {
         "zh": "改编自同名电影的谍战身份推理卡牌游戏，背景设在抗战时期。每位玩家秘密获得潜伏、军情或酱油的身份，并扮演一名拥有特殊技能的角色。传递情报、截获情报、试探与伪装，找出谁是自己人。\n\n适合：喜欢谍战和推理的聚会。",
@@ -1334,6 +1359,7 @@
     {
       "id": "war-chest-nightfall",
       "name": { "zh": "战争之匣：夜幕扩展", "en": "War Chest: Nightfall" },
+      "scorer": "score.html?game=war-chest",
       "image": "images/war-chest-nightfall.jpg",
       "description": {
         "zh": "《战争之匣》的扩展。并非所有战斗都在战场上决出胜负：伪造信件、佯攻撤退、投毒、刺杀与渗透……使用这些特殊兵种，在正面交锋之前就让敌人陷入混乱。（扩展，需要基础游戏才能玩。）设计师：Trevor Benjamin、David Thompson（2024）。",
@@ -1361,6 +1387,7 @@
     {
       "id": "maracaibo-commanders",
       "name": { "zh": "马拉开波海盗：指挥官", "en": "Pirates of Maracaibo: Commanders" },
+      "scorer": "score.html?game=pirates-of-maracaibo",
       "image": "images/maracaibo-commanders.jpg",
       "description": {
         "zh": "《马拉开波海盗》的第一个扩展。你现在扮演一位赫赫有名的船长，拥有独特能力，带来更多战术变化。还可以给船装上大炮，攻打某些岛屿的要塞夺取财宝。（扩展，需要基础游戏才能玩。）设计师：Alexander Pfister、Ralph Bienert、Ryan Hendrickson（2024）。",
@@ -1447,6 +1474,7 @@
     {
       "id": "night-of-the-ninja",
       "name": { "zh": "忍者之夜", "en": "Night of the Ninja" },
+      "scoring": { "mode": "teams", "teams": [{ "key": "crane", "zh": "鹤之家族", "en": "Crane clan", "color": "#2c6fbb" }, { "key": "lotus", "zh": "莲之家族", "en": "Lotus clan", "color": "#c2185b" }, { "key": "ronin", "zh": "浪人", "en": "Ronin", "color": "#5e6a74" }] },
       "image": "images/night-of-the-ninja.jpg",
       "description": {
         "zh": "快节奏的阵营身份推理游戏。你属于某个忍者家族，要找出并击败敌对家族——前提是你能认出他们！每轮选择忍者角色：间谍和占卜师获取情报，只有忍者和盲眼刺客能出手刺杀。被淘汰的玩家仍可参与讨论。设计师：Justin Gary（2021）。\n\n适合：人多的聚会。",
@@ -1966,6 +1994,7 @@
     {
       "id": "bomb-busters",
       "name": { "zh": "炸弹克星", "en": "Bomb Busters" },
+      "scoring": { "mode": "coop" },
       "image": "images/bomb-busters.jpg",
       "description": {
         "zh": "炸弹倒计时开始了！你们是拆弹小队，每人面前有一排看不见的数字电线，不能直接交流。轮流猜队友的哪根电线和自己的某根相同并剪断，剪到红线就爆炸！合理使用道具，完成 66 个关卡。2025 年德国年度游戏。设计师：Hisashi Hayashi（2024）。\n\n适合：喜欢合作推理的玩家。",
@@ -2118,6 +2147,7 @@
     {
       "id": "hanabi",
       "name": { "zh": "花火", "en": "Hanabi" },
+      "scoring": { "mode": "coop", "score": { "zh": "烟花分数", "en": "Fireworks score", "min": 0, "max": 25 } },
       "image": "images/hanabi.jpg",
       "description": {
         "zh": "合作打造完美的烟花表演。你看不到自己的手牌，只能看到别人的！轮流给队友提示（颜色或数字），按顺序把五种颜色的 1–5 打出来。提示次数有限，打错会引起爆炸。2013 年德国年度游戏。设计师：Antoine Bauza（2010）。\n\n适合：喜欢默契合作的玩家。",
@@ -2176,6 +2206,7 @@
     {
       "id": "viticulture-wine-crate",
       "name": { "zh": "葡萄酒庄园：收纳大盒", "en": "Viticulture: Wine Crate" },
+      "scoring": { "mode": "none" },
       "image": "images/viticulture-wine-crate.jpg",
       "description": {
         "zh": "《葡萄酒庄园》的官方收纳盒（配件，不是游戏）。可以装下基础游戏和全部扩展（包括已绝版的模块），内含 6 个定制塑料收纳盒和盖子，可放入套了牌套的卡牌，方便快速摆放。设计师：Jamey Stegmaier。",
@@ -2202,6 +2233,7 @@
     {
       "id": "viticulture-essential-edition",
       "name": { "zh": "葡萄酒庄园：精华版", "en": "Viticulture Essential Edition" },
+      "scorer": "score.html?game=viticulture",
       "image": "images/viticulture-essential-edition.jpg",
       "description": {
         "zh": "《葡萄酒庄园》的精华版，整合了初版之后最受欢迎的改进和扩展内容，并加入单人模式。你在托斯卡纳继承了一座小葡萄园，分配工人度过四季：种葡萄、接待游客、酿酒、完成订单，打造最成功的酒庄。有人达到 20 分时，当年结束后游戏结束，分数最高者获胜。设计师：Jamey Stegmaier、Alan Stone（2015）。\n\n适合：喜欢工人放置的玩家。",
@@ -2236,6 +2268,7 @@
     {
       "id": "terraforming-mars-big-box",
       "name": { "zh": "重塑火星：模型&收纳大盒", "en": "Terraforming Mars: Big Box" },
+      "scoring": { "mode": "none" },
       "image": "images/terraforming-mars-big-box.jpg",
       "description": {
         "zh": "《重塑火星》的收纳大盒：可以装下基础游戏和五个扩展，还附带一套立体的城市、森林、海洋等 3D 地形板块，让版图更好看。（扩展，需要《重塑火星》基础游戏才能玩。）（2021）",
@@ -2263,6 +2296,7 @@
     {
       "id": "terraforming-mars-colonies",
       "name": { "zh": "重塑火星：殖民地", "en": "Terraforming Mars: Colonies" },
+      "scorer": "score.html?game=terraforming-mars",
       "image": "images/terraforming-mars-colonies.jpg",
       "description": {
         "zh": "公司把业务扩展到太阳系的各个角落。派出贸易舰队前往遥远的卫星，在木卫、土卫上建立殖民地，获得资源收入，帮助实现火星改造的最终目标。加入新的殖民地板块、公司和项目卡。（扩展，需要《重塑火星》基础游戏才能玩。）设计师：Jacob Fryxelius（2018）。",
@@ -2290,6 +2324,7 @@
     {
       "id": "terraforming-mars-venus-next",
       "name": { "zh": "重塑火星：接续金星", "en": "Terraforming Mars: Venus Next" },
+      "scorer": "score.html?game=terraforming-mars",
       "image": "images/terraforming-mars-venus-next.jpg",
       "description": {
         "zh": "世界政府决定同时资助改造金星！在金星上建造浮空城市、改善大气。加入金星版图、约 50 张项目卡和 5 家新公司。（扩展，需要《重塑火星》基础游戏才能玩。）设计师：Jacob Fryxelius（2017）。",
@@ -2317,6 +2352,7 @@
     {
       "id": "terraforming-mars-turmoil",
       "name": { "zh": "重塑火星：动荡", "en": "Terraforming Mars: Turmoil" },
+      "scorer": "score.html?game=terraforming-mars",
       "image": "images/terraforming-mars-turmoil.jpg",
       "description": {
         "zh": "政治登场！玩家向各党派派出代表，获得多数的党派会在下一世代执政，带来一次性奖励和持续政策。还有沙尘暴、暴乱等全球事件，提前三个世代就能看到，需要提前规划。专家级扩展。（扩展，需要《重塑火星》基础游戏才能玩。）设计师：Jacob Fryxelius（2019）。",
@@ -2378,6 +2414,7 @@
     {
       "id": "parks-nightfall",
       "name": { "zh": "国家公园：夜幕", "en": "PARKS: Nightfall" },
+      "scorer": "score.html?game=parks",
       "image": "images/parks-nightfall.jpg",
       "description": {
         "zh": "《国家公园》的扩展。加入 24 张新公园卡（包括基础游戏中缺少的 17 座国家公园）、新的年度卡和额外计分，以及全新的露营机制。（扩展，需要基础游戏才能玩。）（2020）",
@@ -2405,6 +2442,7 @@
     {
       "id": "betrayal-at-house-on-the-hill",
       "name": { "zh": "山中小屋", "en": "Betrayal at House on the Hill" },
+      "scoring": { "mode": "teams", "teams": [{ "key": "heroes", "zh": "英雄", "en": "Heroes", "color": "#2c6fbb" }, { "key": "traitor", "zh": "叛徒", "en": "Traitor", "color": "#6a1b9a" }] },
       "image": "images/betrayal-at-house-on-the-hill.jpg",
       "description": {
         "zh": "一群人走进山上的闹鬼老宅，一边探索一边逐块拼出房间，每局的宅子都不一样。途中会遇到鬼魂和不祥的预兆，直到“作祟”触发——其中一人会变成叛徒！之后从 50 个剧本中选出一个，叛徒和其他人展开对决。\n\n适合：喜欢恐怖氛围和剧情的玩家。",
@@ -2430,6 +2468,7 @@
     {
       "id": "maximum-apocalypse",
       "name": { "zh": "末日启示录", "en": "Maximum Apocalypse" },
+      "scoring": { "mode": "coop" },
       "image": "images/maximum-apocalypse.jpg",
       "description": {
         "zh": "文明已经崩溃，你们是末日的幸存者。合作类 Roguelike 冒险游戏：地图每局随机生成，玩家每回合有 4 个行动去探索、打出卡牌、对抗怪物，同时还要管理饥饿和生命值，完成剧本目标。设计师：Mike Gnade（2018）。\n\n适合：喜欢合作生存冒险的玩家。",
@@ -2456,6 +2495,7 @@
     {
       "id": "maximum-apocalypse-wasted-wilds",
       "name": { "zh": "末日启示录：荒野废墟", "en": "Maximum Apocalypse: Wasted Wilds" },
+      "scoring": { "mode": "coop" },
       "image": "images/maximum-apocalypse-wasted-wilds.jpg",
       "description": {
         "zh": "《末日启示录》系列的续作，可独立游玩。保留了合作生存玩法，加入两条剧情战役、严酷天气和与其他幸存者的互动，以及 5 名新角色和大量新内容。设计师：Mike Gnade（2021 众筹，2023 发行）。\n\n适合：喜欢合作生存冒险的玩家。",
@@ -2517,6 +2557,7 @@
     {
       "id": "little-factory-shokai-training",
       "name": { "zh": "小小工厂：商会研修！", "en": "Firm With Brownies: Shokai Training!" },
+      "scorer": "score.html?game=little-factory",
       "image": "images/little-factory-shokai-training.jpg",
       "description": {
         "zh": "《小小工厂（Brownies 版）》的扩展。加入更多变化，以及单人模式：成为精明的商人，和 Brownies 伙伴们一起学习生产和销售。（扩展，需要基础游戏才能玩。）设计师：Shun Taguchi、Aya Taguchi（2021）。",
@@ -2607,6 +2648,7 @@
     {
       "id": "feed-the-kraken",
       "name": { "zh": "险恶疑航", "en": "Feed the Kraken" },
+      "scoring": { "mode": "teams", "teams": [{ "key": "sailors", "zh": "水手", "en": "Sailors", "color": "#2c6fbb" }, { "key": "pirates", "zh": "海盗", "en": "Pirates", "color": "#8e2b2b" }, { "key": "cult", "zh": "邪教徒", "en": "Cult", "color": "#6a1b9a" }] },
       "image": "images/feed-the-kraken.jpg",
       "description": {
         "zh": "大家同在一条船上，却想往不同方向开！忠诚的水手要把船安全开回大陆，海盗想偷偷把船驶进百慕大三角，疯狂的邪教徒则试图把船员拉入教派，献祭给海怪。船长、副手和领航员共同决定航向，大家可以讨论、甩锅、发动兵变。设计师：Maikel Cheney、Hans Joachim Höh、Tobias Immich（2022）。\n\n适合：人多的身份推理聚会。",
@@ -2632,6 +2674,7 @@
     {
       "id": "dumb-animals",
       "name": { "zh": "低等动物", "en": "Dumb Animals" },
+      "scoring": { "mode": "win" },
       "image": "images/dumb-animals.jpg",
       "description": {
         "zh": "混乱的动物王国，靠欺骗、记忆和心理战取胜。每张牌是食物链上的一种动物，可以把牌扣着打出并谎称是更强的动物，其他人可以选择质疑。每局可以用一次特殊的胡萝卜硬币。设计师：丁七（2025）。\n\n适合：喜欢吹牛和心理战的聚会。",
@@ -2707,6 +2750,7 @@
     {
       "id": "love-letter",
       "name": { "zh": "情书", "en": "Love Letter" },
+      "scoring": { "mode": "win" },
       "image": "images/love-letter.jpg",
       "description": {
         "zh": "公主把自己锁在宫里，求婚者们只能托人帮忙递送情书。每人手上只有一张牌，轮流摸一张、打一张，利用侍卫、神父、男爵等角色的能力淘汰对手。最后留下或手牌最大的人把信送到公主手中。只有 16 张牌，几分钟一局。设计师：Seiji Kanai（2012）。（BGA 在线版支持 2–6 人。）\n\n适合：随时随地来一局。",
@@ -2741,6 +2785,7 @@
     {
       "id": "6-nimmt",
       "name": { "zh": "牛头王", "en": "6 nimmt! (Take 5)" },
+      "scoring": { "mode": "low" },
       "image": "images/6-nimmt.jpg",
       "description": {
         "zh": "所有人同时出一张数字牌，从小到大依次接到桌上四行牌的后面。谁的牌成了一行的第 6 张，就要把前面 5 张连同牛头全部收走——牛头越少越好！简单、刺激，人越多越热闹。设计师：Wolfgang Kramer（1994）。\n\n适合：人多的聚会。",
@@ -2774,6 +2819,7 @@
     {
       "id": "coup",
       "name": { "zh": "政变疑云", "en": "Coup" },
+      "scoring": { "mode": "win" },
       "image": "images/coup.jpg",
       "description": {
         "zh": "你是腐败城邦中一个家族的首领，要靠操纵、吹牛和贿赂夺取权力。每人有两张暗置的身份牌，可以宣称自己是任何角色来使用能力——别人可以质疑你。失去两张身份牌就出局，最后留下的人获胜。设计师：Rikki Tahta（2012）。（BGA 在线版支持 2–8 人。）\n\n适合：喜欢吹牛和心理战的聚会。",
@@ -2807,6 +2853,7 @@
     {
       "id": "hungry-monkey",
       "name": { "zh": "开心马喽", "en": "Hungry Monkey" },
+      "scoring": { "mode": "win" },
       "image": "images/hungry-monkey.jpg",
       "description": {
         "zh": "小猴子丢了早餐，森林里的动物都来帮忙找，但只有一个能成为赢家。快节奏的出牌游戏，比谁先把手牌出完，有点像 UNO。设计师：Erik Andersson Sundén（2022）。\n\n适合：亲子和轻松聚会。",
@@ -2832,6 +2879,7 @@
     {
       "id": "salem-1692",
       "name": { "zh": "猎巫镇1692", "en": "Salem 1692" },
+      "scoring": { "mode": "teams", "teams": [{ "key": "town", "zh": "镇民", "en": "Town", "color": "#2e7d4f" }, { "key": "witches", "zh": "女巫", "en": "Witches", "color": "#6a1b9a" }] },
       "image": "images/salem-1692.jpg",
       "description": {
         "zh": "1692 年的塞勒姆镇，一句错误的指控就可能让你被当作女巫绞死。玩家互相指控和辩护，用卡牌对可疑的人施加指控，找出隐藏的女巫；女巫则要在夜里暗中除掉镇民。设计师：Travis Hancock（2015）。\n\n适合：人多的身份推理聚会。",
@@ -2857,6 +2905,7 @@
     {
       "id": "cheese-thief",
       "name": { "zh": "奶酪大盗", "en": "Cheese Thief" },
+      "scoring": { "mode": "teams", "teams": [{ "key": "mice", "zh": "好老鼠", "en": "Mice", "color": "#d39e00" }, { "key": "thief", "zh": "大盗阵营", "en": "Thief & helpers", "color": "#5e6a74" }] },
       "image": "images/cheese-thief.jpg",
       "description": {
         "zh": "轻松快速的身份推理游戏。大家都是梦着明天吃奶酪的小老鼠，但其中一只是小偷，趁大家睡着把奶酪偷走了！每人掷骰决定自己在夜里几点醒来，醒着时可以偷看……天亮后讨论并投票抓出小偷。设计师：Dongxu Li。\n\n适合：亲子和朋友聚会。",
@@ -2940,6 +2989,7 @@
     {
       "id": "the-gang",
       "name": { "zh": "纸牌帮", "en": "The Gang" },
+      "scoring": { "mode": "coop" },
       "image": "images/the-gang.jpg",
       "description": {
         "zh": "合作版德州扑克，一起完成银行抢劫！不能交流手牌，每轮在翻牌前后用筹码表示自己的牌在全桌中有多强，最后按顺序亮牌——排序全对就成功。成功 3 次获胜，失败 3 次就输。设计师：John Cooper、Kory Heath（2024）。\n\n适合：喜欢默契合作的聚会。",
@@ -2973,6 +3023,7 @@
     {
       "id": "7-wonders-duel-agora",
       "name": { "zh": "七大奇迹：对决 - 市政广场", "en": "7 Wonders Duel: Agora" },
+      "scorer": "score.html?game=7-wonders-duel",
       "image": "images/7-wonders-duel-agora.jpg",
       "description": {
         "zh": "《七大奇迹：对决》的扩展。加入元老院版图，由 6 个议院组成，用议员卡争夺议院控制权并获得好处；控制多数议院即可直接获胜，带来新的政治胜利方式。还加入新的奇迹和阴谋卡。（扩展，需要基础游戏才能玩。）设计师：Antoine Bauza、Bruno Cathala（2020）。",
@@ -3000,6 +3051,7 @@
     {
       "id": "before-she-wakes",
       "name": { "zh": "冰冷的她醒来之前", "en": "Before She Wakes" },
+      "scoring": { "mode": "coop" },
       "image": "images/before-she-wakes.jpg",
       "description": {
         "zh": "一款 3–6 人的合作卡牌聚会游戏（2020）。",
@@ -3020,6 +3072,7 @@
     {
       "id": "white-castle-matcha",
       "name": { "zh": "姬路城：茶道", "en": "The White Castle: Matcha" },
+      "scorer": "score.html?game=white-castle",
       "image": "images/white-castle-matcha.jpg",
       "description": {
         "zh": "《姬路城》的第一个扩展，以日本茶道为主题。加入艺伎、茶室、池塘、茶道仪式板块和新资源“茶筅”，让家族成员进入茶室赢取影响力。（扩展，需要基础游戏才能玩。）设计师：Isra C.、Shei S.（2024）。",
@@ -3111,6 +3164,7 @@
     {
       "id": "parks-wildlife",
       "name": { "zh": "国家公园：野生动物", "en": "PARKS: Wildlife" },
+      "scorer": "score.html?game=parks",
       "image": "images/parks-wildlife.jpg",
       "description": {
         "zh": "《国家公园》的扩展。加入新的步道地点、公园卡（含野生动物插画）、装备卡、季节卡和水壶，还有一只在公园卡之间游走的大野牛，给造访的玩家带来奖励。（扩展，需要基础游戏才能玩。）设计师：Henry Audubon、Mattox Shuler（2022）。",
@@ -3163,6 +3217,7 @@
     {
       "id": "skull",
       "name": { "zh": "骷髅牌", "en": "Skull" },
+      "scoring": { "mode": "win" },
       "image": "images/skull.jpg",
       "description": {
         "zh": "纯粹的吹牛游戏。每人有 3 张花和 1 张骷髅，轮流扣下一张牌，直到有人宣称能翻开多少张都是花。其他人可以加价，出价最高的人必须从自己的牌开始翻——翻到骷髅就失败！成功翻牌 2 次，或成为最后留下的玩家即获胜。设计师：Hervé Marly（2011）。\n\n适合：喜欢心理战的聚会。",
@@ -3196,6 +3251,7 @@
     {
       "id": "rummikub",
       "name": { "zh": "拉密", "en": "Rummikub" },
+      "scoring": { "mode": "win" },
       "image": "images/rummikub.jpg",
       "description": {
         "zh": "经典数字牌游戏。用数字牌组成同色顺子或同数不同色的组合放到桌上，还可以重新拆分桌上已有的组合来打出更多牌。最先出完所有牌的人获胜。设计师：Ephraim Hertzano。\n\n适合：全家老少。",
@@ -3246,6 +3302,7 @@
     {
       "id": "avalon",
       "name": { "zh": "抵抗组织：阿瓦隆", "en": "The Resistance: Avalon" },
+      "scoring": { "mode": "teams", "teams": [{ "key": "good", "zh": "正义方", "en": "Good", "color": "#2c6fbb" }, { "key": "evil", "zh": "邪恶方", "en": "Evil", "color": "#8e2b2b" }] },
       "image": "images/avalon.jpg",
       "description": {
         "zh": "亚瑟王的勇士中藏着莫德雷德的爪牙。正义方要完成任务，邪恶方人数少但彼此认识，会暗中破坏任务。梅林知道谁是坏人却不能暴露自己，否则会被刺客刺杀。没有淘汰，所有人玩到最后。设计师：Don Eskridge（2012）。\n\n适合：人多的身份推理聚会。",
@@ -3364,6 +3421,7 @@
     {
       "id": "root-riverfolk",
       "name": { "zh": "茂林源记：河岸扩展", "en": "Root: The Riverfolk Expansion" },
+      "scorer": "score.html?game=root",
       "image": "images/root-riverfolk.jpg",
       "description": {
         "zh": "《茂林源记》的扩展。加入两个新阵营：做生意的河岸商会和传教的蜥蜴教派，还有额外的流浪者、合作剧本和机器人规则，支持 1–6 人。（扩展，需要基础游戏才能玩。）设计师：Cole Wehrle（2018）。",
@@ -3391,6 +3449,7 @@
     {
       "id": "root-underworld",
       "name": { "zh": "茂林源记：地下世界", "en": "Root: The Underworld Expansion" },
+      "scorer": "score.html?game=root",
       "image": "images/root-underworld.jpg",
       "description": {
         "zh": "《茂林源记》的扩展。加入两个新阵营：从地下洞穴进军的地下公国，以及暗中布下阴谋的鸦群密谋；还有湖泊和山地两张新地图。（扩展，需要基础游戏才能玩。）设计师：Cole Wehrle、Patrick Leder（2020）。",
@@ -3418,6 +3477,7 @@
     {
       "id": "castles-of-burgundy-special-edition",
       "name": { "zh": "勃艮第城堡：特别典藏版", "en": "The Castles of Burgundy: Special Edition" },
+      "scorer": "score.html?game=castles-of-burgundy",
       "image": "images/castles-of-burgundy-special-edition.jpg",
       "description": {
         "zh": "经典《勃艮第城堡》的高端典藏版，由 Ravensburger 与 Awaken Realms 合作推出。重新设计的美术和版图、双层玩家版、放大 30% 的板块、板块收纳袋和金属钱币等豪华配件。玩法与原版相同：掷骰拿取板块，建设你的勃艮第领地。设计师：Stefan Feld（2023）。（BGA 在线版支持 2–4 人。）\n\n适合：《勃艮第城堡》的忠实粉丝。",
@@ -3511,6 +3571,7 @@
     {
       "id": "risk",
       "name": { "zh": "战国风云", "en": "Risk" },
+      "scoring": { "mode": "win" },
       "image": "images/risk.jpg",
       "description": {
         "zh": "最经典的大众战争游戏，目标是征服世界。每回合根据占领的领土和大洲获得援军，用掷骰比大小的方式攻打相邻领土，并加固防线。设计师：Albert Lamorisse、Michael I. Levin（1959）。\n\n适合：喜欢征服和对抗的玩家。",
@@ -3622,6 +3683,7 @@
     {
       "id": "terraforming-mars-prelude",
       "name": { "zh": "重塑火星：序幕", "en": "Terraforming Mars: Prelude" },
+      "scorer": "score.html?game=terraforming-mars",
       "image": "images/terraforming-mars-prelude.jpg",
       "description": {
         "zh": "《重塑火星》的扩展。开局时每位玩家从序幕卡中选择两张，立刻获得资源、产能或提前改造，让公司快速起步，明显缩短游戏时间。还加入新的公司和项目卡，以及单人挑战。（扩展，需要《重塑火星》基础游戏才能玩。）设计师：Jacob Fryxelius（2018）。",
@@ -3649,6 +3711,7 @@
     {
       "id": "castles-of-burgundy-2011",
       "name": { "zh": "勃根地城堡", "en": "The Castles of Burgundy" },
+      "scorer": "score.html?game=castles-of-burgundy",
       "image": "images/castles-of-burgundy-2011.jpg",
       "description": {
         "zh": "游戏背景设在中世纪鼎盛时期的法国勃艮第地区。每位玩家扮演一位贵族，从一块小小的封地起步，建造城镇与雄伟的城堡、沿河经商、开采银矿，并借助旅人的知识发展自己的领地。\n\n游戏分 5 个阶段，每阶段 5 轮。每轮掷两颗骰子，用点数从中央版图拿取地块、放入自己的领地、出售货物或获取工人。每种地块放下时都会触发效果，巧妙连锁能带来大量分数。约每位玩家 30 分钟。此为 2011 年原版。设计师：Stefan Feld（2011）。\n\n适合：喜欢规划和深度策略的玩家。",
@@ -3683,6 +3746,7 @@
     {
       "id": "war-chest",
       "name": { "zh": "战争之匣", "en": "War Chest" },
+      "scoring": { "mode": "win" },
       "image": "images/war-chest.jpg",
       "description": {
         "zh": "以“袋子构筑”为核心的抽象战棋游戏。开局轮流征召不同兵种组成军队，每回合从袋子里摸出 3 枚兵种硬币，用来部署、移动、攻击、占领据点或招募更多士兵。不仅要指挥战场上的部队，还要管理袋中等待上场的后备军。率先把全部 6 个控制标记放到据点上的一方获胜，4 人时两两组队。设计师：Trevor Benjamin、David Thompson（2018）。（BGA 在线版支持 2、4 人。）\n\n适合：喜欢两人策略对抗的玩家。",
@@ -3751,6 +3815,7 @@
     {
       "id": "hakoniwa-meow",
       "name": { "zh": "箱庭喵喵", "en": "Hakoniwa Meow" },
+      "scoring": { "mode": "win" },
       "image": "images/hakoniwa-meow.jpg",
       "description": {
         "zh": "又称“箱庭猫”。国产原创的猫咪派对对战游戏。玩家轮流打出房间板块，一点点拼出“箱庭”地图，再用卡牌效果招来更多喵喵，掷骰子和其他玩家的猫咪混战，最后留下来的就是赢家。过程中可以结盟，也可以背叛。上百张卡牌效果各不相同，每局手牌都不一样，还有闭眼叠喵喵、抛撒喵喵等实体小挑战。设计师：英哲，新物集众筹发行。\n\n适合：朋友聚会，喜欢热闹互动的玩家。",
@@ -3776,6 +3841,7 @@
     {
       "id": "arkham-lovecraft-letter",
       "name": { "zh": "诡镇奇谈：克苏鲁情书", "en": "Arkham Horror: Lovecraft Letter" },
+      "scoring": { "mode": "win" },
       "image": "images/arkham-lovecraft-letter.jpg",
       "description": {
         "zh": "《情书》的克苏鲁版本（又名“洛夫克拉夫特情书”），舞台换成了《诡镇奇谈》的阿卡姆镇。规则和《情书》一样：每人只拿一张牌，轮流摸一张、打一张，用角色能力推理和淘汰对手。不同的是加入了“疯狂”：疯狂牌的效果更强，但打出越多疯狂牌，之后每回合都要做理智检定，一旦失败就出局。要保持清醒，还是冒险拥抱疯狂？牌组共 27 张，比原版更丰富。设计师：Seiji Kanai（2025）。\n\n适合：喜欢《情书》、想要更多变化和克苏鲁氛围的玩家。",
@@ -3972,6 +4038,7 @@
     {
       "id": "behind",
       "name": { "zh": "谜图背后", "en": "Behind" },
+      "scoring": { "mode": "coop" },
       "image": "images/behind.jpg",
       "description": {
         "zh": "一款合作解谜游戏：观察、拼合、揭晓！盒子里有三个独立的场景（博物馆盗窃案、两位科学家的神奇机器、通往宇宙的象形文字浮雕），每个场景的逻辑都不一样。大家只能看着板块正面的线索，推理出它们该怎么拼在一起；卡住了可以按顺序翻开提示卡。拼好以后把所有板块翻过来，背面会组成一幅完整的画，对了就一目了然。一个场景约 45–90 分钟，人数不限，玩完一个场景就不能重玩。2025 年法国 As d'Or 年度游戏（进阶类）。设计师：Cédric Millet（2024）。\n\n适合：喜欢拼图和推理、一起动脑的朋友或家庭。",
@@ -4022,6 +4089,7 @@
     {
       "id": "beast",
       "name": { "zh": "巨兽猎踪", "en": "Beast" },
+      "scoring": { "mode": "teams", "teams": [{ "key": "hunters", "zh": "猎人", "en": "Hunters", "color": "#2e7d4f" }, { "key": "beast", "zh": "巨兽", "en": "Beast", "color": "#8e2b2b" }] },
       "image": "images/beast.jpg",
       "description": {
         "zh": "北欧传说风格的荒野里，一位玩家扮演巨兽，其余玩家是猎人。巨兽用方向牌在森林、沼泽和洞穴之间秘密移动，所到之处只留下痕迹，真实位置要等猎人搜到它或它主动出击时才会暴露。猎人们要合作，用轮抽来的行动牌移动、搜索和攻击，一步步缩小范围；巨兽则要藏好踪迹，伺机出击。紧张的“躲猫猫”式隐藏移动与推理。设计师：Aron Midhall、Elon Midhall、Assar Pettersson（Studio Midhall，2023）。\n\n适合：喜欢一对多、隐藏移动和心理博弈的玩家，例如《苏格兰场》《德古拉之怒》的爱好者。",
@@ -4072,6 +4140,7 @@
     {
       "id": "terrorscape",
       "name": { "zh": "暗夜杀机", "en": "Terrorscape" },
+      "scoring": { "mode": "teams", "teams": [{ "key": "survivors", "zh": "幸存者", "en": "Survivors", "color": "#2e7d4f" }, { "key": "killer", "zh": "杀手", "en": "Killer", "color": "#8e2b2b" }] },
       "image": "images/terrorscape.jpg",
       "description": {
         "zh": "一名玩家扮演杀手，其他玩家扮演困在荒宅里的幸存者，是一场不对称的躲猫猫对抗（也译作《恶夜杀机》）。幸存者要合力找齐 5 把钥匙开门逃走，或者修好无线电呼叫救援；杀手看不到幸存者藏在哪里，要靠移动、感知和陷阱把他们一个个找出来。幸存者之间不能明说自己的计划，要靠默契配合，每一步都紧张刺激。设计师：Jeffrey CCH（2023）。\n\n适合：喜欢恐怖题材、推理和团队对抗的玩家；2 人或 4 人都好玩。",

@@ -423,6 +423,9 @@
       : `<button class="admin-btn" type="button" data-signin>${esc(t("adminLogin"))}</button>`;
   }
 
+  // Every game has a scoreboard (score.html?game=<id>), unless it has its own page (scorer), or isn't scored at all
+  // (scoring.mode "none": e.g. murder-mystery scripts and storage boxes).
+  const scorerOf = (g) => g.scorer || ((g.scoring && g.scoring.mode === "none") || (g.tags || []).includes("Accessory") ? null : `score.html?game=${encodeURIComponent(g.id)}`);
   function openGame(id) {
     const g = games.find((x) => x.id === id);
     if (!g) return;
@@ -431,7 +434,7 @@
       <h2 id="detail-title">${esc(gameName(g))}</h2>
       <p class="meta">${meta(g).join(" · ")}</p>
       ${(g.tags || []).length ? `<p class="tag-row">${g.tags.map((k) => `<span class="chip">${esc(tagLabel(k))}</span>`).join("")}</p>` : ""}
-      ${g.scorer ? `<p class="scorer-link"><a class="btn" href="${esc(g.scorer)}">🧮 ${esc(t("scorer"))}</a></p>` : ""}
+      ${scorerOf(g) ? `<p class="scorer-link"><a class="btn" href="${esc(scorerOf(g))}">🧮 ${esc(t("scorer"))}</a></p>` : ""}
       ${HVLoans.enabled ? `<div id="loan-box" class="loan-box"></div><div id="pdf-preview" class="pdf-preview" hidden></div>` : ""}
       <p class="description">${esc(loc(g.description))}</p>
       ${renderLinks(g.links)}`;

@@ -367,7 +367,7 @@ window.HVLoans = (() => {
       const rows = await request(`/rest/v1/events?id=eq.${encodeURIComponent(id)}` +
         "&select=id,title,event_date,start_time,end_time,location,map_url,description," +
         "event_tables(id,game_id,game_name,on_site,max_players,note,created_at,start_time,host_player,event_players(id,name,joined_at)," +
-        "event_games(id,score_id,started_at,game_scores(id,players,winner,top_score,pending)))," + +
+        "event_games(id,score_id,started_at,game_scores(id,players,winner,top_score,pending,details)))," +
         "event_staff(is_lead,sort,staff(id,name,phone,wechat,xhs,wechat_qr,xhs_qr))", { admin: "ifSignedIn" });
       const ev = rows[0] || null;
       if (ev) {
@@ -433,13 +433,15 @@ window.HVLoans = (() => {
       }),
     // ---------- games played at an event table (对局) ----------
     // The host (or an admin) starts a game on the day: saved at once as a game record with the chosen players
-    // (playerIds; all of the table's players when left out) and no scores yet. Returns the record id.
-    startGame: (tableId, token, playerIds) =>
-      request("/rest/v1/rpc/start_event_game", { method: "POST", admin: "ifSignedIn", body: { p_table: tableId, p_token: token, p_players: playerIds || null } }),
-    // The host, an admin, or a signed-in player in that game: one whole number per player, in the record's order.
+    // (playerIds; all of the table's players when left out) and no scores yet, under recordGame (the base game of an
+    // expansion; default: the table's game). Returns the record id.
+    startGame: (tableId, token, playerIds, recordGame) =>
+      request("/rest/v1/rpc/start_event_game", { method: "POST", admin: "ifSignedIn", body: { p_table: tableId, p_token: token, p_players: playerIds || null, p_record_game: recordGame || null } }),
+    // The host, an admin, or a signed-in player in that game: one whole number per player, in the record's order (their
+    // score, or 1 / 0 for won / lost); teams: each player's side; details: { mode, winTeam, won, score } (see schema.sql).
     // Returns false if this browser / account may not.
-    setGameScores: (scoreId, token, totals) =>
-      request("/rest/v1/rpc/set_event_game_scores", { method: "POST", admin: "ifSignedIn", body: { p_score: scoreId, p_token: token, p_totals: totals } }),
+    setGameScores: (scoreId, token, totals, teams, details) =>
+      request("/rest/v1/rpc/set_event_game_scores", { method: "POST", admin: "ifSignedIn", body: { p_score: scoreId, p_token: token, p_totals: totals, p_teams: teams || null, p_details: details || null } }),
     // The host or an admin, while no scores are in. Returns false if it isn't possible.
     cancelGame: (scoreId, token) =>
       request("/rest/v1/rpc/cancel_event_game", { method: "POST", admin: "ifSignedIn", body: { p_score: scoreId, p_token: token } }),

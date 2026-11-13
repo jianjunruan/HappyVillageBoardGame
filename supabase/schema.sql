@@ -205,7 +205,10 @@ create table if not exists public.game_scores (
   played_at timestamptz not null default now(),
   target integer check (target between 1 and 100000),                      -- points needed to win (Flip 7: 200)
   -- [{ "name": "小明", "total": 213 }, ...] in seating order
-  -- (Age of Innovation also has optional "faction" and "terrain" keys, e.g. "monks" and "lake")
+  -- (Age of Innovation also has optional "faction" and "terrain" keys, e.g. "monks" and "lake"; games played in sides
+  -- have "team", e.g. "wolves")
+  -- How the game was won is in details.mode (see js/scoreboard.js): none = highest score; "low" = lowest score;
+  -- "win" / "teams" / "coop" = no scores, total is 1 (won) or 0. top_score is always the winning value.
   players jsonb not null,
   -- one array per round, one cell per player (same order): { "s": score, "b": true if bust, "f": true if Flip 7 }
   rounds jsonb not null default '[]',
@@ -242,8 +245,9 @@ begin
        or jsonb_typeof(p -> 'total') <> 'number' then
       raise exception 'each player needs a name (1-30 characters) and a total' using errcode = 'HVS01';
     end if;
-    if char_length(coalesce(p ->> 'faction', '')) > 40 or char_length(coalesce(p ->> 'terrain', '')) > 40 then
-      raise exception 'faction and terrain must be 40 characters or fewer' using errcode = 'HVS01';
+    if char_length(coalesce(p ->> 'faction', '')) > 40 or char_length(coalesce(p ->> 'terrain', '')) > 40
+       or char_length(coalesce(p ->> 'team', '')) > 40 then
+      raise exception 'faction, terrain and team must be 40 characters or fewer' using errcode = 'HVS01';
     end if;
   end loop;
   if jsonb_typeof(new.rounds) <> 'array' or jsonb_array_length(new.rounds) > 500 or pg_column_size(new.rounds) > 100000 then
@@ -673,8 +677,12 @@ as $$
 $$;
 
 -- Starts a game at a table: the host or an admin, on the day of the event (one day of slack for time zones).
--- p_players: the sign-ups who play (null = everyone at the table). Returns the new record's id.
-create or replace function public.start_event_game(p_table bigint, p_token text, p_players bigint[] default null)
+-- p_players: the sign-ups who play (null = everyone at the table). p_record_game: the game the record is saved under,
+-- when it isn't the table's own (an expansion or another edition is recorded under its base game). Returns the
+-- new record's id.
+drop function if exists public.start_event_game(bigint, text, bigint[]);
+create or replace function public.start_event_game(p_table bigint, p_token text, p_players bigint[] default null,
+  p_record_game text default null)
 returns bigint
 language plpgsql
 security definer
@@ -711,16 +719,22 @@ begin
     raise exception 'pick at least one player' using errcode = 'HVG05';
   end if;
   insert into public.game_scores (game_id, played_on, players, rounds, winner, top_score, round_count, pending)
-  values (tb.game_id, tb.event_date, names, '[]', '—', 0, 0, true)
+  values (case when p_record_game ~ '^[a-z0-9-]{1,100}$' then p_record_game else tb.game_id end,
+          tb.event_date, names, '[]', '—', 0, 0, true)
   returning id into s;
   insert into public.event_games (table_id, score_id) values (tb.id, s);
   return s;
 end;
 $$;
 
--- Fills in (or corrects) a game's scores: p_totals is one whole number per player, in the record's order.
--- Works out the winner. Returns false if the caller may not (see can_score_event_game).
-create or replace function public.set_event_game_scores(p_score bigint, p_token text, p_totals jsonb)
+-- Fills in (or corrects) a game's result: p_totals is one whole number per player, in the record's order: their score,
+-- or 1 (won) / 0 for games without scores. p_details says how the game is won: { "mode": "low" | "win" | "teams" |
+-- "coop", "winTeam": side, "won": true/false, "score": team score } (null or no mode = highest score wins);
+-- p_teams: each player's side (mode "teams"). Works out the winner. Returns false if the caller may not
+-- (see can_score_event_game).
+drop function if exists public.set_event_game_scores(bigint, text, jsonb);
+create or replace function public.set_event_game_scores(p_score bigint, p_token text, p_totals jsonb,
+  p_teams jsonb default null, p_details jsonb default null)
 returns boolean
 language plpgsql
 security definer
@@ -730,9 +744,28 @@ declare
   g record;
   outp jsonb := '[]';
   v jsonb;
+  pl jsonb;
+  tm text;
   top integer;
   win text;
+  mode text := coalesce(p_details ->> 'mode', 'high');
+  det jsonb := '{}';
 begin
+  if p_details is not null and (jsonb_typeof(p_details) <> 'object' or pg_column_size(p_details) > 2000) then
+    raise exception 'details must be a small object' using errcode = 'HVG07';
+  end if;
+  if mode not in ('high', 'low', 'win', 'teams', 'coop') then
+    raise exception 'unknown scoring method' using errcode = 'HVG07';
+  end if;
+  if mode = 'teams' and (jsonb_typeof(p_teams) is distinct from 'array' or jsonb_typeof(p_details -> 'winTeam') is distinct from 'string'
+                         or char_length(p_details ->> 'winTeam') not between 1 and 40) then
+    raise exception 'pick each side and the winning side' using errcode = 'HVG07';
+  end if;
+  if mode = 'coop' and (jsonb_typeof(p_details -> 'won') is distinct from 'boolean'
+       or (p_details ? 'score' and (jsonb_typeof(p_details -> 'score') <> 'number'
+           or (p_details ->> 'score')::numeric not between -9999 and 9999))) then
+    raise exception 'pick the result' using errcode = 'HVG07';
+  end if;
   select s.id, s.players, t.id as table_id, t.host_token, t.host_player, e.event_date into g
   from public.event_games eg
   join public.game_scores s on s.id = eg.score_id
@@ -752,15 +785,36 @@ begin
   for i in 0 .. jsonb_array_length(g.players) - 1 loop
     v := p_totals -> i;
     if jsonb_typeof(v) <> 'number' or (v #>> '{}')::numeric <> trunc((v #>> '{}')::numeric)
-       or (v #>> '{}')::numeric not between -9999 and 9999 then
-      raise exception 'scores are whole numbers from -9999 to 9999' using errcode = 'HVG07';
+       or (v #>> '{}')::numeric not between -9999 and 9999
+       or (mode in ('win', 'teams', 'coop') and (v #>> '{}')::numeric not in (0, 1)) then
+      raise exception 'scores are whole numbers from -9999 to 9999 (1 or 0 without scores)' using errcode = 'HVG07';
     end if;
-    outp := outp || jsonb_build_array(jsonb_set(g.players -> i, '{total}', to_jsonb((v #>> '{}')::integer)));
+    pl := jsonb_set(g.players -> i, '{total}', to_jsonb((v #>> '{}')::integer)) - 'team';
+    if mode = 'teams' then
+      tm := p_teams ->> i;
+      if tm is null or char_length(tm) not between 1 and 40 then
+        raise exception 'pick a side for every player' using errcode = 'HVG07';
+      end if;
+      pl := pl || jsonb_build_object('team', tm);
+    end if;
+    outp := outp || jsonb_build_array(pl);
   end loop;
-  select max((x ->> 'total')::integer) into top from jsonb_array_elements(outp) x;
+  if mode = 'coop' and (select count(distinct x ->> 'total') from jsonb_array_elements(outp) x) > 1 then
+    raise exception 'a co-op game is won or lost by everyone' using errcode = 'HVG07';
+  end if;
+  select case mode when 'low' then min((x ->> 'total')::integer) when 'high' then max((x ->> 'total')::integer) else 1 end
+  into top from jsonb_array_elements(outp) x;
   select string_agg(x ->> 'name', '、' order by o) into win
   from jsonb_array_elements(outp) with ordinality a (x, o) where (x ->> 'total')::integer = top;
-  update public.game_scores set players = outp, top_score = top, winner = left(win, 400), pending = false where id = g.id;
+  if mode <> 'high' then
+    det := jsonb_strip_nulls(jsonb_build_object('mode', mode,
+      'winTeam', case when mode = 'teams' then p_details -> 'winTeam' end,
+      'won', case when mode = 'coop' then p_details -> 'won' end,
+      'score', case when mode = 'coop' then p_details -> 'score' end));
+  end if;
+  update public.game_scores
+  set players = outp, top_score = top, winner = left(coalesce(win, '—'), 400), details = det, pending = false
+  where id = g.id;
   return true;
 end;
 $$;
@@ -827,12 +881,12 @@ end;
 $$;
 
 revoke execute on function public.can_score_event_game(bigint, text, bigint, text, jsonb) from public, anon, authenticated;
-revoke execute on function public.start_event_game(bigint, text, bigint[]) from public;
-revoke execute on function public.set_event_game_scores(bigint, text, jsonb) from public;
+revoke execute on function public.start_event_game(bigint, text, bigint[], text) from public;
+revoke execute on function public.set_event_game_scores(bigint, text, jsonb, jsonb, jsonb) from public;
 revoke execute on function public.cancel_event_game(bigint, text) from public;
 revoke execute on function public.add_event_table_player(bigint, text, text, bigint) from public;
-grant execute on function public.start_event_game(bigint, text, bigint[]) to anon, authenticated;
-grant execute on function public.set_event_game_scores(bigint, text, jsonb) to anon, authenticated;
+grant execute on function public.start_event_game(bigint, text, bigint[], text) to anon, authenticated;
+grant execute on function public.set_event_game_scores(bigint, text, jsonb, jsonb, jsonb) to anon, authenticated;
 grant execute on function public.cancel_event_game(bigint, text) to anon, authenticated;
 grant execute on function public.add_event_table_player(bigint, text, text, bigint) to anon, authenticated;
 
