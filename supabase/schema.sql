@@ -1053,6 +1053,39 @@ as $$
   order by e.event_date desc, t.start_time nulls last
   limit 500;
 $$;
+-- One page of the signed-in player's sign-ups: current ones (the event is today or later, by the player's own date,
+-- p_today) soonest first, or past ones (p_past) most recent first. Returns { "total": n, "rows": [...] }.
+create or replace function public.my_event_signups_page(p_today date, p_past boolean, p_offset integer, p_limit integer)
+returns jsonb
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  with mine as (
+    select e.id as event_id, e.title, e.event_date, e.start_time as event_time, t.id as table_id, t.game_id, t.game_name,
+           t.start_time as table_time, t.host_player = p.id as is_host
+    from public.event_players p
+    join public.event_tables t on t.id = p.table_id
+    join public.events e on e.id = t.event_id
+    where auth.uid() is not null and p.user_id = auth.uid()
+      and (case when p_past then e.event_date < p_today else e.event_date >= p_today end)
+  )
+  select jsonb_build_object(
+    'total', (select count(*) from mine),
+    'rows', coalesce((
+      select jsonb_agg(to_jsonb(x) order by n) from (
+        select m.*, row_number() over (order by
+                 case when p_past then null else m.event_date end asc,
+                 case when p_past then m.event_date end desc,
+                 m.table_time nulls last, m.table_id) as n
+        from mine m
+        order by n
+        offset greatest(coalesce(p_offset, 0), 0)
+        limit least(greatest(coalesce(p_limit, 10), 1), 50)) x), '[]'::jsonb));
+$$;
+revoke execute on function public.my_event_signups_page(date, boolean, integer, integer) from public, anon;
+grant execute on function public.my_event_signups_page(date, boolean, integer, integer) to authenticated;
 -- The signed-in player's sign-ups at one event (so the page knows which are theirs on any device).
 create or replace function public.my_event_player_ids(p_event bigint)
 returns setof bigint

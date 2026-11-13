@@ -39,8 +39,6 @@
       nameTaken: "这个名字已经属于别的账号了：昵称和其他名字都不能和别人重复。",
       statPlays: "对局",
       statWins: "胜场",
-      statRate: "胜率",
-      statPoints: "累计得分",
       statGames: "玩过的桌游",
       summary: "🎲 桌游总结",
       colGame: "桌游",
@@ -50,6 +48,26 @@
       colAvg: "平均分",
       colLast: "最近一次",
       recent: "📜 最近对局",
+      prevPage: "‹ 上一页",
+      shelfTitle: "🎲 玩过的桌游（{n}）",
+      shelfTile: "查看玩过的桌游",
+      spaceHint: "拖动旋转 · 滚轮或双指缩放 · 点封面查看这款桌游的总结",
+      cardLabel: "{name}，玩过 {n} 局",
+      modeLabel: "排列方式",
+      mode_sphere: "球体",
+      mode_helix: "螺旋",
+      mode_ring: "环形",
+      mode_plane: "平面",
+      zoomIn: "放大",
+      zoomOut: "缩小",
+      playsN: "{n} 局",
+      backToShelf: "‹ 返回",
+      colFirst: "第一次",
+      gameRecords: "📜 对局记录（{n}）",
+      toScoreboard: "🧮 去计分板",
+      close: "关闭",
+      nextPage: "下一页 ›",
+      pageOf: "第 {n} / {m} 页",
       rank: "第 {n} 名 / {m} 人",
       points: "{n} 分",
       won: "🏆 获胜",
@@ -61,6 +79,12 @@
       noSignups: "还没有报名记录。",
       upcoming: "即将参加",
       pastSignups: "以前参加的（{n}）",
+      suCurrent: "即将参加",
+      suHistory: "🕘 历史活动",
+      suNoCurrent: "没有还没结束的活动报名。",
+      suNoHistory: "还没有历史活动记录。",
+      suLoading: "加载中…",
+      suLoadFailed: "没能加载：{msg}",
       host: "开桌",
       startsAt: "🕒 {t} 开",
       failed: "出错了：{msg}",
@@ -99,8 +123,6 @@
       nameTaken: "That name belongs to another account: your nickname and other names can't match anyone else's.",
       statPlays: "Games",
       statWins: "Wins",
-      statRate: "Win rate",
-      statPoints: "Total points",
       statGames: "Different games",
       summary: "🎲 Games summary",
       colGame: "Game",
@@ -110,6 +132,26 @@
       colAvg: "Average",
       colLast: "Last played",
       recent: "📜 Recent games",
+      prevPage: "‹ Previous",
+      shelfTitle: "🎲 Games played ({n})",
+      shelfTile: "See the games played",
+      spaceHint: "Drag to spin · wheel or pinch to zoom · tap a cover for that game's summary",
+      cardLabel: "{name}, {n} games",
+      modeLabel: "Layout",
+      mode_sphere: "Sphere",
+      mode_helix: "Spiral",
+      mode_ring: "Rings",
+      mode_plane: "Wall",
+      zoomIn: "Zoom in",
+      zoomOut: "Zoom out",
+      playsN: "{n} games",
+      backToShelf: "‹ Back",
+      colFirst: "First played",
+      gameRecords: "📜 Games ({n})",
+      toScoreboard: "🧮 Scoreboard",
+      close: "Close",
+      nextPage: "Next ›",
+      pageOf: "Page {n} of {m}",
       rank: "#{n} of {m}",
       points: "{n} pts",
       won: "🏆 Won",
@@ -121,6 +163,12 @@
       noSignups: "No sign-ups yet.",
       upcoming: "Coming up",
       pastSignups: "Past ({n})",
+      suCurrent: "Coming up",
+      suHistory: "🕘 Past events",
+      suNoCurrent: "No sign-ups for events that are still to come.",
+      suNoHistory: "No past events yet.",
+      suLoading: "Loading…",
+      suLoadFailed: "Couldn't load: {msg}",
       host: "host",
       startsAt: "🕒 {t}",
       failed: "Something went wrong: {msg}",
@@ -153,7 +201,37 @@
   let own = false;
   let profile = null; // { user_id, name, aliases, bio, created_at }
   let scores = null; // game records with this player
-  let signups = null; // own page only
+  // 我的活动报名 (own page only): current sign-ups (event today or later) or past ones, 10 a page, each page loaded
+  // from the database only when shown; pages already loaded are kept.
+  const SU_PAGE = 10;
+  const su = { view: "current", page: 1, cache: {}, loading: false, err: null, shown: null }; // shown: the page on screen
+  const suKey = () => `${su.view}:${su.page}`;
+  async function loadSignups() {
+    const key = suKey();
+    if (su.cache[key]) return;
+    su.loading = true;
+    su.err = null;
+    try {
+      su.cache[key] = await HVLoans.mySignupsPage(ymd(new Date()), su.view === "past", (su.page - 1) * SU_PAGE, SU_PAGE);
+    } catch (err) {
+      su.err = err;
+    }
+    su.loading = false;
+  }
+  async function showSignups(view, page) {
+    su.view = view;
+    su.page = page;
+    if (!su.cache[suKey()]) {
+      su.loading = true;
+      renderSignups(); // show "loading" in the list only
+      await loadSignups();
+    }
+    renderSignups();
+  }
+  function renderSignups() {
+    const box = main.querySelector("[data-signups]");
+    if (box) box.outerHTML = signupsHtml();
+  }
   let catalog = {}; // game id -> game
   let loadErr = null;
   let loaded = false;
@@ -182,12 +260,8 @@
       catalog = Object.fromEntries(((data && data.games) || []).map((g) => [g.id, g]));
       profile = p;
       if (profile) {
-        const [s, mine] = await Promise.all([
-          HVLoans.playerScores([profile.name, ...(profile.aliases || [])]),
-          own ? HVLoans.mySignups().catch(() => []) : Promise.resolve(null),
-        ]);
+        const [s] = await Promise.all([HVLoans.playerScores([profile.name, ...(profile.aliases || [])]), own ? loadSignups() : null]);
         scores = s;
-        signups = mine;
       } else if (own) {
         // A new account: set the nickname first (the one typed at sign-up is suggested).
         editing = { name: localStorage.getItem("hv-pending-name") || "", aliases: "", bio: "", err: "", setup: true };
@@ -199,6 +273,8 @@
     render();
   }
 
+  const PAGE = 10; // games per page in 桌游总结
+  let summaryPage = 1;
   // ---------- numbers ----------
   function stats() {
     const names = new Set([profile.name, ...(profile.aliases || [])].map(norm));
@@ -206,7 +282,6 @@
     const recent = [];
     let plays = 0;
     let wins = 0;
-    let points = 0;
     for (const r of scores || []) {
       const players = Array.isArray(r.players) ? r.players : [];
       const me = players.find((pl) => names.has(norm(pl.name)));
@@ -216,18 +291,19 @@
       const won = me.total === r.top_score;
       plays++;
       if (won) wins++;
-      points += me.total;
-      const g = (games[r.game_id] ||= { id: r.game_id, plays: 0, wins: 0, best: -Infinity, sum: 0, last: "" });
+      const g = (games[r.game_id] ||= { id: r.game_id, plays: 0, wins: 0, best: -Infinity, sum: 0, last: "", first: "" });
       g.plays++;
       if (won) g.wins++;
       g.best = Math.max(g.best, me.total);
       g.sum += me.total;
       if (day > g.last) g.last = day;
+      if (!g.first || day < g.first) g.first = day;
       recent.push({ day, at: r.played_at, game: r.game_id, total: me.total, rank, count: players.length, won });
     }
     recent.sort((a, b) => b.day.localeCompare(a.day) || String(b.at).localeCompare(String(a.at)));
-    const list = Object.values(games).sort((a, b) => b.plays - a.plays || b.last.localeCompare(a.last));
-    return { plays, wins, points, list, recent };
+    // Most recently played first; same day: the one played more often.
+    const list = Object.values(games).sort((a, b) => b.last.localeCompare(a.last) || b.plays - a.plays);
+    return { plays, wins, list, recent };
   }
   const gameName = (id) => {
     const g = catalog[id];
@@ -296,32 +372,47 @@
     const names = [profile.name, ...(profile.aliases || [])].map((n) => `「${n}」`).join("、");
     if (!s.plays)
       return `<section class="ac-card"><h2>${esc(tr("summary"))}</h2><p class="ac-hint">${esc(tr("noGames", { aliases: (profile.aliases || []).length ? tr("noGamesAlias") : "" }))}</p></section>`;
-    const rate = Math.round((s.wins / s.plays) * 100);
     const tiles = [
       [tr("statPlays"), s.plays],
       [tr("statWins"), s.wins],
-      [tr("statRate"), `${rate}%`],
-      [tr("statPoints"), s.points],
       [tr("statGames"), s.list.length],
     ];
-    return `<section class="pf-tiles">${tiles.map(([k, v]) => `<div class="pf-tile"><b>${esc(v)}</b><span>${esc(k)}</span></div>`).join("")}</section>
+    // 桌游总结: 10 games a page.
+    const pages = Math.max(1, Math.ceil(s.list.length / PAGE));
+    summaryPage = Math.min(Math.max(1, summaryPage), pages);
+    const pageRows = s.list.slice((summaryPage - 1) * PAGE, summaryPage * PAGE);
+    const pager = pages > 1
+      ? `<nav class="pf-pager" aria-label="${esc(tr("summary"))}">
+          <button class="btn ghost btn-sm" type="button" data-page="${summaryPage - 1}"${summaryPage <= 1 ? " disabled" : ""}>${esc(tr("prevPage"))}</button>
+          <span>${esc(tr("pageOf", { n: summaryPage, m: pages }))}</span>
+          <button class="btn ghost btn-sm" type="button" data-page="${summaryPage + 1}"${summaryPage >= pages ? " disabled" : ""}>${esc(tr("nextPage"))}</button>
+        </nav>`
+      : "";
+    return `<section class="pf-tiles">${tiles
+      .map(([k, v], i) =>
+        i === 2 // 玩过的桌游: opens the 3D carousel
+          ? `<button class="pf-tile pf-tile-btn" type="button" data-shelf aria-label="${esc(tr("shelfTile"))}"><b>${esc(v)}</b><span>${esc(k)} ›</span></button>`
+          : `<div class="pf-tile"><b>${esc(v)}</b><span>${esc(k)}</span></div>`
+      )
+      .join("")}</section>
       <section class="ac-card">
         <h2>${esc(tr("summary"))}</h2>
         <div class="pf-table-wrap"><table class="pf-table">
           <thead><tr><th>${esc(tr("colGame"))}</th><th>${esc(tr("colPlays"))}</th><th>${esc(tr("colWins"))}</th><th>${esc(tr("colBest"))}</th><th>${esc(tr("colAvg"))}</th><th>${esc(tr("colLast"))}</th></tr></thead>
-          <tbody>${s.list
+          <tbody>${pageRows
             .map(
               (g) => `<tr><td><a class="pf-game" href="${esc(gameLink(g.id))}">${thumb(g.id)}<span>${esc(gameName(g.id))}</span></a></td>
                 <td>${g.plays}</td><td>${g.wins}</td><td>${esc(num(g.best))}</td><td>${esc(num(g.sum / g.plays))}</td><td>${esc(shortDay(g.last))}</td></tr>`
             )
             .join("")}</tbody>
         </table></div>
+        ${pager}
         <p class="ac-hint">${esc(tr("matchHint", { names }))}</p>
       </section>
       <section class="ac-card">
         <h2>${esc(tr("recent"))}</h2>
         <ul class="pf-recent">${s.recent
-          .slice(0, 15)
+          .slice(0, 10)
           .map(
             (r) => `<li class="${r.won ? "is-won" : ""}">
               <span class="pf-day">${esc(shortDay(r.day))}</span>
@@ -333,22 +424,331 @@
       </section>`;
   }
 
+  // ---------- 玩过的桌游: a 3D space of covers (CSS 3D, no library), and one game's summary ----------
+  // Layouts: 球体 (covers spread evenly over a sphere), 螺旋 (a rising spiral), 环形 (rings stacked like a drum) and
+  // 平面 (a flat wall). Drag / swipe to spin it in any direction, wheel / pinch / ＋ － to zoom; it turns slowly by itself
+  // while left alone. Tap a cover for that game's summary.
+  const dlg3d = $("pf3d");
+  const CW = 96; // cover card width, px
+  const CH = 136; // cover card height (picture + name), px
+  const MODES = ["sphere", "helix", "ring", "plane"];
+  const space = { list: [], recent: [], view: "space", game: null, mode: "sphere", rx: -12, ry: 0, zoom: 1, raf: 0, paused: false };
+  const reduceMotion = () => window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // Where each cover goes in a layout: { t: CSS transform, w, h, d } (w/h/d: the layout's size, for fitting it).
+  function layout(mode, n) {
+    const out = [];
+    if (mode === "sphere") {
+      const R = Math.max(170, Math.round(47 * Math.sqrt(n)));
+      for (let i = 0; i < n; i++) {
+        const y = n === 1 ? 0 : 1 - (2 * (i + 0.5)) / n; // -1 … 1, evenly spread (Fibonacci sphere)
+        const lat = (Math.asin(y) * 180) / Math.PI;
+        const lon = (i * 137.508) % 360;
+        out.push(`rotateY(${lon.toFixed(2)}deg) rotateX(${lat.toFixed(2)}deg) translateZ(${R}px)`);
+      }
+      return { t: out, w: 2 * R + CW, h: 2 * R + CH, d: R };
+    }
+    if (mode === "helix") {
+      const k = Math.min(Math.max(Math.ceil(Math.sqrt(n) * 1.6), 8), 20); // covers per turn
+      const R = Math.max(160, Math.round((k * (CW + 14)) / (2 * Math.PI)));
+      const dy = (CH + 18) / k; // one turn rises by a card's height, so turns don't overlap
+      const top = ((n - 1) * dy) / 2;
+      for (let i = 0; i < n; i++) out.push(`translateY(${(i * dy - top).toFixed(1)}px) rotateY(${((i * 360) / k).toFixed(2)}deg) translateZ(${R}px)`);
+      return { t: out, w: 2 * R + CW, h: (n - 1) * dy + CH, d: R };
+    }
+    if (mode === "ring") {
+      const k = Math.min(n, 18); // covers per ring
+      const rows = Math.ceil(n / k);
+      const R = Math.max(150, Math.round((k * (CW + 16)) / (2 * Math.PI)));
+      const top = ((rows - 1) * (CH + 18)) / 2;
+      for (let i = 0; i < n; i++) {
+        const row = Math.floor(i / k), col = i % k;
+        const shift = row % 2 ? 180 / k : 0; // every other ring offset by half a cover
+        out.push(`translateY(${(row * (CH + 18) - top).toFixed(1)}px) rotateY(${((col * 360) / k + shift).toFixed(2)}deg) translateZ(${R}px)`);
+      }
+      return { t: out, w: 2 * R + CW, h: rows * (CH + 18), d: R };
+    }
+    // plane: a flat wall, a little wider than tall
+    const cols = Math.max(1, Math.ceil(Math.sqrt(n * 1.5)));
+    const rows = Math.ceil(n / cols);
+    const gx = CW + 14, gy = CH + 14;
+    for (let i = 0; i < n; i++) {
+      const r = Math.floor(i / cols), c = i % cols;
+      out.push(`translate3d(${((c - (cols - 1) / 2) * gx).toFixed(1)}px, ${((r - (rows - 1) / 2) * gy).toFixed(1)}px, 0px)`);
+    }
+    return { t: out, w: cols * gx, h: rows * gy, d: 0 };
+  }
+  const head3d = (title, back) => `<div class="pf3d-head">
+      ${back ? `<button class="btn ghost btn-sm" type="button" data-shelf-back>${esc(tr("backToShelf"))}</button>` : ""}
+      <h2 id="pf3d-title">${esc(title)}</h2>
+      <button class="pf3d-close" type="button" data-shelf-close aria-label="${esc(tr("close"))}">✕</button>
+    </div>`;
+  function openShelf() {
+    const s = stats();
+    space.list = s.list;
+    space.recent = s.recent;
+    space.view = "space";
+    space.rx = space.mode === "plane" ? 0 : -12;
+    space.ry = 0;
+    space.zoom = 1;
+    renderSpace();
+    if (!dlg3d.open) {
+      document.documentElement.classList.add("pf3d-open"); // full screen: no page scrolling behind it
+      dlg3d.showModal();
+    }
+    startSpin();
+  }
+  function renderSpace() {
+    if (space.view === "game") return renderGame();
+    const n = space.list.length;
+    const cards = space.list
+      .map((g, i) => `<button class="pf3d-card" type="button" data-card="${i}" aria-label="${esc(tr("cardLabel", { name: gameName(g.id), n: g.plays }))}">
+          <img src="${esc(HVMedia.imageUrl(catalog[g.id] && catalog[g.id].image))}" alt="" draggable="false" decoding="async" onerror="this.src='images/placeholder.svg'">
+          <b>${esc(gameName(g.id))}</b>
+        </button>`)
+      .join("");
+    dlg3d.innerHTML = `${head3d(tr("shelfTitle", { n }), false)}
+      <div class="pf3d-stage" tabindex="-1">
+        <div class="pf3d-world">${cards}</div>
+        <div class="pf3d-zoom"><button type="button" data-zoom="1" aria-label="${esc(tr("zoomIn"))}">＋</button><button type="button" data-zoom="-1" aria-label="${esc(tr("zoomOut"))}">－</button></div>
+      </div>
+      <div class="pf3d-foot"><p class="pf3d-hint">${esc(tr("spaceHint"))}</p>
+      <div class="pf3d-modes" role="group" aria-label="${esc(tr("modeLabel"))}">${MODES.map(
+        (m) => `<button type="button" data-mode="${m}" aria-pressed="${m === space.mode}"${m === space.mode ? ' class="is-on"' : ""}>${esc(tr("mode_" + m))}</button>`
+      ).join("")}</div></div>`;
+    dlg3d.classList.add("is-space");
+    placeCards(false);
+    applyWorld(false);
+  }
+  // Puts every cover where the current layout wants it (animated when switching layouts).
+  function placeCards(animate) {
+    const L3 = layout(space.mode, space.list.length);
+    space.fitBox = L3;
+    dlg3d.querySelectorAll(".pf3d-card").forEach((c, i) => {
+      c.classList.toggle("no-anim", !animate);
+      c.style.transform = L3.t[i];
+    });
+  }
+  // Turns and sizes the whole space: fits the layout to the stage, then the user's zoom on top.
+  function applyWorld(animate) {
+    const world = dlg3d.querySelector(".pf3d-world"), stage = dlg3d.querySelector(".pf3d-stage");
+    if (!world || !space.fitBox) return;
+    const b = space.fitBox;
+    // Full screen: leave room for the title at the top and the layout buttons at the bottom.
+    const fit = Math.min(1.5, (stage.clientWidth * 0.92) / b.w, Math.max(200, stage.clientHeight - 170) / b.h);
+    const sc = fit * space.zoom;
+    world.classList.toggle("no-anim", !animate);
+    world.style.transform = `translateZ(${(-b.d * sc).toFixed(1)}px) rotateX(${space.rx.toFixed(2)}deg) rotateY(${space.ry.toFixed(2)}deg) scale(${sc.toFixed(3)})`;
+  }
+  // The slow turn while nobody touches it (not for 平面, and not with "reduce motion").
+  function startSpin() {
+    cancelAnimationFrame(space.raf);
+    if (reduceMotion()) return;
+    let last = performance.now();
+    const tick = (now) => {
+      if (!dlg3d.open) return;
+      const dt = Math.min(64, now - last);
+      last = now;
+      if (space.view === "space" && space.mode !== "plane" && !space.paused && !drag) {
+        space.ry += dt * 0.006; // about 6° a second
+        applyWorld(false);
+      }
+      space.raf = requestAnimationFrame(tick);
+    };
+    space.raf = requestAnimationFrame(tick);
+  }
+  const clampRx = (v) => Math.max(space.mode === "plane" ? -35 : -80, Math.min(space.mode === "plane" ? 35 : 80, v));
+  const clampRy = (v) => (space.mode === "plane" ? Math.max(-45, Math.min(45, v)) : v);
+  function setMode(m) {
+    if (!MODES.includes(m) || m === space.mode) return;
+    space.mode = m;
+    try {
+      localStorage.setItem("hv-pf3d-mode", m);
+    } catch {}
+    dlg3d.querySelectorAll("[data-mode]").forEach((b) => {
+      b.classList.toggle("is-on", b.dataset.mode === m);
+      b.setAttribute("aria-pressed", String(b.dataset.mode === m));
+    });
+    space.rx = m === "plane" ? 0 : -12;
+    space.ry = m === "plane" ? 0 : space.ry % 360;
+    placeCards(!reduceMotion());
+    applyWorld(!reduceMotion());
+  }
+  try {
+    const saved = localStorage.getItem("hv-pf3d-mode");
+    if (MODES.includes(saved)) space.mode = saved;
+  } catch {}
+  function openGame(i) {
+    space.view = "game";
+    space.game = space.list[i];
+    renderGame();
+    const back = dlg3d.querySelector("[data-shelf-back]");
+    if (back) back.focus();
+  }
+  function renderGame() {
+    const g = space.game;
+    const cat = catalog[g.id];
+    const rows = space.recent.filter((r) => r.game === g.id);
+    const tiles = [
+      [tr("colPlays"), g.plays],
+      [tr("colWins"), g.wins],
+      [tr("colBest"), num(g.best)],
+      [tr("colAvg"), num(g.sum / g.plays)],
+      [tr("colFirst"), shortDay(g.first)],
+      [tr("colLast"), shortDay(g.last)],
+    ];
+    dlg3d.classList.remove("is-space");
+    dlg3d.innerHTML = `<div class="pf3d-page">${head3d(gameName(g.id), true)}
+      <div class="pf3d-game">
+        <img class="pf3d-cover" src="${esc(HVMedia.imageUrl(cat && cat.image))}" alt="" onerror="this.src='images/placeholder.svg'">
+        <div class="pf3d-gtiles">${tiles.map(([k, v], i) => `<div class="pf-tile${i >= 4 ? " is-date" : ""}"><b>${esc(v)}</b><span>${esc(k)}</span></div>`).join("")}</div>
+      </div>
+      <p class="pf3d-links"><a class="btn ghost btn-sm" href="${esc(gameLink(g.id))}">${esc(tr("toScoreboard"))}</a>${cat ? ` <a class="btn ghost btn-sm" href="index.html#/game/${encodeURIComponent(g.id)}">🎲 ${esc(gameName(g.id))}</a>` : ""}</p>
+      <h3>${esc(tr("gameRecords", { n: rows.length }))}</h3>
+      <ul class="pf-recent">${rows
+        .map((r) => `<li class="${r.won ? "is-won" : ""}"><span class="pf-day">${esc(shortDay(r.day))}</span>
+          <span class="pf-res">${esc(tr("points", { n: r.total }))} · ${esc(tr("rank", { n: r.rank, m: r.count }))}${r.won ? ` <b>${esc(tr("won"))}</b>` : ""}</span></li>`)
+        .join("")}</ul></div>`;
+    dlg3d.scrollTop = 0;
+  }
+
+  // Dragging (one finger / the mouse) spins the space; two fingers pinch to zoom. A tap is a click.
+  let drag = null;
+  const touches = new Map(); // pointerId → { x, y }
+  let pinch = null;
+  // The click a browser fires right after releasing a drag (same task) is the end of that drag, not a tap.
+  let swallowClick = false;
+  const setZoom = (z) => {
+    space.zoom = Math.max(0.45, Math.min(2.6, z));
+    applyWorld(false);
+  };
+  dlg3d.addEventListener("pointerdown", (e) => {
+    const stage = e.target.closest(".pf3d-stage");
+    if (!stage || e.button > 0 || e.target.closest(".pf3d-zoom")) return;
+    touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (touches.size === 2) {
+      const [a, b] = [...touches.values()];
+      pinch = { dist: Math.hypot(a.x - b.x, a.y - b.y), zoom: space.zoom };
+      drag = null;
+      return;
+    }
+    drag = { x: e.clientX, y: e.clientY, rx: space.rx, ry: space.ry, id: e.pointerId, stage, moved: false };
+  });
+  dlg3d.addEventListener("pointermove", (e) => {
+    if (!touches.has(e.pointerId)) return;
+    touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pinch && touches.size === 2) {
+      const [a, b] = [...touches.values()];
+      return setZoom(pinch.zoom * (Math.hypot(a.x - b.x, a.y - b.y) / Math.max(1, pinch.dist)));
+    }
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+    if (!drag.moved && Math.hypot(dx, dy) < 6) return;
+    if (!drag.moved) {
+      drag.moved = true;
+      try {
+        drag.stage.setPointerCapture(e.pointerId); // keep following the finger outside the stage
+      } catch {}
+    }
+    space.ry = clampRy(drag.ry + dx * 0.35);
+    space.rx = clampRx(drag.rx - dy * 0.35);
+    applyWorld(false);
+  });
+  const endPointer = (e) => {
+    touches.delete(e.pointerId);
+    if (touches.size < 2) pinch = null;
+    if (!drag || e.pointerId !== drag.id) return;
+    if (drag.moved) {
+      swallowClick = true;
+      setTimeout(() => (swallowClick = false), 0);
+    }
+    drag = null;
+  };
+  dlg3d.addEventListener("pointerup", endPointer);
+  dlg3d.addEventListener("pointercancel", endPointer);
+  dlg3d.addEventListener(
+    "wheel",
+    (e) => {
+      if (!e.target.closest(".pf3d-stage")) return;
+      e.preventDefault();
+      setZoom(space.zoom * Math.pow(1.0015, -e.deltaY));
+    },
+    { passive: false }
+  );
+  // Pause the slow turn while the pointer is over the space or a cover has keyboard focus.
+  dlg3d.addEventListener("pointerover", (e) => (space.paused = Boolean(e.target.closest(".pf3d-stage")) && e.pointerType === "mouse"));
+  dlg3d.addEventListener("pointerleave", () => (space.paused = false));
+  dlg3d.addEventListener("focusin", (e) => (space.paused = Boolean(e.target.closest(".pf3d-card"))));
+  dlg3d.addEventListener("click", (e) => {
+    if (e.target === dlg3d || e.target.closest("[data-shelf-close]")) return dlg3d.close();
+    if (e.target.closest("[data-shelf-back]")) {
+      space.view = "space";
+      renderSpace();
+      return;
+    }
+    const mode = e.target.closest("[data-mode]");
+    if (mode) return setMode(mode.dataset.mode);
+    const zoom = e.target.closest("[data-zoom]");
+    if (zoom) return setZoom(space.zoom * (zoom.dataset.zoom === "1" ? 1.25 : 0.8));
+    const card = e.target.closest("[data-card]");
+    if (card && !swallowClick) return openGame(Number(card.dataset.card));
+  });
+  // Arrow keys spin it; + / - zoom.
+  dlg3d.addEventListener("keydown", (e) => {
+    if (space.view !== "space") return;
+    const k = e.key;
+    if (k === "ArrowLeft" || k === "ArrowRight") space.ry = clampRy(space.ry + (k === "ArrowRight" ? 15 : -15));
+    else if (k === "ArrowUp" || k === "ArrowDown") space.rx = clampRx(space.rx + (k === "ArrowUp" ? 10 : -10));
+    else if (k === "+" || k === "=") return setZoom(space.zoom * 1.25);
+    else if (k === "-") return setZoom(space.zoom * 0.8);
+    else return;
+    e.preventDefault();
+    applyWorld(true);
+  });
+  dlg3d.addEventListener("close", () => {
+    cancelAnimationFrame(space.raf);
+    document.documentElement.classList.remove("pf3d-open");
+  });
+  window.addEventListener("resize", () => {
+    if (dlg3d.open && space.view === "space") applyWorld(false);
+  });
+  HVI18n.onChange(() => {
+    if (dlg3d.open) renderSpace();
+  });
+
   function signupsHtml() {
-    const today = ymd(new Date());
-    const list = signups || [];
     const item = (x) => `<li>
       <span class="pf-day">${esc(fmtDay(x.event_date, { month: "short", day: "numeric", weekday: "short" }))}</span>
       <a href="events.html?id=${x.event_id}">${esc(x.title)}</a>
       <span class="pf-res">🎲 ${esc(x.game_id && catalog[x.game_id] ? gameName(x.game_id) : x.game_name)}${x.table_time ? ` · ${esc(tr("startsAt", { t: x.table_time.slice(0, 5) }))}` : ""}${x.is_host ? ` · <b>${esc(tr("host"))}</b>` : ""}</span>
     </li>`;
-    const up = list.filter((x) => x.event_date >= today).reverse(); // soonest first
-    const past = list.filter((x) => x.event_date < today);
-    return `<section class="ac-card">
-      <h2>${esc(tr("signups"))}</h2>
+    const past = su.view === "past";
+    // While the next page loads, keep the one on screen (dimmed) if it is the same list, so nothing jumps.
+    const kept = su.loading && su.shown && su.shown.view === su.view ? su.shown.data : null;
+    const data = su.cache[suKey()] || kept;
+    if (su.cache[suKey()]) su.shown = { view: su.view, data };
+    let body;
+    if (su.err) body = `<p class="ac-msg is-err">${esc(tr("suLoadFailed", { msg: errText(su.err) }))}</p><button class="btn ghost btn-sm" type="button" data-su-page="${su.page}">${esc(tr("retry"))}</button>`;
+    else if (!data) body = `<p class="ac-hint">${esc(tr("suLoading"))}</p>`;
+    else if (!data.total) body = `<p>${esc(tr(past ? "suNoHistory" : "suNoCurrent"))}</p>`;
+    else {
+      const pages = Math.max(1, Math.ceil(data.total / SU_PAGE));
+      body = `<ul class="pf-recent${su.loading ? " is-loading" : ""}">${data.rows.map(item).join("")}</ul>
+        ${pages > 1 ? `<nav class="pf-pager" aria-label="${esc(tr(past ? "suHistory" : "suCurrent"))}">
+          <button class="btn ghost btn-sm" type="button" data-su-page="${su.page - 1}"${su.page <= 1 || su.loading ? " disabled" : ""}>${esc(tr("prevPage"))}</button>
+          <span>${esc(tr("pageOf", { n: su.page, m: pages }))}</span>
+          <button class="btn ghost btn-sm" type="button" data-su-page="${su.page + 1}"${su.page >= pages || su.loading ? " disabled" : ""}>${esc(tr("nextPage"))}</button>
+        </nav>` : ""}`;
+    }
+    return `<section class="ac-card" data-signups>
+      <div class="pf-su-head">
+        <h2>${esc(tr("signups"))}</h2>
+        <div class="pf-su-tabs" role="tablist">
+          <button type="button" role="tab" class="chip${past ? "" : " is-on"}" aria-selected="${!past}" data-su-view="current">${esc(tr("suCurrent"))}</button>
+          <button type="button" role="tab" class="chip${past ? " is-on" : ""}" aria-selected="${past}" data-su-view="past">${esc(tr("suHistory"))}</button>
+        </div>
+      </div>
       <p class="ac-hint">${esc(tr("signupsHint"))}</p>
-      ${!list.length ? `<p>${esc(tr("noSignups"))}</p>` : ""}
-      ${up.length ? `<h3>${esc(tr("upcoming"))}</h3><ul class="pf-recent">${up.map(item).join("")}</ul>` : ""}
-      ${past.length ? `<details><summary>${esc(tr("pastSignups", { n: past.length }))}</summary><ul class="pf-recent">${past.map(item).join("")}</ul></details>` : ""}
+      ${body}
     </section>`;
   }
 
@@ -363,6 +763,16 @@
   main.addEventListener("click", (e) => {
     const b = e.target.closest("button");
     if (!b) return;
+    if (b.hasAttribute("data-shelf")) return openShelf();
+    if (b.dataset.suView) return b.dataset.suView === su.view ? undefined : void showSignups(b.dataset.suView, 1);
+    if (b.dataset.suPage) return su.loading ? undefined : void showSignups(su.view, Number(b.dataset.suPage));
+    if (b.dataset.page) {
+      summaryPage = Number(b.dataset.page);
+      render();
+      const pager = main.querySelector(".pf-pager");
+      if (pager) pager.closest(".ac-card").scrollIntoView({ block: "nearest" });
+      return;
+    }
     if (b.hasAttribute("data-retry")) {
       loaded = false;
       render();

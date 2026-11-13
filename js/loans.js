@@ -110,7 +110,8 @@ window.HVLoans = (() => {
     };
   }
 
-  async function request(path, { method = "GET", body, admin = false, prefer } = {}) {
+  // withCount: also ask for the total number of matching rows (for paging) and return { rows, total }.
+  async function request(path, { method = "GET", body, admin = false, prefer, withCount = false } = {}) {
     // Public reads send only the apikey header, which works with both the newer publishable key (sb_publishable_…)
     // and the legacy anon key. Admin calls add the signed-in user's token.
     // admin: "ifSignedIn" sends the token only when someone is signed in (for reads admins see more of).
@@ -123,8 +124,13 @@ window.HVLoans = (() => {
       }
     } else if (admin) headers.Authorization = `Bearer ${await accessToken()}`;
     if (prefer) headers.Prefer = prefer;
+    if (withCount) headers.Prefer = [prefer, "count=exact"].filter(Boolean).join(", ");
     const res = await fetch(base + path, { method, headers, body: body ? JSON.stringify(body) : undefined, cache: "no-store" });
-    return parse(res);
+    if (!withCount) return parse(res);
+    const range = res.headers.get("Content-Range") || ""; // e.g. "0-9/37" or "*/0"
+    const rows = await parse(res);
+    const total = Number(range.split("/")[1]);
+    return { rows, total: Number.isFinite(total) ? total : rows.length };
   }
 
   // Storage API calls. Uploads send the file itself, not JSON.
@@ -207,6 +213,9 @@ window.HVLoans = (() => {
     playerScores: (names) => request("/rest/v1/rpc/player_scores", { method: "POST", body: { p_names: names } }),
     // The signed-in player's event sign-ups, and their sign-up ids at one event.
     mySignups: () => request("/rest/v1/rpc/my_event_signups", { method: "POST", admin: true, body: {} }),
+    // One page of the signed-in player's sign-ups: current (event today or later) or past. Returns { total, rows }.
+    mySignupsPage: (today, past, offset, limit = 10) =>
+      request("/rest/v1/rpc/my_event_signups_page", { method: "POST", admin: true, body: { p_today: today, p_past: past, p_offset: offset, p_limit: limit } }),
     myEventPlayerIds: (eventId) => request("/rest/v1/rpc/my_event_player_ids", { method: "POST", admin: true, body: { p_event: eventId } }),
     signOut() {
       if (session) {
@@ -340,9 +349,14 @@ window.HVLoans = (() => {
     // ---------- events and sign-ups (events.html) ----------
     // Every event with its tables and how many joined each: [{ id, title, event_date, start_time, end_time, location, description,
     // event_tables: [{ id, on_site, max_players, event_players: [{ id }] }] }], soonest first.
-    events: () =>
-      request("/rest/v1/events?order=event_date.asc,start_time.asc.nullsfirst,id.asc" +
+    // With fromDay ("YYYY-MM-DD"): only events on that day or later (today's events count as current).
+    events: (fromDay) =>
+      request("/rest/v1/events?order=event_date.asc,start_time.asc.nullsfirst,id.asc" + (fromDay ? `&event_date=gte.${fromDay}` : "") +
         "&select=id,title,event_date,start_time,end_time,location,description,event_tables(id,game_id,game_name,on_site,max_players,event_players(id))"),
+    // One page of past events (before beforeDay), most recent first: { rows, total }. limit 0 just counts them.
+    pastEvents: (beforeDay, offset = 0, limit = 10) =>
+      request(`/rest/v1/events?event_date=lt.${beforeDay}&order=event_date.desc,start_time.desc.nullslast,id.desc&offset=${offset}&limit=${limit}` +
+        "&select=id,title,event_date,start_time,end_time,location,description,event_tables(id,game_id,game_name,on_site,max_players,event_players(id))", { withCount: true }),
     // The next upcoming events (from `fromDay`, "YYYY-MM-DD"), with their tables and main organizer, for the home page.
     upcomingEvents: (fromDay, limit = 2) =>
       request(`/rest/v1/events?event_date=gte.${fromDay}&order=event_date.asc,start_time.asc.nullsfirst,id.asc&limit=${limit}` +

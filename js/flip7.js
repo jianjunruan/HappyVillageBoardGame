@@ -71,6 +71,9 @@
       bustShort: "爆",
       numLabel: "数字 {n}",
       filter: "按玩家名字筛选",
+      prevPage: "‹ 上一页",
+      nextPage: "下一页 ›",
+      pageOf: "第 {n} / {m} 页",
       loading: "正在加载……",
       loadFailed: "无法加载战绩记录：{msg}",
       retry: "重试",
@@ -163,6 +166,9 @@
       bustShort: "✕",
       numLabel: "Number {n}",
       filter: "Filter by player name",
+      prevPage: "‹ Previous",
+      nextPage: "Next ›",
+      pageOf: "Page {n} of {m}",
       loading: "Loading…",
       loadFailed: "Couldn't load the records: {msg}",
       retry: "Try again",
@@ -690,22 +696,34 @@
     if (!$("rec-filter")) {
       recEl.innerHTML = `<h2>${esc(tr("tabRecords"))} <span class="count" id="rec-count"></span></h2>
         <input id="rec-filter" class="f7-filter" type="search" placeholder="${esc(tr("filter"))}" aria-label="${esc(tr("filter"))}" list="f7-names">
-        <div class="f7-recs" id="rec-list"></div>`;
+        <div class="f7-recs" id="rec-list"></div>
+        <nav class="f7-pager" id="rec-pager" aria-label="${esc(tr("tabRecords"))}"></nav>`;
       $("rec-filter").value = filter;
       $("rec-filter").addEventListener("input", (e) => {
         filter = e.target.value;
+        recPage = 1;
         renderRecordList();
       });
     }
     renderRecordList();
     lbEl.innerHTML = leaderboardHtml();
   }
+  // 10 records a page: drawing hundreds at once is what makes a long list slow.
+  const REC_PAGE = 10;
+  let recPage = 1;
   function renderRecordList() {
     const list = shown();
+    const pages = Math.max(1, Math.ceil(list.length / REC_PAGE));
+    recPage = Math.min(Math.max(1, recPage), pages);
     $("rec-count").textContent = records.length ? tr("gamesCount", { n: list.length }) : "";
     $("rec-list").innerHTML = list.length
-      ? list.map(recordHtml).join("")
+      ? list.slice((recPage - 1) * REC_PAGE, recPage * REC_PAGE).map(recordHtml).join("")
       : `<p class="f7-hint">${esc(tr(records.length ? "noMatch" : "none"))}</p>`;
+    $("rec-pager").innerHTML = pages > 1
+      ? `<button class="btn ghost btn-sm" type="button" data-rec-page="${recPage - 1}"${recPage <= 1 ? " disabled" : ""}>${esc(tr("prevPage"))}</button>
+         <span>${esc(tr("pageOf", { n: recPage, m: pages }))}</span>
+         <button class="btn ghost btn-sm" type="button" data-rec-page="${recPage + 1}"${recPage >= pages ? " disabled" : ""}>${esc(tr("nextPage"))}</button>`
+      : "";
   }
 
   function leaderboardHtml() {
@@ -752,6 +770,13 @@
 
   document.querySelector(".f7-main").addEventListener("click", async (e) => {
     if (e.target.closest("[data-retry]")) return loadRecords(true);
+    const pg = e.target.closest("[data-rec-page]");
+    if (pg) {
+      recPage = Number(pg.dataset.recPage);
+      renderRecordList();
+      $("rec-filter").scrollIntoView({ block: "nearest" });
+      return;
+    }
     const ed = e.target.closest("[data-edit-rec]");
     if (ed) {
       editRecId = ed.dataset.editRec;

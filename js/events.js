@@ -21,6 +21,10 @@
       upcoming: "即将举行",
       noUpcoming: "暂时没有即将举行的活动，过几天再来看看吧。",
       past: "往期活动（{n}）",
+      prevPage: "‹ 上一页",
+      nextPage: "下一页 ›",
+      pageOf: "第 {n} / {m} 页",
+      pastFailed: "没能加载往期活动：{msg}",
       today: "今天",
       tomorrow: "明天",
       inDays: "{n} 天后",
@@ -254,6 +258,10 @@
       upcoming: "Coming up",
       noUpcoming: "No events coming up yet. Check back in a few days.",
       past: "Past events ({n})",
+      prevPage: "‹ Previous",
+      nextPage: "Next ›",
+      pageOf: "Page {n} of {m}",
+      pastFailed: "Couldn't load past events: {msg}",
       today: "Today",
       tomorrow: "Tomorrow",
       inDays: "In {n} days",
@@ -628,6 +636,49 @@
   let busy = false;
 
   let wishes = null; // event wishes (期望活动), shown on the events list
+  // 往期活动: 10 a page, each page loaded from the database only when it is shown; pages already loaded are kept.
+  const PAST_PAGE = 10;
+  const pastSt = { open: false, page: 1, total: 0, cache: {}, loading: false, err: null, shown: null };
+  async function loadPast() {
+    const page = pastSt.page;
+    if (pastSt.cache[page]) return;
+    pastSt.loading = true;
+    pastSt.err = null;
+    try {
+      pastSt.cache[page] = await HVLoans.pastEvents(todayYmd(), (page - 1) * PAST_PAGE, PAST_PAGE);
+      pastSt.total = pastSt.cache[page].total;
+    } catch (err) {
+      pastSt.err = err;
+    }
+    pastSt.loading = false;
+  }
+  async function showPast(page) {
+    pastSt.page = page;
+    if (!pastSt.cache[page]) {
+      pastSt.loading = true;
+      renderPast();
+      await loadPast();
+    }
+    renderPast();
+  }
+  function pastBodyHtml() {
+    if (pastSt.err) return `<p class="ev-msg is-err">${esc(tr("pastFailed", { msg: errText(pastSt.err) }))}</p><button class="btn ghost btn-sm" type="button" data-past-page="${pastSt.page}">${esc(tr("retry"))}</button>`;
+    // While the next page loads, keep the one on screen (dimmed) so nothing jumps.
+    const data = pastSt.cache[pastSt.page] || (pastSt.loading ? pastSt.shown : null);
+    if (!data) return `<p class="ev-msg">${esc(tr("loading"))}</p>`;
+    if (pastSt.cache[pastSt.page]) pastSt.shown = data;
+    const pages = Math.max(1, Math.ceil(pastSt.total / PAST_PAGE));
+    return `<div class="ev-list${pastSt.loading ? " is-loading" : ""}">${data.rows.map(eventCard).join("")}</div>
+      ${pages > 1 ? `<nav class="ev-pager" aria-label="${esc(tr("past", { n: pastSt.total }))}">
+        <button class="btn ghost btn-sm" type="button" data-past-page="${pastSt.page - 1}"${pastSt.page <= 1 || pastSt.loading ? " disabled" : ""}>${esc(tr("prevPage"))}</button>
+        <span>${esc(tr("pageOf", { n: pastSt.page, m: pages }))}</span>
+        <button class="btn ghost btn-sm" type="button" data-past-page="${pastSt.page + 1}"${pastSt.page >= pages || pastSt.loading ? " disabled" : ""}>${esc(tr("nextPage"))}</button>
+      </nav>` : ""}`;
+  }
+  function renderPast() {
+    const box = main.querySelector("[data-past-body]");
+    if (box) box.innerHTML = pastBodyHtml();
+  }
   let wishMine = new Set(); // ids this browser / account suggested
   let wishVoted = new Set(); // ids this browser / account gave a +1
   async function load() {
@@ -637,11 +688,16 @@
         if (isAdmin) staffRows = await HVLoans.staffList();
       } else if (EVENT_ID == null) {
         let st;
-        [events, wishes, st] = await Promise.all([
-          HVLoans.events(),
+        let count;
+        [events, wishes, st, count] = await Promise.all([
+          HVLoans.events(todayYmd()),
           HVLoans.wishes().catch(() => null),
           HVLoans.wishState(token()).catch(() => null),
+          HVLoans.pastEvents(todayYmd(), 0, 0).then((r) => r.total, () => 0), // just the count
         ]);
+        pastSt.total = count;
+        pastSt.cache = {}; // things may have changed (e.g. after an admin edit)
+        if (pastSt.open) await loadPast();
         wishMine = new Set(((st && st.mine) || []).map(Number));
         wishVoted = new Set(((st && st.voted) || []).map(Number));
       }
@@ -722,8 +778,7 @@
   }
   function renderList() {
     if (!events) return void (main.innerHTML = `<p class="ev-msg">${esc(tr("loading"))}</p>`);
-    const up = events.filter((e) => !isOver(e)); // already soonest first
-    const past = events.filter(isOver).reverse(); // most recent first
+    const up = events.filter((e) => !isOver(e)); // already soonest first (only today and later are loaded)
     main.innerHTML = `
       <div class="ev-head">
         <h2>${esc(tr("upcoming"))}</h2>
@@ -731,7 +786,7 @@
       </div>
       ${up.length ? `<div class="ev-list">${up.map(eventCard).join("")}</div>` : `<p class="ev-empty">${esc(tr("noUpcoming"))}</p>`}
       ${wishSection()}
-      ${past.length ? `<details class="ev-past"><summary>${esc(tr("past", { n: past.length }))}</summary><div class="ev-list">${past.map(eventCard).join("")}</div></details>` : ""}`;
+      ${pastSt.total ? `<details class="ev-past" data-past${pastSt.open ? " open" : ""}><summary>${esc(tr("past", { n: pastSt.total }))}</summary><div data-past-body>${pastBodyHtml()}</div></details>` : ""}`;
     // events.html#wishes (from the home page): the section only exists now, so scroll to it once.
     if (location.hash === "#wishes" && !scrolledToWishes && $("wishes")) {
       scrolledToWishes = true;
@@ -1602,6 +1657,15 @@
   }
 
   // ---------- events ----------
+  main.addEventListener(
+    "toggle", // <details> toggle doesn't bubble, so listen while capturing
+    (e) => {
+      if (!e.target.matches || !e.target.matches("[data-past]")) return;
+      pastSt.open = e.target.open;
+      if (pastSt.open && !pastSt.cache[pastSt.page]) showPast(pastSt.page);
+    },
+    true
+  );
   main.addEventListener("click", (e) => {
     const b = e.target.closest("button");
     if (!b) return;
@@ -1625,6 +1689,7 @@
         [s.wechat_qr, s.xhs_qr].filter(Boolean).forEach((p) => HVLoans.deleteQr(p).catch(() => {}));
       });
     }
+    if (b.dataset.pastPage) return pastSt.loading ? undefined : void showPast(Number(b.dataset.pastPage));
     if (b.hasAttribute("data-new-event")) return openEventForm(null);
     if (b.hasAttribute("data-wish-add")) return openDialog({ mode: "wish", name: myName(), title: "", desc: "", err: "" });
     if (b.dataset.wishStatus) return void act(() => HVLoans.setWishStatus(Number(b.dataset.id), b.dataset.wishStatus));

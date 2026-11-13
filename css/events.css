@@ -216,3 +216,8 @@ p.ev-tpl { margin: 0; color: var(--muted); }
 .ev-vote.is-on { background: var(--accent); color: #fff; }
 .ev-vote:disabled { border-color: var(--border); color: var(--muted); cursor: not-allowed; }
 .ev-wish-count { color: var(--muted); font-size: 0.85rem; font-weight: 600; }
+
+/* 往期活动 pages */
+.ev-pager { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 14px 0 4px; flex-wrap: wrap; }
+.ev-pager span { color: var(--muted); font-size: 0.9rem; }
+.ev-list.is-loading { opacity: 0.5; }
