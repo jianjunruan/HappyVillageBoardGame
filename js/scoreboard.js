@@ -77,6 +77,8 @@
       noBackend: "战绩记录还没有启用（需要设置 Supabase）。",
       noGame: "找不到这款游戏。",
       won: "🏆 {names} 获胜！",
+      pending: "⏳ 活动中开始的对局，等待在活动页面填写分数",
+      pendingShort: "待填",
       filter: "按玩家名字筛选",
       prevPage: "‹ 上一页",
       nextPage: "下一页 ›",
@@ -155,6 +157,8 @@
       noBackend: "Game records aren't switched on yet (Supabase isn't set up).",
       noGame: "Game not found.",
       won: "🏆 {names} wins!",
+      pending: "⏳ Started at an event, waiting for scores on the event page",
+      pendingShort: "to come",
       filter: "Filter by player name",
       prevPage: "‹ Previous",
       nextPage: "Next ›",
@@ -564,7 +568,7 @@
     if (editing) {
       try {
         const { game_id, ...changes } = toRecord();
-        const row = await HVLoans.updateScore(editing.id, { details: {}, ...changes });
+        const row = await HVLoans.updateScore(editing.id, { details: {}, ...changes, pending: false });
         if (records) records = records.map((r) => (String(r.id) === String(editing.id) ? { ...r, ...row } : r));
         stopEditing(false);
         saveState = "updated";
@@ -657,6 +661,12 @@
   }
   function recordHtml(r) {
     const players = Array.isArray(r.players) ? r.players : [];
+    if (r.pending)
+      return `<article class="f7-rec is-pending">
+        <div class="f7-rec-head"><b>${esc(tr("pending"))}</b><time datetime="${esc(dayOf(r))}">${esc(fmtDay(dayOf(r)))}</time></div>
+        <table class="sb-res"><tbody>${players.map((p) => `<tr><td class="sb-rank">·</td><td><span class="sb-pn">${esc(p.name)}</span></td><td class="sb-pts">${esc(tr("pendingShort"))}</td></tr>`).join("")}</tbody></table>
+        ${isAdmin ? `<div class="f7-rec-foot"><span></span><span class="sb-admin-acts"><button class="link-btn" type="button" data-edit-rec="${esc(r.id)}">${esc(tr("edit"))}</button><button class="link-btn" type="button" data-del-rec="${esc(r.id)}">${esc(tr("delete"))}</button></span></div>` : ""}
+      </article>`;
     const sorted = players.map((p, i) => ({ ...p, i })).sort((a, b) => b.total - a.total || a.i - b.i);
     const details = r.details && typeof r.details === "object" ? r.details : {};
     const gameTags = gFields()
@@ -755,7 +765,8 @@
     const perField = new Map(pFields().map((f) => [f.key, new Map()]));
     const perGame = new Map(gFields().map((f) => [f.key, new Map()]));
     const favField = pFields().find((f) => f.favLabel);
-    for (const r of records) {
+    const done = records.filter((r) => !r.pending);
+    for (const r of done) {
       for (const p of r.players || []) {
         const k = nameKey(p.name);
         if (!k) continue;
@@ -780,7 +791,7 @@
     const nums = (s) => `<td><b>${s.wins}</b></td><td>${s.games}</td><td>${rate(s)}</td><td>${s.best}</td><td>${avg(s)}</td>`;
     const statHead = (first) => [first, tr("lbWins"), tr("lbGames"), tr("lbRate"), tr("lbBest"), tr("lbAvg")];
 
-    let html = `<h2>${esc(tr("tabLeaders"))} <span class="count">${esc(tr("gamesCount", { n: records.length }))}</span></h2>
+    let html = `<h2>${esc(tr("tabLeaders"))} <span class="count">${esc(tr("gamesCount", { n: done.length }))}</span></h2>
       <h3 class="sb-h3">${esc(tr("lbTotal"))}</h3>
       ${table(
         [tr("lbPlayer"), tr("lbSum"), tr("lbGames"), tr("lbAvg"), tr("lbWins")],

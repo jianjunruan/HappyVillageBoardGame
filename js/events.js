@@ -85,6 +85,53 @@
       deleteOwn: "删除这桌",
       deleteOwnConfirm: "删除你开的「{game}」这一桌？",
       cantDelete: "桌上还有其他玩家，不能删除。想离开的话可以点「退出」，把开桌人交给别人。",
+      gamesTitle: "🎮 对局记录",
+      playerName: "名字",
+      otherPh: "例如：小明",
+      needOtherName: "请填写名字。",
+      points: "{n} 分",
+      startGame: "▶ 开始对局",
+      startAnother: "▶ 开始新的一局",
+      gameN: "第 {n} 局",
+      gameAt: "{t} 开始",
+      pendingScores: "⏳ 等待填写分数",
+      fillScores: "✏️ 填写分数",
+      editScores: "修改分数",
+      cancelGame: "取消这局",
+      cancelGameConfirm: "取消第 {n} 局？这一局的记录会被删除。",
+      gameCancelled: "✓ 已取消这一局",
+      viewRecords: "查看战绩 ↗",
+      gamesHintDay: "活动当天，开桌人或管理员可以在这里开始对局，桌上的玩家会自动记进战绩记录。",
+      gamesHintWho: "开桌人、管理员和这局里有账号的玩家（已登录）可以填分数。",
+      startTitle: "开始「{game}」对局",
+      startWho: "这一局谁来玩？",
+      startHint: "默认是桌上所有人，可以取消勾选。开始后会马上记一条战绩记录，打完再填分数。",
+      startAddLabel: "还有人没报名？在这里加上（有空位时）",
+      startAddBtn: "＋ 加入",
+      startSubmit: "▶ 开始",
+      starting: "正在开始……",
+      started: "✓ 已开始第 {n} 局，打完后点「填写分数」。",
+      needPlayers: "至少选一位玩家。",
+      addPlayer: "＋ 添加玩家",
+      addPlayerTitle: "给「{game}」添加玩家",
+      addHint: "给没在网上报名的人占个位置。之后开桌人或管理员可以把他移走。",
+      addToGame: "同时加入第 {n} 局（还没填分数）",
+      addSubmit: "添加",
+      adding: "正在添加……",
+      added: "✓ 已添加 {name}",
+      scoreTitle: "第 {n} 局 · 填写分数",
+      scoreHint: "填每位玩家的最终得分（整数，可以是负数）。分数最高的获胜，同分都算获胜。",
+      scoreSave: "💾 保存分数",
+      scoresSaved: "✓ 分数已保存，已更新到战绩记录",
+      needScore: "请填写 {name} 的得分（-9999 到 9999 的整数）。",
+      customNoRecord: "这款游戏不在桌游目录里，不能记录对局。",
+      errStartHost: "只有开桌人或管理员可以开始对局、添加玩家（开桌人可能已经换人了）。",
+      errNotToday: "只能在活动当天开始对局。",
+      errTooManyGames: "这一桌的对局太多了。",
+      errScoreLate: "活动结束 7 天后就不能再改分数了，请联系管理员。",
+      errScoreBad: "分数要是 -9999 到 9999 的整数。",
+      scoreNotAllowed: "只有开桌人、管理员或这局里有账号的玩家可以填分数，请先登录。",
+      cancelGone: "这一局已经填了分数或已被取消，不能再取消。",
       notHost: "只有这一桌的开桌人或管理员可以这样做（开桌人可能已经换人了）。",
       tableDeleted: "✓ 已删除这一桌",
       editTime: "修改时间",
@@ -322,6 +369,53 @@
       deleteOwn: "Delete table",
       deleteOwnConfirm: "Delete your {game} table?",
       cantDelete: "Other players are at this table, so it can't be deleted. To go, use \"Leave\" and hand the table to someone else.",
+      gamesTitle: "🎮 Games played",
+      playerName: "Name",
+      otherPh: "e.g. Sam",
+      needOtherName: "Please enter a name.",
+      points: "{n} pts",
+      startGame: "▶ Start a game",
+      startAnother: "▶ Start another game",
+      gameN: "Game {n}",
+      gameAt: "started {t}",
+      pendingScores: "⏳ Waiting for scores",
+      fillScores: "✏️ Enter scores",
+      editScores: "Change scores",
+      cancelGame: "Cancel game",
+      cancelGameConfirm: "Cancel game {n}? Its record will be deleted.",
+      gameCancelled: "✓ Game cancelled",
+      viewRecords: "Records ↗",
+      gamesHintDay: "On the day, the host or an admin can start a game here: the players at the table go straight into the game records.",
+      gamesHintWho: "The host, admins and signed-in players in the game can enter the scores.",
+      startTitle: "Start a game of {game}",
+      startWho: "Who's playing this game?",
+      startHint: "Everyone at the table by default; untick anyone who isn't. A game record is saved right away; enter the scores when you finish.",
+      startAddLabel: "Someone didn't sign up? Add them here (if there's a seat)",
+      startAddBtn: "+ Add",
+      startSubmit: "▶ Start",
+      starting: "Starting…",
+      started: "✓ Game {n} started. Tap \"Enter scores\" when you finish.",
+      needPlayers: "Pick at least one player.",
+      addPlayer: "+ Add player",
+      addPlayerTitle: "Add a player to {game}",
+      addHint: "Saves a seat for someone who didn't sign up online. The host or an admin can take them off again.",
+      addToGame: "Also add them to game {n} (no scores yet)",
+      addSubmit: "Add",
+      adding: "Adding…",
+      added: "✓ Added {name}",
+      scoreTitle: "Game {n} · scores",
+      scoreHint: "Each player's final score (a whole number, can be negative). The highest score wins; a tie means a shared win.",
+      scoreSave: "💾 Save scores",
+      scoresSaved: "✓ Scores saved to the game records",
+      needScore: "Enter a score for {name} (a whole number from -9999 to 9999).",
+      customNoRecord: "This game isn't in the catalogue, so its games can't be recorded.",
+      errStartHost: "Only the table's host or an admin can start games and add players (the host may have changed).",
+      errNotToday: "Games can only be started on the day of the event.",
+      errTooManyGames: "Too many games at this table.",
+      errScoreLate: "Scores can't be changed more than 7 days after the event. Please ask an admin.",
+      errScoreBad: "Scores are whole numbers from -9999 to 9999.",
+      scoreNotAllowed: "Only the host, an admin or a player in this game with an account can enter scores. Please sign in.",
+      cancelGone: "This game already has scores or was cancelled, so it can't be cancelled.",
       notHost: "Only this table's host or an admin can do that (the host may have changed).",
       tableDeleted: "✓ Table deleted",
       editTime: "Change time",
@@ -522,6 +616,7 @@
   let mine = new Set(store.get("hv-event-mine", []));
   const saveMine = () => store.set("hv-event-mine", [...mine].slice(-300));
   let profileName = ""; // a signed-in player's nickname
+  let profileNames = []; // their nickname and other names, lower case: a game with one of them is theirs to score
   const myName = () => store.get("hv-event-name", "") || profileName;
 
   // ---------- dates ----------
@@ -610,6 +705,15 @@
     if (code === "HVE06") return tr("needLead");
     if (code === "HVE07") return tr("errJoined");
     if (code === "HVE08") return tr("cantDelete");
+    if (code === "HVG01") return tr("errStartHost");
+    if (code === "HVG02") return tr("errNotToday");
+    if (code === "HVG03") return tr("customNoRecord");
+    if (code === "HVG04") return tr("errTooManyGames");
+    if (code === "HVG05") return tr("needPlayers");
+    if (code === "HVG06") return tr("errScoreLate");
+    if (code === "HVG07") return tr("errScoreBad");
+    if (code === "score-not-allowed") return tr("scoreNotAllowed");
+    if (code === "cancel-gone") return tr("cancelGone");
     if (code === "HVW01") return tr("errWishFlood");
     if (code === "HVW02") return tr("errWishDeclined");
     if (code === "wish-not-mine") return tr("wishNotMine");
@@ -877,6 +981,7 @@
         <div class="ev-table-act">${action}</div>
       </div>
       <div class="ev-players">${chips}</div>
+      ${gamesHtml(t, g, iHost, over, full)}
       ${iHost && !isAdmin && !over ? `<div class="ev-admin-row">
         <button class="link-btn" type="button" data-edit-time="${t.id}">${esc(tr("editTime"))}</button>
         ${players.length > 1 ? `<span class="ev-hint">${esc(tr("cantDelete"))}</span>` : `<button class="link-btn" type="button" data-delete-own="${t.id}">${esc(tr("deleteOwn"))}</button>`}
@@ -888,6 +993,61 @@
         <button class="link-btn" type="button" data-delete-table="${t.id}">${esc(tr("deleteTable"))}</button>
       </div>` : ""}
     </article>`;
+  }
+  // ---------- games played at a table (对局) ----------
+  const nameKey = (n) => String(n || "").trim().toLowerCase();
+  const scorerUrl = (g) => (g.scorer ? g.scorer : `score.html?game=${encodeURIComponent(g.id)}`);
+  const hostOf = (t) => (t.host_player != null ? t.host_player : t.event_players[0] && t.event_players[0].id);
+  const iHostOf = (t) => hostOf(t) != null && mine.has(hostOf(t));
+  const pendingGame = (t) => [...(t.event_games || [])].reverse().find((x) => x.game_scores.pending);
+  // Who may enter a game's scores (the database checks again): admins, the host, and a signed-in player in the game —
+  // by the sign-up at this table, or by one of their profile names. Not more than 7 days after the event (admins: always).
+  function canScore(t, gm) {
+    if (isAdmin) return true;
+    if (daysAway(ev.event_date) < -7) return false;
+    if (iHostOf(t)) return true;
+    if (!HVLoans.user) return false;
+    const names = new Set([...t.event_players.filter((p) => mine.has(p.id)).map((p) => nameKey(p.name)), ...profileNames]);
+    return (gm.game_scores.players || []).some((p) => names.has(nameKey(p.name)));
+  }
+  function gameHtml(t, g, gm, n) {
+    const r = gm.game_scores;
+    const pending = r.pending;
+    const list = (r.players || []).map((p, i) => ({ ...p, i }));
+    if (!pending) list.sort((a, b) => b.total - a.total || a.i - b.i);
+    const run = isAdmin || iHostOf(t);
+    const acts = [
+      canScore(t, gm) ? `<button class="${pending ? "btn btn-sm" : "link-btn"}" type="button" data-score-game="${r.id}" data-table="${t.id}">${esc(tr(pending ? "fillScores" : "editScores"))}</button>` : "",
+      pending && run ? `<button class="link-btn" type="button" data-cancel-game="${r.id}" data-n="${n}">${esc(tr("cancelGame"))}</button>` : "",
+      !pending && g ? `<a class="link-btn" href="${esc(scorerUrl(g))}">${esc(tr("viewRecords"))}</a>` : "",
+    ].filter(Boolean);
+    return `<div class="ev-game${pending ? " is-pending" : ""}">
+      <div class="ev-game-head"><b>${esc(tr("gameN", { n }))}</b><small>${esc(tr("gameAt", { t: new Date(gm.started_at).toLocaleTimeString(lang() === "zh" ? "zh-CN" : "en", { hour: "2-digit", minute: "2-digit" }) }))}</small>
+        <span class="ev-game-state">${pending ? esc(tr("pendingScores")) : `🏆 ${esc(String(r.winner).split("、").join(lang() === "zh" ? "、" : ", "))}`}</span></div>
+      <ol class="ev-game-players">${list
+        .map((p) => `<li class="${!pending && p.total === r.top_score ? "is-win" : ""}"><span>${esc(p.name)}</span><b>${pending ? "–" : esc(tr("points", { n: p.total }))}</b></li>`)
+        .join("")}</ol>
+      ${acts.length ? `<div class="ev-game-acts">${acts.join("")}</div>` : ""}
+    </div>`;
+  }
+  function gamesHtml(t, g, iHost, over, full) {
+    const games = t.event_games || [];
+    const run = isAdmin || iHost;
+    const today = daysAway(ev.event_date) === 0;
+    if (!games.length && !(run && !over)) return "";
+    const btns = [
+      run && today && g ? `<button class="btn btn-sm" type="button" data-start-game="${t.id}">${esc(tr(games.length ? "startAnother" : "startGame"))}</button>` : "",
+      run && !over && !full ? `<button class="btn ghost btn-sm" type="button" data-add-player="${t.id}">${esc(tr("addPlayer"))}</button>` : "",
+    ].filter(Boolean);
+    let hint = "";
+    if (run && !g) hint = tr("customNoRecord");
+    else if (run && !today && !over && !games.length) hint = tr("gamesHintDay");
+    else if (games.length && games.some((x) => x.game_scores.pending)) hint = tr("gamesHintWho");
+    return `<section class="ev-games" aria-label="${esc(tr("gamesTitle"))}">
+      <div class="ev-games-head"><h4>${esc(tr("gamesTitle"))}</h4>${btns.length ? `<div class="ev-games-btns">${btns.join("")}</div>` : ""}</div>
+      ${games.map((gm, i) => gameHtml(t, g, gm, i + 1)).join("")}
+      ${hint ? `<p class="ev-hint">${esc(hint)}</p>` : ""}
+    </section>`;
   }
   // ---------- organizers (负责人) ----------
   // One person's contact card. n: their number at the event (负责人1, 2, …) or null; admin: show edit/delete (organizers page).
@@ -1002,6 +1162,9 @@
     if (D.mode === "leave") return renderLeaveForm();
     if (D.mode === "host") return renderHostForm();
     if (D.mode === "wish") return renderWishForm();
+    if (D.mode === "start") return renderStartForm();
+    if (D.mode === "add") return renderAddForm();
+    if (D.mode === "score") return renderScoreForm();
   }
 
   const norm = (s) => String(s || "").toLowerCase().replace(/[\s·:：\-–—'’!！?？.,，、()（）]/g, "");
@@ -1299,6 +1462,142 @@
         <div class="form-actions"><button class="btn ghost" type="button" data-close>${esc(tr("cancel"))}</button><button class="btn" type="submit"${busy ? " disabled" : ""}>${esc(busy ? tr("leaving") : tr("leaveSubmit"))}</button></div>
       </form>`;
   }
+  // The host / an admin starts a game: everyone at the table is ticked; people who didn't sign up can be added here.
+  function renderStartForm() {
+    const t = ev && ev.event_tables.find((x) => x.id === D.table);
+    if (!t) return closeDialog();
+    const full = t.max_players != null && t.event_players.length >= t.max_players;
+    const n = (t.event_games || []).length + 1;
+    dlg.innerHTML = `${head(tr("startTitle", { game: tableName(t) }))}
+      <form class="ev-form" data-start-form novalidate>
+        <fieldset class="ev-field">
+          <legend>${esc(tr("startWho"))} <small class="ev-count-pill">${esc(tr("gameN", { n }))}</small></legend>
+          <div class="ev-leave-list">${t.event_players
+            .map((p) => `<label class="ev-leave-opt"><input type="checkbox" name="pick" value="${p.id}"${D.picked.has(String(p.id)) ? " checked" : ""}><span>${esc(p.name)}</span></label>`)
+            .join("")}</div>
+        </fieldset>
+        ${full ? "" : `<div class="ev-field"><span>${esc(tr("startAddLabel"))}</span>
+          <div class="ev-inline-add"><input name="addname" maxlength="30" autocomplete="off" placeholder="${esc(tr("otherPh"))}" value="${esc(D.add || "")}"><button class="btn ghost btn-sm" type="button" data-start-add${busy ? " disabled" : ""}>${esc(tr("startAddBtn"))}</button></div></div>`}
+        <p class="ev-hint">${esc(tr("startHint"))}</p>
+        ${errLine()}
+        <div class="form-actions"><button class="btn ghost" type="button" data-close>${esc(tr("cancel"))}</button><button class="btn" type="submit"${busy ? " disabled" : ""}>${esc(busy ? tr("starting") : tr("startSubmit"))}</button></div>
+      </form>`;
+  }
+  async function startAdd() {
+    readForm();
+    D.err = "";
+    const name = String(D.add || "").trim().slice(0, 30);
+    if (!name) {
+      const i = dlg.querySelector("input[name=addname]");
+      return i && i.focus();
+    }
+    if (busy) return;
+    const state = D;
+    busy = true;
+    renderDialog();
+    try {
+      const id = await HVLoans.addTablePlayer(state.table, token(), name);
+      state.picked.add(String(id));
+      state.add = "";
+    } catch (err) {
+      state.err = errText(err);
+    }
+    busy = false;
+    await load(); // redraws the dialog with the new player ticked
+    if (D === state) {
+      renderDialog();
+      const i = dlg.querySelector("input[name=addname]");
+      if (i) i.focus();
+    }
+  }
+  async function submitStart() {
+    readForm();
+    D.err = "";
+    const t = ev && ev.event_tables.find((x) => x.id === D.table);
+    if (!t) return closeDialog();
+    const ids = t.event_players.map((p) => p.id).filter((id) => D.picked.has(String(id)));
+    if (!ids.length) {
+      D.err = tr("needPlayers");
+      return renderDialog();
+    }
+    const n = (t.event_games || []).length + 1;
+    await submit(async () => {
+      await HVLoans.startGame(t.id, token(), ids.length === t.event_players.length ? null : ids);
+      flash = { text: tr("started", { n }), ok: true };
+    });
+  }
+  // The host / an admin adds someone who didn't sign up; optionally into the game still waiting for scores.
+  function renderAddForm() {
+    const t = ev && ev.event_tables.find((x) => x.id === D.table);
+    if (!t) return closeDialog();
+    const gm = pendingGame(t);
+    const n = gm ? t.event_games.indexOf(gm) + 1 : 0;
+    dlg.innerHTML = `${head(tr("addPlayerTitle", { game: tableName(t) }))}
+      <form class="ev-form" data-add-form novalidate>
+        <label class="ev-field"><span>${esc(tr("playerName"))}</span><input name="name" maxlength="30" autocomplete="off" placeholder="${esc(tr("otherPh"))}" value="${esc(D.name || "")}" required autofocus></label>
+        ${gm ? `<label class="ev-check"><input type="checkbox" name="togame"${D.toGame ? " checked" : ""}> <span>${esc(tr("addToGame", { n }))}</span></label>` : ""}
+        <p class="ev-hint">${esc(tr("addHint"))}</p>
+        ${errLine()}
+        <div class="form-actions"><button class="btn ghost" type="button" data-close>${esc(tr("cancel"))}</button><button class="btn" type="submit"${busy ? " disabled" : ""}>${esc(busy ? tr("adding") : tr("addSubmit"))}</button></div>
+      </form>`;
+  }
+  async function submitAdd() {
+    readForm();
+    D.err = "";
+    const name = String(D.name || "").trim().slice(0, 30);
+    if (!name) {
+      D.err = tr("needOtherName");
+      return renderDialog();
+    }
+    const t = ev && ev.event_tables.find((x) => x.id === D.table);
+    if (!t) return closeDialog();
+    const gm = D.toGame ? pendingGame(t) : null;
+    await submit(async () => {
+      await HVLoans.addTablePlayer(t.id, token(), name, gm ? gm.score_id : null);
+      flash = { text: tr("added", { name }), ok: true };
+    });
+  }
+  // Scores for one game: one whole number per player, in the record's order.
+  function renderScoreForm() {
+    const t = ev && ev.event_tables.find((x) => x.id === D.table);
+    const gm = t && (t.event_games || []).find((x) => x.score_id === D.score);
+    if (!gm) return closeDialog();
+    const n = t.event_games.indexOf(gm) + 1;
+    dlg.innerHTML = `${head(tr("scoreTitle", { n }))}
+      <form class="ev-form" data-score-form novalidate>
+        <p class="ev-hint">${esc(tableName(t))}</p>
+        <div class="ev-score-list">${gm.game_scores.players
+          .map((p, i) => `<label class="ev-score-row"><span>${esc(p.name)}</span><input name="s${i}" type="number" step="1" min="-9999" max="9999" value="${esc(D.vals[i] ?? "")}"${i === 0 ? " autofocus" : ""}></label>`)
+          .join("")}</div>
+        <p class="ev-hint">${esc(tr("scoreHint"))}</p>
+        ${errLine()}
+        <div class="form-actions"><button class="btn ghost" type="button" data-close>${esc(tr("cancel"))}</button><button class="btn" type="submit"${busy ? " disabled" : ""}>${esc(busy ? tr("saving") : tr("scoreSave"))}</button></div>
+      </form>`;
+  }
+  async function submitScores() {
+    readForm();
+    D.err = "";
+    const t = ev && ev.event_tables.find((x) => x.id === D.table);
+    const gm = t && (t.event_games || []).find((x) => x.score_id === D.score);
+    if (!gm) return closeDialog();
+    const players = gm.game_scores.players;
+    const totals = [];
+    for (let i = 0; i < players.length; i++) {
+      const v = String(D.vals[i] ?? "").trim();
+      if (!/^-?\d{1,4}$/.test(v)) {
+        D.err = tr("needScore", { name: players[i].name });
+        renderDialog();
+        const bad = dlg.querySelector(`input[name=s${i}]`);
+        if (bad) bad.focus();
+        return;
+      }
+      totals.push(Number(v));
+    }
+    await submit(async () => {
+      if (!(await HVLoans.setGameScores(gm.score_id, token(), totals))) throw Object.assign(new Error("not allowed"), { code: "score-not-allowed" });
+      flash = { text: tr("scoresSaved"), ok: true };
+    });
+  }
   // Anyone: suggest an event (期望活动).
   function renderWishForm() {
     dlg.innerHTML = `${head(tr(D.id ? "wishEditTitle" : "wishFormTitle"))}
@@ -1406,6 +1705,12 @@
     if (D.mode === "leave") D.next = (f.querySelector("input[name=next]:checked") || {}).value || "";
     if (D.mode === "host") D.host = (f.querySelector("input[name=host]:checked") || {}).value || "";
     if (D.mode === "wish") Object.assign(D, { name: v("name"), title: v("title"), desc: v("desc") });
+    if (D.mode === "start") {
+      D.picked = new Set([...f.querySelectorAll("input[name=pick]:checked")].map((x) => x.value));
+      D.add = v("addname") || "";
+    }
+    if (D.mode === "add") Object.assign(D, { name: v("name"), toGame: Boolean(f.elements.togame && f.elements.togame.checked) });
+    if (D.mode === "score") D.vals = D.vals.map((_, i) => v("s" + i));
     if (D.mode === "event") {
       Object.assign(D, { title: v("title"), date: v("date"), time: v("time"), end: v("end"), place: v("place"), map: v("map") });
       if (f.querySelector("[data-rich]")) D.desc = HVRich.value(f.querySelector("[data-rich]"));
@@ -1744,6 +2049,29 @@
         if (!ok) throw Object.assign(new Error("not host"), { code: "not-host" });
       }, tr("tableDeleted"));
     }
+    if (b.dataset.startGame) {
+      const t = tableOf(b.dataset.startGame);
+      if (t) openDialog({ mode: "start", table: t.id, picked: new Set(t.event_players.map((p) => String(p.id))), add: "", err: "" });
+      return;
+    }
+    if (b.dataset.addPlayer) {
+      const t = tableOf(b.dataset.addPlayer);
+      if (t) openDialog({ mode: "add", table: t.id, name: "", toGame: true, err: "" });
+      return;
+    }
+    if (b.dataset.scoreGame) {
+      const t = tableOf(b.dataset.table);
+      const gm = t && (t.event_games || []).find((x) => x.score_id === Number(b.dataset.scoreGame));
+      if (gm) openDialog({ mode: "score", table: t.id, score: gm.score_id, vals: gm.game_scores.players.map((p) => (gm.game_scores.pending ? "" : String(p.total))), err: "" });
+      return;
+    }
+    if (b.dataset.cancelGame) {
+      if (!confirm(tr("cancelGameConfirm", { n: b.dataset.n }))) return;
+      const id = Number(b.dataset.cancelGame);
+      return void act(async () => {
+        if (!(await HVLoans.cancelGame(id, token()))) throw Object.assign(new Error("gone"), { code: "cancel-gone" });
+      }, tr("gameCancelled"));
+    }
     if (b.dataset.changeHost) {
       const t = tableOf(b.dataset.changeHost);
       if (t) openDialog({ mode: "host", table: t.id, host: String(t.host_player != null ? t.host_player : t.event_players[0].id), err: "" });
@@ -1816,6 +2144,7 @@
   dlg.addEventListener("click", (e) => {
     if (e.target.closest("[data-close]") || (e.target === dlg && D && D.mode === "qr")) return closeDialog();
     if (e.target.closest("[data-tpl-save]") && D) return void saveTemplate();
+    if (e.target.closest("[data-start-add]") && D) return void startAdd();
     if (e.target.closest("[data-tpl-delete]") && D) return void deleteTemplate();
     const rm = e.target.closest("[data-qr-remove]");
     if (rm && D && D.qr) {
@@ -1833,6 +2162,12 @@
       renderDialog();
       const s = $("ev-search");
       if (s) s.focus();
+    }
+  });
+  dlg.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && e.target.name === "addname" && D && D.mode === "start") {
+      e.preventDefault();
+      startAdd();
     }
   });
   dlg.addEventListener("input", (e) => {
@@ -1861,6 +2196,9 @@
     if (f.hasAttribute("data-leave-form")) return void submitLeave();
     if (f.hasAttribute("data-host-form")) return void submitHost();
     if (f.hasAttribute("data-wish-form")) return void submitWish();
+    if (f.hasAttribute("data-start-form")) return void submitStart();
+    if (f.hasAttribute("data-add-form")) return void submitAdd();
+    if (f.hasAttribute("data-score-form")) return void submitScores();
   });
   // "close" arrives a moment later, so ignore it if another dialog has been opened since.
   dlg.addEventListener("cancel", (e) => {
@@ -1944,7 +2282,12 @@
       });
     // A signed-in player's nickname fills in the name when joining or opening a table.
     const uid = HVLoans.userId;
-    if (uid) HVLoans.profile(uid).then((p) => (profileName = (p && p.name) || ""), () => {});
+    if (uid)
+      HVLoans.profile(uid).then((p) => {
+        profileName = (p && p.name) || "";
+        profileNames = p ? [p.name, ...(p.aliases || [])].map(nameKey).filter(Boolean) : [];
+        if (ev) render();
+      }, () => {});
   }
   // The catalogue only matters for names and pictures, so the event shows first and fills in after.
   load();

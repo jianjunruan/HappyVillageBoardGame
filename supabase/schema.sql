@@ -632,6 +632,211 @@ revoke execute on function public.set_event_table_host(bigint, bigint) from publ
 grant execute on function public.set_event_table_host(bigint, bigint) to authenticated;  -- checks is_admin() itself
 
 -- ---------------------------------------------------------------------------------------------------------------
+-- Games played at an event table (对局). On the day of the event the table's host (开桌人) or an admin starts a game:
+-- it is saved straight away as a game record (game_scores) with the players they picked from the table (everyone by
+-- default) and no scores yet ("pending"). Then the host, an admin, or any player in that game who has an account (signed
+-- up with it, or the name is one of their profile names) fills in the scores, and can correct them for 7 days after the
+-- event. The host can start more games at the same table, with other players, and can add people who didn't sign up
+-- (if there are seats left). Only games from the catalogue can be recorded (a record belongs to a game in data/games.json).
+alter table public.game_scores add column if not exists pending boolean not null default false;  -- started, no scores yet
+grant update (pending) on public.game_scores to authenticated;  -- admins only (policy): fixing a record clears it
+
+create table if not exists public.event_games (
+  id bigint generated always as identity primary key,
+  table_id bigint not null references public.event_tables (id) on delete cascade,
+  score_id bigint not null unique references public.game_scores (id) on delete cascade,  -- the record stays if the table goes
+  started_at timestamptz not null default now()
+);
+create index if not exists event_games_by_table on public.event_games (table_id);
+alter table public.event_games enable row level security;
+drop policy if exists "Anyone can view event games" on public.event_games;
+create policy "Anyone can view event games" on public.event_games for select using (true);
+grant select (id, table_id, score_id, started_at) on public.event_games to anon, authenticated;
+
+-- True when the caller may fill in a game's scores: an admin, the table's host, or a signed-in player in that game
+-- (p_players: the record's players), matched by the account they signed up at the table with, or their profile names.
+create or replace function public.can_score_event_game(p_table bigint, p_host_token text, p_host_player bigint, p_token text, p_players jsonb)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select public.is_admin()
+      or public.is_event_table_host(p_table, p_host_token, p_host_player, p_token)
+      or (auth.uid() is not null and exists (
+            select 1 from jsonb_array_elements(p_players) pl
+            where lower(trim(pl ->> 'name')) in (
+              select lower(trim(p.name)) from public.event_players p where p.table_id = p_table and p.user_id = auth.uid()
+              union all
+              select lower(trim(n)) from public.profiles pr, unnest(array_append(pr.aliases, pr.name)) n where pr.user_id = auth.uid())));
+$$;
+
+-- Starts a game at a table: the host or an admin, on the day of the event (one day of slack for time zones).
+-- p_players: the sign-ups who play (null = everyone at the table). Returns the new record's id.
+create or replace function public.start_event_game(p_table bigint, p_token text, p_players bigint[] default null)
+returns bigint
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  tb record;
+  names jsonb;
+  n integer;
+  s bigint;
+begin
+  select t.id, t.game_id, t.host_token, t.host_player, e.event_date into tb
+  from public.event_tables t join public.events e on e.id = t.event_id
+  where t.id = p_table for update of t;
+  if tb.id is null then
+    raise exception 'table not found' using errcode = 'HVE01';
+  end if;
+  if not (public.is_admin() or public.is_event_table_host(tb.id, tb.host_token, tb.host_player, p_token)) then
+    raise exception 'only the host can start a game' using errcode = 'HVG01';
+  end if;
+  if tb.event_date not between current_date - 1 and current_date + 1 then
+    raise exception 'games are started on the day of the event' using errcode = 'HVG02';
+  end if;
+  if tb.game_id is null then
+    raise exception 'only games from the catalogue can be recorded' using errcode = 'HVG03';
+  end if;
+  if (select count(*) from public.event_games where table_id = tb.id) >= 30 then
+    raise exception 'too many games at this table' using errcode = 'HVG04';
+  end if;
+  select jsonb_agg(jsonb_build_object('name', p.name, 'total', 0) order by p.joined_at, p.id), count(*) into names, n
+  from public.event_players p
+  where p.table_id = tb.id and (p_players is null or p.id = any (p_players));
+  if coalesce(n, 0) = 0 then
+    raise exception 'pick at least one player' using errcode = 'HVG05';
+  end if;
+  insert into public.game_scores (game_id, played_on, players, rounds, winner, top_score, round_count, pending)
+  values (tb.game_id, tb.event_date, names, '[]', '—', 0, 0, true)
+  returning id into s;
+  insert into public.event_games (table_id, score_id) values (tb.id, s);
+  return s;
+end;
+$$;
+
+-- Fills in (or corrects) a game's scores: p_totals is one whole number per player, in the record's order.
+-- Works out the winner. Returns false if the caller may not (see can_score_event_game).
+create or replace function public.set_event_game_scores(p_score bigint, p_token text, p_totals jsonb)
+returns boolean
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  g record;
+  outp jsonb := '[]';
+  v jsonb;
+  top integer;
+  win text;
+begin
+  select s.id, s.players, t.id as table_id, t.host_token, t.host_player, e.event_date into g
+  from public.event_games eg
+  join public.game_scores s on s.id = eg.score_id
+  join public.event_tables t on t.id = eg.table_id
+  join public.events e on e.id = t.event_id
+  where eg.score_id = p_score
+  for update of s;
+  if g.id is null or not public.can_score_event_game(g.table_id, g.host_token, g.host_player, p_token, g.players) then
+    return false;
+  end if;
+  if not public.is_admin() and g.event_date < current_date - 7 then
+    raise exception 'scores can be changed for 7 days after the event' using errcode = 'HVG06';
+  end if;
+  if jsonb_typeof(p_totals) is distinct from 'array' or jsonb_array_length(p_totals) <> jsonb_array_length(g.players) then
+    raise exception 'one score per player' using errcode = 'HVG07';
+  end if;
+  for i in 0 .. jsonb_array_length(g.players) - 1 loop
+    v := p_totals -> i;
+    if jsonb_typeof(v) <> 'number' or (v #>> '{}')::numeric <> trunc((v #>> '{}')::numeric)
+       or (v #>> '{}')::numeric not between -9999 and 9999 then
+      raise exception 'scores are whole numbers from -9999 to 9999' using errcode = 'HVG07';
+    end if;
+    outp := outp || jsonb_build_array(jsonb_set(g.players -> i, '{total}', to_jsonb((v #>> '{}')::integer)));
+  end loop;
+  select max((x ->> 'total')::integer) into top from jsonb_array_elements(outp) x;
+  select string_agg(x ->> 'name', '、' order by o) into win
+  from jsonb_array_elements(outp) with ordinality a (x, o) where (x ->> 'total')::integer = top;
+  update public.game_scores set players = outp, top_score = top, winner = left(win, 400), pending = false where id = g.id;
+  return true;
+end;
+$$;
+
+-- Cancels a game started by mistake: the host or an admin, only while no scores are in. Deletes its record.
+-- Returns false if it isn't possible (not the host, scores already in, or already gone).
+create or replace function public.cancel_event_game(p_score bigint, p_token text)
+returns boolean
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  s bigint;
+begin
+  delete from public.game_scores gs
+  using public.event_games eg, public.event_tables t
+  where gs.id = p_score and gs.pending and eg.score_id = gs.id and t.id = eg.table_id
+    and (public.is_admin() or public.is_event_table_host(t.id, t.host_token, t.host_player, p_token))
+  returning gs.id into s;
+  return s is not null;
+end;
+$$;
+
+-- The host or an admin adds someone who didn't sign up (by name) to the table, if there's a seat left. With p_score,
+-- they also join that game, if its scores aren't in yet. Returns the new player id. The added person has no browser
+-- secret of their own: the host or an admin takes them off again.
+create or replace function public.add_event_table_player(p_table bigint, p_token text, p_name text, p_score bigint default null)
+returns bigint
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  tb record;
+  p bigint;
+begin
+  select id, event_id, max_players, host_token, host_player into tb from public.event_tables where id = p_table for update;
+  if tb.id is null then
+    raise exception 'table not found' using errcode = 'HVE01';
+  end if;
+  if not (public.is_admin() or public.is_event_table_host(tb.id, tb.host_token, tb.host_player, p_token)) then
+    raise exception 'only the host can add players' using errcode = 'HVG01';
+  end if;
+  perform public.event_signup_guard(tb.event_id);
+  if tb.max_players is not null and (select count(*) from public.event_players where table_id = tb.id) >= tb.max_players then
+    raise exception 'this table is full' using errcode = 'HVE02';
+  end if;
+  if exists (select 1 from public.event_players where table_id = tb.id and lower(trim(name)) = lower(trim(p_name))) then
+    raise exception 'someone with this name already joined' using errcode = 'HVE03';
+  end if;
+  insert into public.event_players (table_id, name, token) values (tb.id, trim(p_name), replace(gen_random_uuid()::text, '-', ''))
+  returning id into p;
+  if p_score is not null then
+    update public.game_scores gs
+    set players = gs.players || jsonb_build_array(jsonb_build_object('name', trim(p_name), 'total', 0))
+    from public.event_games eg
+    where gs.id = p_score and gs.pending and eg.score_id = gs.id and eg.table_id = tb.id
+      and jsonb_array_length(gs.players) < 30
+      and not exists (select 1 from jsonb_array_elements(gs.players) x where lower(trim(x ->> 'name')) = lower(trim(p_name)));
+  end if;
+  return p;
+end;
+$$;
+
+revoke execute on function public.can_score_event_game(bigint, text, bigint, text, jsonb) from public, anon, authenticated;
+revoke execute on function public.start_event_game(bigint, text, bigint[]) from public;
+revoke execute on function public.set_event_game_scores(bigint, text, jsonb) from public;
+revoke execute on function public.cancel_event_game(bigint, text) from public;
+revoke execute on function public.add_event_table_player(bigint, text, text, bigint) from public;
+grant execute on function public.start_event_game(bigint, text, bigint[]) to anon, authenticated;
+grant execute on function public.set_event_game_scores(bigint, text, jsonb) to anon, authenticated;
+grant execute on function public.cancel_event_game(bigint, text) to anon, authenticated;
+grant execute on function public.add_event_table_player(bigint, text, text, bigint) to anon, authenticated;
+
+-- ---------------------------------------------------------------------------------------------------------------
 -- Event wishes (期望活动): anyone can suggest an event they'd like (their name, the event's name, a short description).
 -- Everyone can see them. The person who suggested one can change or delete it (from the same browser, or signed in
 -- with the same account); admins adopt (已采纳) or decline (未采纳) it, or delete it. Suggesting doesn't mean it will
@@ -1031,6 +1236,7 @@ as $$
   where exists (
     select 1 from jsonb_array_elements(s.players) pl
     where lower(trim(pl ->> 'name')) in (select lower(trim(n)) from unnest(p_names) n where trim(n) <> ''))
+    and not s.pending  -- games started at an event whose scores aren't in yet
   order by coalesce(s.played_on, s.played_at::date) desc, s.played_at desc
   limit 2000;
 $$;

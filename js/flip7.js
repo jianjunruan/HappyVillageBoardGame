@@ -26,6 +26,8 @@
       rounds: "共 {n} 轮",
       newGame: "新游戏",
       won: "🏆 {names} 获胜！",
+      pending: "⏳ 活动中开始的对局，等待在活动页面填写分数",
+      pendingShort: "待填",
       wonSub: "{score} 分，共 {n} 轮",
       again: "同一批人再来一局",
       undo: "撤回上一轮",
@@ -121,6 +123,8 @@
       rounds: "{n} rounds",
       newGame: "New game",
       won: "🏆 {names} wins!",
+      pending: "⏳ Started at an event, waiting for scores on the event page",
+      pendingShort: "to come",
       wonSub: "{score} points in {n} rounds",
       again: "Play again, same players",
       undo: "Undo last round",
@@ -641,6 +645,12 @@
 
   function recordHtml(r) {
     const players = Array.isArray(r.players) ? r.players : [];
+    if (r.pending)
+      return `<article class="f7-rec is-pending">
+        <div class="f7-rec-head"><b>${esc(tr("pending"))}</b><time datetime="${esc(r.played_at)}">${esc(fmtTime(r.played_at))}</time></div>
+        <ol class="f7-rec-players">${players.map((p) => `<li>${esc(p.name)} · ${esc(tr("pendingShort"))}</li>`).join("")}</ol>
+        ${isAdmin ? `<div class="f7-rec-foot"><span></span><span class="f7-admin-acts"><button class="link-btn" type="button" data-del-rec="${esc(r.id)}">${esc(tr("delete"))}</button></span></div>` : ""}
+      </article>`;
     const sorted = players.map((p, i) => ({ ...p, i })).sort((a, b) => b.total - a.total || a.i - b.i);
     const table = Array.isArray(r.rounds) && r.rounds.length
       ? `<details><summary>${esc(tr("history"))}</summary><div class="f7-scroll"><table class="f7-table">
@@ -728,7 +738,8 @@
 
   function leaderboardHtml() {
     const stats = new Map();
-    for (const r of records) {
+    const done = records.filter((r) => !r.pending);
+    for (const r of done) {
       const winners = new Set(String(r.winner).split("、").map(nameKey));
       (r.players || []).forEach((p, pi) => {
         const k = nameKey(p.name);
@@ -749,7 +760,7 @@
     const rows = [...stats.values()].sort((a, b) => b.wins - a.wins || b.wins / b.games - a.wins / a.games || b.games - a.games || b.best - a.best);
     if (!rows.length) return `<h2>${esc(tr("tabLeaders"))}</h2><p class="f7-hint">${esc(tr("none"))}</p>`;
     const medal = ["🥇", "🥈", "🥉"];
-    return `<h2>${esc(tr("tabLeaders"))} <span class="count">${esc(tr("gamesCount", { n: records.length }))}</span></h2>
+    return `<h2>${esc(tr("tabLeaders"))} <span class="count">${esc(tr("gamesCount", { n: done.length }))}</span></h2>
       <div class="f7-scroll"><table class="f7-table f7-lb">
         <thead><tr><th>${esc(tr("lbPlayer"))}</th><th>${esc(tr("lbWins"))}</th><th>${esc(tr("lbGames"))}</th><th>${esc(tr("lbRate"))}</th><th>${esc(tr("lbBest"))}</th><th>${esc(tr("lbAvg"))}</th><th>${esc(tr("lbF7"))}</th><th>${esc(tr("lbBusts"))}</th></tr></thead>
         <tbody>${rows

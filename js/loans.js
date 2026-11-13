@@ -321,7 +321,7 @@ window.HVLoans = (() => {
     // Score records (table game_scores), newest first. Anyone can read and save; only admins can change or delete.
     scores: (gameId, limit = 500) =>
       request(`/rest/v1/game_scores?game_id=eq.${encodeURIComponent(gameId)}&order=played_at.desc&limit=${limit}` +
-        "&select=id,game_id,played_at,played_on,details,target,players,rounds,winner,top_score,round_count"),
+        "&select=id,game_id,played_at,played_on,details,target,players,rounds,winner,top_score,round_count,pending"),
     // record: { game_id, target, players: [{ name, total }], rounds: [[{ s, b, f }, ...], ...], winner, top_score, round_count }
     async saveScore(record) {
       const rows = await request("/rest/v1/game_scores", { method: "POST", prefer: "return=representation", body: record });
@@ -366,7 +366,8 @@ window.HVLoans = (() => {
     async event(id) {
       const rows = await request(`/rest/v1/events?id=eq.${encodeURIComponent(id)}` +
         "&select=id,title,event_date,start_time,end_time,location,map_url,description," +
-        "event_tables(id,game_id,game_name,on_site,max_players,note,created_at,start_time,host_player,event_players(id,name,joined_at))," +
+        "event_tables(id,game_id,game_name,on_site,max_players,note,created_at,start_time,host_player,event_players(id,name,joined_at)," +
+        "event_games(id,score_id,started_at,game_scores(id,players,winner,top_score,pending)))," + +
         "event_staff(is_lead,sort,staff(id,name,phone,wechat,xhs,wechat_qr,xhs_qr))", { admin: "ifSignedIn" });
       const ev = rows[0] || null;
       if (ev) {
@@ -376,7 +377,11 @@ window.HVLoans = (() => {
           (a, b) => (a.start_time == null) - (b.start_time == null) || (a.start_time || "").localeCompare(b.start_time || "") ||
             a.created_at.localeCompare(b.created_at) || a.id - b.id
         );
-        for (const t of ev.event_tables) t.event_players.sort((a, b) => a.joined_at.localeCompare(b.joined_at) || a.id - b.id);
+        for (const t of ev.event_tables) {
+          t.event_players.sort((a, b) => a.joined_at.localeCompare(b.joined_at) || a.id - b.id);
+          // Games played at the table (对局), first one first; a game whose record was deleted is left out.
+          t.event_games = (t.event_games || []).filter((g) => g.game_scores).sort((a, b) => a.id - b.id);
+        }
       }
       return ev;
     },
@@ -426,6 +431,22 @@ window.HVLoans = (() => {
         admin: "ifSignedIn",
         body: nextId ? { p_player: playerId, p_token: token, p_next: nextId } : { p_player: playerId, p_token: token },
       }),
+    // ---------- games played at an event table (对局) ----------
+    // The host (or an admin) starts a game on the day: saved at once as a game record with the chosen players
+    // (playerIds; all of the table's players when left out) and no scores yet. Returns the record id.
+    startGame: (tableId, token, playerIds) =>
+      request("/rest/v1/rpc/start_event_game", { method: "POST", admin: "ifSignedIn", body: { p_table: tableId, p_token: token, p_players: playerIds || null } }),
+    // The host, an admin, or a signed-in player in that game: one whole number per player, in the record's order.
+    // Returns false if this browser / account may not.
+    setGameScores: (scoreId, token, totals) =>
+      request("/rest/v1/rpc/set_event_game_scores", { method: "POST", admin: "ifSignedIn", body: { p_score: scoreId, p_token: token, p_totals: totals } }),
+    // The host or an admin, while no scores are in. Returns false if it isn't possible.
+    cancelGame: (scoreId, token) =>
+      request("/rest/v1/rpc/cancel_event_game", { method: "POST", admin: "ifSignedIn", body: { p_score: scoreId, p_token: token } }),
+    // The host or an admin adds someone to the table by name (and to the game scoreId, if its scores aren't in yet).
+    // Returns the new player id.
+    addTablePlayer: (tableId, token, name, scoreId) =>
+      request("/rest/v1/rpc/add_event_table_player", { method: "POST", admin: "ifSignedIn", body: { p_table: tableId, p_token: token, p_name: name, p_score: scoreId || null } }),
     // ---------- event wishes (期望活动) ----------
     // Most "+1" votes first, then newest: [{ id, name, title, description, status: "open" | "adopted" | "rejected",
     // votes, created_at }]. Optional limit.
