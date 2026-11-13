@@ -8,6 +8,7 @@
   --img-bg: #f3eee7;
   --danger: #c0392b;
   --ok: #2e7d4f;
+  --noloan: #5b4b8a; /* games that are never lent out */
   --border: #eadfd3;
   --shadow: 0 2px 10px rgb(60 40 20 / 0.08);
   --radius: 14px;
@@ -25,6 +26,7 @@
     --img-bg: #1f1b18;
     --danger: #f07167;
     --ok: #6fcf97;
+    --noloan: #b9a6f0;
     --border: #3a332d;
     --shadow: 0 2px 10px rgb(0 0 0 / 0.4);
     color-scheme: dark;
@@ -204,6 +206,7 @@ dialog article { padding: 0 24px 28px; }
 .card-tag { max-width: 100%; padding: 2px 9px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--text);
   font-size: 0.75rem; font-weight: 600; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 1px 3px rgb(0 0 0 / 0.15); pointer-events: auto; }
 .card-tag.is-in { background: var(--ok); border-color: var(--ok); color: #fff; }
+.card-tag.is-noloan { background: #5b4b8a; border-color: #5b4b8a; color: #fff; }
 .card-tag.is-partial { background: var(--accent); border-color: var(--accent); color: #fff; }
 .card-tag.is-out { background: var(--danger); border-color: var(--danger); color: #fff; }
 .card-tag.is-overdue { outline: 2px solid var(--danger); outline-offset: 1px; }
@@ -245,6 +248,7 @@ dialog article { padding: 0 24px 28px; }
 .loan-status { margin: 0; font-weight: 600; }
 .loan-status.is-in { color: var(--ok); }
 .loan-status.is-out { color: var(--danger); }
+.loan-status.is-noloan { color: var(--noloan); }
 .overdue { margin-left: 4px; padding: 1px 8px; border-radius: 999px; background: var(--danger); color: #fff; font-size: 0.8rem; }
 .loan-form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px; margin-top: 12px; }
 .loan-form label { display: grid; gap: 4px; flex: 1 1 160px; font-size: 0.88rem; color: var(--muted); }

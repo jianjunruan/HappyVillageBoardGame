@@ -81,6 +81,8 @@
       .join(" ");
   const outOf = (g) => loansOf(g).reduce((n, l) => n + (l.quantity || 1), 0);
   const leftOf = (g) => Math.max(ownedOf(g) - outOf(g), 0);
+  // Games that are never lent out ("noLoan": true in games.json), wherever their sets are.
+  const noLoan = (g) => g.noLoan === true;
 
   function meta(game) {
     return [
@@ -143,7 +145,7 @@
           (!activeTag || (g.tags || []).includes(activeTag)) &&
           (!activeCat || catOf(g) === activeCat) &&
           (!activeLoan ||
-            (activeLoan === "out" ? outOf(g) > 0 : activeLoan === "in" ? leftOf(g) > 0 : activeLoan === "none" ? ownedOf(g) === 0 : countAt(g, activeLoan) > 0))
+            (activeLoan === "out" ? outOf(g) > 0 : activeLoan === "in" ? leftOf(g) > 0 && !noLoan(g) : activeLoan === "none" ? ownedOf(g) === 0 : countAt(g, activeLoan) > 0))
         );
       });
     // Easiest first within each category and band, but games in the same series (base game, expansions,
@@ -184,7 +186,9 @@
       const left = leftOf(g);
       const who = list.map((l) => `${l.borrower}${(l.quantity || 1) > 1 ? ` ×${l.quantity}` : ""}`).join("、");
       const overdue = list.some(isOverdue) ? " is-overdue" : "";
-      const status = !list.length
+      const status = noLoan(g)
+        ? tag("is-noloan", `🔒 ${t("noLoan")}`, t("noLoanLong"))
+        : !list.length
         ? tag("is-in", owned > 1 ? `🟢 ${t("tagLeft", { n: left })}` : `🟢 ${t("loanFilterIn")}`)
         : left
           ? tag(`is-partial${overdue}`, `🟠 ${t("tagOut", { out: outOf(g), owned })}`, who)
@@ -261,6 +265,8 @@
     const summary =
       owned === 0
         ? `<p class="loan-status is-none">⚪ ${esc(t("loanNone"))}</p>`
+        : noLoan(g)
+        ? `<p class="loan-status is-noloan">🔒 ${esc(t("noLoanLong"))}</p>`
         : owned > 1
         ? `<p class="loan-status ${left ? "is-in" : "is-out"}">${left ? "🟢" : "🔴"} ${esc(t("loanSets", { owned, left }))}</p>`
         : left
@@ -322,7 +328,9 @@
              <label data-owner-only${s.owner ? "" : " hidden"}>🏠 ${esc(t("setsWithOwner"))}<input name="withOwner" type="number" min="0" max="99" step="1" value="${s.withOwner}" required></label>
              <button class="btn ghost" type="submit">${esc(t("copiesSave"))}</button>
            </form>`;
-      admin += left
+      admin += noLoan(g)
+        ? `<p class="hint">🔒 ${esc(t("noLoanAdmin"))}</p>`
+        : left
         ? `<form class="loan-form lend-form" data-loan-lend>
              <label>${esc(t("loanBorrower"))}<input name="borrower" required maxlength="60" autocomplete="off"></label>
              ${qty}

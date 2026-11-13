@@ -4162,6 +4162,59 @@
           "url": "https://boardgamegeek.com/boardgame/371433/terrorscape"
         }
       ]
+    },
+    {
+      "id": "dreamlife-gps",
+      "name": { "zh": "圆梦领航", "en": "DreamLife GPS" },
+      "noLoan": true,
+      "scoring": { "mode": "none" },
+      "image": "images/dreamlife-gps.jpg",
+      "description": {
+        "zh": "一款认识自己的启发式桌游，号称“人生的 GPS 导航系统”。每位玩家先定下一个人生中想达成或想体验的目标，然后在人生地图板和情绪能量等级板上前进，按领航师的引导抽取资源卡和挑战卡、完成行动，并和同桌的人分享自己的人生故事。游戏融入了丰盛法则、情绪能量、播种定律、冰山理论等自我成长的概念，帮你看见自己的人生模式与信念。没有输赢，重在交流和启发；卡牌也可以单独使用。（台湾原创，2022）\n\n适合：想认识自己、找话题、加深彼此了解的朋友、团队或课堂；需要一位熟悉玩法的领航师带领，一局约 3 小时。",
+        "en": "A self-discovery game billed as a GPS for your life. Each player first sets a goal they want to reach or an experience they want to create, then moves across a life-map board and an emotional-energy board. Guided by a facilitator (the navigator), players draw resource and challenge cards, take actions and share their own life stories with the table. It draws on self-growth ideas such as the law of abundance, emotional energy, sowing and reaping, and the iceberg model, to help you see your own patterns and beliefs. There is no winner: it's about talking and insight. The cards can also be used on their own. (Made in Taiwan, 2022.)\n\nGreat for: friends, teams or classes who want to get to know themselves and each other; needs a facilitator who knows the game, and takes about 3 hours."
+      },
+      "players": "2–6",
+      "playtime": "180",
+      "age": "15",
+      "category": "party",
+      "weight": 1.5,
+      "tags": ["Party", "Role-play"],
+      "links": [
+        {
+          "label": { "zh": "官方网站", "en": "Official website" },
+          "url": "https://dreamlifegps.com/"
+        },
+        {
+          "label": { "zh": "在 YouTube 搜索介绍视频", "en": "Find videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=%E5%9C%93%E5%A4%A2%E9%A0%98%E8%88%AA"
+        }
+      ]
+    },
+    {
+      "id": "cashflow",
+      "name": { "zh": "现金流", "en": "CASHFLOW" },
+      "scoring": { "mode": "win" },
+      "image": "images/cashflow.jpg",
+      "description": {
+        "zh": "《富爸爸穷爸爸》作者罗伯特·清崎设计的理财游戏。每人抽一份职业，带着工资、开销和贷款进入“老鼠赛跑”：掷骰前进，遇到小买卖、大生意、市场变化和意外开销，用自己的财务报表记账，买进房产、股票和生意来增加被动收入。当被动收入超过总支出，就跳出老鼠赛跑，进入“快车道”追逐自己的梦想，最先实现梦想的人获胜。边玩边学会看懂资产、负债和现金流。设计师：Robert Kiyosaki（1996，2020 新版）。\n\n适合：想学理财观念的朋友和家人；要算账，一局约 1–3 小时。",
+        "en": "The money game by Robert Kiyosaki, author of Rich Dad Poor Dad. Everyone draws a profession with its salary, expenses and loans, and starts in the Rat Race: roll and move, take small deals, big deals, market changes and surprise costs, and keep your own financial statement, buying property, shares and businesses to build passive income. Once your passive income is more than your expenses you escape to the Fast Track and chase your dream; the first to reach it wins. You learn to read assets, liabilities and cash flow as you play. Designed by Robert Kiyosaki (1996; new edition 2020).\n\nGreat for: friends and families who want to learn about money; involves bookkeeping, and takes about 1–3 hours."
+      },
+      "players": "2–6",
+      "playtime": "60–180",
+      "age": "14",
+      "category": "family",
+      "weight": 2.1,
+      "tags": ["Family", "Trading"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=cashflow+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/6552/cashflow-101"
+        }
+      ]
     }
   ]
 }
