@@ -4068,6 +4068,31 @@
           "url": "https://boardgamegeek.com/boardgame/140934/arboretum"
         }
       ]
+    },
+    {
+      "id": "terrorscape",
+      "name": { "zh": "暗夜杀机", "en": "Terrorscape" },
+      "image": "images/terrorscape.jpg",
+      "description": {
+        "zh": "一名玩家扮演杀手，其他玩家扮演困在荒宅里的幸存者，是一场不对称的躲猫猫对抗（也译作《恶夜杀机》）。幸存者要合力找齐 5 把钥匙开门逃走，或者修好无线电呼叫救援；杀手看不到幸存者藏在哪里，要靠移动、感知和陷阱把他们一个个找出来。幸存者之间不能明说自己的计划，要靠默契配合，每一步都紧张刺激。设计师：Jeffrey CCH（2023）。\n\n适合：喜欢恐怖题材、推理和团队对抗的玩家；2 人或 4 人都好玩。",
+        "en": "One player is the killer; the others are survivors trapped in a mansion, in a tense asymmetric game of hide and seek. Survivors work together to find 5 keys and escape, or repair the radio and call for help. The killer can't see where they hide and must hunt them down by moving, sensing and setting traps. Survivors can't openly share their plans, so every move is a nervous guess. Designed by Jeffrey CCH (2023).\n\nGreat for: fans of horror themes, deduction and team-versus-one games; plays well with 2 or 4."
+      },
+      "players": "2–4",
+      "playtime": "30–45",
+      "age": "14",
+      "category": "american",
+      "weight": 2.3,
+      "tags": ["Thematic", "Deduction", "Team"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=terrorscape+board+game+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/371433/terrorscape"
+        }
+      ]
     }
   ]
 }
