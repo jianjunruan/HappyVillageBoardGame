@@ -17,14 +17,19 @@ window.HV_CONFIG = {
   supabaseAnonKey: "sb_publishable_M-oaWVq6dgi8UbHreUJd2A_glWug8LE",
 };
 
-// Shows the version at the bottom of every page: inside the page's footer when it has one, otherwise in a small
-// footer of its own at the end of the page.
+// Shows "欢乐小镇 v1.1.0" at the bottom of every page: inside the page's footer when it has one, otherwise in a small
+// footer of its own at the end of the page. Follows the language switch.
 document.addEventListener("DOMContentLoaded", () => {
   const v = window.HV_CONFIG && HV_CONFIG.version;
   if (!v || document.querySelector(".site-version")) return;
   const tag = document.createElement("p");
   tag.className = "site-version";
-  tag.textContent = "v" + v;
+  const paint = () => {
+    const en = window.HVI18n && HVI18n.lang === "en";
+    tag.textContent = `${en ? "Happy Village" : "欢乐小镇"} v${v}`;
+  };
+  paint();
+  if (window.HVI18n && HVI18n.onChange) HVI18n.onChange(paint);
   const footer = document.querySelector(".site-footer");
   if (footer) footer.append(tag);
   else {
