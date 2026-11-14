@@ -4,6 +4,9 @@
 // and the site will load games (and later events) from the server instead.
 // Site name and other interface text live in js/i18n.js.
 window.HV_CONFIG = {
+  // The site's version, shown at the bottom of every page. Raise it with each release (e.g. 1.1.0 → 1.2.0).
+  version: "1.1.0",
+
   apiBase: null,
 
   // Board game loans (Supabase). Copy both values from Supabase → Project Settings → API Keys / Data API.
@@ -13,3 +16,21 @@ window.HV_CONFIG = {
   supabaseUrl: "https://arsqwtojjoeoriinbmiq.supabase.co",
   supabaseAnonKey: "sb_publishable_M-oaWVq6dgi8UbHreUJd2A_glWug8LE",
 };
+
+// Shows the version at the bottom of every page: inside the page's footer when it has one, otherwise in a small
+// footer of its own at the end of the page.
+document.addEventListener("DOMContentLoaded", () => {
+  const v = window.HV_CONFIG && HV_CONFIG.version;
+  if (!v || document.querySelector(".site-version")) return;
+  const tag = document.createElement("p");
+  tag.className = "site-version";
+  tag.textContent = "v" + v;
+  const footer = document.querySelector(".site-footer");
+  if (footer) footer.append(tag);
+  else {
+    const f = document.createElement("footer");
+    f.className = "site-version-bar";
+    f.append(tag);
+    document.body.append(f);
+  }
+});

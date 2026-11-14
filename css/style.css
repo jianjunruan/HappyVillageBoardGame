@@ -194,6 +194,8 @@ dialog article { padding: 0 24px 28px; }
 .links { padding-left: 20px; }
 
 .site-footer { padding: 24px 16px 40px; color: var(--muted); font-size: 0.9rem; border-top: 1px solid var(--border); }
+.site-version { margin: 8px 0 0; color: var(--muted); font-size: 0.8rem; opacity: 0.8; text-align: center; }
+.site-version-bar { padding: 16px 16px calc(20px + env(safe-area-inset-bottom, 0px)); }
 
 @media (max-width: 520px) {
   dialog article { padding: 0 16px 20px; }
