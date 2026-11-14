@@ -398,7 +398,7 @@
       <button class="f7-icon-btn sb-del" type="button" data-del="${i}" aria-label="${esc(tr("removePlayer", { n }))}" ${F.players.length <= 1 ? "disabled" : ""}>×</button>
       <div class="sb-row">
         <label class="sb-f sb-name"><span>${esc(tr("name"))}</span>
-          <input data-i="${i}" data-k="name" value="${esc(p.name)}" maxlength="30" list="sb-names" autocomplete="off" placeholder="${esc(tr("playerN", { n }))}"></label>
+          ${HVPlayerPicker.field({ value: p.name, picked: p.picked, attrs: `data-i="${i}" data-k="name" placeholder="${esc(tr("playerN", { n }))}"` })}</label>
         ${SCORED() ? `<label class="sb-f sb-score"><span>${esc(tr("score"))}</span>
           <input data-i="${i}" data-k="score" value="${esc(p.score)}" type="number" inputmode="${CFG.minScore < 0 ? "text" : "numeric"}" min="${CFG.minScore}" max="${MAX_SCORE}" step="1"></label>` : ""}
         ${MODE() === "win" ? `<div class="sb-f sb-score"><span>${esc(tr("winTag"))}</span><button type="button" class="sb-win${p.won ? " is-on" : ""}" data-win="${i}" aria-pressed="${!!p.won}">${esc(tr("won2"))}</button></div>` : ""}
@@ -478,6 +478,19 @@
   }
   function wireForm() {
     const el = $("tab-score");
+    // Picking a player from the list (registered players must be picked, not typed).
+    HVPlayerPicker.wire(el, (input, name, picked) => {
+      if (input.dataset.k !== "name" || !picked) return;
+      const p = F.players[+input.dataset.i];
+      if (!p) return;
+      p.name = name;
+      p.picked = true;
+      clearMsg();
+      store();
+    });
+    HVPlayerPicker.onReady(() => {
+      if (tabNow && tabNow() === "score" && !el.contains(document.activeElement)) renderForm(); // show any "must pick" notes
+    });
     el.addEventListener("input", (e) => {
       const t = e.target;
       if (t.id === "sb-date") {
@@ -485,6 +498,7 @@
         F.dateSetOn = today();
       } else if (t.dataset.k === "name" || t.dataset.k === "score") {
         F.players[+t.dataset.i][t.dataset.k] = t.value;
+        if (t.dataset.k === "name") F.players[+t.dataset.i].picked = false; // typed by hand
       } else if (t.id === "sb-coop-score") {
         F.res.score = t.value;
       } else return;
@@ -647,6 +661,8 @@
     for (let i = 0; i < F.players.length; i++) {
       const p = F.players[i];
       if (!p.name.trim()) return tr("needName", { n: i + 1 });
+      const must = HVPlayerPicker.problem(p.name, p.picked);
+      if (must) return must;
       if (SCORED()) {
         const s = Number(p.score);
         if (p.score === "" || !Number.isInteger(s) || s < CFG.minScore || s > MAX_SCORE) return tr("needScore", { name: p.name.trim(), min: CFG.minScore, max: MAX_SCORE });
@@ -723,7 +739,7 @@
     try {
       await HVLoans.saveScore(toRecord());
       // Ready for the next game: same players and date; scores and choices cleared.
-      F = { date: F.date, dateSetOn: F.dateSetOn, players: F.players.map((p) => ({ ...blankPlayer(), name: p.name })), extra: blankExtra(), res: blankRes() };
+      F = { date: F.date, dateSetOn: F.dateSetOn, players: F.players.map((p) => ({ ...blankPlayer(), name: p.name, picked: p.picked })), extra: blankExtra(), res: blankRes() };
       store();
       saveState = "saved";
       records = null; // reload the list next time it's shown
@@ -745,6 +761,7 @@
         ...blankPlayer(),
         ...Object.fromEntries(pFields().map((f) => [f.key, p[f.key] || ""])),
         name: String(p.name || ""),
+        picked: true, // already saved: only a changed name has to be picked again
         score: r.pending || !SCORED() ? "" : String(p.total ?? ""),
         won: !r.pending && p.total === r.top_score,
         team: p.team || "",
@@ -1029,6 +1046,7 @@
     const names = new Map();
     for (const r of records || []) for (const p of r.players || []) if (!names.has(nameKey(p.name))) names.set(nameKey(p.name), String(p.name).trim());
     $("sb-names").innerHTML = [...names.values()].map((n) => `<option value="${esc(n)}"></option>`).join("");
+    HVPlayerPicker.setPast([...names.values()]);
   }
 
   function wireRecords() {
