@@ -86,7 +86,7 @@
       suNoHistory: "还没有历史活动记录。",
       suLoading: "加载中…",
       suLoadFailed: "没能加载：{msg}",
-      host: "开桌",
+      host: "房主",
       startsAt: "🕒 {t} 开",
       failed: "出错了：{msg}",
       offline: "网络连接失败，请检查网络后再试。",
