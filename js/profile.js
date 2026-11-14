@@ -511,6 +511,7 @@
       document.documentElement.classList.add("pf3d-open"); // full screen: no page scrolling behind it
       dlg3d.showModal();
     }
+    applyWorld(false); // again now that the stage has its size (it had none before the dialog opened)
     startSpin();
   }
   function renderSpace() {
@@ -518,12 +519,17 @@
     const n = space.list.length;
     const cards = space.list
       .map((g, i) => `<button class="pf3d-card" type="button" data-card="${i}" aria-label="${esc(tr("cardLabel", { name: gameName(g.id), n: g.plays }))}">
-          <img src="${esc(HVMedia.imageUrl(catalog[g.id] && catalog[g.id].image))}" alt="" draggable="false" decoding="async" onerror="this.src='images/placeholder.svg'">
-          <b>${esc(gameName(g.id))}</b>
+          <span class="pf3d-front">
+            <img src="${esc(HVMedia.imageUrl(catalog[g.id] && catalog[g.id].image))}" alt="" draggable="false" decoding="async" onerror="this.src='images/placeholder.svg'">
+            <b>${esc(gameName(g.id))}</b>
+          </span>
+          <span class="pf3d-back" aria-hidden="true"><i>🎲</i><b>${esc(gameName(g.id))}</b></span>
         </button>`)
       .join("");
     dlg3d.innerHTML = `${head3d(tr("shelfTitle", { n }), false)}
       <div class="pf3d-stage" tabindex="-1">
+        <div class="pf3d-sky" aria-hidden="true"><div class="pf3d-stars is-far"></div><div class="pf3d-stars is-near"></div><span class="pf3d-shoot"></span></div>
+        <div class="pf3d-orb" aria-hidden="true"></div>
         <div class="pf3d-world">${cards}</div>
         <div class="pf3d-zoom"><button type="button" data-zoom="1" aria-label="${esc(tr("zoomIn"))}">＋</button><button type="button" data-zoom="-1" aria-label="${esc(tr("zoomOut"))}">－</button></div>
       </div>
@@ -532,8 +538,48 @@
         (m) => `<button type="button" data-mode="${m}" aria-pressed="${m === space.mode}"${m === space.mode ? ' class="is-on"' : ""}>${esc(tr("mode_" + m))}</button>`
       ).join("")}</div></div>`;
     dlg3d.classList.add("is-space");
+    paintStars();
     placeCards(false);
     applyWorld(false);
+  }
+  // 🌌 The starry sky: two tiles of random stars (drawn once), repeated across the stage; they drift a little as
+  // the space turns. Far stars are small and dim, near stars bigger and twinkling.
+  let starTiles = null;
+  function starTile(size, count, maxR, seed) {
+    const c = document.createElement("canvas");
+    c.width = c.height = size;
+    const x = c.getContext("2d");
+    let r = seed;
+    const rnd = () => ((r = (r * 16807) % 2147483647) / 2147483647);
+    const tints = ["255,255,255", "200,225,255", "255,236,210", "190,255,248"];
+    for (let i = 0; i < count; i++) {
+      const px = rnd() * size, py = rnd() * size, rad = 0.3 + rnd() ** 3 * maxR, a = 0.35 + rnd() * 0.65;
+      const tint = tints[Math.floor(rnd() * tints.length)];
+      if (rad > 1.1) {
+        const g = x.createRadialGradient(px, py, 0, px, py, rad * 4);
+        g.addColorStop(0, `rgba(${tint},${a * 0.5})`);
+        g.addColorStop(1, `rgba(${tint},0)`);
+        x.fillStyle = g;
+        x.beginPath();
+        x.arc(px, py, rad * 4, 0, Math.PI * 2);
+        x.fill();
+      }
+      x.fillStyle = `rgba(${tint},${a})`;
+      x.beginPath();
+      x.arc(px, py, rad, 0, Math.PI * 2);
+      x.fill();
+    }
+    return c.toDataURL();
+  }
+  function paintStars() {
+    try {
+      starTiles = starTiles || { far: starTile(512, 260, 0.9, 7), near: starTile(700, 70, 1.9, 99) };
+    } catch {
+      return; // no canvas: the nebula colours alone
+    }
+    const far = dlg3d.querySelector(".pf3d-stars.is-far"), near = dlg3d.querySelector(".pf3d-stars.is-near");
+    if (far) far.style.backgroundImage = `url(${starTiles.far})`;
+    if (near) near.style.backgroundImage = `url(${starTiles.near})`;
   }
   // Puts every cover where the current layout wants it (animated when switching layouts).
   function placeCards(animate) {
@@ -554,6 +600,21 @@
     const sc = fit * space.zoom;
     world.classList.toggle("no-anim", !animate);
     world.style.transform = `translateZ(${(-b.d * sc).toFixed(1)}px) rotateX(${space.rx.toFixed(2)}deg) rotateY(${space.ry.toFixed(2)}deg) scale(${sc.toFixed(3)})`;
+    // The glowing orb inside the sphere: as big as the sphere looks (its centre is pushed back by its radius).
+    const orb = dlg3d.querySelector(".pf3d-orb");
+    if (orb) {
+      const p = parseFloat(getComputedStyle(stage).perspective) || 1400;
+      const R = b.d * sc;
+      const size = space.mode === "sphere" ? Math.round(2 * R * (p / (p + R)) * 0.9) : 0;
+      if (size) orb.style.setProperty("--orb", size + "px");
+      orb.classList.toggle("is-on", Boolean(size));
+    }
+    // The stars drift slowly with the turn, the near ones more (parallax).
+    const sky = dlg3d.querySelector(".pf3d-sky");
+    if (sky) {
+      sky.style.setProperty("--sx", (-space.ry * 1.2).toFixed(1) + "px");
+      sky.style.setProperty("--sy", (space.rx * 1.2).toFixed(1) + "px");
+    }
   }
   // The slow turn while nobody touches it (not for 平面, and not with "reduce motion").
   function startSpin() {
