@@ -147,6 +147,12 @@ Re-run `supabase/schema.sql` once more for this. It adds the **staff** and **eve
 - **Privacy:** visitors can only read an organizer's details while that person is assigned to an event dated yesterday or later. After the event, the details disappear from the page; admins still see them. QR pictures have random file names and the bucket can't be listed, but anyone who has a picture's link can open it.
 - Deleting an organizer also takes them off their events. If they were an event's 负责人1, the next one moves up on the page; edit the event to set the order again.
 
+### Headcount (参加人数)
+**Re-run `supabase/schema.sql` before deploying this.** It adds the `extra_people` column to **events**. Until then the events pages can't load, because they ask for that column.
+- **The number** on the event cards, the event page and the home page counts people, not seats: someone at two tables counts once (same name, ignoring case and spaces). The organizers count too, once each, even if they also joined a table.
+- **Friends who didn't sign up:** on the event page, admins click **👥 共 N 人参加** and enter how many came without signing up (0–200). That number is added to the total.
+- **The list:** anyone can click the number to see everyone coming: the organizers first, then each player with the tables they joined, then how many friends were added. On past events visitors see organizers as "名字不公开", because their names are hidden after the event.
+
 ## Player accounts and profiles (注册 / 玩家主页)
 Players can create their own accounts. Re-run `supabase/schema.sql` once: it adds the **profiles** table, links event sign-ups to accounts, and adds the functions behind the profile page. Player accounts use the same Supabase Auth as admins. Only accounts listed in `public.admins` get admin tools; a player who signs in sees none.
 

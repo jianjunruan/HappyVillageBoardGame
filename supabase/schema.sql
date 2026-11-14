@@ -325,6 +325,8 @@ alter table public.events add column if not exists end_time time;
 alter table public.events add column if not exists location text not null default '' check (char_length(location) <= 200);
 alter table public.events add column if not exists map_url text not null default ''
   check (map_url = '' or (char_length(map_url) <= 500 and map_url ~* '^https://'));
+-- People coming without signing up (e.g. friends someone brings along). Admins set it; it is added to the headcount.
+alter table public.events add column if not exists extra_people integer not null default 0 check (extra_people between 0 and 200);
 
 create table if not exists public.event_tables (
   id bigint generated always as identity primary key,
@@ -615,8 +617,8 @@ revoke select on public.event_tables from anon, authenticated;
 grant select (id, event_id, game_id, game_name, on_site, max_players, note, created_at, start_time, host_player)
   on public.event_tables to anon, authenticated;
 grant select (id, table_id, name, joined_at) on public.event_players to anon, authenticated;  -- not the token
-grant insert (title, event_date, start_time, end_time, location, map_url, description) on public.events to authenticated;
-grant update (title, event_date, start_time, end_time, location, map_url, description) on public.events to authenticated;
+grant insert (title, event_date, start_time, end_time, location, map_url, description, extra_people) on public.events to authenticated;
+grant update (title, event_date, start_time, end_time, location, map_url, description, extra_people) on public.events to authenticated;
 grant delete on public.events to authenticated;
 grant update (game_name, on_site, max_players, note, start_time) on public.event_tables to authenticated;  -- admins only (policy)
 grant delete on public.event_tables, public.event_players to authenticated;

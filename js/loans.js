@@ -347,36 +347,49 @@ window.HVLoans = (() => {
       if (!rows.length) throw Object.assign(new Error("Nothing deleted"), { code: "nothing-updated" });
     },
     // ---------- events and sign-ups (events.html) ----------
-    // How many different people are coming to an event (e: an event with event_tables[].event_players[].name and
-    // event_staff[].staff_id). Not seats: someone at two tables counts once (same name, ignoring case and spaces),
-    // and the organizers (负责人) count too — once, even if they also joined a table. When an organizer's name is
-    // hidden (visitors, past events) they are still counted, by their id.
-    headcount(e) {
+    // The different people coming to an event (e: an event with event_tables[].event_players[].name and
+    // event_staff[].staff_id), organizers (负责人) first: [{ name, staff, tables: [table ids] }]. Not seats: someone at
+    // two tables is listed once (same name, ignoring case and spaces), and an organizer who also joined a table is
+    // listed once too. When an organizer's name is hidden (visitors, past events) they are still listed, with name null.
+    attendees(e) {
       const key = (name) => String(name || "").trim().toLowerCase();
-      const who = new Set();
-      for (const t of e.event_tables || []) for (const p of t.event_players || []) who.add(p.name != null ? "n:" + key(p.name) : "p:" + p.id);
-      for (const s of e.event_staff || []) who.add(s.staff && s.staff.name ? "n:" + key(s.staff.name) : "s:" + s.staff_id);
-      return who.size;
+      const who = new Map();
+      for (const s of e.event_staff || []) {
+        const name = s.staff && s.staff.name;
+        who.set(name ? "n:" + key(name) : "s:" + s.staff_id, { name: name || null, staff: true, tables: [] });
+      }
+      for (const t of e.event_tables || [])
+        for (const p of t.event_players || []) {
+          const k = p.name != null ? "n:" + key(p.name) : "p:" + p.id;
+          if (!who.has(k)) who.set(k, { name: p.name ?? null, staff: false, tables: [] });
+          const a = who.get(k);
+          if (!a.tables.includes(t.id)) a.tables.push(t.id);
+        }
+      return [...who.values()];
+    },
+    // How many are coming: the different people above plus the friends an admin added (extra_people) who didn't sign up.
+    headcount(e) {
+      return this.attendees(e).length + (e.extra_people || 0);
     },
     // Every event with its tables and how many joined each: [{ id, title, event_date, start_time, end_time, location, description,
-    // event_tables: [{ id, on_site, max_players, event_players: [{ id, name }] }], event_staff: [{ staff_id, staff: { name } }] }], soonest first.
+    // event_tables: [{ id, on_site, max_players, event_players: [{ id, name }] }], event_staff: [{ staff_id, staff: { name } }], extra_people }], soonest first.
     // With fromDay ("YYYY-MM-DD"): only events on that day or later (today's events count as current).
     events: (fromDay) =>
       request("/rest/v1/events?order=event_date.asc,start_time.asc.nullsfirst,id.asc" + (fromDay ? `&event_date=gte.${fromDay}` : "") +
-        "&select=id,title,event_date,start_time,end_time,location,description,event_tables(id,game_id,game_name,on_site,max_players,event_players(id,name)),event_staff(staff_id,staff(name))"),
+        "&select=id,title,event_date,start_time,end_time,location,extra_people,description,event_tables(id,game_id,game_name,on_site,max_players,event_players(id,name)),event_staff(staff_id,staff(name))"),
     // One page of past events (before beforeDay), most recent first: { rows, total }. limit 0 just counts them.
     pastEvents: (beforeDay, offset = 0, limit = 10) =>
       request(`/rest/v1/events?event_date=lt.${beforeDay}&order=event_date.desc,start_time.desc.nullslast,id.desc&offset=${offset}&limit=${limit}` +
-        "&select=id,title,event_date,start_time,end_time,location,description,event_tables(id,game_id,game_name,on_site,max_players,event_players(id,name)),event_staff(staff_id,staff(name))", { withCount: true }),
+        "&select=id,title,event_date,start_time,end_time,location,extra_people,description,event_tables(id,game_id,game_name,on_site,max_players,event_players(id,name)),event_staff(staff_id,staff(name))", { withCount: true }),
     // The next upcoming events (from `fromDay`, "YYYY-MM-DD"), with their tables and main organizer, for the home page.
     upcomingEvents: (fromDay, limit = 2) =>
       request(`/rest/v1/events?event_date=gte.${fromDay}&order=event_date.asc,start_time.asc.nullsfirst,id.asc&limit=${limit}` +
-        "&select=id,title,event_date,start_time,end_time,location,event_tables(id,event_players(id,name)),event_staff(staff_id,is_lead,sort,staff(name))"),
+        "&select=id,title,event_date,start_time,end_time,location,extra_people,event_tables(id,event_players(id,name)),event_staff(staff_id,is_lead,sort,staff(name))"),
     // One event with its tables, players and organizers, or null. Organizers are null for visitors once the event is
     // over (see the staff policy in schema.sql).
     async event(id) {
       const rows = await request(`/rest/v1/events?id=eq.${encodeURIComponent(id)}` +
-        "&select=id,title,event_date,start_time,end_time,location,map_url,description," +
+        "&select=id,title,event_date,start_time,end_time,location,extra_people,map_url,description," +
         "event_tables(id,game_id,game_name,on_site,max_players,note,created_at,start_time,host_player,event_players(id,name,joined_at)," +
         "event_games(id,score_id,started_at,game_scores(id,players,winner,top_score,pending,details)))," +
         "event_staff(staff_id,is_lead,sort,staff(id,name,phone,wechat,xhs,wechat_qr,xhs_qr))", { admin: "ifSignedIn" });
@@ -408,6 +421,8 @@ window.HVLoans = (() => {
       return rows[0];
     },
     deleteEvent: (id) => adminDelete("events", id),
+    // Friends who come without signing up (a whole number, 0–200). Admins only.
+    setExtraPeople: (id, n) => HVLoans.saveEvent({ extra_people: n }, id),
     // table: { game_id, game_name, on_site, max_players, note, start_time ("HH:MM" or null) }. Returns { table_id, player_id }.
     openTable: (eventId, table, name, token) =>
       request("/rest/v1/rpc/open_event_table", {
