@@ -218,6 +218,9 @@ window.HVLoans = (() => {
       request("/rest/v1/rpc/my_event_signups_page", { method: "POST", admin: true, body: { p_today: today, p_past: past, p_offset: offset, p_limit: limit } }),
     // Admins only: the event's sign-ups made from a player account: [{ player_id, user_id, profile_name }].
     eventPlayerAccounts: (eventId) => request("/rest/v1/rpc/event_player_accounts", { method: "POST", admin: true, body: { p_event: eventId } }),
+    // Admins only: everyone who ever signed up, across all events, plus player accounts with no sign-ups:
+    // [{ user_id (null = not registered), profile_name, name, events, signups, first_date, last_date }].
+    playerRoster: () => request("/rest/v1/rpc/admin_player_roster", { method: "POST", admin: true, body: {} }),
     myEventPlayerIds: (eventId) => request("/rest/v1/rpc/my_event_player_ids", { method: "POST", admin: true, body: { p_event: eventId } }),
     signOut() {
       if (session) {

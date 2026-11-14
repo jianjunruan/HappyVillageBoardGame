@@ -1381,3 +1381,37 @@ as $$
 $$;
 revoke execute on function public.event_player_accounts(bigint) from public, anon;
 grant execute on function public.event_player_accounts(bigint) to authenticated;
+
+-- Admins only: everyone who ever signed up for an event, across all events (events.html?players).
+-- A sign-up made from a player account counts as that account (registered); other sign-ups are grouped by name
+-- (ignoring case and spaces). Player accounts that never signed up are listed too, with 0 events.
+-- name: the name they used most recently; events: how many different events; signups: how many tables joined.
+create or replace function public.admin_player_roster()
+returns table (user_id uuid, profile_name text, name text, events bigint, signups bigint, first_date date, last_date date)
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  with s as (
+    select p.user_id, lower(trim(p.name)) as k, trim(p.name) as name, e.id as eid, e.event_date, p.joined_at
+    from public.event_players p
+    join public.event_tables t on t.id = p.table_id
+    join public.events e on e.id = t.event_id
+    where public.is_admin()
+  ), g as (
+    select (array_agg(s.user_id))[1] as uid,
+           (array_agg(s.name order by s.event_date desc, s.joined_at desc))[1] as name,
+           count(distinct s.eid) as events, count(*) as signups, min(s.event_date) as first_date, max(s.event_date) as last_date
+    from s
+    group by coalesce(s.user_id::text, 'n:' || s.k)
+  )
+  select g.uid, pr.name, g.name, g.events, g.signups, g.first_date, g.last_date
+  from g left join public.profiles pr on pr.user_id = g.uid
+  union all
+  select pr.user_id, pr.name, pr.name, 0, 0, null, null
+  from public.profiles pr
+  where public.is_admin() and not exists (select 1 from public.event_players p where p.user_id = pr.user_id);
+$$;
+revoke execute on function public.admin_player_roster() from public, anon;
+grant execute on function public.admin_player_roster() to authenticated;
