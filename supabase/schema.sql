@@ -1364,54 +1364,90 @@ revoke execute on function public.my_event_player_ids(bigint) from public, anon;
 grant execute on function public.my_event_signups() to authenticated;
 grant execute on function public.my_event_player_ids(bigint) to authenticated;
 
--- Admins only: which of an event's sign-ups were made from a player account, with that account's nickname.
--- (Visitors can't read event_players.user_id; this is how the admin's "来玩的人" list marks 已注册 / 未注册.)
-create or replace function public.event_player_accounts(p_event bigint)
-returns table (player_id bigint, user_id uuid, profile_name text)
+-- Which player account a name belongs to, for sign-ups made without signing in: a name (ignoring case and spaces)
+-- that is exactly one account's nickname, one of its aliases, or a name it used when signing up while signed in.
+-- A name shared by two accounts belongs to neither. Only used inside the admin functions below.
+create or replace function public.player_account_names()
+returns table (k text, user_id uuid)
 language sql
 stable
 security definer
 set search_path = ''
 as $$
-  select p.id, p.user_id, pr.name
-  from public.event_players p
-  join public.event_tables t on t.id = p.table_id
-  left join public.profiles pr on pr.user_id = p.user_id
-  where public.is_admin() and t.event_id = p_event and p.user_id is not null;
+  with keys as (
+    select lower(trim(p.name)) as k, p.user_id from public.event_players p where p.user_id is not null
+    union
+    select lower(trim(n)), pr.user_id from public.profiles pr, unnest(array_append(pr.aliases, pr.name)) n
+  )
+  select keys.k, (array_agg(keys.user_id))[1]
+  from keys
+  where keys.k <> ''
+  group by keys.k
+  having count(distinct keys.user_id) = 1;
+$$;
+revoke execute on function public.player_account_names() from public, anon, authenticated;
+
+-- Admins only: which of an event's sign-ups belong to a player account, with that account's nickname.
+-- (Visitors can't read event_players.user_id; this is how the admin's "来玩的人" list marks 已注册 / 未注册.)
+-- by_name: made without signing in, matched to the account by name (see player_account_names).
+drop function if exists public.event_player_accounts(bigint);
+create or replace function public.event_player_accounts(p_event bigint)
+returns table (player_id bigint, user_id uuid, profile_name text, by_name boolean)
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  with m as (
+    select p.id, coalesce(p.user_id, n.user_id) as uid, p.user_id is null as by_name
+    from public.event_players p
+    join public.event_tables t on t.id = p.table_id
+    left join public.player_account_names() n on p.user_id is null and n.k = lower(trim(p.name))
+    where public.is_admin() and t.event_id = p_event
+  )
+  select m.id, m.uid, pr.name, m.by_name
+  from m left join public.profiles pr on pr.user_id = m.uid
+  where m.uid is not null;
 $$;
 revoke execute on function public.event_player_accounts(bigint) from public, anon;
 grant execute on function public.event_player_accounts(bigint) to authenticated;
 
 -- Admins only: everyone who ever signed up for an event, across all events (events.html?players).
--- A sign-up made from a player account counts as that account (registered); other sign-ups are grouped by name
+-- Sign-ups belong to a player account (registered) when made while signed in, or when made without signing in
+-- under a name that belongs to exactly one account (see player_account_names). The rest are grouped by name
 -- (ignoring case and spaces). Player accounts that never signed up are listed too, with 0 events.
--- name: the name they used most recently; events: how many different events; signups: how many tables joined.
+-- name: the name they used most recently; events: how many different events; signups: how many tables joined;
+-- guest_signups: how many of those were made without signing in.
+drop function if exists public.admin_player_roster();
 create or replace function public.admin_player_roster()
-returns table (user_id uuid, profile_name text, name text, events bigint, signups bigint, first_date date, last_date date)
+returns table (user_id uuid, profile_name text, name text, events bigint, signups bigint, guest_signups bigint, first_date date, last_date date)
 language sql
 stable
 security definer
 set search_path = ''
 as $$
   with s as (
-    select p.user_id, lower(trim(p.name)) as k, trim(p.name) as name, e.id as eid, e.event_date, p.joined_at
+    select coalesce(p.user_id, n.user_id) as uid, p.user_id is null as guest, lower(trim(p.name)) as k, trim(p.name) as name,
+           e.id as eid, e.event_date, p.joined_at
     from public.event_players p
     join public.event_tables t on t.id = p.table_id
     join public.events e on e.id = t.event_id
+    left join public.player_account_names() n on p.user_id is null and n.k = lower(trim(p.name))
     where public.is_admin()
   ), g as (
-    select (array_agg(s.user_id))[1] as uid,
+    select (array_agg(s.uid))[1] as uid,
            (array_agg(s.name order by s.event_date desc, s.joined_at desc))[1] as name,
-           count(distinct s.eid) as events, count(*) as signups, min(s.event_date) as first_date, max(s.event_date) as last_date
+           count(distinct s.eid) as events, count(*) as signups, count(*) filter (where s.guest) as guest_signups,
+           min(s.event_date) as first_date, max(s.event_date) as last_date
     from s
-    group by coalesce(s.user_id::text, 'n:' || s.k)
+    group by coalesce(s.uid::text, 'n:' || s.k)
   )
-  select g.uid, pr.name, g.name, g.events, g.signups, g.first_date, g.last_date
+  select g.uid, pr.name, g.name, g.events, g.signups, g.guest_signups, g.first_date, g.last_date
   from g left join public.profiles pr on pr.user_id = g.uid
   union all
-  select pr.user_id, pr.name, pr.name, 0, 0, null, null
+  select pr.user_id, pr.name, pr.name, 0, 0, 0, null, null
   from public.profiles pr
-  where public.is_admin() and not exists (select 1 from public.event_players p where p.user_id = pr.user_id);
+  where public.is_admin() and not exists (select 1 from g where g.uid = pr.user_id);
 $$;
 revoke execute on function public.admin_player_roster() from public, anon;
 grant execute on function public.admin_player_roster() to authenticated;

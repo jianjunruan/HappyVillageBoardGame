@@ -48,6 +48,9 @@
       isReg: "已注册",
       isGuest: "未注册",
       regAs: "账号：{name}",
+      homeLink: "主页 ›",
+      byName: "没登录报名，按名字对上了这个账号",
+      guestTimes: "其中 {n} 次没登录",
       accLoading: "正在查看哪些玩家已注册…",
       accFailed: "没能查到注册情况：{msg}",
       fEmpty: "这一类里没有人。",
@@ -275,7 +278,7 @@
       staffBtn: "👥 负责人",
       playersBtn: "📋 玩家名单",
       playersTitle: "玩家总名单",
-      playersHint: "所有活动里报过名的玩家，每人一行，只有管理员能看到。用玩家账号报名的算已注册，其他按名字合并（不分大小写）。注册了但还没报过名的账号也会列出来。",
+      playersHint: "所有活动里报过名的玩家，每人一行，只有管理员能看到。用玩家账号报名的算已注册；没登录报名的，名字和某个账号的昵称、别名或用过的名字一样，也算进那个账号。其他按名字合并（不分大小写）。注册了但还没报过名的账号也会列出来。",
       playersOnly: "玩家名单只有管理员可以查看，请先登录。",
       playersSearch: "搜索名字",
       playersEvents: "参加 {n} 次活动",
@@ -382,6 +385,9 @@
       isReg: "registered",
       isGuest: "not registered",
       regAs: "Account: {name}",
+      homeLink: "Profile ›",
+      byName: "Signed up without signing in; matched to this account by name",
+      guestTimes: "{n} without signing in",
       accLoading: "Checking who has an account…",
       accFailed: "Couldn't check accounts: {msg}",
       fEmpty: "Nobody in this group.",
@@ -605,7 +611,7 @@
       staffBtn: "👥 Organizers",
       playersBtn: "📋 Players",
       playersTitle: "All players",
-      playersHint: "Everyone who signed up for any event, one line each. Admins only. Sign-ups made from a player account count as registered; the rest are grouped by name (ignoring case). Accounts that never signed up are listed too.",
+      playersHint: "Everyone who signed up for any event, one line each. Admins only. Sign-ups made from a player account count as registered, and so do sign-ups without signing in under a name that matches an account's nickname, alias or a name it used. The rest are grouped by name (ignoring case). Accounts that never signed up are listed too.",
       playersOnly: "Only admins can see the players list. Please sign in.",
       playersSearch: "Search names",
       playersEvents: "{n} events",
@@ -1270,12 +1276,17 @@
             const name = r.name || r.profile_name || "";
             const nick = reg && r.profile_name && nameKey(r.profile_name) !== nameKey(name) ? ` <small>(${esc(r.profile_name)})</small>` : "";
             const meta = Number(r.signups)
-              ? [tr("playersEvents", { n: r.events }), tr("playersSignups", { n: r.signups }), r.last_date ? tr("playersLast", { d: fmtDate(r.last_date) }) : ""]
+              ? [
+                  tr("playersEvents", { n: r.events }),
+                  tr("playersSignups", { n: r.signups }),
+                  reg && Number(r.guest_signups) ? tr("guestTimes", { n: r.guest_signups }) : "",
+                  r.last_date ? tr("playersLast", { d: fmtDate(r.last_date) }) : "",
+                ]
                   .filter(Boolean)
                   .join(" · ")
               : tr("playersNever");
-            const title = reg ? `<a href="profile.html?u=${encodeURIComponent(r.user_id)}"><b>${esc(name)}</b></a>` : `<b>${esc(name)}</b>`;
-            return `<li>${title}${nick} <span class="ev-acc ${reg ? "is-reg" : "is-guest"}">${esc(tr(reg ? "isReg" : "isGuest"))}</span><br><small class="ev-hint">${esc(meta)}</small></li>`;
+            const home = reg ? `<a class="ev-home" href="profile.html?u=${encodeURIComponent(r.user_id)}">${esc(tr("homeLink"))}</a>` : "";
+            return `<li><div class="ev-roster-row"><span><b>${esc(name)}</b>${nick} <span class="ev-acc ${reg ? "is-reg" : "is-guest"}">${esc(tr(reg ? "isReg" : "isGuest"))}</span><br><small class="ev-hint">${esc(meta)}</small></span>${home}</div></li>`;
           })
           .join("")
       : `<li class="ev-empty">${esc(tr("playersNone"))}</li>`;
@@ -1632,9 +1643,11 @@
         const badge = k
           ? ` <span class="ev-acc ${k === "reg" ? "is-reg" : "is-guest"}">${esc(tr(k === "reg" ? "isReg" : "isGuest"))}</span>`
           : "";
+        // Matched by name only: every one of this person's sign-ups was made without signing in.
+        const byName = u && a.players.every((id) => !acc.get(id) || acc.get(id).by_name);
         const link =
           u && u.user_id
-            ? `<br><small class="ev-hint"><a href="profile.html?u=${encodeURIComponent(u.user_id)}">${esc(tr("regAs", { name: u.profile_name || a.name || "" }))}</a></small>`
+            ? `<br><small class="ev-hint">${esc(tr("regAs", { name: u.profile_name || a.name || "" }))}${byName ? ` · ${esc(tr("byName"))}` : ""}</small> <a class="ev-home" href="profile.html?u=${encodeURIComponent(u.user_id)}">${esc(tr("homeLink"))}</a>`
             : "";
         const at = a.tables.map((id) => games.get(id)).filter(Boolean);
         return `<li><b>${name}</b>${tag}${badge}${at.length ? `<br><small class="ev-hint">${esc(at.join("、"))}</small>` : ""}${link}</li>`;

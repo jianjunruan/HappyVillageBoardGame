@@ -45,7 +45,10 @@
 .ev-roster-tools .ev-filters { margin: 0; }
 .ev-roster { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
 .ev-roster li { padding: 10px 14px; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); overflow-wrap: anywhere; }
-.ev-roster li a { color: var(--text); }
+.ev-roster-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ev-home { flex: none; display: inline-flex; align-items: center; min-height: 32px; padding: 4px 12px; border: 1px solid var(--accent); border-radius: 999px;
+  color: var(--accent); font-size: 0.85rem; font-weight: 700; text-decoration: none; white-space: nowrap; touch-action: manipulation; }
+.ev-people .ev-home { margin-top: 4px; }
 .ev-roster li.ev-empty { background: none; border: 0; }
 .ev-rel { display: inline-block; margin-left: 4px; padding: 0 9px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; background: var(--accent-soft); color: var(--accent); }
 .ev-rel.is-today { background: var(--ok); color: #fff; }
