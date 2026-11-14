@@ -1363,3 +1363,21 @@ revoke execute on function public.my_event_signups() from public, anon;
 revoke execute on function public.my_event_player_ids(bigint) from public, anon;
 grant execute on function public.my_event_signups() to authenticated;
 grant execute on function public.my_event_player_ids(bigint) to authenticated;
+
+-- Admins only: which of an event's sign-ups were made from a player account, with that account's nickname.
+-- (Visitors can't read event_players.user_id; this is how the admin's "来玩的人" list marks 已注册 / 未注册.)
+create or replace function public.event_player_accounts(p_event bigint)
+returns table (player_id bigint, user_id uuid, profile_name text)
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select p.id, p.user_id, pr.name
+  from public.event_players p
+  join public.event_tables t on t.id = p.table_id
+  left join public.profiles pr on pr.user_id = p.user_id
+  where public.is_admin() and t.event_id = p_event and p.user_id is not null;
+$$;
+revoke execute on function public.event_player_accounts(bigint) from public, anon;
+grant execute on function public.event_player_accounts(bigint) to authenticated;

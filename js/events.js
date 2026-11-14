@@ -42,6 +42,15 @@
       extraSave: "💾 保存人数",
       badExtra: "请填 0 到 200 之间的整数。",
       extraSaved: "✓ 人数已更新",
+      fAll: "全部 {n}",
+      fReg: "已注册 {n}",
+      fGuest: "未注册 {n}",
+      isReg: "已注册",
+      isGuest: "未注册",
+      regAs: "账号：{name}",
+      accLoading: "正在查看哪些玩家已注册…",
+      accFailed: "没能查到注册情况：{msg}",
+      fEmpty: "这一类里没有人。",
       noTables: "还没有人开桌",
       newEvent: "＋ 发布活动",
       editEvent: "编辑活动",
@@ -357,6 +366,15 @@
       extraSave: "💾 Save",
       badExtra: "Please enter a whole number from 0 to 200.",
       extraSaved: "✓ Headcount updated",
+      fAll: "All {n}",
+      fReg: "Registered {n}",
+      fGuest: "Not registered {n}",
+      isReg: "registered",
+      isGuest: "not registered",
+      regAs: "Account: {name}",
+      accLoading: "Checking who has an account…",
+      accFailed: "Couldn't check accounts: {msg}",
+      fEmpty: "Nobody in this group.",
       noTables: "No tables yet",
       newEvent: "+ New event",
       editEvent: "Edit event",
@@ -1509,20 +1527,48 @@
   // Admins can change that number of friends here.
   function renderPeople() {
     if (!ev) return closeDialog();
-    const list = HVLoans.attendees(ev);
+    const all = HVLoans.attendees(ev);
     const extra = ev.extra_people || 0;
     const games = new Map(ev.event_tables.map((t) => [t.id, tableName(t)]));
+    // Admins: who signed up from a player account (已注册) and who didn't (未注册). Organizers who didn't join a
+    // table have no sign-up, so they are in neither group.
+    const acc = isAdmin && D.accounts instanceof Map ? D.accounts : null;
+    const accountOf = (a) => (acc ? a.players.map((id) => acc.get(id)).find(Boolean) || null : null);
+    const kind = (a) => (!acc || !a.players.length ? "" : accountOf(a) ? "reg" : "guest");
+    const nReg = acc ? all.filter((a) => kind(a) === "reg").length : 0;
+    const nGuest = acc ? all.filter((a) => kind(a) === "guest").length : 0;
+    const filter = acc ? D.filter || "all" : "all";
+    const list = filter === "all" ? all : all.filter((a) => kind(a) === filter);
     const rows = list
       .map((a) => {
         const name = a.name != null ? esc(a.name) : esc(tr("peopleHidden"));
         const tag = a.staff && a.name != null ? ` <small>· ${esc(tr("peopleStaff"))}</small>` : "";
+        const k = kind(a);
+        const u = k === "reg" ? accountOf(a) : null;
+        const badge = k
+          ? ` <span class="ev-acc ${k === "reg" ? "is-reg" : "is-guest"}">${esc(tr(k === "reg" ? "isReg" : "isGuest"))}</span>`
+          : "";
+        const link =
+          u && u.user_id
+            ? `<br><small class="ev-hint"><a href="profile.html?u=${encodeURIComponent(u.user_id)}">${esc(tr("regAs", { name: u.profile_name || a.name || "" }))}</a></small>`
+            : "";
         const at = a.tables.map((id) => games.get(id)).filter(Boolean);
-        return `<li><b>${name}</b>${tag}${at.length ? `<br><small class="ev-hint">${esc(at.join("、"))}</small>` : ""}</li>`;
+        return `<li><b>${name}</b>${tag}${badge}${at.length ? `<br><small class="ev-hint">${esc(at.join("、"))}</small>` : ""}${link}</li>`;
       })
       .join("");
+    const seg = (f, label) =>
+      `<button type="button" class="ev-filter${filter === f ? " is-on" : ""}" data-people-filter="${f}" aria-pressed="${filter === f}">${esc(label)}</button>`;
+    const filters = !isAdmin
+      ? ""
+      : D.accErr
+        ? `<p class="ev-msg is-err">${esc(tr("accFailed", { msg: D.accErr }))}</p>`
+        : !acc
+          ? `<p class="ev-hint">${esc(tr("accLoading"))}</p>`
+          : `<div class="ev-filters">${seg("all", tr("fAll", { n: all.length }))}${seg("reg", tr("fReg", { n: nReg }))}${seg("guest", tr("fGuest", { n: nGuest }))}</div>`;
     dlg.innerHTML = `${head(tr("peopleTitle", { n: HVLoans.headcount(ev) }))}
-      ${list.length ? `<ol class="ev-people">${rows}</ol>` : extra ? "" : `<p class="ev-empty">${esc(tr("peopleNone"))}</p>`}
-      ${extra ? `<p class="ev-hint">${esc(tr("peopleExtra", { n: extra }))}</p>` : ""}
+      ${filters}
+      ${list.length ? `<ol class="ev-people">${rows}</ol>` : filter !== "all" ? `<p class="ev-empty">${esc(tr("fEmpty"))}</p>` : extra ? "" : `<p class="ev-empty">${esc(tr("peopleNone"))}</p>`}
+      ${extra && filter === "all" ? `<p class="ev-hint">${esc(tr("peopleExtra", { n: extra }))}</p>` : ""}
       ${
         isAdmin
           ? `<form class="ev-form" data-people-form novalidate>
@@ -1533,6 +1579,19 @@
       </form>`
           : `<div class="form-actions"><button class="btn ghost" type="button" data-close autofocus>${esc(tr("close"))}</button></div>`
       }`;
+  }
+  // Opens the "来玩的人" list; for admins, also looks up which sign-ups came from a player account.
+  async function openPeople() {
+    openDialog({ mode: "people", filter: "all", accounts: null, accErr: "" });
+    if (!isAdmin) return;
+    const state = D;
+    try {
+      const rows = await HVLoans.eventPlayerAccounts(ev.id);
+      state.accounts = new Map(rows.map((r) => [Number(r.player_id), r]));
+    } catch (err) {
+      state.accErr = errText(err);
+    }
+    if (D === state) renderDialog();
   }
   async function submitPeople() {
     readForm();
@@ -2176,7 +2235,7 @@
       return void load();
     }
     if (b.dataset.copy != null) return copyText(b);
-    if (b.hasAttribute("data-people")) return openDialog({ mode: "people" });
+    if (b.hasAttribute("data-people")) return void openPeople();
     if (b.dataset.qr) return openDialog({ mode: "qr", url: b.dataset.qr, title: b.dataset.qrTitle });
     if (b.hasAttribute("data-signin")) {
       $("login-error").textContent = "";
@@ -2362,6 +2421,12 @@
     if (e.target.closest("[data-close]") || (e.target === dlg && D && D.mode === "qr")) return closeDialog();
     if (e.target.closest("[data-tpl-save]") && D) return void saveTemplate();
     if (e.target.closest("[data-start-add]") && D) return void startAdd();
+    const pf = e.target.closest("[data-people-filter]");
+    if (pf && D && D.mode === "people") {
+      readForm();
+      D.filter = pf.dataset.peopleFilter;
+      return renderDialog();
+    }
     if (e.target.closest("[data-tpl-delete]") && D) return void deleteTemplate();
     const rm = e.target.closest("[data-qr-remove]");
     if (rm && D && D.qr) {
