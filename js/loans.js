@@ -193,6 +193,8 @@ window.HVLoans = (() => {
       await auth("/user", { method: "PUT", token: await accessToken(), body: { password } });
     },
     // Profiles: { user_id, name, aliases: [], bio }. null when the player hasn't made one yet.
+    // Every player account's nickname and other names (public), for picking players when scoring.
+    allProfiles: () => request("/rest/v1/profiles?select=name,aliases&order=name.asc&limit=5000"),
     async profile(userId) {
       const rows = await request(`/rest/v1/profiles?user_id=eq.${encodeURIComponent(userId)}&select=user_id,name,aliases,bio,created_at`);
       return rows[0] || null;

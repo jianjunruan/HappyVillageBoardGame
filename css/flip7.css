@@ -23,7 +23,7 @@
 
 /* setup */
 .f7-names { display: grid; gap: 8px; }
-.f7-name-row { display: flex; gap: 8px; }
+.f7-name-row { display: flex; gap: 8px; align-items: flex-start; }
 .f7-name-row input { flex: 1; min-width: 0; padding: 10px 12px; }
 .f7-icon-btn { width: 44px; flex: none; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--muted); font-size: 1.2rem; cursor: pointer; }
 .f7-icon-btn:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -142,3 +142,20 @@ dialog.f7-sheet { width: min(560px, calc(100vw - 16px)); padding: 16px; }
 .f7-name-edit input { flex: 1; min-width: 0; padding: 7px 10px; font: inherit; }
 .f7-name-edit label span { color: var(--muted); font-size: 0.88rem; white-space: nowrap; }
 .f7-name-edit .f7-actions { display: flex; gap: 8px; }
+
+/* Picking a player's name (js/player-picker.js) */
+.pp-wrap { position: relative; display: block; flex: 1; min-width: 0; }
+.pp-wrap > input { width: 100%; }
+/* The list opens right under the box and pushes the rest down, so it never covers the next player's box */
+.pp-list { display: grid; margin-top: 4px; max-height: 240px; overflow-y: auto; padding: 4px;
+  border: 1px solid var(--border); border-radius: 10px; background: var(--surface); box-shadow: 0 4px 14px rgb(0 0 0 / 0.12); }
+.pp-list[hidden] { display: none; }
+.pp-item { display: flex; align-items: center; gap: 6px; min-height: 42px; padding: 6px 10px; border: 0; border-radius: 8px; background: none; color: var(--text); font: inherit; text-align: left; cursor: pointer; touch-action: manipulation; }
+.pp-item:hover, .pp-item:focus-visible { background: var(--bg); outline: none; }
+.pp-item b { font-weight: 700; overflow-wrap: anywhere; }
+.pp-item small { color: var(--muted); }
+.pp-tag { margin-left: auto; flex: none; padding: 1px 8px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
+.pp-tag.is-reg { background: color-mix(in srgb, var(--ok) 16%, var(--surface)); color: var(--ok); border-color: transparent; }
+.pp-new { display: block; padding: 8px 10px; color: var(--muted); font-size: 0.9rem; }
+.pp-warn { display: block; color: var(--danger); font-size: 0.85rem; font-weight: 600; }
+.pp-warn:empty { display: none; }

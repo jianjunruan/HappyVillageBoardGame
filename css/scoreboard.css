@@ -11,7 +11,7 @@
 .sb-player legend { float: left; padding: 0; font-weight: 700; color: var(--muted); font-size: 0.9rem; }
 .sb-player legend + * { clear: both; }
 .sb-del { position: absolute; top: 8px; right: 8px; height: 34px; width: 34px; }
-.sb-row { display: flex; gap: 10px; }
+.sb-row { display: flex; gap: 10px; align-items: flex-start; }
 .sb-f { display: grid; gap: 4px; min-width: 0; }
 .sb-f > span { font-size: 0.85rem; color: var(--muted); font-weight: 600; }
 .sb-f > span b { color: var(--text); }
