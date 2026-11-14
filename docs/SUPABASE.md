@@ -165,6 +165,14 @@ Admins open it with the **📋 玩家名单** button on the events page (`events
 ### Registered names need signing in
 Opening or joining a table under a name that belongs to a player account (its nickname, an alias, or a name it used when signed in; ignoring case and spaces) only works when signed in to that account. Otherwise the database refuses (error HVE09) and the form says the name is a registered player's, with a **👤 登录后报名** button that comes back to the event after signing in. Admins can use any name, and adding someone at a table (by the host or an admin) isn't checked. Re-run `supabase/schema.sql` once for this (it adds `event_name_guard` and calls it from `open_event_table` and `join_event_table`).
 
+### Admins sign up other players
+Admins never join an event themselves. When an admin opens or joins a table, the form asks for the **玩家名字** of the player they're signing up, and shows players from all events to pick from: recent players when the box is empty, or everyone whose name or nickname contains what's typed, each tagged 已注册 / 未注册.
+- **Picking a registered player** links the sign-up to their account.
+- **Typing a name** that belongs to exactly one account (nickname, alias or a name it used) links it automatically; the form says so. When several registered players have that name, the admin has to pick one.
+- Any other name is signed up as an unregistered player.
+- The admin's sign-ups get their own browser secret, so they don't show as the admin's own ("我"); admins can still remove them.
+- In the database: `open_event_table` and `join_event_table` take an optional `p_user` (only used for admins), and `event_signup_user` decides whose sign-up it is. **Re-run `supabase/schema.sql` for this.**
+
 ## Player accounts and profiles (注册 / 玩家主页)
 Players can create their own accounts. Re-run `supabase/schema.sql` once: it adds the **profiles** table, links event sign-ups to accounts, and adds the functions behind the profile page. Player accounts use the same Supabase Auth as admins. Only accounts listed in `public.admins` get admin tools; a player who signs in sees none.
 

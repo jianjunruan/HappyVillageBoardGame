@@ -414,9 +414,11 @@ $$;
 
 -- Opens a table and seats the person who opened it. Returns { "table_id": …, "player_id": … }.
 -- (The older version without a start time is removed so the website can't call it.)
+-- p_user: admins only, the player account the sign-up is for (see event_signup_user).
 drop function if exists public.open_event_table(bigint, text, text, boolean, integer, text, text, text);
+drop function if exists public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time);
 create or replace function public.open_event_table(p_event bigint, p_game_id text, p_game_name text, p_on_site boolean,
-  p_max_players integer, p_note text, p_name text, p_token text, p_start_time time default null)
+  p_max_players integer, p_note text, p_name text, p_token text, p_start_time time default null, p_user uuid default null)
 returns jsonb
 language plpgsql
 security definer
@@ -438,14 +440,16 @@ begin
   values (p_event, nullif(trim(p_game_id), ''), trim(p_game_name), coalesce(p_on_site, false), p_max_players,
           coalesce(trim(p_note), ''), p_start_time, p_token)
   returning id into t;
-  insert into public.event_players (table_id, name, token, user_id) values (t, trim(p_name), p_token, auth.uid()) returning id into p;
+  insert into public.event_players (table_id, name, token, user_id)
+  values (t, trim(p_name), p_token, public.event_signup_user(p_name, p_user)) returning id into p;
   update public.event_tables set host_player = p where id = t;
   return jsonb_build_object('table_id', t, 'player_id', p);
 end;
 $$;
 
--- Joins a table. Returns the new player id.
-create or replace function public.join_event_table(p_table bigint, p_name text, p_token text)
+-- Joins a table. Returns the new player id. p_user: admins only, the player account the sign-up is for.
+drop function if exists public.join_event_table(bigint, text, text);
+create or replace function public.join_event_table(p_table bigint, p_name text, p_token text, p_user uuid default null)
 returns bigint
 language plpgsql
 security definer
@@ -455,6 +459,7 @@ declare
   ev bigint;
   cap integer;
   p bigint;
+  u uuid;
 begin
   select event_id, max_players into ev, cap from public.event_tables where id = p_table for update;
   if ev is null then
@@ -468,10 +473,11 @@ begin
   if exists (select 1 from public.event_players where table_id = p_table and lower(trim(name)) = lower(trim(p_name))) then
     raise exception 'someone with this name already joined' using errcode = 'HVE03';
   end if;
-  if auth.uid() is not null and exists (select 1 from public.event_players where table_id = p_table and user_id = auth.uid()) then
+  u := public.event_signup_user(p_name, p_user);
+  if u is not null and exists (select 1 from public.event_players where table_id = p_table and user_id = u) then
     raise exception 'this account already joined this table' using errcode = 'HVE07';
   end if;
-  insert into public.event_players (table_id, name, token, user_id) values (p_table, trim(p_name), p_token, auth.uid()) returning id into p;
+  insert into public.event_players (table_id, name, token, user_id) values (p_table, trim(p_name), p_token, u) returning id into p;
   return p;
 end;
 $$;
@@ -625,15 +631,15 @@ grant delete on public.events to authenticated;
 grant update (game_name, on_site, max_players, note, start_time) on public.event_tables to authenticated;  -- admins only (policy)
 grant delete on public.event_tables, public.event_players to authenticated;
 revoke execute on function public.event_signup_guard(bigint) from public, anon, authenticated;
-revoke execute on function public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time) from public;
-revoke execute on function public.join_event_table(bigint, text, text) from public;
+revoke execute on function public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time, uuid) from public;
+revoke execute on function public.join_event_table(bigint, text, text, uuid) from public;
 revoke execute on function public.leave_event_table(bigint, text, bigint) from public;
 revoke execute on function public.delete_event_table(bigint, text) from public;
 revoke execute on function public.set_event_table_time(bigint, text, time) from public;
 grant execute on function public.set_event_table_time(bigint, text, time) to anon, authenticated;
 revoke execute on function public.is_event_table_host(bigint, text, bigint, text) from public, anon, authenticated;
-grant execute on function public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time) to anon, authenticated;
-grant execute on function public.join_event_table(bigint, text, text) to anon, authenticated;
+grant execute on function public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time, uuid) to anon, authenticated;
+grant execute on function public.join_event_table(bigint, text, text, uuid) to anon, authenticated;
 grant execute on function public.leave_event_table(bigint, text, bigint) to anon, authenticated;
 grant execute on function public.delete_event_table(bigint, text) to anon, authenticated;
 revoke execute on function public.set_event_table_host(bigint, bigint) from public, anon;
@@ -870,7 +876,10 @@ begin
   if exists (select 1 from public.event_players where table_id = tb.id and lower(trim(name)) = lower(trim(p_name))) then
     raise exception 'someone with this name already joined' using errcode = 'HVE03';
   end if;
-  insert into public.event_players (table_id, name, token) values (tb.id, trim(p_name), replace(gen_random_uuid()::text, '-', ''))
+  -- A name that belongs to exactly one player account is linked to it (see player_account_names).
+  insert into public.event_players (table_id, name, token, user_id)
+  values (tb.id, trim(p_name), replace(gen_random_uuid()::text, '-', ''),
+          (select n.user_id from public.player_account_names() n where n.k = lower(trim(p_name))))
   returning id into p;
   if p_score is not null then
     update public.game_scores gs
@@ -1423,6 +1432,32 @@ begin
 end;
 $$;
 revoke execute on function public.event_name_guard(text) from public, anon, authenticated;
+
+-- Whose sign-up this is. A player signs up for themselves (their account when signed in, else nobody's).
+-- Admins don't sign up themselves: they sign up other players. With p_user it's that player account (error HVE10
+-- if there's no such account); otherwise a name that belongs to exactly one account is linked to it, and any other
+-- name to no account.
+create or replace function public.event_signup_user(p_name text, p_user uuid)
+returns uuid
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $$
+begin
+  if not public.is_admin() then
+    return auth.uid();
+  end if;
+  if p_user is not null then
+    if not exists (select 1 from public.profiles where user_id = p_user) then
+      raise exception 'player account not found' using errcode = 'HVE10';
+    end if;
+    return p_user;
+  end if;
+  return (select n.user_id from public.player_account_names() n where n.k = lower(trim(coalesce(p_name, ''))));
+end;
+$$;
+revoke execute on function public.event_signup_user(text, uuid) from public, anon, authenticated;
 
 -- Admins only: which of an event's sign-ups belong to a player account, with that account's nickname.
 -- (Visitors can't read event_players.user_id; this is how the admin's "来玩的人" list marks 已注册 / 未注册.)

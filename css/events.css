@@ -280,3 +280,10 @@ p.ev-tpl { margin: 0; color: var(--muted); }
 .ev-pager span { color: var(--muted); font-size: 0.9rem; }
 .ev-list.is-loading { opacity: 0.5; }
 .ev-login-link { text-decoration: none; }
+.ev-suggest { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 8px; max-height: 40vh; overflow-y: auto; }
+.ev-suggest-chip { display: inline-flex; align-items: center; gap: 4px; min-height: 36px; padding: 4px 10px; border: 1px solid var(--border); border-radius: 999px;
+  background: var(--surface); color: var(--text); font: inherit; font-size: 0.9rem; cursor: pointer; touch-action: manipulation; max-width: 100%; overflow-wrap: anywhere; text-align: left; }
+.ev-suggest-chip small { color: var(--muted); }
+.ev-suggest-chip.is-on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+.ev-link-status { margin: 4px 0 0; font-size: 0.9rem; color: var(--muted); }
+.ev-link-status.is-ok { color: var(--ok); font-weight: 700; }
