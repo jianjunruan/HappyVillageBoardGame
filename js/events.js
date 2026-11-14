@@ -30,7 +30,8 @@
       inDays: "{n} 天后",
       over: "已结束",
       tables: "{n} 桌",
-      people: "{n} 人报名",
+      people: "{n} 人参加（含负责人）",
+      headcount: "👥 共 {n} 人参加（每人只算一次，含负责人）",
       noTables: "还没有人开桌",
       newEvent: "＋ 发布活动",
       editEvent: "编辑活动",
@@ -334,7 +335,8 @@
       inDays: "In {n} days",
       over: "Over",
       tables: "{n} tables",
-      people: "{n} signed up",
+      people: "{n} people coming (incl. organizers)",
+      headcount: "👥 {n} people coming (each person counted once, organizers included)",
       noTables: "No tables yet",
       newEvent: "+ New event",
       editEvent: "Edit event",
@@ -900,8 +902,8 @@
 
   function stats(e) {
     const tables = e.event_tables || [];
-    const people = tables.reduce((n, t) => n + (t.event_players || []).length, 0);
-    return tables.length ? `${tr("tables", { n: tables.length })} · ${tr("people", { n: people })}` : tr("noTables");
+    const people = HVLoans.headcount(e);
+    return [tables.length ? tr("tables", { n: tables.length }) : tr("noTables"), people ? tr("people", { n: people }) : ""].filter(Boolean).join(" · ");
   }
   function eventCard(e) {
     const d = parseYmd(e.event_date);
@@ -1183,6 +1185,7 @@
         <h2>${esc(ev.title)}</h2>
         <p class="ev-when">📅 ${esc(fmtDate(ev.event_date, true))}${ev.start_time ? ` · 🕒 ${esc(timeRange(ev))}` : ""} <span class="ev-rel ${rel.cls}">${esc(rel.text)}</span></p>
         ${placeLine(ev)}
+        <p class="ev-when">${esc(tr("headcount", { n: HVLoans.headcount(ev) }))}</p>
         ${ev.description ? `<div class="ev-desc rt-content">${HVRich.html(ev.description)}</div>` : ""}
         ${isAdmin ? `<p class="ev-admin-row"><button class="link-btn" type="button" data-edit-event>${esc(tr("editEvent"))}</button><button class="link-btn" type="button" data-delete-event>${esc(tr("deleteEvent"))}</button></p>` : ""}
       </section>
