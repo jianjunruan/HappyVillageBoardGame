@@ -152,6 +152,14 @@ Re-run `supabase/schema.sql` once more for this. It adds the **staff** and **eve
 - **The number** on the event cards, the event page and the home page counts people, not seats: someone at two tables counts once (same name, ignoring case and spaces). The organizers count too, once each, even if they also joined a table.
 - **Friends who didn't sign up:** on the event page, admins click **👥 共 N 人参加** and enter how many came without signing up (0–200). That number is added to the total.
 - **The list:** anyone can click the number to see everyone coming: the organizers first, then each player with the tables they joined, then how many friends were added. On past events visitors see organizers as "名字不公开", because their names are hidden after the event.
+- **Registered or not (admins):** in that list admins also see **全部 / 已注册 / 未注册** filters and a tag on each player. 已注册 means they signed up while signed in to a player account; the line under them links to that account's profile. Organizers who didn't join a table have no tag. Re-run `supabase/schema.sql` once for this: it adds the admin-only `event_player_accounts` function. Until then the list shows "没能查到注册情况" for admins, and everything else works as before.
+
+### All players (玩家总名单)
+Admins open it with the **📋 玩家名单** button on the events page (`events.html?players`). It lists everyone who ever signed up for any event, one line each, with how many events they came to, how many tables they joined and their most recent event. Most recent first.
+- **全部 / 已注册 / 未注册** filters and a name search (it also finds account nicknames).
+- **已注册:** the sign-ups were made while signed in to a player account. Each account is one line; the name shown is the one they used most recently, with the account nickname in brackets if it's different. Tap the name to open their profile. Accounts that never signed up are listed too ("还没报过名").
+- **未注册:** sign-ups without an account, grouped by name (ignoring case and spaces). Someone who sometimes signs up while signed in and sometimes not shows up twice, once in each group.
+- Re-run `supabase/schema.sql` once for this: it adds the admin-only `admin_player_roster` function. Visitors and players can't call it.
 
 ## Player accounts and profiles (注册 / 玩家主页)
 Players can create their own accounts. Re-run `supabase/schema.sql` once: it adds the **profiles** table, links event sign-ups to accounts, and adds the functions behind the profile page. Player accounts use the same Supabase Auth as admins. Only accounts listed in `public.admins` get admin tools; a player who signs in sees none.

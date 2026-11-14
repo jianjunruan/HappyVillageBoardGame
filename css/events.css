@@ -34,6 +34,19 @@
 .ev-hero .ev-count::after { content: "›"; font-size: 1.1em; }
 .ev-people { margin: 0 0 12px; padding-left: 1.6em; max-height: 50vh; overflow-y: auto; }
 .ev-people li { padding: 4px 0; overflow-wrap: anywhere; }
+.ev-filters { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
+.ev-filter { min-height: 36px; padding: 6px 12px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); color: var(--text); font: inherit; font-size: 0.9rem; cursor: pointer; touch-action: manipulation; }
+.ev-filter.is-on { border-color: var(--accent); background: var(--accent); color: #fff; font-weight: 700; }
+.ev-acc { display: inline-block; margin-left: 4px; padding: 0 8px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; vertical-align: 1px; }
+.ev-acc.is-reg { background: color-mix(in srgb, var(--ok) 16%, var(--surface)); color: var(--ok); }
+.ev-acc.is-guest { background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
+.ev-roster-tools { display: grid; gap: 10px; margin: 12px 0; }
+.ev-roster-tools input { width: 100%; min-height: 42px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--text); font: inherit; }
+.ev-roster-tools .ev-filters { margin: 0; }
+.ev-roster { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.ev-roster li { padding: 10px 14px; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); overflow-wrap: anywhere; }
+.ev-roster li a { color: var(--text); }
+.ev-roster li.ev-empty { background: none; border: 0; }
 .ev-rel { display: inline-block; margin-left: 4px; padding: 0 9px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; background: var(--accent-soft); color: var(--accent); }
 .ev-rel.is-today { background: var(--ok); color: #fff; }
 .ev-rel.is-over { background: var(--border); color: var(--muted); }

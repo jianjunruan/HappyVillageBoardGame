@@ -42,6 +42,15 @@
       extraSave: "💾 保存人数",
       badExtra: "请填 0 到 200 之间的整数。",
       extraSaved: "✓ 人数已更新",
+      fAll: "全部 {n}",
+      fReg: "已注册 {n}",
+      fGuest: "未注册 {n}",
+      isReg: "已注册",
+      isGuest: "未注册",
+      regAs: "账号：{name}",
+      accLoading: "正在查看哪些玩家已注册…",
+      accFailed: "没能查到注册情况：{msg}",
+      fEmpty: "这一类里没有人。",
       noTables: "还没有人开桌",
       newEvent: "＋ 发布活动",
       editEvent: "编辑活动",
@@ -264,6 +273,16 @@
       signInError: "登录失败：{msg}",
       // organizers (负责人)
       staffBtn: "👥 负责人",
+      playersBtn: "📋 玩家名单",
+      playersTitle: "玩家总名单",
+      playersHint: "所有活动里报过名的玩家，每人一行，只有管理员能看到。用玩家账号报名的算已注册，其他按名字合并（不分大小写）。注册了但还没报过名的账号也会列出来。",
+      playersOnly: "玩家名单只有管理员可以查看，请先登录。",
+      playersSearch: "搜索名字",
+      playersEvents: "参加 {n} 次活动",
+      playersSignups: "报了 {n} 桌",
+      playersNever: "还没报过名",
+      playersLast: "最近：{d}",
+      playersNone: "没有符合条件的玩家。",
       staffTitle: "负责人",
       staffHint: "这个名单只有管理员能看到。被安排到活动里的负责人，联系方式会显示在活动页上；活动结束后自动隐藏。",
       staffEmpty: "还没有负责人。先添加一位，发布活动时就能选择。",
@@ -357,6 +376,15 @@
       extraSave: "💾 Save",
       badExtra: "Please enter a whole number from 0 to 200.",
       extraSaved: "✓ Headcount updated",
+      fAll: "All {n}",
+      fReg: "Registered {n}",
+      fGuest: "Not registered {n}",
+      isReg: "registered",
+      isGuest: "not registered",
+      regAs: "Account: {name}",
+      accLoading: "Checking who has an account…",
+      accFailed: "Couldn't check accounts: {msg}",
+      fEmpty: "Nobody in this group.",
       noTables: "No tables yet",
       newEvent: "+ New event",
       editEvent: "Edit event",
@@ -575,6 +603,16 @@
       notAdmin: "This account isn't an admin.",
       signInError: "Sign-in failed: {msg}",
       staffBtn: "👥 Organizers",
+      playersBtn: "📋 Players",
+      playersTitle: "All players",
+      playersHint: "Everyone who signed up for any event, one line each. Admins only. Sign-ups made from a player account count as registered; the rest are grouped by name (ignoring case). Accounts that never signed up are listed too.",
+      playersOnly: "Only admins can see the players list. Please sign in.",
+      playersSearch: "Search names",
+      playersEvents: "{n} events",
+      playersSignups: "{n} tables",
+      playersNever: "No sign-ups yet",
+      playersLast: "Last: {d}",
+      playersNone: "No players match.",
       staffTitle: "Organizers",
       staffHint: "Only admins can see this list. When an organizer is assigned to an event, their contact details show on that event's page, and are hidden again after the event.",
       staffEmpty: "No organizers yet. Add one, then pick them when publishing an event.",
@@ -648,6 +686,8 @@
   })();
   // events.html?staff: the organizers list (admins only)
   const STAFF_VIEW = EVENT_ID == null && new URLSearchParams(location.search).has("staff");
+  // events.html?players: everyone who ever signed up, across all events (admins only)
+  const PLAYERS_VIEW = EVENT_ID == null && !STAFF_VIEW && new URLSearchParams(location.search).has("players");
 
   // ---------- this browser's sign-ups ----------
   const store = {
@@ -798,6 +838,8 @@
   let isAdmin = false;
   let adminChecked = !HVLoans.user; // nothing to check when nobody is signed in
   let staffRows = null; // the organizers list (STAFF_VIEW)
+  let rosterRows = null; // everyone who ever signed up (PLAYERS_VIEW)
+  const rosterSt = { filter: "all", q: "" };
   let flash = null; // { text, ok } shown above the tables once
   let busy = false;
 
@@ -852,6 +894,8 @@
     try {
       if (STAFF_VIEW) {
         if (isAdmin) staffRows = await HVLoans.staffList();
+      } else if (PLAYERS_VIEW) {
+        if (isAdmin) rosterRows = await HVLoans.playerRoster();
       } else if (EVENT_ID == null) {
         let st;
         let count;
@@ -911,10 +955,11 @@
     renderAdminBar();
     renderLogin();
     if (!HVLoans.enabled) return void (main.innerHTML = `<p class="ev-msg is-err">${esc(tr("noBackend"))}</p>`);
-    if (loadErr && !(events || ev || staffRows))
+    if (loadErr && !(events || ev || staffRows || rosterRows))
       return void (main.innerHTML = `<p class="ev-msg is-err">${esc(tr("loadFailed", { msg: errText(loadErr) }))}</p>
         <button class="btn" type="button" data-retry>${esc(tr("retry"))}</button>`);
     if (STAFF_VIEW) renderStaffPage();
+    else if (PLAYERS_VIEW) renderPlayersPage();
     else if (EVENT_ID == null) renderList();
     else renderEvent();
     if (dlg.open) renderDialog();
@@ -948,7 +993,7 @@
     main.innerHTML = `
       <div class="ev-head">
         <h2>${esc(tr("upcoming"))}</h2>
-        ${isAdmin ? `<span class="ev-head-acts"><a class="btn ghost" href="events.html?staff">${esc(tr("staffBtn"))}</a><button class="btn" type="button" data-new-event>${esc(tr("newEvent"))}</button></span>` : ""}
+        ${isAdmin ? `<span class="ev-head-acts"><a class="btn ghost" href="events.html?players">${esc(tr("playersBtn"))}</a><a class="btn ghost" href="events.html?staff">${esc(tr("staffBtn"))}</a><button class="btn" type="button" data-new-event>${esc(tr("newEvent"))}</button></span>` : ""}
       </div>
       ${up.length ? `<div class="ev-list">${up.map(eventCard).join("")}</div>` : `<p class="ev-empty">${esc(tr("noUpcoming"))}</p>`}
       ${wishSection()}
@@ -1177,6 +1222,63 @@
       <p class="ev-hint">${esc(tr("staffHint"))}</p>
       ${flash ? `<p class="ev-msg ${flash.ok ? "is-ok" : "is-err"}" role="status">${esc(flash.text)}</p>` : ""}
       ${staffRows.length ? `<div class="ev-staff-grid">${staffRows.map((s) => staffCard(s, null, true)).join("")}</div>` : `<p class="ev-empty">${esc(tr("staffEmpty"))}</p>`}`;
+  }
+
+  // Everyone who ever signed up, across all events: 全部 / 已注册 / 未注册 and a name search. Admins only.
+  function renderPlayersPage() {
+    document.title = `${tr("playersTitle")} · ${tr("title")} · ${HVI18n.t("siteName")}`;
+    const crumb = `<p class="ev-crumb"><a href="events.html">${esc(tr("backToEvents"))}</a></p>`;
+    if (!adminChecked) return void (main.innerHTML = crumb + `<p class="ev-msg">${esc(tr("loading"))}</p>`);
+    if (!isAdmin)
+      return void (main.innerHTML = crumb + `<p class="ev-msg">${esc(tr("playersOnly"))}</p><button class="btn" type="button" data-signin>${esc(tr("adminLogin"))}</button>`);
+    if (!rosterRows) return void (main.innerHTML = crumb + `<p class="ev-msg">${esc(tr("loading"))}</p>`);
+    const typing = document.activeElement && document.activeElement.id === "ev-roster-q";
+    main.innerHTML = `${crumb}
+      <div class="ev-head"><h2>${esc(tr("playersTitle"))}</h2></div>
+      <p class="ev-hint">${esc(tr("playersHint"))}</p>
+      <div class="ev-roster-tools">
+        <input id="ev-roster-q" type="search" placeholder="${esc(tr("playersSearch"))}" value="${esc(rosterSt.q)}" autocomplete="off">
+        <div class="ev-filters" id="ev-roster-filters"></div>
+      </div>
+      <ol class="ev-roster" id="ev-roster-list"></ol>`;
+    renderRosterList();
+    if (typing) {
+      const q = $("ev-roster-q");
+      q.focus();
+      q.setSelectionRange(q.value.length, q.value.length);
+    }
+  }
+  // Redraws only the filters and the list, so typing in the search box keeps the keyboard open on phones.
+  function renderRosterList() {
+    const rows = [...rosterRows].sort(
+      (a, b) => (b.last_date || "").localeCompare(a.last_date || "") || Number(b.events) - Number(a.events) || String(a.name).localeCompare(String(b.name))
+    );
+    const q = rosterSt.q.trim().toLowerCase();
+    const hit = (r) => !q || [r.name, r.profile_name].some((n) => n && String(n).toLowerCase().includes(q));
+    const found = rows.filter(hit);
+    const nReg = found.filter((r) => r.user_id).length;
+    const f = rosterSt.filter;
+    const shown = found.filter((r) => f === "all" || (f === "reg" ? r.user_id : !r.user_id));
+    const seg = (k, label) =>
+      `<button type="button" class="ev-filter${f === k ? " is-on" : ""}" data-roster-filter="${k}" aria-pressed="${f === k}">${esc(label)}</button>`;
+    $("ev-roster-filters").innerHTML =
+      seg("all", tr("fAll", { n: found.length })) + seg("reg", tr("fReg", { n: nReg })) + seg("guest", tr("fGuest", { n: found.length - nReg }));
+    $("ev-roster-list").innerHTML = shown.length
+      ? shown
+          .map((r) => {
+            const reg = Boolean(r.user_id);
+            const name = r.name || r.profile_name || "";
+            const nick = reg && r.profile_name && nameKey(r.profile_name) !== nameKey(name) ? ` <small>(${esc(r.profile_name)})</small>` : "";
+            const meta = Number(r.signups)
+              ? [tr("playersEvents", { n: r.events }), tr("playersSignups", { n: r.signups }), r.last_date ? tr("playersLast", { d: fmtDate(r.last_date) }) : ""]
+                  .filter(Boolean)
+                  .join(" · ")
+              : tr("playersNever");
+            const title = reg ? `<a href="profile.html?u=${encodeURIComponent(r.user_id)}"><b>${esc(name)}</b></a>` : `<b>${esc(name)}</b>`;
+            return `<li>${title}${nick} <span class="ev-acc ${reg ? "is-reg" : "is-guest"}">${esc(tr(reg ? "isReg" : "isGuest"))}</span><br><small class="ev-hint">${esc(meta)}</small></li>`;
+          })
+          .join("")
+      : `<li class="ev-empty">${esc(tr("playersNone"))}</li>`;
   }
 
   // 📍 The place, linking to Google Maps (or the event's own map link).
@@ -1509,20 +1611,48 @@
   // Admins can change that number of friends here.
   function renderPeople() {
     if (!ev) return closeDialog();
-    const list = HVLoans.attendees(ev);
+    const all = HVLoans.attendees(ev);
     const extra = ev.extra_people || 0;
     const games = new Map(ev.event_tables.map((t) => [t.id, tableName(t)]));
+    // Admins: who signed up from a player account (已注册) and who didn't (未注册). Organizers who didn't join a
+    // table have no sign-up, so they are in neither group.
+    const acc = isAdmin && D.accounts instanceof Map ? D.accounts : null;
+    const accountOf = (a) => (acc ? a.players.map((id) => acc.get(id)).find(Boolean) || null : null);
+    const kind = (a) => (!acc || !a.players.length ? "" : accountOf(a) ? "reg" : "guest");
+    const nReg = acc ? all.filter((a) => kind(a) === "reg").length : 0;
+    const nGuest = acc ? all.filter((a) => kind(a) === "guest").length : 0;
+    const filter = acc ? D.filter || "all" : "all";
+    const list = filter === "all" ? all : all.filter((a) => kind(a) === filter);
     const rows = list
       .map((a) => {
         const name = a.name != null ? esc(a.name) : esc(tr("peopleHidden"));
         const tag = a.staff && a.name != null ? ` <small>· ${esc(tr("peopleStaff"))}</small>` : "";
+        const k = kind(a);
+        const u = k === "reg" ? accountOf(a) : null;
+        const badge = k
+          ? ` <span class="ev-acc ${k === "reg" ? "is-reg" : "is-guest"}">${esc(tr(k === "reg" ? "isReg" : "isGuest"))}</span>`
+          : "";
+        const link =
+          u && u.user_id
+            ? `<br><small class="ev-hint"><a href="profile.html?u=${encodeURIComponent(u.user_id)}">${esc(tr("regAs", { name: u.profile_name || a.name || "" }))}</a></small>`
+            : "";
         const at = a.tables.map((id) => games.get(id)).filter(Boolean);
-        return `<li><b>${name}</b>${tag}${at.length ? `<br><small class="ev-hint">${esc(at.join("、"))}</small>` : ""}</li>`;
+        return `<li><b>${name}</b>${tag}${badge}${at.length ? `<br><small class="ev-hint">${esc(at.join("、"))}</small>` : ""}${link}</li>`;
       })
       .join("");
+    const seg = (f, label) =>
+      `<button type="button" class="ev-filter${filter === f ? " is-on" : ""}" data-people-filter="${f}" aria-pressed="${filter === f}">${esc(label)}</button>`;
+    const filters = !isAdmin
+      ? ""
+      : D.accErr
+        ? `<p class="ev-msg is-err">${esc(tr("accFailed", { msg: D.accErr }))}</p>`
+        : !acc
+          ? `<p class="ev-hint">${esc(tr("accLoading"))}</p>`
+          : `<div class="ev-filters">${seg("all", tr("fAll", { n: all.length }))}${seg("reg", tr("fReg", { n: nReg }))}${seg("guest", tr("fGuest", { n: nGuest }))}</div>`;
     dlg.innerHTML = `${head(tr("peopleTitle", { n: HVLoans.headcount(ev) }))}
-      ${list.length ? `<ol class="ev-people">${rows}</ol>` : extra ? "" : `<p class="ev-empty">${esc(tr("peopleNone"))}</p>`}
-      ${extra ? `<p class="ev-hint">${esc(tr("peopleExtra", { n: extra }))}</p>` : ""}
+      ${filters}
+      ${list.length ? `<ol class="ev-people">${rows}</ol>` : filter !== "all" ? `<p class="ev-empty">${esc(tr("fEmpty"))}</p>` : extra ? "" : `<p class="ev-empty">${esc(tr("peopleNone"))}</p>`}
+      ${extra && filter === "all" ? `<p class="ev-hint">${esc(tr("peopleExtra", { n: extra }))}</p>` : ""}
       ${
         isAdmin
           ? `<form class="ev-form" data-people-form novalidate>
@@ -1533,6 +1663,19 @@
       </form>`
           : `<div class="form-actions"><button class="btn ghost" type="button" data-close autofocus>${esc(tr("close"))}</button></div>`
       }`;
+  }
+  // Opens the "来玩的人" list; for admins, also looks up which sign-ups came from a player account.
+  async function openPeople() {
+    openDialog({ mode: "people", filter: "all", accounts: null, accErr: "" });
+    if (!isAdmin) return;
+    const state = D;
+    try {
+      const rows = await HVLoans.eventPlayerAccounts(ev.id);
+      state.accounts = new Map(rows.map((r) => [Number(r.player_id), r]));
+    } catch (err) {
+      state.accErr = errText(err);
+    }
+    if (D === state) renderDialog();
   }
   async function submitPeople() {
     readForm();
@@ -2168,15 +2311,24 @@
     },
     true
   );
+  main.addEventListener("input", (e) => {
+    if (e.target.id !== "ev-roster-q") return;
+    rosterSt.q = e.target.value;
+    renderRosterList();
+  });
   main.addEventListener("click", (e) => {
     const b = e.target.closest("button");
     if (!b) return;
+    if (b.dataset.rosterFilter) {
+      rosterSt.filter = b.dataset.rosterFilter;
+      return renderRosterList();
+    }
     if (b.hasAttribute("data-retry")) {
       main.innerHTML = `<p class="ev-msg">${esc(tr("loading"))}</p>`;
       return void load();
     }
     if (b.dataset.copy != null) return copyText(b);
-    if (b.hasAttribute("data-people")) return openDialog({ mode: "people" });
+    if (b.hasAttribute("data-people")) return void openPeople();
     if (b.dataset.qr) return openDialog({ mode: "qr", url: b.dataset.qr, title: b.dataset.qrTitle });
     if (b.hasAttribute("data-signin")) {
       $("login-error").textContent = "";
@@ -2362,6 +2514,12 @@
     if (e.target.closest("[data-close]") || (e.target === dlg && D && D.mode === "qr")) return closeDialog();
     if (e.target.closest("[data-tpl-save]") && D) return void saveTemplate();
     if (e.target.closest("[data-start-add]") && D) return void startAdd();
+    const pf = e.target.closest("[data-people-filter]");
+    if (pf && D && D.mode === "people") {
+      readForm();
+      D.filter = pf.dataset.peopleFilter;
+      return renderDialog();
+    }
     if (e.target.closest("[data-tpl-delete]") && D) return void deleteTemplate();
     const rm = e.target.closest("[data-qr-remove]");
     if (rm && D && D.qr) {
@@ -2495,7 +2653,7 @@
       .catch(() => {})
       .then(() => {
         adminChecked = true;
-        if (STAFF_VIEW && isAdmin) load();
+        if ((STAFF_VIEW || PLAYERS_VIEW) && isAdmin) load();
         else render();
       });
     // A signed-in player's nickname fills in the name when joining or opening a table.

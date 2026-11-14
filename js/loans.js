@@ -216,6 +216,11 @@ window.HVLoans = (() => {
     // One page of the signed-in player's sign-ups: current (event today or later) or past. Returns { total, rows }.
     mySignupsPage: (today, past, offset, limit = 10) =>
       request("/rest/v1/rpc/my_event_signups_page", { method: "POST", admin: true, body: { p_today: today, p_past: past, p_offset: offset, p_limit: limit } }),
+    // Admins only: the event's sign-ups made from a player account: [{ player_id, user_id, profile_name }].
+    eventPlayerAccounts: (eventId) => request("/rest/v1/rpc/event_player_accounts", { method: "POST", admin: true, body: { p_event: eventId } }),
+    // Admins only: everyone who ever signed up, across all events, plus player accounts with no sign-ups:
+    // [{ user_id (null = not registered), profile_name, name, events, signups, first_date, last_date }].
+    playerRoster: () => request("/rest/v1/rpc/admin_player_roster", { method: "POST", admin: true, body: {} }),
     myEventPlayerIds: (eventId) => request("/rest/v1/rpc/my_event_player_ids", { method: "POST", admin: true, body: { p_event: eventId } }),
     signOut() {
       if (session) {
@@ -348,7 +353,7 @@ window.HVLoans = (() => {
     },
     // ---------- events and sign-ups (events.html) ----------
     // The different people coming to an event (e: an event with event_tables[].event_players[].name and
-    // event_staff[].staff_id), organizers (负责人) first: [{ name, staff, tables: [table ids] }]. Not seats: someone at
+    // event_staff[].staff_id), organizers (负责人) first: [{ name, staff, tables: [table ids], players: [sign-up ids] }]. Not seats: someone at
     // two tables is listed once (same name, ignoring case and spaces), and an organizer who also joined a table is
     // listed once too. When an organizer's name is hidden (visitors, past events) they are still listed, with name null.
     attendees(e) {
@@ -356,14 +361,15 @@ window.HVLoans = (() => {
       const who = new Map();
       for (const s of e.event_staff || []) {
         const name = s.staff && s.staff.name;
-        who.set(name ? "n:" + key(name) : "s:" + s.staff_id, { name: name || null, staff: true, tables: [] });
+        who.set(name ? "n:" + key(name) : "s:" + s.staff_id, { name: name || null, staff: true, tables: [], players: [] });
       }
       for (const t of e.event_tables || [])
         for (const p of t.event_players || []) {
           const k = p.name != null ? "n:" + key(p.name) : "p:" + p.id;
-          if (!who.has(k)) who.set(k, { name: p.name ?? null, staff: false, tables: [] });
+          if (!who.has(k)) who.set(k, { name: p.name ?? null, staff: false, tables: [], players: [] });
           const a = who.get(k);
           if (!a.tables.includes(t.id)) a.tables.push(t.id);
+          a.players.push(p.id);
         }
       return [...who.values()];
     },
