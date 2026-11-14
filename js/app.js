@@ -41,9 +41,10 @@
   const catOf = (g) => (CATEGORIES.includes(g.category) ? g.category : "other");
   const bandOf = (g) => BANDS.findIndex((b) => (g.weight ?? 0) < b.max);
   const dots = (i) => "★".repeat(i + 1) + "☆".repeat(BANDS.length - i - 1);
-  // Each category shows 10 games at a time; the rest (and their pictures) load when its page is turned.
+  // Each difficulty band of a category shows 10 games at a time; the rest (and their pictures) load when its page
+  // is turned.
   const PER_PAGE = 10;
-  let catPage = {}; // category → page (1-based)
+  let catPage = {}; // "category:band" → page (1-based)
   let lastFilter = ""; // search + filters the pages belong to: changing them goes back to page 1
 
   const esc = (s) =>
@@ -210,7 +211,7 @@
           </div>
         </a>`;
 
-    // Category sections, each split into difficulty bands from light to heavy, 10 games per page.
+    // Category sections, each split into difficulty bands from light to heavy, 10 games per band per page.
     const filterKey = [q, activeTag, activeCat, activeLoan].join("|");
     if (filterKey !== lastFilter) {
       lastFilter = filterKey;
@@ -220,48 +221,47 @@
     els.grid.innerHTML = [...CATEGORIES, "other"].map((cat) => {
       const inCat = list.filter((g) => catOf(g) === cat);
       if (!inCat.length) return "";
-      // In display order (light to heavy), then the current page of it.
-      const ordered = BANDS.flatMap((b, i) => inCat.filter((g) => bandOf(g) === i));
-      const pages = Math.ceil(ordered.length / PER_PAGE);
-      const page = Math.min(Math.max(1, catPage[cat] || 1), pages);
-      const shown = new Set(ordered.slice((page - 1) * PER_PAGE, page * PER_PAGE));
+      // Every difficulty band has its own pages of 10 games.
       const bands = BANDS.map((b, i) => {
         const inBand = inCat.filter((g) => bandOf(g) === i);
-        const here = inBand.filter((g) => shown.has(g));
-        if (!here.length) return "";
+        if (!inBand.length) return "";
+        const key = `${cat}:${i}`;
+        const pages = Math.ceil(inBand.length / PER_PAGE);
+        const page = Math.min(Math.max(1, catPage[key] || 1), pages);
+        const here = inBand.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+        const pager =
+          pages > 1
+            ? `<nav class="cat-pager" aria-label="${esc(t("cat_" + cat))} · ${esc(t("band_" + b.key))}">
+            <button class="btn ghost btn-sm" type="button" data-band-page="${key}" data-page="${page - 1}"${page <= 1 ? " disabled" : ""}>${esc(t("prevPage"))}</button>
+            <span>${esc(t("pageOf", { n: page, m: pages }))}</span>
+            <button class="btn ghost btn-sm" type="button" data-band-page="${key}" data-page="${page + 1}"${page >= pages ? " disabled" : ""}>${esc(t("nextPage"))}</button>
+          </nav>`
+            : "";
         return `
-          <div class="band">
+          <div class="band" id="band-${cat}-${i}">
             <h3 class="band-title"><span class="dots" aria-hidden="true">${dots(i)}</span> ${esc(t("band_" + b.key))}
               <span class="band-range">${esc(t("bandRange", { v: b.range }))} · ${esc(t("count", { n: inBand.length }))}</span></h3>
             <div class="grid">${here.map(card).join("")}</div>
+            ${pager}
           </div>`;
       }).join("");
-      const pager =
-        pages > 1
-          ? `<nav class="cat-pager" aria-label="${esc(t("cat_" + cat))}">
-          <button class="btn ghost btn-sm" type="button" data-cat-page="${cat}" data-page="${page - 1}"${page <= 1 ? " disabled" : ""}>${esc(t("prevPage"))}</button>
-          <span>${esc(t("pageOf", { n: page, m: pages }))}</span>
-          <button class="btn ghost btn-sm" type="button" data-cat-page="${cat}" data-page="${page + 1}"${page >= pages ? " disabled" : ""}>${esc(t("nextPage"))}</button>
-        </nav>`
-          : "";
       return `
         <section class="cat-section" id="cat-${cat}">
           <h2 class="cat-title">${esc(t("cat_" + cat))} <span class="count">${esc(t("count", { n: inCat.length }))}</span></h2>
           <p class="cat-hint">${esc(t("cat_" + cat + "_hint"))}</p>
           ${bands}
-          ${pager}
         </section>`;
     }).join("");
   }
 
-  // Turning a category's page: show it and bring the category's title back into view.
+  // Turning a band's page: show it and bring the band's title back into view.
   els.grid.addEventListener("click", (e) => {
-    const b = e.target.closest("[data-cat-page]");
+    const b = e.target.closest("[data-band-page]");
     if (!b || b.disabled) return;
-    catPage[b.dataset.catPage] = Number(b.dataset.page);
+    catPage[b.dataset.bandPage] = Number(b.dataset.page);
     renderGrid();
-    const sec = document.getElementById("cat-" + b.dataset.catPage);
-    if (sec) sec.scrollIntoView({ behavior: "smooth", block: "start" });
+    const band = document.getElementById("band-" + b.dataset.bandPage.replace(":", "-"));
+    if (band) band.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
   function renderLinks(links = []) {
