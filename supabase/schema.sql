@@ -427,6 +427,7 @@ declare
   p bigint;
 begin
   perform public.event_signup_guard(p_event);
+  perform public.event_name_guard(p_name);
   if (select count(*) from public.event_tables where event_id = p_event) >= 100 then
     raise exception 'too many tables at this event' using errcode = 'HVE05';
   end if;
@@ -460,6 +461,7 @@ begin
     raise exception 'table not found' using errcode = 'HVE01';
   end if;
   perform public.event_signup_guard(ev);
+  perform public.event_name_guard(p_name);
   if cap is not null and (select count(*) from public.event_players where table_id = p_table) >= cap then
     raise exception 'this table is full' using errcode = 'HVE02';
   end if;
@@ -1386,6 +1388,41 @@ as $$
   having count(distinct keys.user_id) = 1;
 $$;
 revoke execute on function public.player_account_names() from public, anon, authenticated;
+
+-- Signing up (opening or joining a table) under a name that belongs to a player account — its nickname, an alias,
+-- or a name it used when signed in — needs that account to be signed in (error HVE09), so a player's sign-ups stay
+-- theirs. Admins may use any name. (Adding someone at the table, by the host or an admin, isn't checked.)
+create or replace function public.event_name_guard(p_name text)
+returns void
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $$
+declare
+  k text := lower(trim(coalesce(p_name, '')));
+begin
+  if k = '' or public.is_admin() then
+    return;
+  end if;
+  if exists (
+    select 1 from (
+      select p.user_id from public.event_players p where p.user_id is not null and lower(trim(p.name)) = k
+      union
+      select pr.user_id from public.profiles pr, unnest(array_append(pr.aliases, pr.name)) n where lower(trim(n)) = k
+    ) owners
+    where owners.user_id is distinct from auth.uid()
+  ) and not exists (
+    select 1 from public.profiles pr, unnest(array_append(pr.aliases, pr.name)) n
+    where pr.user_id = auth.uid() and lower(trim(n)) = k
+  ) and not exists (
+    select 1 from public.event_players p where p.user_id = auth.uid() and lower(trim(p.name)) = k
+  ) then
+    raise exception 'this name belongs to a player account; sign in to use it' using errcode = 'HVE09';
+  end if;
+end;
+$$;
+revoke execute on function public.event_name_guard(text) from public, anon, authenticated;
 
 -- Admins only: which of an event's sign-ups belong to a player account, with that account's nickname.
 -- (Visitors can't read event_players.user_id; this is how the admin's "来玩的人" list marks 已注册 / 未注册.)

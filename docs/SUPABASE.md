@@ -162,6 +162,9 @@ Admins open it with the **📋 玩家名单** button on the events page (`events
 - Two different people with exactly the same name as an account are counted as that account; give one of them a different name if that matters.
 - Re-run `supabase/schema.sql` once for this: it adds the admin-only `admin_player_roster` function. Visitors and players can't call it.
 
+### Registered names need signing in
+Opening or joining a table under a name that belongs to a player account (its nickname, an alias, or a name it used when signed in; ignoring case and spaces) only works when signed in to that account. Otherwise the database refuses (error HVE09) and the form says the name is a registered player's, with a **👤 登录后报名** button that comes back to the event after signing in. Admins can use any name, and adding someone at a table (by the host or an admin) isn't checked. Re-run `supabase/schema.sql` once for this (it adds `event_name_guard` and calls it from `open_event_table` and `join_event_table`).
+
 ## Player accounts and profiles (注册 / 玩家主页)
 Players can create their own accounts. Re-run `supabase/schema.sql` once: it adds the **profiles** table, links event sign-ups to accounts, and adds the functions behind the profile page. Player accounts use the same Supabase Auth as admins. Only accounts listed in `public.admins` get admin tools; a player who signs in sees none.
 

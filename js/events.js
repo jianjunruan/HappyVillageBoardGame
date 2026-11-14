@@ -49,6 +49,8 @@
       isGuest: "未注册",
       regAs: "账号：{name}",
       homeLink: "主页 ›",
+      errNameTaken: "「{name}」是已注册玩家的名字。如果是你，请先登录再报名；如果不是你，请换一个名字。",
+      loginToSignUp: "👤 登录后报名",
       byName: "没登录报名，按名字对上了这个账号",
       guestTimes: "其中 {n} 次没登录",
       accLoading: "正在查看哪些玩家已注册…",
@@ -386,6 +388,8 @@
       isGuest: "not registered",
       regAs: "Account: {name}",
       homeLink: "Profile ›",
+      errNameTaken: "\"{name}\" is a registered player's name. If that's you, please sign in first; if not, please use another name.",
+      loginToSignUp: "👤 Sign in to sign up",
       byName: "Signed up without signing in; matched to this account by name",
       guestTimes: "{n} without signing in",
       accLoading: "Checking who has an account…",
@@ -813,6 +817,7 @@
     if (code === "HVE06") return tr("needLead");
     if (code === "HVE07") return tr("errJoined");
     if (code === "HVE08") return tr("cantDelete");
+    if (code === "HVE09") return tr("errNameTaken", { name: (D && D.name) || "" });
     if (code === "HVG01") return tr("errStartHost");
     if (code === "HVG02") return tr("errNotToday");
     if (code === "HVG03") return tr("customNoRecord");
@@ -1347,7 +1352,12 @@
     if (dlg.open) dlg.close();
   }
   const head = (title) => `<div class="ev-sheet-head"><h2 id="ev-dlg-title">${esc(title)}</h2><button class="ev-close" type="button" data-close aria-label="${esc(tr("close"))}">✕</button></div>`;
-  const errLine = () => `<p class="form-error" role="alert">${esc(D.err || "")}</p>`;
+  // The error under a form. A name that belongs to a player account (HVE09) also gets a sign-in button that comes back here.
+  const errLine = () =>
+    `<p class="form-error" role="alert">${esc(D.err || "")}</p>` +
+    (D.errCode === "HVE09"
+      ? `<p><a class="btn ghost btn-sm ev-login-link" href="account.html?next=${encodeURIComponent(location.pathname.split("/").pop() + location.search)}">${esc(tr("loginToSignUp"))}</a></p>`
+      : "");
   function renderDialog() {
     if (!D) return;
     if (D.mode === "open" && D.step === "pick") return renderPick();
@@ -2162,6 +2172,7 @@
     if (busy) return;
     busy = true;
     D.err = "";
+    D.errCode = "";
     renderDialog();
     try {
       await fn();
@@ -2172,6 +2183,7 @@
       busy = false;
       if (D) {
         D.err = errText(err);
+        D.errCode = err.code || "";
         renderDialog();
       }
       if (err.code === "HVE02" || err.code === "HVE01") load();
