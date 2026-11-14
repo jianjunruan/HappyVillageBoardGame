@@ -204,7 +204,9 @@
       wishAdd: "＋ 提议活动",
       wishEmpty: "还没有人提议，来提第一个吧！",
       wishFormTitle: "提议期望活动",
-      wishName: "你的名字",
+      wishName: "你的名字（可不填）",
+      wishNamePh: "不填就匿名提议",
+      wishByAnon: "匿名提议 · {date}",
       wishWhat: "期望活动名称",
       wishWhatPh: "例如：狼人杀之夜、新手教学日",
       wishDesc: "活动简介（可不填）",
@@ -556,7 +558,9 @@
       wishAdd: "+ Suggest an event",
       wishEmpty: "No suggestions yet. Be the first!",
       wishFormTitle: "Suggest an event",
-      wishName: "Your name",
+      wishName: "Your name (optional)",
+      wishNamePh: "Leave empty to suggest anonymously",
+      wishByAnon: "Suggested anonymously · {date}",
       wishWhat: "Event name",
       wishWhatPh: "e.g. Werewolf night, Beginners' day",
       wishDesc: "Description (optional)",
@@ -1065,7 +1069,7 @@
     return `<article class="ev-wish${st === "adopted" ? " is-adopted" : st === "rejected" ? " is-rejected" : ""}${mineW ? " is-mine" : ""}">
       <div class="ev-wish-top"><h3>${esc(w.title)}</h3>${badge}${mineW ? `<span class="ev-wish-mine">${esc(tr("wishMine"))}</span>` : ""}</div>
       ${w.description ? `<p class="ev-wish-desc">${esc(w.description)}</p>` : ""}
-      <p class="ev-wish-by">${esc(tr("wishBy", { name: w.name, date: fmtDate(w.created_at.slice(0, 10)) }))}</p>
+      <p class="ev-wish-by">${esc(w.name ? tr("wishBy", { name: w.name, date: fmtDate(w.created_at.slice(0, 10)) }) : tr("wishByAnon", { date: fmtDate(w.created_at.slice(0, 10)) }))}</p>
       <div class="ev-wish-vote">${voteBtn}<span class="ev-wish-count">${esc(tr("votes", { n: w.votes || 0 }))}</span></div>
       ${admin || own || del ? `<p class="ev-admin-row">${own}${admin}${del}</p>` : ""}
     </article>`;
@@ -2047,8 +2051,8 @@
     dlg.innerHTML = `${head(tr(D.id ? "wishEditTitle" : "wishFormTitle"))}
       <form class="ev-form" data-wish-form novalidate>
         <p class="ev-wish-note">${esc(tr("wishNote"))}</p>
-        <label class="ev-field"><span>${esc(tr("wishName"))}</span><input name="name" maxlength="30" autocomplete="nickname" placeholder="${esc(tr("namePh"))}" value="${esc(D.name)}" required${D.name ? "" : " autofocus"}></label>
-        <label class="ev-field"><span>${esc(tr("wishWhat"))}</span><input name="title" maxlength="80" placeholder="${esc(tr("wishWhatPh"))}" value="${esc(D.title)}" required${D.name ? " autofocus" : ""}></label>
+        <label class="ev-field"><span>${esc(tr("wishName"))}</span><input name="name" maxlength="30" autocomplete="nickname" placeholder="${esc(tr("wishNamePh"))}" value="${esc(D.name || "")}"></label>
+        <label class="ev-field"><span>${esc(tr("wishWhat"))}</span><input name="title" maxlength="80" placeholder="${esc(tr("wishWhatPh"))}" value="${esc(D.title)}" required autofocus></label>
         <label class="ev-field"><span>${esc(tr("wishDesc"))}</span><textarea name="desc" rows="4" maxlength="1000" placeholder="${esc(tr("wishDescPh"))}">${esc(D.desc)}</textarea></label>
         ${errLine()}
         <div class="form-actions"><button class="btn ghost" type="button" data-close>${esc(tr("cancel"))}</button><button class="btn" type="submit"${busy ? " disabled" : ""}>${esc(busy ? tr("saving") : tr("wishSubmit"))}</button></div>
@@ -2057,10 +2061,10 @@
   async function submitWish() {
     readForm();
     D.err = "";
-    const name = checkName();
+    const name = String(D.name || "").trim().slice(0, 30); // empty: suggested anonymously
     const title = String(D.title || "").trim().slice(0, 80);
-    if (name && !title) D.err = tr("needWishTitle");
-    if (!name || D.err) return renderDialog();
+    if (!title) D.err = tr("needWishTitle");
+    if (D.err) return renderDialog();
     const desc = String(D.desc || "").trim().slice(0, 1000);
     const id = D.id;
     await submit(async () => {
@@ -2071,7 +2075,7 @@
         await HVLoans.addWish(name, title, desc, token());
         flash = { text: tr("wishThanks"), ok: true };
       }
-      store.set("hv-event-name", name);
+      if (name) store.set("hv-event-name", name);
     });
   }
   // Admins: pick another player at the table to be its host.
@@ -2475,7 +2479,7 @@
     }
     if (b.dataset.pastPage) return pastSt.loading ? undefined : void showPast(Number(b.dataset.pastPage));
     if (b.hasAttribute("data-new-event")) return openEventForm(null);
-    if (b.hasAttribute("data-wish-add")) return openDialog({ mode: "wish", name: myName(), title: "", desc: "", err: "" });
+    if (b.hasAttribute("data-wish-add")) return openDialog({ mode: "wish", name: "", title: "", desc: "", err: "" }); // empty by default: anonymous unless they type a name
     if (b.dataset.wishStatus) return void act(() => HVLoans.setWishStatus(Number(b.dataset.id), b.dataset.wishStatus));
     if (b.dataset.wishEdit) {
       const w = (wishes || []).find((x) => x.id === Number(b.dataset.wishEdit));

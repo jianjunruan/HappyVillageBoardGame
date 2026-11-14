@@ -100,6 +100,7 @@
       all: "全部 {n} 个 →",
       adopted: "✓ 已采纳",
       by: "{name} 提议",
+      byAnon: "匿名提议",
       none: "💡 想参加什么活动？提议一个期望活动 →",
       note: "我们会根据情况决定是否采纳举办，提交期望活动不代表一定会举办。",
       vote: "🙋 +1",
@@ -113,6 +114,7 @@
       all: "All {n} →",
       adopted: "✓ Adopted",
       by: "by {name}",
+      byAnon: "anonymous",
       none: "💡 What event would you like? Suggest one →",
       note: "We decide case by case whether to hold a suggested event; suggesting one doesn't mean it will happen.",
       vote: "🙋 +1",
@@ -162,7 +164,7 @@
           return `<li class="hw-item${w.status === "adopted" ? " is-adopted" : ""}">
           <a href="events.html#wishes"><span class="hw-title"><b>${esc(w.title)}</b>${w.status === "adopted" ? ` <span class="hw-badge">${esc(tr("adopted"))}</span>` : ""}</span>
           ${w.description ? `<span class="hw-desc">${esc(w.description)}</span>` : ""}
-          <small>${esc(tr("by", { name: w.name }))}</small></a>
+          <small>${esc(w.name ? tr("by", { name: w.name }) : tr("byAnon"))}</small></a>
           <div class="hw-vote"><button type="button" class="hw-vote-btn${on ? " is-on" : ""}" data-vote="${w.id}" aria-pressed="${on}" aria-label="${esc(tr("voteLabel", { title: w.title }))}">${esc(tr(on ? "voted" : "vote"))}</button><small>${esc(tr("votes", { n: w.votes || 0 }))}</small></div>
         </li>`;
         })

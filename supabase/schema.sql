@@ -918,6 +918,9 @@ create table if not exists public.event_wishes (
   user_id uuid references auth.users (id) on delete set null  -- the account that suggested it; never readable
 );
 -- 'open' (待定), 'adopted' (已采纳) or 'rejected' (未采纳). (The first version had no 'rejected'.)
+-- The name is optional: an empty name means the wish was suggested anonymously (匿名).
+alter table public.event_wishes drop constraint if exists event_wishes_name_check;
+alter table public.event_wishes add constraint event_wishes_name_check check (char_length(trim(name)) <= 30);
 alter table public.event_wishes drop constraint if exists event_wishes_status_check;
 alter table public.event_wishes add constraint event_wishes_status_check check (status in ('open', 'adopted', 'rejected'));
 -- The suggesting browser's secret (like event sign-ups); never readable. Lets them change or delete it.
@@ -939,7 +942,7 @@ create unique index if not exists event_wish_votes_one_per_account on public.eve
 alter table public.event_wish_votes enable row level security;  -- no policies, no grants: only the functions below use it
 revoke all on public.event_wish_votes from anon, authenticated;
 
--- Adds a wish (plain text). At most 20 a minute across the site. Returns the new id.
+-- Adds a wish (plain text; the name may be empty for an anonymous wish). At most 20 a minute across the site. Returns the new id.
 -- (The first version had no browser secret; it is removed so the website can't call it.)
 drop function if exists public.add_event_wish(text, text, text);
 create or replace function public.add_event_wish(p_name text, p_title text, p_description text, p_token text)
@@ -959,7 +962,7 @@ begin
     raise exception 'Too many suggestions just now, try again in a minute' using errcode = 'HVW01';
   end if;
   insert into public.event_wishes (name, title, description, token, user_id)
-  values (trim(p_name), trim(p_title), trim(coalesce(p_description, '')), p_token, auth.uid())
+  values (trim(coalesce(p_name, '')), trim(p_title), trim(coalesce(p_description, '')), p_token, auth.uid())
   returning id into w;
   return w;
 end;
@@ -987,7 +990,7 @@ declare
   w bigint;
 begin
   update public.event_wishes
-  set name = trim(p_name), title = trim(p_title), description = trim(coalesce(p_description, ''))
+  set name = trim(coalesce(p_name, '')), title = trim(p_title), description = trim(coalesce(p_description, ''))
   where id = p_wish and public.is_event_wish_owner(token, user_id, p_token)
   returning id into w;
   return w is not null;
