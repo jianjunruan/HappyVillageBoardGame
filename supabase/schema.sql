@@ -359,6 +359,8 @@ create unique index if not exists event_players_one_name on public.event_players
 -- The player account that signed up (when signed in). Lets them leave, or act as host, from any device.
 -- Never readable from the website.
 alter table public.event_players add column if not exists user_id uuid references auth.users (id) on delete set null;
+-- Signed up without a name (匿名): the website gives them a name like 匿名1, numbered per event.
+alter table public.event_players add column if not exists anonymous boolean not null default false;
 create index if not exists event_players_by_user on public.event_players (user_id) where user_id is not null;
 
 -- Tables opened before the host was recorded: the first person who joined is the host.
@@ -412,6 +414,36 @@ begin
 end;
 $$;
 
+-- The name a sign-up is saved under. Empty (or "匿名", "匿名3"…) means anonymous: the same browser keeps one
+-- anonymous name per event (so joining two tables is still one person), and a new browser gets the next number
+-- (匿名1, 匿名2, …). Any other name is kept as typed.
+create or replace function public.event_signup_name(p_event bigint, p_name text, p_token text)
+returns text
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  n text := trim(coalesce(p_name, ''));
+  r text;
+begin
+  if n <> '' and n !~ '^匿名[0-9]*$' then
+    return n;
+  end if;
+  select p.name into r from public.event_players p join public.event_tables t on t.id = p.table_id
+  where t.event_id = p_event and p.anonymous and p.token = p_token
+  order by p.id limit 1;
+  if r is not null then
+    return r;
+  end if;
+  select '匿名' || (coalesce(max(substring(p.name from '^匿名([0-9]+)$')::int), 0) + 1) into r
+  from public.event_players p join public.event_tables t on t.id = p.table_id
+  where t.event_id = p_event and p.name ~ '^匿名[0-9]+$';
+  return r;
+end;
+$$;
+revoke execute on function public.event_signup_name(bigint, text, text) from public, anon, authenticated;
+
 -- Opens a table and seats the person who opened it. Returns { "table_id": …, "player_id": … }.
 -- (The older version without a start time is removed so the website can't call it.)
 -- p_user: admins only, the player account the sign-up is for (see event_signup_user).
@@ -427,9 +459,11 @@ as $$
 declare
   t bigint;
   p bigint;
+  nm text;
 begin
   perform public.event_signup_guard(p_event);
   perform public.event_name_guard(p_name);
+  nm := public.event_signup_name(p_event, p_name, p_token);
   if (select count(*) from public.event_tables where event_id = p_event) >= 100 then
     raise exception 'too many tables at this event' using errcode = 'HVE05';
   end if;
@@ -440,8 +474,9 @@ begin
   values (p_event, nullif(trim(p_game_id), ''), trim(p_game_name), coalesce(p_on_site, false), p_max_players,
           coalesce(trim(p_note), ''), p_start_time, p_token)
   returning id into t;
-  insert into public.event_players (table_id, name, token, user_id)
-  values (t, trim(p_name), p_token, public.event_signup_user(p_name, p_user)) returning id into p;
+  insert into public.event_players (table_id, name, token, user_id, anonymous)
+  values (t, nm, p_token, public.event_signup_user(nm, p_user), nm is distinct from trim(coalesce(p_name, '')) or nm ~ '^匿名[0-9]+$')
+  returning id into p;
   update public.event_tables set host_player = p where id = t;
   return jsonb_build_object('table_id', t, 'player_id', p);
 end;
@@ -460,6 +495,7 @@ declare
   cap integer;
   p bigint;
   u uuid;
+  nm text;
 begin
   select event_id, max_players into ev, cap from public.event_tables where id = p_table for update;
   if ev is null then
@@ -467,17 +503,19 @@ begin
   end if;
   perform public.event_signup_guard(ev);
   perform public.event_name_guard(p_name);
+  nm := public.event_signup_name(ev, p_name, p_token);
   if cap is not null and (select count(*) from public.event_players where table_id = p_table) >= cap then
     raise exception 'this table is full' using errcode = 'HVE02';
   end if;
-  if exists (select 1 from public.event_players where table_id = p_table and lower(trim(name)) = lower(trim(p_name))) then
+  if exists (select 1 from public.event_players where table_id = p_table and lower(trim(name)) = lower(nm)) then
     raise exception 'someone with this name already joined' using errcode = 'HVE03';
   end if;
-  u := public.event_signup_user(p_name, p_user);
+  u := public.event_signup_user(nm, p_user);
   if u is not null and exists (select 1 from public.event_players where table_id = p_table and user_id = u) then
     raise exception 'this account already joined this table' using errcode = 'HVE07';
   end if;
-  insert into public.event_players (table_id, name, token, user_id) values (p_table, trim(p_name), p_token, u) returning id into p;
+  insert into public.event_players (table_id, name, token, user_id, anonymous)
+  values (p_table, nm, p_token, u, nm is distinct from trim(coalesce(p_name, '')) or nm ~ '^匿名[0-9]+$') returning id into p;
   return p;
 end;
 $$;
@@ -1386,7 +1424,7 @@ security definer
 set search_path = ''
 as $$
   with keys as (
-    select lower(trim(p.name)) as k, p.user_id from public.event_players p where p.user_id is not null
+    select lower(trim(p.name)) as k, p.user_id from public.event_players p where p.user_id is not null and not p.anonymous
     union
     select lower(trim(n)), pr.user_id from public.profiles pr, unnest(array_append(pr.aliases, pr.name)) n
   )
@@ -1416,7 +1454,7 @@ begin
   end if;
   if exists (
     select 1 from (
-      select p.user_id from public.event_players p where p.user_id is not null and lower(trim(p.name)) = k
+      select p.user_id from public.event_players p where p.user_id is not null and not p.anonymous and lower(trim(p.name)) = k
       union
       select pr.user_id from public.profiles pr, unnest(array_append(pr.aliases, pr.name)) n where lower(trim(n)) = k
     ) owners
@@ -1487,7 +1525,8 @@ grant execute on function public.event_player_accounts(bigint) to authenticated;
 -- Admins only: everyone who ever signed up for an event, across all events (events.html?players).
 -- Sign-ups belong to a player account (registered) when made while signed in, or when made without signing in
 -- under a name that belongs to exactly one account (see player_account_names). The rest are grouped by name
--- (ignoring case and spaces). Player accounts that never signed up are listed too, with 0 events.
+-- (ignoring case and spaces). Anonymous sign-ups (匿名) without an account are left out: they can't be told apart.
+-- Player accounts that never signed up are listed too, with 0 events.
 -- name: the name they used most recently; events: how many different events; signups: how many tables joined;
 -- guest_signups: how many of those were made without signing in.
 drop function if exists public.admin_player_roster();
@@ -1499,16 +1538,16 @@ security definer
 set search_path = ''
 as $$
   with s as (
-    select coalesce(p.user_id, n.user_id) as uid, p.user_id is null as guest, lower(trim(p.name)) as k, trim(p.name) as name,
+    select coalesce(p.user_id, n.user_id) as uid, p.user_id is null as guest, p.anonymous as anon, lower(trim(p.name)) as k, trim(p.name) as name,
            e.id as eid, e.event_date, p.joined_at
     from public.event_players p
     join public.event_tables t on t.id = p.table_id
     join public.events e on e.id = t.event_id
     left join public.player_account_names() n on p.user_id is null and n.k = lower(trim(p.name))
-    where public.is_admin()
+    where public.is_admin() and not (p.anonymous and p.user_id is null)
   ), g as (
     select (array_agg(s.uid))[1] as uid,
-           (array_agg(s.name order by s.event_date desc, s.joined_at desc))[1] as name,
+           (array_agg(s.name order by s.anon, s.event_date desc, s.joined_at desc))[1] as name,
            count(distinct s.eid) as events, count(*) as signups, count(*) filter (where s.guest) as guest_signups,
            min(s.event_date) as first_date, max(s.event_date) as last_date
     from s

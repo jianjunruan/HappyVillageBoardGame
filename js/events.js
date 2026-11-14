@@ -266,6 +266,10 @@
       notePh: "例如：新手教学、下午 3 点开始",
       yourName: "你的名字",
       namePh: "其他人会看到这个名字",
+      yourNameOpt: "你的名字（可不填）",
+      namePhOpt: "不填就匿名报名，会显示成「匿名1」这样的名字",
+      playerNameAdminOpt: "玩家名字（可不填）",
+      linkAnon: "不填名字：匿名报名，不关联账号。",
       needName: "请填写你的名字。",
       badMax: "人数上限请填 1–30 的整数，或留空表示不限。",
       openSubmit: "🎲 开桌并加入",
@@ -617,6 +621,10 @@
       notePh: "e.g. teaching game, starts at 3 pm",
       yourName: "Your name",
       namePh: "Others will see this name",
+      yourNameOpt: "Your name (optional)",
+      namePhOpt: "Leave empty to sign up anonymously (shown as 匿名1, 匿名2…)",
+      playerNameAdminOpt: "Player's name (optional)",
+      linkAnon: "No name: an anonymous sign-up, no account linked.",
       needName: "Please enter your name.",
       badMax: "Max players must be a whole number from 1 to 30, or empty for no limit.",
       openSubmit: "🎲 Open and join",
@@ -1305,7 +1313,8 @@
       ? shown
           .map((r) => {
             const reg = Boolean(r.user_id);
-            const name = r.name || r.profile_name || "";
+            // A registered player who only signed up anonymously (匿名3…) is shown by their nickname.
+            const name = (r.profile_name && /^匿名\d+$/.test(r.name || "") ? r.profile_name : r.name) || r.profile_name || "";
             const nick = reg && r.profile_name && nameKey(r.profile_name) !== nameKey(name) ? ` <small>(${esc(r.profile_name)})</small>` : "";
             const meta = Number(r.signups)
               ? [
@@ -1443,9 +1452,10 @@
   // Admins sign up other players: a name box with matching players from all events to pick from (js below).
   const nameField = () => (isAdmin ? adminNameField() : ownNameField());
   const adminNameField = () => `<p class="ev-hint">${esc(tr("adminSignupHint"))}</p>
-    <label class="ev-field"><span>${esc(tr("playerNameAdmin"))}</span><input name="name" maxlength="30" autocomplete="off" placeholder="${esc(tr("playerNameAdminPh"))}" value="${esc(D.name || "")}" required${D.name ? "" : " autofocus"}></label>
+    <label class="ev-field"><span>${esc(tr("playerNameAdminOpt"))}</span><input name="name" maxlength="30" autocomplete="off" placeholder="${esc(tr("playerNameAdminPh"))}" value="${esc(D.name || "")}"${D.name ? "" : " autofocus"}></label>
     <div id="ev-suggest">${suggestHtml()}</div>`;
-  const ownNameField = () => `<label class="ev-field"><span>${esc(tr("yourName"))}</span><input name="name" maxlength="30" autocomplete="nickname" placeholder="${esc(tr("namePh"))}" value="${esc(D.name)}" required${D.name ? "" : " autofocus"}></label>`;
+  // The name is optional: left empty, the sign-up is anonymous (匿名1, 匿名2, … numbered by the database).
+  const ownNameField = () => `<label class="ev-field"><span>${esc(tr("yourNameOpt"))}</span><input name="name" maxlength="30" autocomplete="nickname" placeholder="${esc(tr("namePhOpt"))}" value="${esc(D.name || "")}"${D.name ? "" : " autofocus"}></label>`;
   function renderOpenForm() {
     dlg.innerHTML = `${head(tr("openNew"))}
       <form class="ev-form" data-open-form novalidate>
@@ -1784,8 +1794,8 @@
         return `<button type="button" class="ev-suggest-chip${on ? " is-on" : ""}" data-pick-player="${esc(r.user_id || "")}" data-pick-name="${esc(r.label)}">${esc(r.label)}${other} <span class="ev-acc ${r.user_id ? "is-reg" : "is-guest"}">${esc(tr(r.user_id ? "isReg" : "isGuest"))}</span></button>`;
       })
       .join("");
-    let status = "";
     const typed = String(D.name || "").trim();
+    let status = typed ? "" : tr("linkAnon");
     if (D.user) status = tr("linkPicked", { name: typed });
     else if (typed) {
       const reg = registeredNamed(typed);
@@ -2286,13 +2296,13 @@
   async function submitOpen() {
     readForm();
     D.err = "";
-    const name = checkName();
+    const name = String(D.name || "").trim().slice(0, 30); // empty: anonymous
     const max = String(D.max ?? "").trim();
-    if (name && max && !/^\d+$/.test(max)) D.err = tr("badMax");
-    else if (name && max && (Number(max) < 1 || Number(max) > 30)) D.err = tr("badMax");
+    if (max && !/^\d+$/.test(max)) D.err = tr("badMax");
+    else if (max && (Number(max) < 1 || Number(max) > 30)) D.err = tr("badMax");
     const who = isAdmin && name && !D.err ? adminSignupUser() : { user: null };
     if (who.err) D.err = who.err;
-    if (!name || D.err) return renderDialog();
+    if (D.err) return renderDialog();
     const g = D.game.id && gameById(D.game.id);
     const gameName = g ? (typeof g.name === "string" ? g.name : g.name.zh || g.name.en) : D.game.custom;
     await submit(async () => {
@@ -2304,7 +2314,7 @@
         who.user
       );
       if (!isAdmin) {
-        store.set("hv-event-name", name);
+        if (name) store.set("hv-event-name", name);
         rememberMine(r.player_id);
       }
       flash = null;
@@ -2313,15 +2323,15 @@
   async function submitJoin() {
     readForm();
     D.err = "";
-    const name = checkName();
+    const name = String(D.name || "").trim().slice(0, 30); // empty: anonymous
     const who = isAdmin && name ? adminSignupUser() : { user: null };
     if (who.err) D.err = who.err;
-    if (!name || D.err) return renderDialog();
+    if (D.err) return renderDialog();
     await submit(async () => {
       if (isAdmin) await HVLoans.joinTable(D.table, name, freshToken(), who.user);
       else {
         const id = await HVLoans.joinTable(D.table, name, token());
-        store.set("hv-event-name", name);
+        if (name) store.set("hv-event-name", name);
         rememberMine(id);
       }
       flash = null;

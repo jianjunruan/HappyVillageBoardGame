@@ -173,6 +173,16 @@ Admins never join an event themselves. When an admin opens or joins a table, the
 - The admin's sign-ups get their own browser secret, so they don't show as the admin's own ("我"); admins can still remove them.
 - In the database: `open_event_table` and `join_event_table` take an optional `p_user` (only used for admins), and `event_signup_user` decides whose sign-up it is. **Re-run `supabase/schema.sql` for this.**
 
+### Anonymous sign-ups (匿名)
+The name is optional when opening or joining a table. Left empty (or typed as 匿名), the database saves the sign-up as **匿名1**, **匿名2**, … numbered per event, and marks it `anonymous`.
+- The same browser keeps the same anonymous name within an event, so joining two tables still counts as one person in the headcount.
+- A signed-in player who leaves the name empty is still linked to their account (admins see them as 已注册).
+- Admins can leave the name empty to sign someone up anonymously.
+- Anonymous sign-ups without an account are left out of the players list (they can't be told apart), and their names never count as an account's name.
+- Adding someone at a table (host or admin) still needs a name.
+- If an anonymous player is put into a scored game, the record shows "匿名1"; scoreboards that add up results by name will treat every "匿名1" as the same person.
+- Re-run `supabase/schema.sql` for this: it adds the `anonymous` column and the `event_signup_name` function.
+
 ## Player accounts and profiles (注册 / 玩家主页)
 Players can create their own accounts. Re-run `supabase/schema.sql` once: it adds the **profiles** table, links event sign-ups to accounts, and adds the functions behind the profile page. Player accounts use the same Supabase Auth as admins. Only accounts listed in `public.admins` get admin tools; a player who signs in sees none.
 
