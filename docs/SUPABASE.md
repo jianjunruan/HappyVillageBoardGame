@@ -173,6 +173,12 @@ Admins never join an event themselves. When an admin opens or joins a table, the
 - The admin's sign-ups get their own browser secret, so they don't show as the admin's own ("我"); admins can still remove them.
 - In the database: `open_event_table` and `join_event_table` take an optional `p_user` (only used for admins), and `event_signup_user` decides whose sign-up it is. **Re-run `supabase/schema.sql` for this.**
 
+### Event feedback (活动反馈)
+From an event's day until 7 days after, its page shows **📝 活动反馈**. Four questions: how the event was overall (1–5 stars, required), what they liked most (any of: 玩到的游戏 / 认识新朋友 / 规则讲解 / 气氛 / 场地 / 其他), whether they'll come again (一定会 / 可能会 / 不太会), and what could be better (text, up to 1000 characters).
+- **Fully anonymous:** no name or account is saved, only the browser's secret, so each browser gives one answer per event and can change it later (the button then reads 已提交反馈 · 修改).
+- **Only admins can read it.** On the event page admins see **📊 查看反馈（N）**: the average and spread of the stars, how many picked each option, and every written comment (newest first). Event cards show "N 份反馈 · ⭐4.6" to admins.
+- In the database: the **event_feedback** table (no policies, not readable from the website) and the functions `submit_event_feedback`, `my_event_feedback`, `admin_event_feedback` and `admin_feedback_summary`. At most 60 answers a minute across the site. Re-run `supabase/schema.sql` for this.
+
 ## Player accounts and profiles (注册 / 玩家主页)
 Players can create their own accounts. Re-run `supabase/schema.sql` once: it adds the **profiles** table, links event sign-ups to accounts, and adds the functions behind the profile page. Player accounts use the same Supabase Auth as admins. Only accounts listed in `public.admins` get admin tools; a player who signs in sees none.
 

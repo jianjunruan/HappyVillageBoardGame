@@ -287,3 +287,30 @@ p.ev-tpl { margin: 0; color: var(--muted); }
 .ev-suggest-chip.is-on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
 .ev-link-status { margin: 4px 0 0; font-size: 0.9rem; color: var(--muted); }
 .ev-link-status.is-ok { color: var(--ok); font-weight: 700; }
+
+/* Event feedback (活动反馈) */
+.ev-fb { margin: 16px 0 0; padding: 14px 16px; border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); border: 1px dashed var(--accent); }
+.ev-fb-hint { margin: 0 0 10px; }
+.ev-fb-hint small { color: var(--muted); }
+.ev-fb-acts { display: flex; flex-wrap: wrap; gap: 8px; }
+.ev-fb-anon { margin: 0 0 12px; padding: 8px 12px; border-radius: 10px; background: var(--accent-soft); color: var(--accent); font-size: 0.9rem; font-weight: 600; }
+.ev-req { color: var(--danger); }
+.ev-stars { display: flex; gap: 4px; }
+.ev-star { width: 44px; height: 44px; border: 0; background: none; font-size: 2rem; line-height: 1; color: var(--border); cursor: pointer; touch-action: manipulation; padding: 0; }
+.ev-star.is-on { color: #f5b301; text-shadow: 0 0 8px rgb(245 179 1 / 0.45); }
+.ev-fb-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.ev-fb-chip { min-height: 38px; padding: 6px 14px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); color: var(--text); font: inherit; font-size: 0.92rem; cursor: pointer; touch-action: manipulation; }
+.ev-fb-chip.is-on { border-color: var(--accent); background: var(--accent); color: #fff; font-weight: 700; }
+.ev-card-fb { color: var(--accent); font-size: 0.85rem; font-weight: 700; }
+.ev-fb-report h3 { margin: 16px 0 8px; font-size: 1rem; }
+.ev-fb-report h3:first-child { margin-top: 0; }
+.ev-fb-report h3 small { color: var(--muted); font-weight: 400; margin-left: 6px; }
+.ev-fb-bar { display: grid; grid-template-columns: 6.5em 1fr 2em; align-items: center; gap: 8px; margin: 4px 0; font-size: 0.9rem; }
+.ev-fb-bar span { color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ev-fb-bar i { height: 10px; border-radius: 999px; background: var(--bg); overflow: hidden; }
+.ev-fb-bar i b { display: block; height: 100%; border-radius: 999px; background: var(--accent); }
+.ev-fb-bar em { font-style: normal; color: var(--muted); text-align: right; }
+.ev-fb-comments { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; max-height: 45vh; overflow-y: auto; }
+.ev-fb-comments li { padding: 10px 12px; border-radius: 10px; background: var(--bg); border: 1px solid var(--border); }
+.ev-fb-comments p { margin: 0 0 4px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.ev-fb-comments small { color: var(--muted); }

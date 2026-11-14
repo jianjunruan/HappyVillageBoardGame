@@ -1526,3 +1526,104 @@ as $$
 $$;
 revoke execute on function public.admin_player_roster() from public, anon;
 grant execute on function public.admin_player_roster() to authenticated;
+
+-- ---------- Event feedback (活动反馈) ----------
+-- After an event, anyone can tell us how it went: from the event's day until 7 days after. Fully anonymous: no name
+-- and no account is stored, only the browser's secret (so one browser gives one answer per event and can change it).
+-- Only admins can read the answers, through admin_event_feedback / admin_feedback_summary (never the secret).
+-- rating: 1–5 stars (required); likes: what they liked most; again: will they come again; improve: free text.
+create table if not exists public.event_feedback (
+  id bigint generated always as identity primary key,
+  event_id bigint not null references public.events (id) on delete cascade,
+  rating smallint not null check (rating between 1 and 5),
+  likes text[] not null default '{}' check (likes <@ array['games', 'people', 'teaching', 'vibe', 'venue', 'other']::text[]),
+  again text check (again in ('yes', 'maybe', 'no')),
+  improve text not null default '' check (char_length(improve) <= 1000),
+  token text not null check (char_length(token) between 16 and 100),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (event_id, token)
+);
+alter table public.event_feedback enable row level security;  -- no policies: only the functions below
+revoke all on public.event_feedback from anon, authenticated;
+
+-- Gives (or changes) this browser's feedback for an event. Errors: HVF01 feedback isn't open for this event (open from
+-- the event's day — a day early to allow for time zones — until 7 days after), HVF02 a bad answer, HVF03 too many
+-- just now.
+create or replace function public.submit_event_feedback(p_event bigint, p_token text, p_rating integer, p_likes text[],
+  p_again text, p_improve text)
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  d date;
+begin
+  select event_date into d from public.events where id = p_event;
+  if d is null or current_date < d - 1 or current_date > d + 7 then
+    raise exception 'feedback is not open for this event' using errcode = 'HVF01';
+  end if;
+  if p_token is null or char_length(p_token) not between 16 and 100 or p_rating is null or p_rating not between 1 and 5
+     or not (coalesce(p_likes, '{}') <@ array['games', 'people', 'teaching', 'vibe', 'venue', 'other']::text[])
+     or (p_again is not null and p_again not in ('yes', 'maybe', 'no')) or char_length(coalesce(p_improve, '')) > 1000 then
+    raise exception 'bad feedback' using errcode = 'HVF02';
+  end if;
+  perform pg_advisory_xact_lock(hashtext('hv-event-feedback'));
+  if (select count(*) from public.event_feedback where updated_at > now() - interval '1 minute') >= 60 then
+    raise exception 'Too much feedback just now, try again in a minute' using errcode = 'HVF03';
+  end if;
+  insert into public.event_feedback (event_id, rating, likes, again, improve, token)
+  values (p_event, p_rating, coalesce((select array_agg(distinct x) from unnest(p_likes) x), '{}'), p_again,
+          trim(coalesce(p_improve, '')), p_token)
+  on conflict (event_id, token) do update
+  set rating = excluded.rating, likes = excluded.likes, again = excluded.again, improve = excluded.improve, updated_at = now();
+end;
+$$;
+
+-- This browser's own feedback for an event (to show it and change it), or nothing.
+create or replace function public.my_event_feedback(p_event bigint, p_token text)
+returns table (rating smallint, likes text[], again text, improve text)
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select f.rating, f.likes, f.again, f.improve from public.event_feedback f
+  where f.event_id = p_event and p_token is not null and char_length(p_token) >= 16 and f.token = p_token;
+$$;
+
+-- Admins only: every answer for an event, newest first (no browser secret).
+create or replace function public.admin_event_feedback(p_event bigint)
+returns table (rating smallint, likes text[], again text, improve text, created_at timestamptz)
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select f.rating, f.likes, f.again, f.improve, f.created_at from public.event_feedback f
+  where public.is_admin() and f.event_id = p_event
+  order by f.created_at desc;
+$$;
+
+-- Admins only: how many answers each event has and their average rating (for the event cards).
+create or replace function public.admin_feedback_summary()
+returns table (event_id bigint, answers bigint, average numeric)
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select f.event_id, count(*), round(avg(f.rating), 1) from public.event_feedback f
+  where public.is_admin()
+  group by f.event_id;
+$$;
+
+revoke execute on function public.submit_event_feedback(bigint, text, integer, text[], text, text) from public;
+revoke execute on function public.my_event_feedback(bigint, text) from public;
+revoke execute on function public.admin_event_feedback(bigint) from public, anon;
+revoke execute on function public.admin_feedback_summary() from public, anon;
+grant execute on function public.submit_event_feedback(bigint, text, integer, text[], text, text) to anon, authenticated;
+grant execute on function public.my_event_feedback(bigint, text) to anon, authenticated;
+grant execute on function public.admin_event_feedback(bigint) to authenticated;
+grant execute on function public.admin_feedback_summary() to authenticated;
