@@ -226,6 +226,7 @@
   }
   let S = load() || blank();
   let draftNames = ["", "", ""];
+  let draftPicked = []; // draftPicked[i]: name i was picked from the player list (registered players must be)
   let saveState = null; // null | "saving" | { err } — the save button's status for the finished game
 
   const hasManual = (h) => h.manual !== null && h.manual !== undefined && h.manual !== "";
@@ -271,7 +272,7 @@
           .map(
             (n, i) => `
           <div class="f7-name-row">
-            <input aria-label="${esc(tr("playerN", { n: i + 1 }))}" data-i="${i}" value="${esc(n)}" placeholder="${esc(tr("playerN", { n: i + 1 }))}" maxlength="30" list="f7-names" autocomplete="off">
+            ${HVPlayerPicker.field({ value: n, picked: draftPicked[i], attrs: `aria-label="${esc(tr("playerN", { n: i + 1 }))}" data-i="${i}" placeholder="${esc(tr("playerN", { n: i + 1 }))}"` })}
             <button class="f7-icon-btn" type="button" data-del="${i}" aria-label="${esc(tr("removePlayer", { n: i + 1 }))}" ${draftNames.length <= 2 ? "disabled" : ""}>×</button>
           </div>`
           )
@@ -280,20 +281,29 @@
       <button class="f7-dashed" type="button" id="add-p" ${draftNames.length >= MAX_PLAYERS ? "disabled" : ""}>${esc(tr("addPlayer"))}</button>
       <div class="f7-field"><label for="target">${esc(tr("target"))}</label><input id="target" type="number" inputmode="numeric" min="1" value="${S.target || 200}"></div>
       <p class="f7-hint">${esc(tr("targetHint"))}</p>
-      <p style="margin-top:20px"><button class="btn f7-wide" type="button" id="start">${esc(tr("start"))}</button></p>`;
-    el.querySelectorAll("[data-i]").forEach((inp) => inp.addEventListener("input", (e) => (draftNames[+e.target.dataset.i] = e.target.value)));
+      <p style="margin-top:20px"><button class="btn f7-wide" type="button" id="start">${esc(tr("start"))}</button></p>
+      <p class="f7-msg is-err" role="alert" id="setup-err" hidden></p>`;
     el.querySelectorAll("[data-del]").forEach((b) =>
       b.addEventListener("click", () => {
         draftNames.splice(+b.dataset.del, 1);
+        draftPicked.splice(+b.dataset.del, 1);
         renderSetup();
       })
     );
     $("add-p").onclick = () => {
       draftNames.push("");
+      draftPicked.push(false);
       renderSetup();
       el.querySelector(`[data-i="${draftNames.length - 1}"]`).focus();
     };
     $("start").onclick = () => {
+      // A registered player's name has to be picked from the list, not typed.
+      const must = draftNames.map((n, i) => HVPlayerPicker.problem(n, draftPicked[i])).find(Boolean);
+      if (must) {
+        $("setup-err").textContent = must;
+        $("setup-err").hidden = false;
+        return;
+      }
       const tgt = parseInt($("target").value, 10);
       S = blank();
       S.target = tgt > 0 ? Math.min(tgt, 100000) : 200;
@@ -485,7 +495,8 @@
       if (inPlay && !confirm(tr("newConfirm"))) return;
       if (unsaved() && !confirm(tr("unsavedConfirm"))) return;
       draftNames = S.players.map((p) => p.name);
-      if (draftNames.length < 2) draftNames = ["", "", ""];
+      draftPicked = draftNames.map(() => true); // the same players as the last game
+      if (draftNames.length < 2) (draftNames = ["", "", ""]), (draftPicked = []);
       const tgt = S.target;
       S = blank();
       S.target = tgt;
@@ -673,7 +684,7 @@
       <div class="f7-rec-head"><b>${esc(tr("won", { names: joinNames(String(r.winner).split("、")) }))}</b><time datetime="${esc(r.played_at)}">${esc(fmtTime(r.played_at))}</time></div>
       ${String(editRecId) === String(r.id)
         ? `<form class="f7-name-edit" data-names-form="${esc(r.id)}"><p class="f7-hint">${esc(tr("editNames"))}</p>
-            ${players.map((p, pi) => `<label><input name="n${pi}" value="${esc(p.name)}" maxlength="30" list="f7-names" autocomplete="off"> <span>${esc(tr("points", { n: p.total }))}</span></label>`).join("")}
+            ${players.map((p, pi) => `<label>${HVPlayerPicker.field({ value: p.name, picked: true, attrs: `name="n${pi}"` })} <span>${esc(tr("points", { n: p.total }))}</span></label>`).join("")}
             <p class="f7-msg is-err" role="alert"></p>
             <div class="f7-actions"><button class="btn" type="submit">${esc(tr("saveNames"))}</button><button class="btn ghost" type="button" data-cancel-names>${esc(tr("cancel2"))}</button></div>
           </form>`
@@ -777,7 +788,16 @@
     const names = new Map();
     for (const r of records || []) for (const p of r.players || []) if (!names.has(nameKey(p.name))) names.set(nameKey(p.name), String(p.name).trim());
     $("f7-names").innerHTML = [...names.values()].map((n) => `<option value="${esc(n)}"></option>`).join("");
+    HVPlayerPicker.setPast([...names.values()]);
   }
+  // Player names: matching players to pick from; registered players must be picked (js/player-picker.js).
+  HVPlayerPicker.wire(document.querySelector(".f7-main"), (input, name, picked) => {
+    if (input.dataset.i == null || !input.closest("#tab-score")) return; // the admin's name edit keeps its state on the input
+    draftNames[+input.dataset.i] = name;
+    draftPicked[+input.dataset.i] = picked;
+    const errEl = $("setup-err");
+    if (errEl) errEl.hidden = true;
+  });
 
   document.querySelector(".f7-main").addEventListener("click", async (e) => {
     if (e.target.closest("[data-retry]")) return loadRecords(true);
@@ -823,6 +843,8 @@
     const names = (r.players || []).map((_, pi) => form.elements[`n${pi}`].value.trim());
     const err = form.querySelector(".f7-msg");
     if (names.some((n) => !n || n.length > 30)) return void (err.textContent = tr("needName2"));
+    const must = (r.players || []).map((_, pi) => HVPlayerPicker.problem(names[pi], form.elements[`n${pi}`].dataset.picked === "1")).find(Boolean);
+    if (must) return void (err.textContent = must);
     const players = r.players.map((p, pi) => ({ ...p, name: names[pi] }));
     const winner = players.filter((p) => p.total === r.top_score).map((p) => p.name).join("、");
     const btn = form.querySelector('button[type="submit"]');
