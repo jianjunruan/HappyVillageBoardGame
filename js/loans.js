@@ -222,11 +222,21 @@ window.HVLoans = (() => {
     // [{ user_id (null = not registered), profile_name, name, events, signups, first_date, last_date }].
     playerRoster: () => request("/rest/v1/rpc/admin_player_roster", { method: "POST", admin: true, body: {} }),
     // ---------- event feedback (活动反馈), anonymous ----------
-    // fb: { rating 1–5, likes: ["games", "people", "teaching", "vibe", "venue", "other"], again: "yes" | "maybe" | "no" | null, improve }
+    // fb: { rating 1–5, likes: ["games", "people", "teaching", "vibe", "venue", "other"], again: "yes" | "maybe" | "no" | null,
+    //       improve, name ("" = anonymous), likeOther (their words when they picked "other") }
     submitFeedback: (eventId, token, fb) =>
       request("/rest/v1/rpc/submit_event_feedback", {
         method: "POST",
-        body: { p_event: eventId, p_token: token, p_rating: fb.rating, p_likes: fb.likes || [], p_again: fb.again || null, p_improve: fb.improve || "" },
+        body: {
+          p_event: eventId,
+          p_token: token,
+          p_rating: fb.rating,
+          p_likes: fb.likes || [],
+          p_again: fb.again || null,
+          p_improve: fb.improve || "",
+          p_name: fb.name || "", // empty: anonymous
+          p_like_other: fb.likeOther || "",
+        },
       }),
     // This browser's own feedback for the event, or null.
     async myFeedback(eventId, token) {

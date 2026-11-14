@@ -51,10 +51,21 @@
       homeLink: "主页 ›",
       fbBtn: "📝 活动反馈",
       fbEdit: "✓ 已提交反馈 · 修改",
-      fbHint: "说说你这次活动的感受吧。完全匿名，只有管理员能看到。",
+      fbHint: "说说你这次活动的感受吧。可以匿名，也可以留名，只有管理员能看到。",
       fbClosesIn: "反馈开放到 {date}。",
       fbTitle: "活动反馈",
-      fbAnon: "🔒 完全匿名：不记录名字和账号，只有管理员能看到。",
+      fbAnon: "🔒 匿名：不记录名字和账号，只有管理员能看到。",
+      fbReal: "👤 实名：你的名字会和反馈一起给管理员看（不会公开）。",
+      fbWho: "匿名还是实名？",
+      fbModeAnon: "🔒 匿名",
+      fbModeReal: "👤 实名",
+      fbNameLabel: "你的名字",
+      fbNamePh: "管理员会看到这个名字",
+      fbNeedName: "选了实名，请填写你的名字。",
+      fbOtherPh: "说说你喜欢的其他地方",
+      fbOthers: "「其他」写了什么",
+      fbAnonLabel: "匿名",
+      fbWhoCount: "实名 {real} · 匿名 {anon}",
       fbQ1: "这次活动整体体验如何？",
       fbQ2: "你最喜欢这次活动的哪些部分？（可多选）",
       fbQ3: "下次还会来吗？",
@@ -440,10 +451,21 @@
       homeLink: "Profile ›",
       fbBtn: "📝 Event feedback",
       fbEdit: "✓ Feedback sent · Change it",
-      fbHint: "Tell us how the event went. Fully anonymous; only admins can see it.",
+      fbHint: "Tell us how the event went. Anonymous or with your name, as you like; only admins can see it.",
       fbClosesIn: "Feedback is open until {date}.",
       fbTitle: "Event feedback",
-      fbAnon: "🔒 Fully anonymous: no name or account is saved, and only admins can see it.",
+      fbAnon: "🔒 Anonymous: no name or account is saved, and only admins can see it.",
+      fbReal: "👤 With your name: admins see your name with the feedback (it isn't shown publicly).",
+      fbWho: "Anonymous or with your name?",
+      fbModeAnon: "🔒 Anonymous",
+      fbModeReal: "👤 With my name",
+      fbNameLabel: "Your name",
+      fbNamePh: "Admins will see this name",
+      fbNeedName: "You chose to give your name: please enter it.",
+      fbOtherPh: "What else did you like?",
+      fbOthers: "What \"Other\" said",
+      fbAnonLabel: "Anonymous",
+      fbWhoCount: "With name {real} · Anonymous {anon}",
       fbQ1: "How was the event overall?",
       fbQ2: "What did you like most? (pick any)",
       fbQ3: "Will you come again?",
@@ -1491,7 +1513,17 @@
   }
   function openFeedbackForm() {
     const r = myFb.event === ev.id && myFb.row;
-    openDialog({ mode: "feedback", rating: r ? r.rating : 0, likes: r ? [...r.likes] : [], again: r ? r.again : null, improve: r ? r.improve : "", err: "" });
+    openDialog({
+      mode: "feedback",
+      rating: r ? r.rating : 0,
+      likes: r ? [...r.likes] : [],
+      likeOther: r ? r.like_other ?? r.likeOther ?? "" : "",
+      again: r ? r.again : null,
+      improve: r ? r.improve : "",
+      real: Boolean(r && r.name), // anonymous unless they gave a name before
+      name: (r && r.name) || "",
+      err: "",
+    });
   }
   function renderFeedbackForm() {
     const stars = [1, 2, 3, 4, 5]
@@ -1501,9 +1533,15 @@
       `<button type="button" class="ev-fb-chip${on ? " is-on" : ""}" data-fb-${kind}="${v}" aria-pressed="${on}">${esc(tr(kind === "like" ? "like_" + v : "again_" + v))}</button>`;
     dlg.innerHTML = `${head(tr("fbTitle"))}
       <form class="ev-form" data-fb-form novalidate>
-        <p class="ev-fb-anon">${esc(tr("fbAnon"))}</p>
+        <div class="ev-field"><span>${esc(tr("fbWho"))}</span><div class="ev-fb-chips">
+          <button type="button" class="ev-fb-chip${D.real ? "" : " is-on"}" data-fb-who="anon" aria-pressed="${!D.real}">${esc(tr("fbModeAnon"))}</button>
+          <button type="button" class="ev-fb-chip${D.real ? " is-on" : ""}" data-fb-who="real" aria-pressed="${D.real}">${esc(tr("fbModeReal"))}</button>
+        </div></div>
+        <p class="ev-fb-anon${D.real ? " is-real" : ""}">${esc(tr(D.real ? "fbReal" : "fbAnon"))}</p>
+        ${D.real ? `<label class="ev-field"><span>${esc(tr("fbNameLabel"))} <b class="ev-req">*</b></span><input name="fbname" maxlength="30" autocomplete="nickname" placeholder="${esc(tr("fbNamePh"))}" value="${esc(D.name || "")}"></label>` : ""}
         <div class="ev-field"><span>${esc(tr("fbQ1"))} <b class="ev-req">*</b></span><div class="ev-stars" role="group">${stars}</div></div>
-        <div class="ev-field"><span>${esc(tr("fbQ2"))}</span><div class="ev-fb-chips">${FB_LIKES.map((v) => chip("like", v, D.likes.includes(v))).join("")}</div></div>
+        <div class="ev-field"><span>${esc(tr("fbQ2"))}</span><div class="ev-fb-chips">${FB_LIKES.map((v) => chip("like", v, D.likes.includes(v))).join("")}</div>
+          ${D.likes.includes("other") ? `<input class="ev-fb-other" name="likeother" maxlength="200" placeholder="${esc(tr("fbOtherPh"))}" value="${esc(D.likeOther || "")}">` : ""}</div>
         <div class="ev-field"><span>${esc(tr("fbQ3"))}</span><div class="ev-fb-chips">${FB_AGAIN.map((v) => chip("again", v, D.again === v)).join("")}</div></div>
         <label class="ev-field"><span>${esc(tr("fbQ4"))}</span><textarea name="improve" rows="4" maxlength="1000" placeholder="${esc(tr("fbQ4Ph"))}">${esc(D.improve || "")}</textarea></label>
         ${errLine()}
@@ -1513,11 +1551,18 @@
   async function submitFeedback() {
     readForm();
     D.err = "";
-    if (!D.rating) {
-      D.err = tr("fbNeedRating");
-      return renderDialog();
-    }
-    const fb = { rating: D.rating, likes: D.likes, again: D.again, improve: String(D.improve || "").trim().slice(0, 1000) };
+    const name = D.real ? String(D.name || "").trim().slice(0, 30) : "";
+    if (D.real && !name) D.err = tr("fbNeedName");
+    else if (!D.rating) D.err = tr("fbNeedRating");
+    if (D.err) return renderDialog();
+    const fb = {
+      rating: D.rating,
+      likes: D.likes,
+      again: D.again,
+      improve: String(D.improve || "").trim().slice(0, 1000),
+      name,
+      likeOther: D.likes.includes("other") ? String(D.likeOther || "").trim().slice(0, 200) : "",
+    };
     const id = ev.id;
     await submit(async () => {
       await HVLoans.submitFeedback(id, token(), fb);
@@ -1549,21 +1594,32 @@
     const avg = n ? (rows.reduce((a, r) => a + r.rating, 0) / n).toFixed(1) : "–";
     const againN = rows.filter((r) => r.again).length;
     const comments = rows.filter((r) => r.improve);
+    const others = rows.filter((r) => r.like_other);
+    const realN = rows.filter((r) => r.name).length;
+    const who = (r) => (r.name ? `👤 ${r.name}` : tr("fbAnonLabel"));
     dlg.innerHTML = `${head(tr("fbAdminTitle", { n }))}
       ${
         n
           ? `<div class="ev-fb-report">
+        <p class="ev-hint">${esc(tr("fbWhoCount", { real: realN, anon: n - realN }))}</p>
         <h3>${esc(tr("fbQ1"))} <small>${esc(tr("fbAvg", { avg }))}</small></h3>
         ${[5, 4, 3, 2, 1].map((k) => bar("★".repeat(k), rows.filter((r) => r.rating === k).length, n)).join("")}
         <h3>${esc(tr("fbQ2"))} <small>${esc(tr("fbAnswered", { n: rows.filter((r) => r.likes.length).length }))}</small></h3>
         ${FB_LIKES.map((v) => bar(tr("like_" + v), rows.filter((r) => r.likes.includes(v)).length, n)).join("")}
+        ${
+          others.length
+            ? `<p class="ev-fb-sub">${esc(tr("fbOthers"))}</p><ul class="ev-fb-comments">${others
+                .map((r) => `<li><p>${esc(r.like_other)}</p><small>${esc(who(r))}</small></li>`)
+                .join("")}</ul>`
+            : ""
+        }
         <h3>${esc(tr("fbQ3"))} <small>${esc(tr("fbAnswered", { n: againN }))}</small></h3>
         ${FB_AGAIN.map((v) => bar(tr("again_" + v), rows.filter((r) => r.again === v).length, againN)).join("")}
         <h3>${esc(tr("fbComments"))} <small>${comments.length}</small></h3>
         ${
           comments.length
             ? `<ul class="ev-fb-comments">${comments
-                .map((r) => `<li><p>${esc(r.improve)}</p><small>${"★".repeat(r.rating)} · ${esc(fmtDate(r.created_at.slice(0, 10)))}</small></li>`)
+                .map((r) => `<li><p>${esc(r.improve)}</p><small>${esc(who(r))} · ${"★".repeat(r.rating)} · ${esc(fmtDate(r.created_at.slice(0, 10)))}</small></li>`)
                 .join("")}</ul>`
             : `<p class="ev-hint">${esc(tr("fbNoComments"))}</p>`
         }
@@ -2358,7 +2414,11 @@
     if (D.mode === "join") D.name = v("name");
     if (D.mode === "time") D.time = v("time");
     if (D.mode === "people") D.extra = v("extra");
-    if (D.mode === "feedback") D.improve = v("improve");
+    if (D.mode === "feedback") {
+      D.improve = v("improve");
+      if (f.elements.fbname) D.name = v("fbname");
+      if (f.elements.likeother) D.likeOther = v("likeother");
+    }
     if (D.mode === "leave") D.next = (f.querySelector("input[name=next]:checked") || {}).value || "";
     if (D.mode === "host") D.host = (f.querySelector("input[name=host]:checked") || {}).value || "";
     if (D.mode === "wish") Object.assign(D, { name: v("name"), title: v("title"), desc: v("desc") });
@@ -2862,6 +2922,17 @@
     if (e.target.closest("[data-start-add]") && D) return void startAdd();
     if (D && D.mode === "feedback") {
       const star = e.target.closest("[data-fb-star]"), like = e.target.closest("[data-fb-like]"), again = e.target.closest("[data-fb-again]");
+      const who = e.target.closest("[data-fb-who]");
+      if (who) {
+        readForm();
+        D.real = who.dataset.fbWho === "real";
+        if (D.real && !D.name) D.name = myName();
+        D.err = "";
+        renderDialog();
+        const input = dlg.querySelector("input[name=fbname]");
+        if (input && !input.value) input.focus();
+        return;
+      }
       if (star || like || again) {
         readForm();
         if (star) {
@@ -2873,7 +2944,13 @@
           D.likes = D.likes.includes(v) ? D.likes.filter((x) => x !== v) : [...D.likes, v];
         }
         if (again) D.again = D.again === again.dataset.fbAgain ? null : again.dataset.fbAgain;
-        return renderDialog();
+        renderDialog();
+        // Picking "other" opens a box for their own words.
+        if (like && like.dataset.fbLike === "other" && D.likes.includes("other")) {
+          const box = dlg.querySelector("input[name=likeother]");
+          if (box) box.focus();
+        }
+        return;
       }
     }
     const pick = e.target.closest("[data-pick-player]");

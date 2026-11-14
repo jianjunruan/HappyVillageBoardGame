@@ -4215,6 +4215,56 @@
           "url": "https://boardgamegeek.com/boardgame/6552/cashflow-101"
         }
       ]
+    },
+    {
+      "id": "dune-imperium-uprising",
+      "name": { "zh": "沙丘：帝国 起义", "en": "Dune: Imperium – Uprising" },
+      "image": "images/dune-imperium-uprising.jpg",
+      "description": {
+        "zh": "《沙丘：帝国》的独立续作，可以单独玩，也能和《沙丘：帝国》混用。每位玩家是一位大家族领袖，回合里出牌派出特工到沙丘星、皇帝、宇航公会、贝尼·杰瑟里特和弗雷曼人等地点，收集香料、水和金钱，扩充自己的牌组，并在每轮的冲突中派兵争夺奖励。新加入间谍、合约和沙虫：驾驭沙虫的部队战力翻倍。率先拿到 10 分（或游戏结束时分数最高）的玩家获胜；还有 6 人 3 对 3 的团队模式。设计师：Paul Dennen（2023）。\n\n适合：喜欢构筑牌组加工人放置、有一定策略深度的玩家；一局约 1–2 小时。",
+        "en": "The standalone follow-up to Dune: Imperium, playable on its own or mixed with the original. Each player leads a Great House: play cards to send agents to Arrakis, the Emperor, the Spacing Guild, the Bene Gesserit, the Fremen and more, gather spice, water and Solari, build up your deck, and send troops into each round's conflict for its rewards. New are spies, contracts and sandworms, which double a unit's strength. First to 10 victory points (or the most when the game ends) wins; there is also a 6-player 3-vs-3 team mode. Designed by Paul Dennen (2023).\n\nGreat for: players who like deck-building with worker placement and some strategic depth; about 1–2 hours."
+      },
+      "players": "1–6",
+      "playtime": "30",
+      "age": "14",
+      "category": "euro",
+      "weight": 3.06,
+      "tags": ["Strategy", "Euro", "Cards", "Thematic"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=dune+imperium+uprising+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/397598/dune-imperium-uprising"
+        }
+      ]
+    },
+    {
+      "id": "dune-imperium",
+      "name": { "zh": "沙丘：帝国", "en": "Dune: Imperium" },
+      "image": "images/dune-imperium.jpg",
+      "description": {
+        "zh": "以《沙丘》电影和小说为背景，把构筑牌组和工人放置结合在一起的策略游戏。每位玩家是一位大家族领袖，回合里出牌派出特工到沙丘星、皇帝、宇航公会、贝尼·杰瑟里特、弗雷曼人等地点，收集香料、水和金钱，买进更强的卡牌、争取各派系的支持和结盟，并在每轮的冲突中派兵争夺奖励，还可以用密谋卡在关键时刻出奇制胜。率先拿到 10 分（或游戏结束时分数最高）的玩家获胜；可单人或双人对战自动对手。设计师：Paul Dennen（2020）。\n\n适合：喜欢构筑牌组加工人放置、有一定策略深度的玩家；一局约 1–2 小时。续作《沙丘：帝国 起义》可以和它混用。",
+        "en": "A strategy game set in the world of Dune that blends deck-building with worker placement. Each player leads a Great House: play cards to send agents to Arrakis, the Emperor, the Spacing Guild, the Bene Gesserit, the Fremen and more, gather spice, water and Solari, buy stronger cards, win the factions' favour and alliances, and send troops into each round's conflict for its rewards, with intrigue cards for surprise twists. First to 10 victory points (or the most when the game ends) wins; it also plays solo or with two against an automated rival. Designed by Paul Dennen (2020).\n\nGreat for: players who like deck-building with worker placement and some strategic depth; about 1–2 hours. The follow-up, Dune: Imperium – Uprising, can be mixed with it."
+      },
+      "players": "1–4",
+      "playtime": "30",
+      "age": "14",
+      "category": "euro",
+      "weight": 3.04,
+      "tags": ["Strategy", "Euro", "Cards", "Thematic"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=dune+imperium+how+to+play"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/316554/dune-imperium"
+        }
+      ]
     }
   ]
 }
