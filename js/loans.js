@@ -430,7 +430,8 @@ window.HVLoans = (() => {
     // Friends who come without signing up (a whole number, 0–200). Admins only.
     setExtraPeople: (id, n) => HVLoans.saveEvent({ extra_people: n }, id),
     // table: { game_id, game_name, on_site, max_players, note, start_time ("HH:MM" or null) }. Returns { table_id, player_id }.
-    openTable: (eventId, table, name, token) =>
+    // user: admins only, the player account this sign-up is for (left out when there is none).
+    openTable: (eventId, table, name, token, user = null) =>
       request("/rest/v1/rpc/open_event_table", {
         method: "POST",
         admin: "ifSignedIn",
@@ -444,6 +445,7 @@ window.HVLoans = (() => {
           p_name: name,
           p_token: token,
           p_start_time: table.start_time || null,
+          ...(user ? { p_user: user } : {}),
         },
       }),
     // Changes a table's start time ("HH:MM" or null) as its current host. Returns false if this browser isn't the host.
@@ -453,8 +455,13 @@ window.HVLoans = (() => {
     deleteOwnTable: (tableId, token) =>
       request("/rest/v1/rpc/delete_event_table", { method: "POST", admin: "ifSignedIn", body: { p_table: tableId, p_token: token } }),
     // Returns the new player id.
-    joinTable: (tableId, name, token) =>
-      request("/rest/v1/rpc/join_event_table", { method: "POST", admin: "ifSignedIn", body: { p_table: tableId, p_name: name, p_token: token } }),
+    // user: admins only, the player account this sign-up is for (left out when there is none).
+    joinTable: (tableId, name, token, user = null) =>
+      request("/rest/v1/rpc/join_event_table", {
+        method: "POST",
+        admin: "ifSignedIn",
+        body: { p_table: tableId, p_name: name, p_token: token, ...(user ? { p_user: user } : {}) },
+      }),
     // Returns true if this browser's sign-up was removed. A host can name the player who takes over (nextId);
     // without one, the next person who joined does.
     leaveTable: (playerId, token, nextId) =>

@@ -414,9 +414,11 @@ $$;
 
 -- Opens a table and seats the person who opened it. Returns { "table_id": …, "player_id": … }.
 -- (The older version without a start time is removed so the website can't call it.)
+-- p_user: admins only, the player account the sign-up is for (see event_signup_user).
 drop function if exists public.open_event_table(bigint, text, text, boolean, integer, text, text, text);
+drop function if exists public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time);
 create or replace function public.open_event_table(p_event bigint, p_game_id text, p_game_name text, p_on_site boolean,
-  p_max_players integer, p_note text, p_name text, p_token text, p_start_time time default null)
+  p_max_players integer, p_note text, p_name text, p_token text, p_start_time time default null, p_user uuid default null)
 returns jsonb
 language plpgsql
 security definer
@@ -427,6 +429,7 @@ declare
   p bigint;
 begin
   perform public.event_signup_guard(p_event);
+  perform public.event_name_guard(p_name);
   if (select count(*) from public.event_tables where event_id = p_event) >= 100 then
     raise exception 'too many tables at this event' using errcode = 'HVE05';
   end if;
@@ -437,14 +440,16 @@ begin
   values (p_event, nullif(trim(p_game_id), ''), trim(p_game_name), coalesce(p_on_site, false), p_max_players,
           coalesce(trim(p_note), ''), p_start_time, p_token)
   returning id into t;
-  insert into public.event_players (table_id, name, token, user_id) values (t, trim(p_name), p_token, auth.uid()) returning id into p;
+  insert into public.event_players (table_id, name, token, user_id)
+  values (t, trim(p_name), p_token, public.event_signup_user(p_name, p_user)) returning id into p;
   update public.event_tables set host_player = p where id = t;
   return jsonb_build_object('table_id', t, 'player_id', p);
 end;
 $$;
 
--- Joins a table. Returns the new player id.
-create or replace function public.join_event_table(p_table bigint, p_name text, p_token text)
+-- Joins a table. Returns the new player id. p_user: admins only, the player account the sign-up is for.
+drop function if exists public.join_event_table(bigint, text, text);
+create or replace function public.join_event_table(p_table bigint, p_name text, p_token text, p_user uuid default null)
 returns bigint
 language plpgsql
 security definer
@@ -454,22 +459,25 @@ declare
   ev bigint;
   cap integer;
   p bigint;
+  u uuid;
 begin
   select event_id, max_players into ev, cap from public.event_tables where id = p_table for update;
   if ev is null then
     raise exception 'table not found' using errcode = 'HVE01';
   end if;
   perform public.event_signup_guard(ev);
+  perform public.event_name_guard(p_name);
   if cap is not null and (select count(*) from public.event_players where table_id = p_table) >= cap then
     raise exception 'this table is full' using errcode = 'HVE02';
   end if;
   if exists (select 1 from public.event_players where table_id = p_table and lower(trim(name)) = lower(trim(p_name))) then
     raise exception 'someone with this name already joined' using errcode = 'HVE03';
   end if;
-  if auth.uid() is not null and exists (select 1 from public.event_players where table_id = p_table and user_id = auth.uid()) then
+  u := public.event_signup_user(p_name, p_user);
+  if u is not null and exists (select 1 from public.event_players where table_id = p_table and user_id = u) then
     raise exception 'this account already joined this table' using errcode = 'HVE07';
   end if;
-  insert into public.event_players (table_id, name, token, user_id) values (p_table, trim(p_name), p_token, auth.uid()) returning id into p;
+  insert into public.event_players (table_id, name, token, user_id) values (p_table, trim(p_name), p_token, u) returning id into p;
   return p;
 end;
 $$;
@@ -623,15 +631,15 @@ grant delete on public.events to authenticated;
 grant update (game_name, on_site, max_players, note, start_time) on public.event_tables to authenticated;  -- admins only (policy)
 grant delete on public.event_tables, public.event_players to authenticated;
 revoke execute on function public.event_signup_guard(bigint) from public, anon, authenticated;
-revoke execute on function public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time) from public;
-revoke execute on function public.join_event_table(bigint, text, text) from public;
+revoke execute on function public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time, uuid) from public;
+revoke execute on function public.join_event_table(bigint, text, text, uuid) from public;
 revoke execute on function public.leave_event_table(bigint, text, bigint) from public;
 revoke execute on function public.delete_event_table(bigint, text) from public;
 revoke execute on function public.set_event_table_time(bigint, text, time) from public;
 grant execute on function public.set_event_table_time(bigint, text, time) to anon, authenticated;
 revoke execute on function public.is_event_table_host(bigint, text, bigint, text) from public, anon, authenticated;
-grant execute on function public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time) to anon, authenticated;
-grant execute on function public.join_event_table(bigint, text, text) to anon, authenticated;
+grant execute on function public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time, uuid) to anon, authenticated;
+grant execute on function public.join_event_table(bigint, text, text, uuid) to anon, authenticated;
 grant execute on function public.leave_event_table(bigint, text, bigint) to anon, authenticated;
 grant execute on function public.delete_event_table(bigint, text) to anon, authenticated;
 revoke execute on function public.set_event_table_host(bigint, bigint) from public, anon;
@@ -868,7 +876,10 @@ begin
   if exists (select 1 from public.event_players where table_id = tb.id and lower(trim(name)) = lower(trim(p_name))) then
     raise exception 'someone with this name already joined' using errcode = 'HVE03';
   end if;
-  insert into public.event_players (table_id, name, token) values (tb.id, trim(p_name), replace(gen_random_uuid()::text, '-', ''))
+  -- A name that belongs to exactly one player account is linked to it (see player_account_names).
+  insert into public.event_players (table_id, name, token, user_id)
+  values (tb.id, trim(p_name), replace(gen_random_uuid()::text, '-', ''),
+          (select n.user_id from public.player_account_names() n where n.k = lower(trim(p_name))))
   returning id into p;
   if p_score is not null then
     update public.game_scores gs
@@ -1364,54 +1375,151 @@ revoke execute on function public.my_event_player_ids(bigint) from public, anon;
 grant execute on function public.my_event_signups() to authenticated;
 grant execute on function public.my_event_player_ids(bigint) to authenticated;
 
--- Admins only: which of an event's sign-ups were made from a player account, with that account's nickname.
--- (Visitors can't read event_players.user_id; this is how the admin's "来玩的人" list marks 已注册 / 未注册.)
-create or replace function public.event_player_accounts(p_event bigint)
-returns table (player_id bigint, user_id uuid, profile_name text)
+-- Which player account a name belongs to, for sign-ups made without signing in: a name (ignoring case and spaces)
+-- that is exactly one account's nickname, one of its aliases, or a name it used when signing up while signed in.
+-- A name shared by two accounts belongs to neither. Only used inside the admin functions below.
+create or replace function public.player_account_names()
+returns table (k text, user_id uuid)
 language sql
 stable
 security definer
 set search_path = ''
 as $$
-  select p.id, p.user_id, pr.name
-  from public.event_players p
-  join public.event_tables t on t.id = p.table_id
-  left join public.profiles pr on pr.user_id = p.user_id
-  where public.is_admin() and t.event_id = p_event and p.user_id is not null;
+  with keys as (
+    select lower(trim(p.name)) as k, p.user_id from public.event_players p where p.user_id is not null
+    union
+    select lower(trim(n)), pr.user_id from public.profiles pr, unnest(array_append(pr.aliases, pr.name)) n
+  )
+  select keys.k, (array_agg(keys.user_id))[1]
+  from keys
+  where keys.k <> ''
+  group by keys.k
+  having count(distinct keys.user_id) = 1;
+$$;
+revoke execute on function public.player_account_names() from public, anon, authenticated;
+
+-- Signing up (opening or joining a table) under a name that belongs to a player account — its nickname, an alias,
+-- or a name it used when signed in — needs that account to be signed in (error HVE09), so a player's sign-ups stay
+-- theirs. Admins may use any name. (Adding someone at the table, by the host or an admin, isn't checked.)
+create or replace function public.event_name_guard(p_name text)
+returns void
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $$
+declare
+  k text := lower(trim(coalesce(p_name, '')));
+begin
+  if k = '' or public.is_admin() then
+    return;
+  end if;
+  if exists (
+    select 1 from (
+      select p.user_id from public.event_players p where p.user_id is not null and lower(trim(p.name)) = k
+      union
+      select pr.user_id from public.profiles pr, unnest(array_append(pr.aliases, pr.name)) n where lower(trim(n)) = k
+    ) owners
+    where owners.user_id is distinct from auth.uid()
+  ) and not exists (
+    select 1 from public.profiles pr, unnest(array_append(pr.aliases, pr.name)) n
+    where pr.user_id = auth.uid() and lower(trim(n)) = k
+  ) and not exists (
+    select 1 from public.event_players p where p.user_id = auth.uid() and lower(trim(p.name)) = k
+  ) then
+    raise exception 'this name belongs to a player account; sign in to use it' using errcode = 'HVE09';
+  end if;
+end;
+$$;
+revoke execute on function public.event_name_guard(text) from public, anon, authenticated;
+
+-- Whose sign-up this is. A player signs up for themselves (their account when signed in, else nobody's).
+-- Admins don't sign up themselves: they sign up other players. With p_user it's that player account (error HVE10
+-- if there's no such account); otherwise a name that belongs to exactly one account is linked to it, and any other
+-- name to no account.
+create or replace function public.event_signup_user(p_name text, p_user uuid)
+returns uuid
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $$
+begin
+  if not public.is_admin() then
+    return auth.uid();
+  end if;
+  if p_user is not null then
+    if not exists (select 1 from public.profiles where user_id = p_user) then
+      raise exception 'player account not found' using errcode = 'HVE10';
+    end if;
+    return p_user;
+  end if;
+  return (select n.user_id from public.player_account_names() n where n.k = lower(trim(coalesce(p_name, ''))));
+end;
+$$;
+revoke execute on function public.event_signup_user(text, uuid) from public, anon, authenticated;
+
+-- Admins only: which of an event's sign-ups belong to a player account, with that account's nickname.
+-- (Visitors can't read event_players.user_id; this is how the admin's "来玩的人" list marks 已注册 / 未注册.)
+-- by_name: made without signing in, matched to the account by name (see player_account_names).
+drop function if exists public.event_player_accounts(bigint);
+create or replace function public.event_player_accounts(p_event bigint)
+returns table (player_id bigint, user_id uuid, profile_name text, by_name boolean)
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  with m as (
+    select p.id, coalesce(p.user_id, n.user_id) as uid, p.user_id is null as by_name
+    from public.event_players p
+    join public.event_tables t on t.id = p.table_id
+    left join public.player_account_names() n on p.user_id is null and n.k = lower(trim(p.name))
+    where public.is_admin() and t.event_id = p_event
+  )
+  select m.id, m.uid, pr.name, m.by_name
+  from m left join public.profiles pr on pr.user_id = m.uid
+  where m.uid is not null;
 $$;
 revoke execute on function public.event_player_accounts(bigint) from public, anon;
 grant execute on function public.event_player_accounts(bigint) to authenticated;
 
 -- Admins only: everyone who ever signed up for an event, across all events (events.html?players).
--- A sign-up made from a player account counts as that account (registered); other sign-ups are grouped by name
+-- Sign-ups belong to a player account (registered) when made while signed in, or when made without signing in
+-- under a name that belongs to exactly one account (see player_account_names). The rest are grouped by name
 -- (ignoring case and spaces). Player accounts that never signed up are listed too, with 0 events.
--- name: the name they used most recently; events: how many different events; signups: how many tables joined.
+-- name: the name they used most recently; events: how many different events; signups: how many tables joined;
+-- guest_signups: how many of those were made without signing in.
+drop function if exists public.admin_player_roster();
 create or replace function public.admin_player_roster()
-returns table (user_id uuid, profile_name text, name text, events bigint, signups bigint, first_date date, last_date date)
+returns table (user_id uuid, profile_name text, name text, events bigint, signups bigint, guest_signups bigint, first_date date, last_date date)
 language sql
 stable
 security definer
 set search_path = ''
 as $$
   with s as (
-    select p.user_id, lower(trim(p.name)) as k, trim(p.name) as name, e.id as eid, e.event_date, p.joined_at
+    select coalesce(p.user_id, n.user_id) as uid, p.user_id is null as guest, lower(trim(p.name)) as k, trim(p.name) as name,
+           e.id as eid, e.event_date, p.joined_at
     from public.event_players p
     join public.event_tables t on t.id = p.table_id
     join public.events e on e.id = t.event_id
+    left join public.player_account_names() n on p.user_id is null and n.k = lower(trim(p.name))
     where public.is_admin()
   ), g as (
-    select (array_agg(s.user_id))[1] as uid,
+    select (array_agg(s.uid))[1] as uid,
            (array_agg(s.name order by s.event_date desc, s.joined_at desc))[1] as name,
-           count(distinct s.eid) as events, count(*) as signups, min(s.event_date) as first_date, max(s.event_date) as last_date
+           count(distinct s.eid) as events, count(*) as signups, count(*) filter (where s.guest) as guest_signups,
+           min(s.event_date) as first_date, max(s.event_date) as last_date
     from s
-    group by coalesce(s.user_id::text, 'n:' || s.k)
+    group by coalesce(s.uid::text, 'n:' || s.k)
   )
-  select g.uid, pr.name, g.name, g.events, g.signups, g.first_date, g.last_date
+  select g.uid, pr.name, g.name, g.events, g.signups, g.guest_signups, g.first_date, g.last_date
   from g left join public.profiles pr on pr.user_id = g.uid
   union all
-  select pr.user_id, pr.name, pr.name, 0, 0, null, null
+  select pr.user_id, pr.name, pr.name, 0, 0, 0, null, null
   from public.profiles pr
-  where public.is_admin() and not exists (select 1 from public.event_players p where p.user_id = pr.user_id);
+  where public.is_admin() and not exists (select 1 from g where g.uid = pr.user_id);
 $$;
 revoke execute on function public.admin_player_roster() from public, anon;
 grant execute on function public.admin_player_roster() to authenticated;

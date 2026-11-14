@@ -48,6 +48,24 @@
       isReg: "已注册",
       isGuest: "未注册",
       regAs: "账号：{name}",
+      homeLink: "主页 ›",
+      playerNameAdmin: "玩家名字",
+      playerNameAdminPh: "输入名字，或从下面选择",
+      adminSignupHint: "管理员不会加入活动，这里是帮其他玩家报名。",
+      suggestTitle: "符合的玩家（点一下选择）：",
+      suggestRecent: "最近来过的玩家（点一下选择）：",
+      suggestLoading: "正在加载玩家名单…",
+      suggestNone: "名单里没有这个名字，会作为新的未注册玩家报名。",
+      linkPicked: "✓ 会关联到已注册玩家「{name}」",
+      linkAuto: "✓ 会自动关联到已注册玩家「{name}」",
+      linkMany: "有 {n} 位已注册玩家叫这个名字，请从上面选一位。",
+      linkGuest: "未注册玩家，不关联账号。",
+      needPick: "有多位已注册玩家叫这个名字，请从列表里选一位。",
+      errNoAccount: "没有找到这个玩家账号，请重新选择。",
+      errNameTaken: "「{name}」是已注册玩家的名字。如果是你，请先登录再报名；如果不是你，请换一个名字。",
+      loginToSignUp: "👤 登录后报名",
+      byName: "没登录报名，按名字对上了这个账号",
+      guestTimes: "其中 {n} 次没登录",
       accLoading: "正在查看哪些玩家已注册…",
       accFailed: "没能查到注册情况：{msg}",
       fEmpty: "这一类里没有人。",
@@ -275,7 +293,7 @@
       staffBtn: "👥 负责人",
       playersBtn: "📋 玩家名单",
       playersTitle: "玩家总名单",
-      playersHint: "所有活动里报过名的玩家，每人一行，只有管理员能看到。用玩家账号报名的算已注册，其他按名字合并（不分大小写）。注册了但还没报过名的账号也会列出来。",
+      playersHint: "所有活动里报过名的玩家，每人一行，只有管理员能看到。用玩家账号报名的算已注册；没登录报名的，名字和某个账号的昵称、别名或用过的名字一样，也算进那个账号。其他按名字合并（不分大小写）。注册了但还没报过名的账号也会列出来。",
       playersOnly: "玩家名单只有管理员可以查看，请先登录。",
       playersSearch: "搜索名字",
       playersEvents: "参加 {n} 次活动",
@@ -382,6 +400,24 @@
       isReg: "registered",
       isGuest: "not registered",
       regAs: "Account: {name}",
+      homeLink: "Profile ›",
+      playerNameAdmin: "Player's name",
+      playerNameAdminPh: "Type a name, or pick one below",
+      adminSignupHint: "Admins don't join events: this signs up another player.",
+      suggestTitle: "Matching players (tap to pick):",
+      suggestRecent: "Recent players (tap to pick):",
+      suggestLoading: "Loading players…",
+      suggestNone: "No one by this name yet: they'll be signed up as a new unregistered player.",
+      linkPicked: "✓ Linked to registered player \"{name}\"",
+      linkAuto: "✓ Will be linked to registered player \"{name}\"",
+      linkMany: "{n} registered players have this name. Please pick one above.",
+      linkGuest: "Not registered: no account linked.",
+      needPick: "Several registered players have this name. Please pick one from the list.",
+      errNoAccount: "That player account wasn't found. Please pick again.",
+      errNameTaken: "\"{name}\" is a registered player's name. If that's you, please sign in first; if not, please use another name.",
+      loginToSignUp: "👤 Sign in to sign up",
+      byName: "Signed up without signing in; matched to this account by name",
+      guestTimes: "{n} without signing in",
       accLoading: "Checking who has an account…",
       accFailed: "Couldn't check accounts: {msg}",
       fEmpty: "Nobody in this group.",
@@ -605,7 +641,7 @@
       staffBtn: "👥 Organizers",
       playersBtn: "📋 Players",
       playersTitle: "All players",
-      playersHint: "Everyone who signed up for any event, one line each. Admins only. Sign-ups made from a player account count as registered; the rest are grouped by name (ignoring case). Accounts that never signed up are listed too.",
+      playersHint: "Everyone who signed up for any event, one line each. Admins only. Sign-ups made from a player account count as registered, and so do sign-ups without signing in under a name that matches an account's nickname, alias or a name it used. The rest are grouped by name (ignoring case). Accounts that never signed up are listed too.",
       playersOnly: "Only admins can see the players list. Please sign in.",
       playersSearch: "Search names",
       playersEvents: "{n} events",
@@ -807,6 +843,8 @@
     if (code === "HVE06") return tr("needLead");
     if (code === "HVE07") return tr("errJoined");
     if (code === "HVE08") return tr("cantDelete");
+    if (code === "HVE09") return tr("errNameTaken", { name: (D && D.name) || "" });
+    if (code === "HVE10") return tr("errNoAccount");
     if (code === "HVG01") return tr("errStartHost");
     if (code === "HVG02") return tr("errNotToday");
     if (code === "HVG03") return tr("customNoRecord");
@@ -1270,12 +1308,17 @@
             const name = r.name || r.profile_name || "";
             const nick = reg && r.profile_name && nameKey(r.profile_name) !== nameKey(name) ? ` <small>(${esc(r.profile_name)})</small>` : "";
             const meta = Number(r.signups)
-              ? [tr("playersEvents", { n: r.events }), tr("playersSignups", { n: r.signups }), r.last_date ? tr("playersLast", { d: fmtDate(r.last_date) }) : ""]
+              ? [
+                  tr("playersEvents", { n: r.events }),
+                  tr("playersSignups", { n: r.signups }),
+                  reg && Number(r.guest_signups) ? tr("guestTimes", { n: r.guest_signups }) : "",
+                  r.last_date ? tr("playersLast", { d: fmtDate(r.last_date) }) : "",
+                ]
                   .filter(Boolean)
                   .join(" · ")
               : tr("playersNever");
-            const title = reg ? `<a href="profile.html?u=${encodeURIComponent(r.user_id)}"><b>${esc(name)}</b></a>` : `<b>${esc(name)}</b>`;
-            return `<li>${title}${nick} <span class="ev-acc ${reg ? "is-reg" : "is-guest"}">${esc(tr(reg ? "isReg" : "isGuest"))}</span><br><small class="ev-hint">${esc(meta)}</small></li>`;
+            const home = reg ? `<a class="ev-home" href="profile.html?u=${encodeURIComponent(r.user_id)}">${esc(tr("homeLink"))}</a>` : "";
+            return `<li><div class="ev-roster-row"><span><b>${esc(name)}</b>${nick} <span class="ev-acc ${reg ? "is-reg" : "is-guest"}">${esc(tr(reg ? "isReg" : "isGuest"))}</span><br><small class="ev-hint">${esc(meta)}</small></span>${home}</div></li>`;
           })
           .join("")
       : `<li class="ev-empty">${esc(tr("playersNone"))}</li>`;
@@ -1336,7 +1379,12 @@
     if (dlg.open) dlg.close();
   }
   const head = (title) => `<div class="ev-sheet-head"><h2 id="ev-dlg-title">${esc(title)}</h2><button class="ev-close" type="button" data-close aria-label="${esc(tr("close"))}">✕</button></div>`;
-  const errLine = () => `<p class="form-error" role="alert">${esc(D.err || "")}</p>`;
+  // The error under a form. A name that belongs to a player account (HVE09) also gets a sign-in button that comes back here.
+  const errLine = () =>
+    `<p class="form-error" role="alert">${esc(D.err || "")}</p>` +
+    (D.errCode === "HVE09"
+      ? `<p><a class="btn ghost btn-sm ev-login-link" href="account.html?next=${encodeURIComponent(location.pathname.split("/").pop() + location.search)}">${esc(tr("loginToSignUp"))}</a></p>`
+      : "");
   function renderDialog() {
     if (!D) return;
     if (D.mode === "open" && D.step === "pick") return renderPick();
@@ -1392,7 +1440,12 @@
       ? `<div class="ev-chosen"><img src="${esc(HVMedia.imageUrl(g.image))}" alt="" onerror="this.src='images/placeholder.svg'"><span><b>${esc(gameLabel(g))}</b>${g.players ? `<small>${esc(tr("players", { p: g.players }))}</small>` : ""}</span><button class="link-btn" type="button" data-change-game>${esc(tr("change"))}</button></div>`
       : `<div class="ev-chosen"><span class="ev-thumb ev-thumb-icon" aria-hidden="true">🎲</span><span><b>${esc(D.game.custom)}</b><small>${esc(tr("custom"))}</small></span><button class="link-btn" type="button" data-change-game>${esc(tr("change"))}</button></div>`;
   }
-  const nameField = () => `<label class="ev-field"><span>${esc(tr("yourName"))}</span><input name="name" maxlength="30" autocomplete="nickname" placeholder="${esc(tr("namePh"))}" value="${esc(D.name)}" required${D.name ? "" : " autofocus"}></label>`;
+  // Admins sign up other players: a name box with matching players from all events to pick from (js below).
+  const nameField = () => (isAdmin ? adminNameField() : ownNameField());
+  const adminNameField = () => `<p class="ev-hint">${esc(tr("adminSignupHint"))}</p>
+    <label class="ev-field"><span>${esc(tr("playerNameAdmin"))}</span><input name="name" maxlength="30" autocomplete="off" placeholder="${esc(tr("playerNameAdminPh"))}" value="${esc(D.name || "")}" required${D.name ? "" : " autofocus"}></label>
+    <div id="ev-suggest">${suggestHtml()}</div>`;
+  const ownNameField = () => `<label class="ev-field"><span>${esc(tr("yourName"))}</span><input name="name" maxlength="30" autocomplete="nickname" placeholder="${esc(tr("namePh"))}" value="${esc(D.name)}" required${D.name ? "" : " autofocus"}></label>`;
   function renderOpenForm() {
     dlg.innerHTML = `${head(tr("openNew"))}
       <form class="ev-form" data-open-form novalidate>
@@ -1632,9 +1685,11 @@
         const badge = k
           ? ` <span class="ev-acc ${k === "reg" ? "is-reg" : "is-guest"}">${esc(tr(k === "reg" ? "isReg" : "isGuest"))}</span>`
           : "";
+        // Matched by name only: every one of this person's sign-ups was made without signing in.
+        const byName = u && a.players.every((id) => !acc.get(id) || acc.get(id).by_name);
         const link =
           u && u.user_id
-            ? `<br><small class="ev-hint"><a href="profile.html?u=${encodeURIComponent(u.user_id)}">${esc(tr("regAs", { name: u.profile_name || a.name || "" }))}</a></small>`
+            ? `<br><small class="ev-hint">${esc(tr("regAs", { name: u.profile_name || a.name || "" }))}${byName ? ` · ${esc(tr("byName"))}` : ""}</small> <a class="ev-home" href="profile.html?u=${encodeURIComponent(u.user_id)}">${esc(tr("homeLink"))}</a>`
             : "";
         const at = a.tables.map((id) => games.get(id)).filter(Boolean);
         return `<li><b>${name}</b>${tag}${badge}${at.length ? `<br><small class="ev-hint">${esc(at.join("、"))}</small>` : ""}${link}</li>`;
@@ -1692,6 +1747,67 @@
       flash = { text: tr("extraSaved"), ok: true };
     });
   }
+  // ---------- admins signing up other players ----------
+  let adminRoster = null; // everyone from all events (HVLoans.playerRoster), loaded when an admin first signs someone up
+  let adminRosterLoading = null;
+  function loadAdminRoster() {
+    if (adminRoster || adminRosterLoading) return;
+    adminRosterLoading = HVLoans.playerRoster()
+      .then((rows) => {
+        adminRoster = rows.map((r) => ({ ...r, label: r.profile_name || r.name || "" }));
+      })
+      .catch(() => {
+        adminRoster = [];
+      })
+      .then(() => {
+        adminRosterLoading = null;
+        if (D && (D.mode === "open" || D.mode === "join") && $("ev-suggest")) $("ev-suggest").innerHTML = suggestHtml();
+      });
+  }
+  // Registered players whose nickname or a name they used is exactly this name.
+  function registeredNamed(name) {
+    const k = nameKey(name);
+    if (!k || !adminRoster) return [];
+    return adminRoster.filter((r) => r.user_id && (nameKey(r.name) === k || nameKey(r.profile_name) === k));
+  }
+  function suggestHtml() {
+    if (!adminRoster) return `<p class="ev-hint">${esc(tr("suggestLoading"))}</p>`;
+    const q = nameKey(D.name);
+    const sorted = [...adminRoster].sort(
+      (a, b) => Boolean(b.user_id) - Boolean(a.user_id) || (b.last_date || "").localeCompare(a.last_date || "") || a.label.localeCompare(b.label)
+    );
+    const hits = (q ? sorted.filter((r) => [r.name, r.profile_name].some((n) => n && nameKey(n).includes(q))) : sorted).slice(0, 12);
+    const chips = hits
+      .map((r) => {
+        const on = D.user ? D.user === r.user_id : false;
+        const other = r.user_id && r.name && nameKey(r.name) !== nameKey(r.label) ? ` <small>(${esc(r.name)})</small>` : "";
+        return `<button type="button" class="ev-suggest-chip${on ? " is-on" : ""}" data-pick-player="${esc(r.user_id || "")}" data-pick-name="${esc(r.label)}">${esc(r.label)}${other} <span class="ev-acc ${r.user_id ? "is-reg" : "is-guest"}">${esc(tr(r.user_id ? "isReg" : "isGuest"))}</span></button>`;
+      })
+      .join("");
+    let status = "";
+    const typed = String(D.name || "").trim();
+    if (D.user) status = tr("linkPicked", { name: typed });
+    else if (typed) {
+      const reg = registeredNamed(typed);
+      status = reg.length === 1 ? tr("linkAuto", { name: reg[0].label }) : reg.length > 1 ? tr("linkMany", { n: reg.length }) : tr("linkGuest");
+    }
+    return `${hits.length ? `<p class="ev-hint">${esc(tr(q ? "suggestTitle" : "suggestRecent"))}</p><div class="ev-suggest">${chips}</div>` : q ? `<p class="ev-hint">${esc(tr("suggestNone"))}</p>` : ""}
+      ${status ? `<p class="ev-link-status${D.user || registeredNamed(typed).length === 1 ? " is-ok" : ""}">${esc(status)}</p>` : ""}`;
+  }
+  // The player account an admin's sign-up is for, or an error when the name is ambiguous.
+  function adminSignupUser() {
+    if (D.user) return { user: D.user };
+    const reg = registeredNamed(D.name);
+    if (reg.length > 1) return { err: tr("needPick") };
+    return { user: reg.length === 1 ? reg[0].user_id : null };
+  }
+  // A new secret for each sign-up an admin makes, so the admin's own browser doesn't count it as theirs.
+  function freshToken() {
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    return [...bytes].map((b) => b.toString(16).padStart(2, "0")).join("");
+  }
+
   // A table's start time (its host or an admin).
   function renderTimeForm() {
     const t = ev && ev.event_tables.find((x) => x.id === D.table);
@@ -2127,7 +2243,8 @@
 
   function startOpen() {
     // The start time begins as the event's own start time; the host can change or clear it.
-    openDialog({ mode: "open", step: "pick", q: "", custom: "", game: null, onSite: true, time: ev && ev.start_time ? fmtTime(ev.start_time) : "", max: "", note: "", name: myName(), err: "" });
+    if (isAdmin) loadAdminRoster();
+    openDialog({ mode: "open", step: "pick", q: "", custom: "", game: null, onSite: true, time: ev && ev.start_time ? fmtTime(ev.start_time) : "", max: "", note: "", name: isAdmin ? "" : myName(), user: null, err: "" });
   }
   function chooseGame(game) {
     const g = game.id && gameById(game.id);
@@ -2149,6 +2266,7 @@
     if (busy) return;
     busy = true;
     D.err = "";
+    D.errCode = "";
     renderDialog();
     try {
       await fn();
@@ -2159,6 +2277,7 @@
       busy = false;
       if (D) {
         D.err = errText(err);
+        D.errCode = err.code || "";
         renderDialog();
       }
       if (err.code === "HVE02" || err.code === "HVE01") load();
@@ -2171,6 +2290,8 @@
     const max = String(D.max ?? "").trim();
     if (name && max && !/^\d+$/.test(max)) D.err = tr("badMax");
     else if (name && max && (Number(max) < 1 || Number(max) > 30)) D.err = tr("badMax");
+    const who = isAdmin && name && !D.err ? adminSignupUser() : { user: null };
+    if (who.err) D.err = who.err;
     if (!name || D.err) return renderDialog();
     const g = D.game.id && gameById(D.game.id);
     const gameName = g ? (typeof g.name === "string" ? g.name : g.name.zh || g.name.en) : D.game.custom;
@@ -2179,10 +2300,13 @@
         EVENT_ID,
         { game_id: g ? g.id : null, game_name: gameName, on_site: D.onSite, max_players: max ? Number(max) : null, note: D.note, start_time: D.time || null },
         name,
-        token()
+        isAdmin ? freshToken() : token(),
+        who.user
       );
-      store.set("hv-event-name", name);
-      rememberMine(r.player_id);
+      if (!isAdmin) {
+        store.set("hv-event-name", name);
+        rememberMine(r.player_id);
+      }
       flash = null;
     });
   }
@@ -2190,11 +2314,16 @@
     readForm();
     D.err = "";
     const name = checkName();
-    if (!name) return renderDialog();
+    const who = isAdmin && name ? adminSignupUser() : { user: null };
+    if (who.err) D.err = who.err;
+    if (!name || D.err) return renderDialog();
     await submit(async () => {
-      const id = await HVLoans.joinTable(D.table, name, token());
-      store.set("hv-event-name", name);
-      rememberMine(id);
+      if (isAdmin) await HVLoans.joinTable(D.table, name, freshToken(), who.user);
+      else {
+        const id = await HVLoans.joinTable(D.table, name, token());
+        store.set("hv-event-name", name);
+        rememberMine(id);
+      }
       flash = null;
     });
   }
@@ -2374,7 +2503,10 @@
     }
     if (b.hasAttribute("data-open-table")) return startOpen();
     const tableOf = (id) => ev.event_tables.find((t) => t.id === Number(id));
-    if (b.dataset.join) return openDialog({ mode: "join", table: Number(b.dataset.join), name: myName(), err: "" });
+    if (b.dataset.join) {
+      if (isAdmin) loadAdminRoster();
+      return openDialog({ mode: "join", table: Number(b.dataset.join), name: isAdmin ? "" : myName(), user: null, err: "" });
+    }
     if (b.dataset.leave) {
       const t = tableOf(b.dataset.table);
       const pid = Number(b.dataset.leave);
@@ -2514,6 +2646,16 @@
     if (e.target.closest("[data-close]") || (e.target === dlg && D && D.mode === "qr")) return closeDialog();
     if (e.target.closest("[data-tpl-save]") && D) return void saveTemplate();
     if (e.target.closest("[data-start-add]") && D) return void startAdd();
+    const pick = e.target.closest("[data-pick-player]");
+    if (pick && D && (D.mode === "open" || D.mode === "join")) {
+      readForm();
+      D.name = pick.dataset.pickName;
+      D.user = pick.dataset.pickPlayer || null;
+      const input = dlg.querySelector("input[name=name]");
+      if (input) input.value = D.name;
+      $("ev-suggest").innerHTML = suggestHtml();
+      return;
+    }
     const pf = e.target.closest("[data-people-filter]");
     if (pf && D && D.mode === "people") {
       readForm();
@@ -2551,6 +2693,11 @@
       D.q = e.target.value;
       $("ev-pick-list").innerHTML = pickList();
     } else if (e.target.id === "ev-custom-in") D.custom = e.target.value;
+    else if (isAdmin && e.target.name === "name" && (D.mode === "open" || D.mode === "join") && $("ev-suggest")) {
+      D.name = e.target.value;
+      D.user = null; // typed by hand: linked again by name when saved
+      $("ev-suggest").innerHTML = suggestHtml();
+    }
   });
   dlg.addEventListener("submit", (e) => {
     e.preventDefault();

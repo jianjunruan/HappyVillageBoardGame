@@ -152,14 +152,26 @@ Re-run `supabase/schema.sql` once more for this. It adds the **staff** and **eve
 - **The number** on the event cards, the event page and the home page counts people, not seats: someone at two tables counts once (same name, ignoring case and spaces). The organizers count too, once each, even if they also joined a table.
 - **Friends who didn't sign up:** on the event page, admins click **👥 共 N 人参加** and enter how many came without signing up (0–200). That number is added to the total.
 - **The list:** anyone can click the number to see everyone coming: the organizers first, then each player with the tables they joined, then how many friends were added. On past events visitors see organizers as "名字不公开", because their names are hidden after the event.
-- **Registered or not (admins):** in that list admins also see **全部 / 已注册 / 未注册** filters and a tag on each player. 已注册 means they signed up while signed in to a player account; the line under them links to that account's profile. Organizers who didn't join a table have no tag. Re-run `supabase/schema.sql` once for this: it adds the admin-only `event_player_accounts` function. Until then the list shows "没能查到注册情况" for admins, and everything else works as before.
+- **Registered or not (admins):** in that list admins also see **全部 / 已注册 / 未注册** filters and a tag on each player. 已注册 means they signed up while signed in to a player account, or under a name that belongs to one (same rule as the players list, marked "没登录报名，按名字对上了这个账号"); **主页 ›** opens that account's profile. Organizers who didn't join a table have no tag. Re-run `supabase/schema.sql` once for this: it adds the admin-only `event_player_accounts` function. Until then the list shows "没能查到注册情况" for admins, and everything else works as before.
 
 ### All players (玩家总名单)
 Admins open it with the **📋 玩家名单** button on the events page (`events.html?players`). It lists everyone who ever signed up for any event, one line each, with how many events they came to, how many tables they joined and their most recent event. Most recent first.
 - **全部 / 已注册 / 未注册** filters and a name search (it also finds account nicknames).
-- **已注册:** the sign-ups were made while signed in to a player account. Each account is one line; the name shown is the one they used most recently, with the account nickname in brackets if it's different. Tap the name to open their profile. Accounts that never signed up are listed too ("还没报过名").
-- **未注册:** sign-ups without an account, grouped by name (ignoring case and spaces). Someone who sometimes signs up while signed in and sometimes not shows up twice, once in each group.
+- **已注册:** sign-ups made while signed in to a player account, plus sign-ups made without signing in under a name (ignoring case and spaces) that is that account's nickname, one of its aliases, or a name it used when signed in. A name that matches two accounts goes to neither. Each account is one line, showing the name they used most recently (the nickname in brackets if different) and "其中 N 次没登录" for the sign-ups matched by name. **主页 ›** opens their profile. Accounts that never signed up are listed too ("还没报过名").
+- **未注册:** the remaining sign-ups, grouped by name (ignoring case and spaces).
+- Two different people with exactly the same name as an account are counted as that account; give one of them a different name if that matters.
 - Re-run `supabase/schema.sql` once for this: it adds the admin-only `admin_player_roster` function. Visitors and players can't call it.
+
+### Registered names need signing in
+Opening or joining a table under a name that belongs to a player account (its nickname, an alias, or a name it used when signed in; ignoring case and spaces) only works when signed in to that account. Otherwise the database refuses (error HVE09) and the form says the name is a registered player's, with a **👤 登录后报名** button that comes back to the event after signing in. Admins can use any name, and adding someone at a table (by the host or an admin) isn't checked. Re-run `supabase/schema.sql` once for this (it adds `event_name_guard` and calls it from `open_event_table` and `join_event_table`).
+
+### Admins sign up other players
+Admins never join an event themselves. When an admin opens or joins a table, the form asks for the **玩家名字** of the player they're signing up, and shows players from all events to pick from: recent players when the box is empty, or everyone whose name or nickname contains what's typed, each tagged 已注册 / 未注册.
+- **Picking a registered player** links the sign-up to their account.
+- **Typing a name** that belongs to exactly one account (nickname, alias or a name it used) links it automatically; the form says so. When several registered players have that name, the admin has to pick one.
+- Any other name is signed up as an unregistered player.
+- The admin's sign-ups get their own browser secret, so they don't show as the admin's own ("我"); admins can still remove them.
+- In the database: `open_event_table` and `join_event_table` take an optional `p_user` (only used for admins), and `event_signup_user` decides whose sign-up it is. **Re-run `supabase/schema.sql` for this.**
 
 ## Player accounts and profiles (注册 / 玩家主页)
 Players can create their own accounts. Re-run `supabase/schema.sql` once: it adds the **profiles** table, links event sign-ups to accounts, and adds the functions behind the profile page. Player accounts use the same Supabase Auth as admins. Only accounts listed in `public.admins` get admin tools; a player who signs in sees none.
