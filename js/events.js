@@ -32,6 +32,16 @@
       tables: "{n} 桌",
       people: "{n} 人参加",
       headcount: "👥 共 {n} 人参加",
+      peopleTitle: "来玩的人（{n}）",
+      peopleStaff: "负责人",
+      peopleHidden: "负责人（名字不公开）",
+      peopleExtra: "另外 {n} 位没报名的朋友",
+      peopleNone: "还没有人报名。",
+      extraField: "没报名的朋友（人数）",
+      extraHint: "有人带朋友来、朋友没在网上报名时，在这里填人数，会算进总人数。",
+      extraSave: "💾 保存人数",
+      badExtra: "请填 0 到 200 之间的整数。",
+      extraSaved: "✓ 人数已更新",
       noTables: "还没有人开桌",
       newEvent: "＋ 发布活动",
       editEvent: "编辑活动",
@@ -337,6 +347,16 @@
       tables: "{n} tables",
       people: "{n} people coming",
       headcount: "👥 {n} people coming",
+      peopleTitle: "Who's coming ({n})",
+      peopleStaff: "organizer",
+      peopleHidden: "Organizer (name not shown)",
+      peopleExtra: "Plus {n} friends who didn't sign up",
+      peopleNone: "Nobody has signed up yet.",
+      extraField: "Friends who didn't sign up",
+      extraHint: "When someone brings friends who didn't sign up online, enter how many here. They're added to the total.",
+      extraSave: "💾 Save",
+      badExtra: "Please enter a whole number from 0 to 200.",
+      extraSaved: "✓ Headcount updated",
       noTables: "No tables yet",
       newEvent: "+ New event",
       editEvent: "Edit event",
@@ -1185,7 +1205,7 @@
         <h2>${esc(ev.title)}</h2>
         <p class="ev-when">📅 ${esc(fmtDate(ev.event_date, true))}${ev.start_time ? ` · 🕒 ${esc(timeRange(ev))}` : ""} <span class="ev-rel ${rel.cls}">${esc(rel.text)}</span></p>
         ${placeLine(ev)}
-        <p class="ev-when">${esc(tr("headcount", { n: HVLoans.headcount(ev) }))}</p>
+        <p class="ev-when"><button class="link-btn ev-count" type="button" data-people>${esc(tr("headcount", { n: HVLoans.headcount(ev) }))}</button></p>
         ${ev.description ? `<div class="ev-desc rt-content">${HVRich.html(ev.description)}</div>` : ""}
         ${isAdmin ? `<p class="ev-admin-row"><button class="link-btn" type="button" data-edit-event>${esc(tr("editEvent"))}</button><button class="link-btn" type="button" data-delete-event>${esc(tr("deleteEvent"))}</button></p>` : ""}
       </section>
@@ -1230,6 +1250,7 @@
     if (D.mode === "start") return renderStartForm();
     if (D.mode === "add") return renderAddForm();
     if (D.mode === "score") return renderScoreForm();
+    if (D.mode === "people") return renderPeople();
   }
 
   const norm = (s) => String(s || "").toLowerCase().replace(/[\s·:：\-–—'’!！?？.,，、()（）]/g, "");
@@ -1483,6 +1504,50 @@
         ${errLine()}
         <div class="form-actions"><button class="btn ghost" type="button" data-close>${esc(tr("cancel"))}</button><button class="btn" type="submit"${busy ? " disabled" : ""}>${esc(busy ? tr("saving") : tr("staffSave"))}</button></div>
       </form>`;
+  }
+  // Everyone coming to the event, each person once (organizers first), plus friends who didn't sign up.
+  // Admins can change that number of friends here.
+  function renderPeople() {
+    if (!ev) return closeDialog();
+    const list = HVLoans.attendees(ev);
+    const extra = ev.extra_people || 0;
+    const games = new Map(ev.event_tables.map((t) => [t.id, tableName(t)]));
+    const rows = list
+      .map((a) => {
+        const name = a.name != null ? esc(a.name) : esc(tr("peopleHidden"));
+        const tag = a.staff && a.name != null ? ` <small>· ${esc(tr("peopleStaff"))}</small>` : "";
+        const at = a.tables.map((id) => games.get(id)).filter(Boolean);
+        return `<li><b>${name}</b>${tag}${at.length ? `<br><small class="ev-hint">${esc(at.join("、"))}</small>` : ""}</li>`;
+      })
+      .join("");
+    dlg.innerHTML = `${head(tr("peopleTitle", { n: HVLoans.headcount(ev) }))}
+      ${list.length ? `<ol class="ev-people">${rows}</ol>` : extra ? "" : `<p class="ev-empty">${esc(tr("peopleNone"))}</p>`}
+      ${extra ? `<p class="ev-hint">${esc(tr("peopleExtra", { n: extra }))}</p>` : ""}
+      ${
+        isAdmin
+          ? `<form class="ev-form" data-people-form novalidate>
+        <label class="ev-field"><span>${esc(tr("extraField"))}</span><input name="extra" type="number" min="0" max="200" step="1" inputmode="numeric" value="${esc(D.extra ?? extra)}"></label>
+        <p class="ev-hint">${esc(tr("extraHint"))}</p>
+        ${errLine()}
+        <div class="form-actions"><button class="btn ghost" type="button" data-close>${esc(tr("close"))}</button><button class="btn" type="submit"${busy ? " disabled" : ""}>${esc(busy ? tr("saving") : tr("extraSave"))}</button></div>
+      </form>`
+          : `<div class="form-actions"><button class="btn ghost" type="button" data-close autofocus>${esc(tr("close"))}</button></div>`
+      }`;
+  }
+  async function submitPeople() {
+    readForm();
+    D.err = "";
+    const raw = String(D.extra ?? "").trim();
+    const n = raw === "" ? 0 : Number(raw);
+    if (!/^\d*$/.test(raw) || n > 200) {
+      D.err = tr("badExtra");
+      return renderDialog();
+    }
+    const id = ev.id;
+    await submit(async () => {
+      await HVLoans.setExtraPeople(id, n);
+      flash = { text: tr("extraSaved"), ok: true };
+    });
   }
   // A table's start time (its host or an admin).
   function renderTimeForm() {
@@ -1822,6 +1887,7 @@
     if (D.mode === "open") Object.assign(D, { onSite: v("site") === "1", time: v("time"), max: v("max"), note: v("note"), name: v("name") });
     if (D.mode === "join") D.name = v("name");
     if (D.mode === "time") D.time = v("time");
+    if (D.mode === "people") D.extra = v("extra");
     if (D.mode === "leave") D.next = (f.querySelector("input[name=next]:checked") || {}).value || "";
     if (D.mode === "host") D.host = (f.querySelector("input[name=host]:checked") || {}).value || "";
     if (D.mode === "wish") Object.assign(D, { name: v("name"), title: v("title"), desc: v("desc") });
@@ -2110,6 +2176,7 @@
       return void load();
     }
     if (b.dataset.copy != null) return copyText(b);
+    if (b.hasAttribute("data-people")) return openDialog({ mode: "people" });
     if (b.dataset.qr) return openDialog({ mode: "qr", url: b.dataset.qr, title: b.dataset.qrTitle });
     if (b.hasAttribute("data-signin")) {
       $("login-error").textContent = "";
@@ -2349,6 +2416,7 @@
     if (f.hasAttribute("data-start-form")) return void submitStart();
     if (f.hasAttribute("data-add-form")) return void submitAdd();
     if (f.hasAttribute("data-score-form")) return void submitScores();
+    if (f.hasAttribute("data-people-form")) return void submitPeople();
   });
   // "close" arrives a moment later, so ignore it if another dialog has been opened since.
   dlg.addEventListener("cancel", (e) => {

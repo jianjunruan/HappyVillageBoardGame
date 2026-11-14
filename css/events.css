@@ -29,6 +29,9 @@
 .ev-card-body { display: grid; gap: 4px; min-width: 0; }
 .ev-card-title { font-weight: 700; font-size: 1.1rem; }
 .ev-when { color: var(--muted); font-size: 0.92rem; margin: 0; }
+.ev-count { font-weight: 600; }
+.ev-people { margin: 0 0 12px; padding-left: 1.6em; max-height: 50vh; overflow-y: auto; }
+.ev-people li { padding: 4px 0; overflow-wrap: anywhere; }
 .ev-rel { display: inline-block; margin-left: 4px; padding: 0 9px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; background: var(--accent-soft); color: var(--accent); }
 .ev-rel.is-today { background: var(--ok); color: #fff; }
 .ev-rel.is-over { background: var(--border); color: var(--muted); }
