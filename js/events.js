@@ -1205,7 +1205,7 @@
         <h2>${esc(ev.title)}</h2>
         <p class="ev-when">📅 ${esc(fmtDate(ev.event_date, true))}${ev.start_time ? ` · 🕒 ${esc(timeRange(ev))}` : ""} <span class="ev-rel ${rel.cls}">${esc(rel.text)}</span></p>
         ${placeLine(ev)}
-        <p class="ev-when"><button class="link-btn ev-count" type="button" data-people>${esc(tr("headcount", { n: HVLoans.headcount(ev) }))}</button></p>
+        <p class="ev-when"><button class="ev-count" type="button" data-people>${esc(tr("headcount", { n: HVLoans.headcount(ev) }))}</button></p>
         ${ev.description ? `<div class="ev-desc rt-content">${HVRich.html(ev.description)}</div>` : ""}
         ${isAdmin ? `<p class="ev-admin-row"><button class="link-btn" type="button" data-edit-event>${esc(tr("editEvent"))}</button><button class="link-btn" type="button" data-delete-event>${esc(tr("deleteEvent"))}</button></p>` : ""}
       </section>
