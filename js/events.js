@@ -49,6 +49,41 @@
       isGuest: "未注册",
       regAs: "账号：{name}",
       homeLink: "主页 ›",
+      fbBtn: "📝 活动反馈",
+      fbEdit: "✓ 已提交反馈 · 修改",
+      fbHint: "说说你这次活动的感受吧。完全匿名，只有管理员能看到。",
+      fbClosesIn: "反馈开放到 {date}。",
+      fbTitle: "活动反馈",
+      fbAnon: "🔒 完全匿名：不记录名字和账号，只有管理员能看到。",
+      fbQ1: "这次活动整体体验如何？",
+      fbQ2: "你最喜欢这次活动的哪些部分？（可多选）",
+      fbQ3: "下次还会来吗？",
+      fbQ4: "有哪里可以做得更好？",
+      fbQ4Ph: "任何建议都欢迎（可不填）",
+      fbStar: "{n} 星",
+      like_games: "玩到的游戏",
+      like_people: "认识新朋友",
+      like_teaching: "规则讲解",
+      like_vibe: "气氛",
+      like_venue: "场地",
+      like_other: "其他",
+      again_yes: "一定会",
+      again_maybe: "可能会",
+      again_no: "不太会",
+      fbSubmit: "📝 提交反馈",
+      fbNeedRating: "请先给整体体验打个星。",
+      fbThanks: "✓ 谢谢你的反馈！",
+      fbClosed: "这个活动的反馈已经关闭了。",
+      fbBad: "反馈内容有误，请检查后再提交。",
+      fbBusy: "刚才提交的人太多了，请一分钟后再试。",
+      fbAdminBtn: "📊 查看反馈（{n}）",
+      fbAdminTitle: "活动反馈（{n} 份）",
+      fbAdminNone: "还没有人提交反馈。",
+      fbAvg: "平均 ⭐ {avg}",
+      fbComments: "可以做得更好的地方",
+      fbNoComments: "没有文字意见。",
+      fbCard: "{n} 份反馈 · ⭐{avg}",
+      fbAnswered: "{n} 人回答",
       playerNameAdmin: "玩家名字",
       playerNameAdminPh: "输入名字，或从下面选择",
       adminSignupHint: "管理员不会加入活动，这里是帮其他玩家报名。",
@@ -403,6 +438,41 @@
       isGuest: "not registered",
       regAs: "Account: {name}",
       homeLink: "Profile ›",
+      fbBtn: "📝 Event feedback",
+      fbEdit: "✓ Feedback sent · Change it",
+      fbHint: "Tell us how the event went. Fully anonymous; only admins can see it.",
+      fbClosesIn: "Feedback is open until {date}.",
+      fbTitle: "Event feedback",
+      fbAnon: "🔒 Fully anonymous: no name or account is saved, and only admins can see it.",
+      fbQ1: "How was the event overall?",
+      fbQ2: "What did you like most? (pick any)",
+      fbQ3: "Will you come again?",
+      fbQ4: "What could be better?",
+      fbQ4Ph: "Any suggestion is welcome (optional)",
+      fbStar: "{n} stars",
+      like_games: "The games",
+      like_people: "Meeting people",
+      like_teaching: "Rules teaching",
+      like_vibe: "The vibe",
+      like_venue: "The venue",
+      like_other: "Other",
+      again_yes: "Definitely",
+      again_maybe: "Maybe",
+      again_no: "Probably not",
+      fbSubmit: "📝 Send feedback",
+      fbNeedRating: "Please rate the event overall first.",
+      fbThanks: "✓ Thanks for your feedback!",
+      fbClosed: "Feedback for this event is closed.",
+      fbBad: "Something in the feedback isn't right. Please check it and send again.",
+      fbBusy: "Lots of feedback just now. Please try again in a minute.",
+      fbAdminBtn: "📊 View feedback ({n})",
+      fbAdminTitle: "Event feedback ({n})",
+      fbAdminNone: "No feedback yet.",
+      fbAvg: "Average ⭐ {avg}",
+      fbComments: "What could be better",
+      fbNoComments: "No written comments.",
+      fbCard: "{n} feedback · ⭐{avg}",
+      fbAnswered: "{n} answered",
       playerNameAdmin: "Player's name",
       playerNameAdminPh: "Type a name, or pick one below",
       adminSignupHint: "Admins don't join events: this signs up another player.",
@@ -847,6 +917,9 @@
     if (code === "HVE06") return tr("needLead");
     if (code === "HVE07") return tr("errJoined");
     if (code === "HVE08") return tr("cantDelete");
+    if (code === "HVF01") return tr("fbClosed");
+    if (code === "HVF02") return tr("fbBad");
+    if (code === "HVF03") return tr("fbBusy");
     if (code === "HVE09") return tr("errNameTaken", { name: (D && D.name) || "" });
     if (code === "HVE10") return tr("errNoAccount");
     if (code === "HVG01") return tr("errStartHost");
@@ -955,6 +1028,14 @@
       }
       else {
         ev = await HVLoans.event(EVENT_ID);
+        // This browser's feedback, while feedback is open (shows "已提交反馈 · 修改").
+        if (ev && fbOpen(ev)) {
+          try {
+            myFb = { event: ev.id, row: await HVLoans.myFeedback(ev.id, token()) };
+          } catch {
+            myFb = { event: null, row: null };
+          }
+        }
         // A signed-in player's sign-ups count as theirs on any device.
         if (ev && HVLoans.user) {
           try {
@@ -1004,6 +1085,7 @@
     else if (PLAYERS_VIEW) renderPlayersPage();
     else if (EVENT_ID == null) renderList();
     else renderEvent();
+    if (isAdmin && !STAFF_VIEW && !PLAYERS_VIEW) loadFbSummary(); // feedback counts for the cards / event page
     if (dlg.open) renderDialog();
   }
 
@@ -1025,6 +1107,7 @@
         ${e.location ? `<span class="ev-card-place">📍 ${esc(e.location)}</span>` : ""}
         ${e.description ? `<span class="ev-card-desc">${esc(HVRich.text(e.description))}</span>` : ""}
         <span class="ev-card-stats">${esc(stats(e))}</span>
+        ${isAdmin && fbSummary && fbSummary.get(e.id) ? `<span class="ev-card-fb">${esc(tr("fbCard", { n: fbSummary.get(e.id).answers, avg: Number(fbSummary.get(e.id).average).toFixed(1) }))}</span>` : ""}
         ${shown.length ? `<span class="ev-card-games">${shown.map((n) => `<span class="chip">${esc(n)}</span>`).join("")}${games.length > shown.length ? `<span class="chip">+${games.length - shown.length}</span>` : ""}</span>` : ""}
       </span>
     </a>`;
@@ -1359,6 +1442,7 @@
         ${isAdmin ? `<p class="ev-admin-row"><button class="link-btn" type="button" data-edit-event>${esc(tr("editEvent"))}</button><button class="link-btn" type="button" data-delete-event>${esc(tr("deleteEvent"))}</button></p>` : ""}
       </section>
       ${staffSection(ev)}
+      ${feedbackSection(ev)}
       <div class="ev-head">
         <h2>${esc(tr("openTables", { n: tables.length }))}</h2>
         ${over ? "" : `<button class="btn" type="button" data-open-table>${esc(tr("openNew"))}</button>`}
@@ -1366,6 +1450,127 @@
       ${flash ? `<p class="ev-msg ${flash.ok ? "is-ok" : "is-err"}" role="status">${esc(flash.text)}</p>` : ""}
       ${over ? `<p class="ev-empty">${esc(tr("overNote"))}</p>` : ""}
       ${tables.length ? `<div class="ev-tables">${tables.map((t) => tableCard(t, over)).join("")}</div>` : over ? "" : `<p class="ev-empty">${esc(tr("openFirst"))}</p>`}`;
+  }
+
+  // ---------- event feedback (活动反馈): anonymous, from the event's day until 7 days after; only admins read it ----------
+  const FB_LIKES = ["games", "people", "teaching", "vibe", "venue", "other"];
+  const FB_AGAIN = ["yes", "maybe", "no"];
+  const fbOpen = (e) => daysAway(e.event_date) <= 0 && daysAway(e.event_date) >= -7;
+  const fbCloses = (e) => {
+    const d = parseYmd(e.event_date);
+    d.setDate(d.getDate() + 7);
+    return fmtDate(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`);
+  };
+  let myFb = { event: null, row: null }; // this browser's feedback for the open event (loaded with it)
+  let fbSummary = null; // admins: Map(event id → { answers, average }) for the event cards
+  let fbSummaryLoading = false;
+  function loadFbSummary() {
+    if (!isAdmin || fbSummary || fbSummaryLoading) return;
+    fbSummaryLoading = true;
+    HVLoans.feedbackSummary()
+      .then((rows) => (fbSummary = new Map(rows.map((r) => [Number(r.event_id), r]))))
+      .catch(() => (fbSummary = new Map()))
+      .then(() => {
+        fbSummaryLoading = false;
+        render();
+      });
+  }
+  function feedbackSection(e) {
+    const sum = isAdmin && fbSummary ? fbSummary.get(e.id) : null;
+    const adminBtn = isAdmin ? `<button class="btn ghost" type="button" data-fb-view>${esc(tr("fbAdminBtn", { n: sum ? sum.answers : 0 }))}</button>` : "";
+    const open = fbOpen(e);
+    if (!open && !adminBtn) return "";
+    const mine = myFb.event === e.id && myFb.row;
+    return `<section class="ev-fb">
+      ${open ? `<p class="ev-fb-hint">${esc(tr("fbHint"))} <small>${esc(tr("fbClosesIn", { date: fbCloses(e) }))}</small></p>` : ""}
+      <div class="ev-fb-acts">
+        ${open ? `<button class="btn${mine ? " ghost" : ""}" type="button" data-fb-give>${esc(tr(mine ? "fbEdit" : "fbBtn"))}</button>` : ""}
+        ${adminBtn}
+      </div>
+    </section>`;
+  }
+  function openFeedbackForm() {
+    const r = myFb.event === ev.id && myFb.row;
+    openDialog({ mode: "feedback", rating: r ? r.rating : 0, likes: r ? [...r.likes] : [], again: r ? r.again : null, improve: r ? r.improve : "", err: "" });
+  }
+  function renderFeedbackForm() {
+    const stars = [1, 2, 3, 4, 5]
+      .map((n) => `<button type="button" class="ev-star${n <= D.rating ? " is-on" : ""}" data-fb-star="${n}" aria-label="${esc(tr("fbStar", { n }))}" aria-pressed="${n === D.rating}">★</button>`)
+      .join("");
+    const chip = (kind, v, on) =>
+      `<button type="button" class="ev-fb-chip${on ? " is-on" : ""}" data-fb-${kind}="${v}" aria-pressed="${on}">${esc(tr(kind === "like" ? "like_" + v : "again_" + v))}</button>`;
+    dlg.innerHTML = `${head(tr("fbTitle"))}
+      <form class="ev-form" data-fb-form novalidate>
+        <p class="ev-fb-anon">${esc(tr("fbAnon"))}</p>
+        <div class="ev-field"><span>${esc(tr("fbQ1"))} <b class="ev-req">*</b></span><div class="ev-stars" role="group">${stars}</div></div>
+        <div class="ev-field"><span>${esc(tr("fbQ2"))}</span><div class="ev-fb-chips">${FB_LIKES.map((v) => chip("like", v, D.likes.includes(v))).join("")}</div></div>
+        <div class="ev-field"><span>${esc(tr("fbQ3"))}</span><div class="ev-fb-chips">${FB_AGAIN.map((v) => chip("again", v, D.again === v)).join("")}</div></div>
+        <label class="ev-field"><span>${esc(tr("fbQ4"))}</span><textarea name="improve" rows="4" maxlength="1000" placeholder="${esc(tr("fbQ4Ph"))}">${esc(D.improve || "")}</textarea></label>
+        ${errLine()}
+        <div class="form-actions"><button class="btn ghost" type="button" data-close>${esc(tr("cancel"))}</button><button class="btn" type="submit"${busy ? " disabled" : ""}>${esc(busy ? tr("saving") : tr("fbSubmit"))}</button></div>
+      </form>`;
+  }
+  async function submitFeedback() {
+    readForm();
+    D.err = "";
+    if (!D.rating) {
+      D.err = tr("fbNeedRating");
+      return renderDialog();
+    }
+    const fb = { rating: D.rating, likes: D.likes, again: D.again, improve: String(D.improve || "").trim().slice(0, 1000) };
+    const id = ev.id;
+    await submit(async () => {
+      await HVLoans.submitFeedback(id, token(), fb);
+      myFb = { event: id, row: fb };
+      fbSummary = null; // admins: counts changed
+      flash = { text: tr("fbThanks"), ok: true };
+    });
+  }
+  // Admins: a summary of the event's feedback, then every written comment.
+  async function openFeedbackView() {
+    openDialog({ mode: "fbview", rows: null, err: "" });
+    const state = D;
+    try {
+      state.rows = await HVLoans.eventFeedback(ev.id);
+    } catch (err) {
+      state.err = errText(err);
+    }
+    if (D === state) renderDialog();
+  }
+  function renderFeedbackView() {
+    if (!D.rows) {
+      dlg.innerHTML = `${head(tr("fbTitle"))}${D.err ? errLine() : `<p class="ev-hint">${esc(tr("loading"))}</p>`}
+        <div class="form-actions"><button class="btn ghost" type="button" data-close>${esc(tr("close"))}</button></div>`;
+      return;
+    }
+    const rows = D.rows, n = rows.length;
+    const bar = (label, count, total) =>
+      `<div class="ev-fb-bar"><span>${esc(label)}</span><i><b style="width:${total ? Math.round((count / total) * 100) : 0}%"></b></i><em>${count}</em></div>`;
+    const avg = n ? (rows.reduce((a, r) => a + r.rating, 0) / n).toFixed(1) : "–";
+    const againN = rows.filter((r) => r.again).length;
+    const comments = rows.filter((r) => r.improve);
+    dlg.innerHTML = `${head(tr("fbAdminTitle", { n }))}
+      ${
+        n
+          ? `<div class="ev-fb-report">
+        <h3>${esc(tr("fbQ1"))} <small>${esc(tr("fbAvg", { avg }))}</small></h3>
+        ${[5, 4, 3, 2, 1].map((k) => bar("★".repeat(k), rows.filter((r) => r.rating === k).length, n)).join("")}
+        <h3>${esc(tr("fbQ2"))} <small>${esc(tr("fbAnswered", { n: rows.filter((r) => r.likes.length).length }))}</small></h3>
+        ${FB_LIKES.map((v) => bar(tr("like_" + v), rows.filter((r) => r.likes.includes(v)).length, n)).join("")}
+        <h3>${esc(tr("fbQ3"))} <small>${esc(tr("fbAnswered", { n: againN }))}</small></h3>
+        ${FB_AGAIN.map((v) => bar(tr("again_" + v), rows.filter((r) => r.again === v).length, againN)).join("")}
+        <h3>${esc(tr("fbComments"))} <small>${comments.length}</small></h3>
+        ${
+          comments.length
+            ? `<ul class="ev-fb-comments">${comments
+                .map((r) => `<li><p>${esc(r.improve)}</p><small>${"★".repeat(r.rating)} · ${esc(fmtDate(r.created_at.slice(0, 10)))}</small></li>`)
+                .join("")}</ul>`
+            : `<p class="ev-hint">${esc(tr("fbNoComments"))}</p>`
+        }
+      </div>`
+          : `<p class="ev-empty">${esc(tr("fbAdminNone"))}</p>`
+      }
+      <div class="form-actions"><button class="btn ghost" type="button" data-close>${esc(tr("close"))}</button></div>`;
   }
 
   // ---------- dialogs: open a table, join a table, publish/edit an event ----------
@@ -1405,6 +1610,8 @@
     if (D.mode === "add") return renderAddForm();
     if (D.mode === "score") return renderScoreForm();
     if (D.mode === "people") return renderPeople();
+    if (D.mode === "feedback") return renderFeedbackForm();
+    if (D.mode === "fbview") return renderFeedbackView();
   }
 
   const norm = (s) => String(s || "").toLowerCase().replace(/[\s·:：\-–—'’!！?？.,，、()（）]/g, "");
@@ -2151,6 +2358,7 @@
     if (D.mode === "join") D.name = v("name");
     if (D.mode === "time") D.time = v("time");
     if (D.mode === "people") D.extra = v("extra");
+    if (D.mode === "feedback") D.improve = v("improve");
     if (D.mode === "leave") D.next = (f.querySelector("input[name=next]:checked") || {}).value || "";
     if (D.mode === "host") D.host = (f.querySelector("input[name=host]:checked") || {}).value || "";
     if (D.mode === "wish") Object.assign(D, { name: v("name"), title: v("title"), desc: v("desc") });
@@ -2462,6 +2670,8 @@
     }
     if (b.dataset.copy != null) return copyText(b);
     if (b.hasAttribute("data-people")) return void openPeople();
+    if (b.hasAttribute("data-fb-give")) return openFeedbackForm();
+    if (b.hasAttribute("data-fb-view")) return void openFeedbackView();
     if (b.dataset.qr) return openDialog({ mode: "qr", url: b.dataset.qr, title: b.dataset.qrTitle });
     if (b.hasAttribute("data-signin")) {
       $("login-error").textContent = "";
@@ -2650,6 +2860,22 @@
     if (e.target.closest("[data-close]") || (e.target === dlg && D && D.mode === "qr")) return closeDialog();
     if (e.target.closest("[data-tpl-save]") && D) return void saveTemplate();
     if (e.target.closest("[data-start-add]") && D) return void startAdd();
+    if (D && D.mode === "feedback") {
+      const star = e.target.closest("[data-fb-star]"), like = e.target.closest("[data-fb-like]"), again = e.target.closest("[data-fb-again]");
+      if (star || like || again) {
+        readForm();
+        if (star) {
+          D.rating = Number(star.dataset.fbStar);
+          D.err = "";
+        }
+        if (like) {
+          const v = like.dataset.fbLike;
+          D.likes = D.likes.includes(v) ? D.likes.filter((x) => x !== v) : [...D.likes, v];
+        }
+        if (again) D.again = D.again === again.dataset.fbAgain ? null : again.dataset.fbAgain;
+        return renderDialog();
+      }
+    }
     const pick = e.target.closest("[data-pick-player]");
     if (pick && D && (D.mode === "open" || D.mode === "join")) {
       readForm();
@@ -2726,6 +2952,7 @@
     if (f.hasAttribute("data-add-form")) return void submitAdd();
     if (f.hasAttribute("data-score-form")) return void submitScores();
     if (f.hasAttribute("data-people-form")) return void submitPeople();
+    if (f.hasAttribute("data-fb-form")) return void submitFeedback();
   });
   // "close" arrives a moment later, so ignore it if another dialog has been opened since.
   dlg.addEventListener("cancel", (e) => {

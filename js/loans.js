@@ -221,6 +221,22 @@ window.HVLoans = (() => {
     // Admins only: everyone who ever signed up, across all events, plus player accounts with no sign-ups:
     // [{ user_id (null = not registered), profile_name, name, events, signups, first_date, last_date }].
     playerRoster: () => request("/rest/v1/rpc/admin_player_roster", { method: "POST", admin: true, body: {} }),
+    // ---------- event feedback (活动反馈), anonymous ----------
+    // fb: { rating 1–5, likes: ["games", "people", "teaching", "vibe", "venue", "other"], again: "yes" | "maybe" | "no" | null, improve }
+    submitFeedback: (eventId, token, fb) =>
+      request("/rest/v1/rpc/submit_event_feedback", {
+        method: "POST",
+        body: { p_event: eventId, p_token: token, p_rating: fb.rating, p_likes: fb.likes || [], p_again: fb.again || null, p_improve: fb.improve || "" },
+      }),
+    // This browser's own feedback for the event, or null.
+    async myFeedback(eventId, token) {
+      const rows = await request("/rest/v1/rpc/my_event_feedback", { method: "POST", body: { p_event: eventId, p_token: token } });
+      return rows[0] || null;
+    },
+    // Admins only: every answer for the event, newest first.
+    eventFeedback: (eventId) => request("/rest/v1/rpc/admin_event_feedback", { method: "POST", admin: true, body: { p_event: eventId } }),
+    // Admins only: [{ event_id, answers, average }].
+    feedbackSummary: () => request("/rest/v1/rpc/admin_feedback_summary", { method: "POST", admin: true, body: {} }),
     myEventPlayerIds: (eventId) => request("/rest/v1/rpc/my_event_player_ids", { method: "POST", admin: true, body: { p_event: eventId } }),
     signOut() {
       if (session) {
