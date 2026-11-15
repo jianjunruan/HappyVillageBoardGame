@@ -345,6 +345,9 @@ alter table public.event_tables add column if not exists start_time time;
 -- or an admin can delete the table. Tables opened before this was added have no host_token: only admins can delete them.
 alter table public.event_tables add column if not exists host_token text;
 alter table public.event_tables add column if not exists host_player bigint;
+-- An empty table an admin opened for anyone to join (e.g. a table for newcomers): it stays when everyone has left,
+-- the first person to join becomes its host, and only admins can delete it.
+alter table public.event_tables add column if not exists keep_open boolean not null default false;
 
 create table if not exists public.event_players (
   id bigint generated always as identity primary key,
@@ -415,10 +418,13 @@ $$;
 -- Opens a table and seats the person who opened it. Returns { "table_id": …, "player_id": … }.
 -- (The older version without a start time is removed so the website can't call it.)
 -- p_user: admins only, the player account the sign-up is for (see event_signup_user).
+-- p_seat false: admins only, open an empty table for anyone to join (keep_open); nobody is seated, player_id is null.
 drop function if exists public.open_event_table(bigint, text, text, boolean, integer, text, text, text);
 drop function if exists public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time);
+drop function if exists public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time, uuid);
 create or replace function public.open_event_table(p_event bigint, p_game_id text, p_game_name text, p_on_site boolean,
-  p_max_players integer, p_note text, p_name text, p_token text, p_start_time time default null, p_user uuid default null)
+  p_max_players integer, p_note text, p_name text, p_token text, p_start_time time default null, p_user uuid default null,
+  p_seat boolean default true)
 returns jsonb
 language plpgsql
 security definer
@@ -429,17 +435,25 @@ declare
   p bigint;
 begin
   perform public.event_signup_guard(p_event);
-  perform public.event_name_guard(p_name);
+  if not coalesce(p_seat, true) and not public.is_admin() then
+    raise exception 'only admins can open an empty table' using errcode = '42501';
+  end if;
+  if coalesce(p_seat, true) then
+    perform public.event_name_guard(p_name);
+  end if;
   if (select count(*) from public.event_tables where event_id = p_event) >= 100 then
     raise exception 'too many tables at this event' using errcode = 'HVE05';
   end if;
   if p_token is null or char_length(p_token) not between 16 and 100 then
     raise exception 'missing browser secret' using errcode = 'HVE05';
   end if;
-  insert into public.event_tables (event_id, game_id, game_name, on_site, max_players, note, start_time, host_token)
+  insert into public.event_tables (event_id, game_id, game_name, on_site, max_players, note, start_time, host_token, keep_open)
   values (p_event, nullif(trim(p_game_id), ''), trim(p_game_name), coalesce(p_on_site, false), p_max_players,
-          coalesce(trim(p_note), ''), p_start_time, p_token)
+          coalesce(trim(p_note), ''), p_start_time, case when coalesce(p_seat, true) then p_token end, not coalesce(p_seat, true))
   returning id into t;
+  if not coalesce(p_seat, true) then
+    return jsonb_build_object('table_id', t, 'player_id', null);  -- empty: the first to join becomes the host
+  end if;
   insert into public.event_players (table_id, name, token, user_id)
   values (t, trim(p_name), p_token, public.event_signup_user(p_name, p_user)) returning id into p;
   update public.event_tables set host_player = p where id = t;
@@ -478,6 +492,8 @@ begin
     raise exception 'this account already joined this table' using errcode = 'HVE07';
   end if;
   insert into public.event_players (table_id, name, token, user_id) values (p_table, trim(p_name), p_token, u) returning id into p;
+  -- An empty table (an admin's open table, or everyone left it): the first to join becomes its host.
+  update public.event_tables set host_player = p, host_token = p_token where id = p_table and host_player is null;
   return p;
 end;
 $$;
@@ -512,7 +528,8 @@ begin
     end if;
   end if;
   delete from public.event_players where id = p_player;
-  delete from public.event_tables where id = t and not exists (select 1 from public.event_players where table_id = t);
+  delete from public.event_tables
+  where id = t and not keep_open and not exists (select 1 from public.event_players where table_id = t);
   return true;
 end;
 $$;
@@ -565,9 +582,12 @@ as $$
 declare
   tb record;
 begin
-  select id, host_token, host_player into tb from public.event_tables where id = p_table for update;
+  select id, host_token, host_player, keep_open into tb from public.event_tables where id = p_table for update;
   if tb.id is null or not public.is_event_table_host(tb.id, tb.host_token, tb.host_player, p_token) then
     return false;
+  end if;
+  if tb.keep_open then
+    raise exception 'an admin opened this table; only admins can delete it' using errcode = 'HVE11';
   end if;
   if exists (select 1 from public.event_players where table_id = tb.id and id <> tb.host_player) then
     raise exception 'other players are still at this table' using errcode = 'HVE08';
@@ -636,14 +656,14 @@ grant delete on public.events to authenticated;
 grant update (game_name, on_site, max_players, note, start_time) on public.event_tables to authenticated;  -- admins only (policy)
 grant delete on public.event_tables, public.event_players to authenticated;
 revoke execute on function public.event_signup_guard(bigint) from public, anon, authenticated;
-revoke execute on function public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time, uuid) from public;
+revoke execute on function public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time, uuid, boolean) from public;
 revoke execute on function public.join_event_table(bigint, text, text, uuid) from public;
 revoke execute on function public.leave_event_table(bigint, text, bigint) from public;
 revoke execute on function public.delete_event_table(bigint, text) from public;
 revoke execute on function public.set_event_table_time(bigint, text, time, text) from public;
 grant execute on function public.set_event_table_time(bigint, text, time, text) to anon, authenticated;
 revoke execute on function public.is_event_table_host(bigint, text, bigint, text) from public, anon, authenticated;
-grant execute on function public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time, uuid) to anon, authenticated;
+grant execute on function public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time, uuid, boolean) to anon, authenticated;
 grant execute on function public.join_event_table(bigint, text, text, uuid) to anon, authenticated;
 grant execute on function public.leave_event_table(bigint, text, bigint) to anon, authenticated;
 grant execute on function public.delete_event_table(bigint, text) to anon, authenticated;

@@ -459,7 +459,8 @@ window.HVLoans = (() => {
     setExtraPeople: (id, n) => HVLoans.saveEvent({ extra_people: n }, id),
     // table: { game_id, game_name, on_site, max_players, note, start_time ("HH:MM" or null) }. Returns { table_id, player_id }.
     // user: admins only, the player account this sign-up is for (left out when there is none).
-    openTable: (eventId, table, name, token, user = null) =>
+    // seat false (admins): an empty table for anyone to join; nobody is seated.
+    openTable: (eventId, table, name, token, user = null, seat = true) =>
       request("/rest/v1/rpc/open_event_table", {
         method: "POST",
         admin: "ifSignedIn",
@@ -474,6 +475,7 @@ window.HVLoans = (() => {
           p_token: token,
           p_start_time: table.start_time || null,
           ...(user ? { p_user: user } : {}),
+          ...(seat ? {} : { p_seat: false }),
         },
       }),
     // Changes a table's start time ("HH:MM" or null) and note as its current host. Returns false if this browser isn't the host.
