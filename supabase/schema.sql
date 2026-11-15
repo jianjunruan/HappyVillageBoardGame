@@ -532,7 +532,9 @@ $$;
 
 -- Changes a table's start time (null clears it); only the current host's browser (admins change tables directly).
 -- Returns true if it worked, false if this browser isn't the host.
-create or replace function public.set_event_table_time(p_table bigint, p_token text, p_start_time time)
+-- p_note: the table's note too (up to 200 characters); null leaves it as it is (older pages only send the time).
+drop function if exists public.set_event_table_time(bigint, text, time);
+create or replace function public.set_event_table_time(p_table bigint, p_token text, p_start_time time, p_note text default null)
 returns boolean
 language plpgsql
 security definer
@@ -541,7 +543,10 @@ as $$
 declare
   t bigint;
 begin
-  update public.event_tables set start_time = p_start_time
+  if p_note is not null and char_length(trim(p_note)) > 200 then
+    raise exception 'note too long' using errcode = 'HVE05';
+  end if;
+  update public.event_tables set start_time = p_start_time, note = coalesce(trim(p_note), note)
   where id = p_table and public.is_event_table_host(id, host_token, host_player, p_token)
   returning id into t;
   return t is not null;
@@ -635,8 +640,8 @@ revoke execute on function public.open_event_table(bigint, text, text, boolean, 
 revoke execute on function public.join_event_table(bigint, text, text, uuid) from public;
 revoke execute on function public.leave_event_table(bigint, text, bigint) from public;
 revoke execute on function public.delete_event_table(bigint, text) from public;
-revoke execute on function public.set_event_table_time(bigint, text, time) from public;
-grant execute on function public.set_event_table_time(bigint, text, time) to anon, authenticated;
+revoke execute on function public.set_event_table_time(bigint, text, time, text) from public;
+grant execute on function public.set_event_table_time(bigint, text, time, text) to anon, authenticated;
 revoke execute on function public.is_event_table_host(bigint, text, bigint, text) from public, anon, authenticated;
 grant execute on function public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time, uuid) to anon, authenticated;
 grant execute on function public.join_event_table(bigint, text, text, uuid) to anon, authenticated;
