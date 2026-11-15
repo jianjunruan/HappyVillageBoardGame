@@ -238,11 +238,11 @@
       cancelGone: "这一局已经填了分数或已被取消，不能再取消。",
       notHost: "只有这一桌的房主或管理员可以这样做（房主可能已经换人了）。",
       tableDeleted: "✓ 已删除这一桌",
-      editTime: "修改时间",
-      timeTitle: "「{game}」几点开",
-      timeHint: "清空表示不定时间。",
-      timeSave: "💾 保存时间",
-      timeSaved: "✓ 时间已更新",
+      editTime: "修改时间/备注",
+      timeTitle: "修改「{game}」",
+      timeHint: "时间清空表示不定时间；备注清空就不显示。",
+      timeSave: "💾 保存",
+      timeSaved: "✓ 已更新时间和备注",
       leaveTitle: "退出「{game}」这一桌",
       wishTitle: "💡 期望活动",
       wishIntro: "想参加什么样的活动？告诉我们！",
@@ -638,11 +638,11 @@
       cancelGone: "This game already has scores or was cancelled, so it can't be cancelled.",
       notHost: "Only this table's host or an admin can do that (the host may have changed).",
       tableDeleted: "✓ Table deleted",
-      editTime: "Change time",
-      timeTitle: "When does {game} start?",
-      timeHint: "Leave it empty for no set time.",
-      timeSave: "💾 Save time",
-      timeSaved: "✓ Time updated",
+      editTime: "Change time / note",
+      timeTitle: "Change {game}",
+      timeHint: "Leave the time empty for no set time, and the note empty to show none.",
+      timeSave: "💾 Save",
+      timeSaved: "✓ Time and note updated",
       leaveTitle: "Leave the {game} table",
       wishTitle: "💡 Event wishes",
       wishIntro: "What kind of event would you like? Tell us!",
@@ -2075,13 +2075,14 @@
     return [...bytes].map((b) => b.toString(16).padStart(2, "0")).join("");
   }
 
-  // A table's start time (its host or an admin).
+  // A table's start time and note (its host or an admin).
   function renderTimeForm() {
     const t = ev && ev.event_tables.find((x) => x.id === D.table);
     if (!t) return closeDialog();
     dlg.innerHTML = `${head(tr("timeTitle", { game: tableName(t) }))}
       <form class="ev-form" data-time-form novalidate>
-        <label class="ev-field ev-time"><span>${esc(tr("tableTime"))}</span><input name="time" type="time" value="${esc(D.time || "")}" autofocus></label>
+        <label class="ev-field ev-time"><span>${esc(tr("tableTime"))}</span><input name="time" type="time" value="${esc(D.time || "")}"></label>
+        <label class="ev-field"><span>${esc(tr("note"))}</span><input name="note" maxlength="200" placeholder="${esc(tr("notePh"))}" value="${esc(D.note || "")}" autofocus></label>
         <p class="ev-hint">${esc(tr("timeHint"))}</p>
         ${errLine()}
         <div class="form-actions"><button class="btn ghost" type="button" data-close>${esc(tr("cancel"))}</button><button class="btn" type="submit"${busy ? " disabled" : ""}>${esc(busy ? tr("saving") : tr("timeSave"))}</button></div>
@@ -2092,9 +2093,10 @@
     D.err = "";
     const id = D.table;
     const time = D.time || null;
+    const note = String(D.note || "").trim().slice(0, 200);
     await submit(async () => {
-      if (isAdmin) await HVLoans.updateTable(id, { start_time: time });
-      else if (!(await HVLoans.setTableTime(id, token(), time))) throw Object.assign(new Error("not host"), { code: "not-host" });
+      if (isAdmin) await HVLoans.updateTable(id, { start_time: time, note });
+      else if (!(await HVLoans.setTableTime(id, token(), time, note))) throw Object.assign(new Error("not host"), { code: "not-host" });
       flash = { text: tr("timeSaved"), ok: true };
     });
   }
@@ -2412,7 +2414,7 @@
     const v = (n) => (f.elements[n] ? f.elements[n].value : undefined);
     if (D.mode === "open") Object.assign(D, { onSite: v("site") === "1", time: v("time"), max: v("max"), note: v("note"), name: v("name") });
     if (D.mode === "join") D.name = v("name");
-    if (D.mode === "time") D.time = v("time");
+    if (D.mode === "time") Object.assign(D, { time: v("time"), note: v("note") });
     if (D.mode === "people") D.extra = v("extra");
     if (D.mode === "feedback") {
       D.improve = v("improve");
@@ -2854,7 +2856,7 @@
     }
     if (b.dataset.editTime) {
       const t = tableOf(b.dataset.editTime);
-      if (t) openDialog({ mode: "time", table: t.id, time: fmtTime(t.start_time), err: "" });
+      if (t) openDialog({ mode: "time", table: t.id, time: fmtTime(t.start_time), note: t.note || "", err: "" });
       return;
     }
     if (b.dataset.removePlayer) {
