@@ -151,6 +151,11 @@
       custom: "✏️ 手动填写",
       seats: "{n} / {max} 人",
       seatsOpen: "{n} 人（不限人数）",
+      emptySeat: "只开桌，不加入任何人",
+      emptySeatHint: "开一张空桌，让玩家自己加入（例如新手桌）。第一个加入的人会成为房主；大家都退出后这桌也会保留，只有管理员能删除。",
+      emptySubmit: "🎲 开空桌",
+      emptyTable: "还没有人加入，欢迎来坐！",
+      errKeepOpen: "这一桌是管理员开的，只有管理员可以删除。",
       full: "已满",
       join: "加入",
       leave: "退出",
@@ -551,6 +556,11 @@
       custom: "✏️ Typed in",
       seats: "{n} / {max} players",
       seatsOpen: "{n} players (no limit)",
+      emptySeat: "Open the table without seating anyone",
+      emptySeatHint: "An empty table players join by themselves (e.g. a table for newcomers). The first to join becomes the host; it stays when everyone has left, and only admins can delete it.",
+      emptySubmit: "🎲 Open empty table",
+      emptyTable: "Nobody here yet. Come and join!",
+      errKeepOpen: "An admin opened this table; only admins can delete it.",
       full: "Full",
       join: "Join",
       leave: "Leave",
@@ -939,6 +949,7 @@
     if (code === "HVE06") return tr("needLead");
     if (code === "HVE07") return tr("errJoined");
     if (code === "HVE08") return tr("cantDelete");
+    if (code === "HVE11") return tr("errKeepOpen");
     if (code === "HVF01") return tr("fbClosed");
     if (code === "HVF02") return tr("fbBad");
     if (code === "HVF03") return tr("fbBusy");
@@ -1234,7 +1245,7 @@
         </div>
         <div class="ev-table-act">${action}</div>
       </div>
-      <div class="ev-players">${chips}</div>
+      <div class="ev-players">${chips || `<span class="ev-hint">${esc(tr("emptyTable"))}</span>`}</div>
       ${gamesHtml(t, g, iHost, over, full)}
       ${iHost && !isAdmin && !over ? `<div class="ev-admin-row">
         <button class="link-btn" type="button" data-edit-time="${t.id}">${esc(tr("editTime"))}</button>
@@ -1730,9 +1741,11 @@
           <label class="ev-field ev-max"><span>${esc(tr("maxPlayers"))}</span><input name="max" type="number" inputmode="numeric" min="1" max="30" placeholder="${esc(tr("maxPh"))}" value="${esc(D.max ?? "")}"></label>
         </div>
         <label class="ev-field"><span>${esc(tr("note"))}</span><input name="note" maxlength="200" placeholder="${esc(tr("notePh"))}" value="${esc(D.note)}"></label>
-        ${nameField()}
+        ${isAdmin ? `<label class="ev-check"><input type="checkbox" name="empty"${D.empty ? " checked" : ""} data-empty-toggle> <span>${esc(tr("emptySeat"))}</span></label>
+        ${D.empty ? `<p class="ev-hint">${esc(tr("emptySeatHint"))}</p>` : ""}` : ""}
+        ${isAdmin && D.empty ? "" : nameField()}
         ${errLine()}
-        <div class="form-actions"><button class="btn ghost" type="button" data-close>${esc(tr("cancel"))}</button><button class="btn" type="submit"${busy ? " disabled" : ""}>${esc(busy ? tr("saving") : tr("openSubmit"))}</button></div>
+        <div class="form-actions"><button class="btn ghost" type="button" data-close>${esc(tr("cancel"))}</button><button class="btn" type="submit"${busy ? " disabled" : ""}>${esc(busy ? tr("saving") : tr(isAdmin && D.empty ? "emptySubmit" : "openSubmit"))}</button></div>
       </form>`;
   }
   function renderJoin() {
@@ -2412,7 +2425,11 @@
     const f = dlg.querySelector("form.ev-form");
     if (!f || !D) return;
     const v = (n) => (f.elements[n] ? f.elements[n].value : undefined);
-    if (D.mode === "open") Object.assign(D, { onSite: v("site") === "1", time: v("time"), max: v("max"), note: v("note"), name: v("name") });
+    if (D.mode === "open") {
+      Object.assign(D, { onSite: v("site") === "1", time: v("time"), max: v("max"), note: v("note") });
+      if (f.elements.name) D.name = v("name");
+      if (f.elements.empty) D.empty = f.elements.empty.checked;
+    }
     if (D.mode === "join") D.name = v("name");
     if (D.mode === "time") Object.assign(D, { time: v("time"), note: v("note") });
     if (D.mode === "people") D.extra = v("extra");
@@ -2560,22 +2577,24 @@
   async function submitOpen() {
     readForm();
     D.err = "";
-    const name = checkName();
+    const empty = isAdmin && D.empty; // admins: an empty table, nobody seated
+    const name = empty ? "" : checkName();
     const max = String(D.max ?? "").trim();
-    if (name && max && !/^\d+$/.test(max)) D.err = tr("badMax");
-    else if (name && max && (Number(max) < 1 || Number(max) > 30)) D.err = tr("badMax");
+    if ((empty || name) && max && !/^\d+$/.test(max)) D.err = tr("badMax");
+    else if ((empty || name) && max && (Number(max) < 1 || Number(max) > 30)) D.err = tr("badMax");
     const who = isAdmin && name && !D.err ? adminSignupUser() : { user: null };
     if (who.err) D.err = who.err;
-    if (!name || D.err) return renderDialog();
+    if ((!empty && !name) || D.err) return renderDialog();
     const g = D.game.id && gameById(D.game.id);
     const gameName = g ? (typeof g.name === "string" ? g.name : g.name.zh || g.name.en) : D.game.custom;
     await submit(async () => {
       const r = await HVLoans.openTable(
         EVENT_ID,
         { game_id: g ? g.id : null, game_name: gameName, on_site: D.onSite, max_players: max ? Number(max) : null, note: D.note, start_time: D.time || null },
-        name,
+        empty ? "-" : name,
         isAdmin ? freshToken() : token(),
-        who.user
+        who.user,
+        !empty
       );
       if (!isAdmin) {
         store.set("hv-event-name", name);
@@ -2964,6 +2983,10 @@
       if (input) input.value = D.name;
       $("ev-suggest").innerHTML = suggestHtml();
       return;
+    }
+    if (e.target.closest("[data-empty-toggle]") && D && D.mode === "open") {
+      readForm();
+      return renderDialog();
     }
     const pf = e.target.closest("[data-people-filter]");
     if (pf && D && D.mode === "people") {
