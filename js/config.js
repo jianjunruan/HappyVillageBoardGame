@@ -4,8 +4,9 @@
 // and the site will load games (and later events) from the server instead.
 // Site name and other interface text live in js/i18n.js.
 window.HV_CONFIG = {
-  // The site's version, shown at the bottom of every page. Raise it with each release (e.g. 1.1.0 → 1.2.0).
-  version: "1.1.0",
+  // The site's version, shown at the bottom of every page. Raised one step with every change by
+  // `node scripts/bump-version.mjs` (1.1.0 → 1.1.1 … 1.1.9 → 1.2.0); see CLAUDE.md. Don't edit it by hand.
+  version: "1.1.1",
 
   apiBase: null,
 
