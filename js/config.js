@@ -6,9 +6,13 @@
 window.HV_CONFIG = {
   // The site's version, shown at the bottom of every page. Raised one step with every change by
   // `node scripts/bump-version.mjs` (1.1.0 → 1.1.1 … 1.1.9 → 1.2.0); see CLAUDE.md. Don't edit it by hand.
-  version: "1.1.3",
+  version: "1.1.5",
 
   apiBase: null,
+
+  // The live site's address: what the 分享 button shares and copies, and what the QR code in images/share-qr.png opens
+  // (the image was made outside the repo; make a new one if this address ever changes).
+  siteUrl: "https://jianjunruan.github.io/HappyVillageBoardGame/",
 
   // Board game loans (Supabase). Copy both values from Supabase → Project Settings → API Keys / Data API.
   // supabaseAnonKey: the "publishable" key (sb_publishable_…) or the legacy "anon public" key. Never the secret/service_role key.

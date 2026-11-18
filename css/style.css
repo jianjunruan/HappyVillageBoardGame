@@ -351,3 +351,18 @@ dialog.login { width: min(380px, calc(100vw - 24px)); }
 .hw-vote small { color: var(--muted); font-size: 0.78rem; }
 .hw-vote-btn { padding: 3px 10px; border: 1px solid var(--accent); border-radius: 999px; background: var(--surface); color: var(--accent); font: inherit; font-size: 0.8rem; font-weight: 700; cursor: pointer; }
 .hw-vote-btn.is-on { background: var(--accent); color: #fff; }
+
+/* 📤 分享: the club's QR card, to show, save, forward or copy the link (js/share.js) */
+.share-dlg { width: min(440px, calc(100vw - 24px)); }
+.share-body { padding: 18px 20px 22px; text-align: center; }
+.share-body h2 { margin: 4px 36px 12px; font-size: 1.15rem; }
+.share-img { display: block; width: 100%; max-width: 340px; height: auto; margin: 0 auto; border-radius: 12px; box-shadow: var(--shadow); -webkit-touch-callout: default; }
+.share-tip { margin: 12px 0 4px; color: var(--muted); font-size: 0.9rem; }
+.share-url { margin: 0 0 14px; font-size: 0.8rem; color: var(--muted); overflow-wrap: anywhere; user-select: all; -webkit-user-select: all; }
+.share-acts { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.share-acts .btn { text-decoration: none; }
+.share-msg { min-height: 1.3em; margin: 10px 0 0; color: var(--ok); font-size: 0.9rem; font-weight: 600; }
+@media (max-width: 520px) {
+  .share-acts .btn { flex: 1 1 100%; }
+  .share-img { max-width: 100%; }
+}

@@ -106,6 +106,8 @@ account.html        Player sign-in, sign-up, password reset (js/account.js, css/
 profile.html        Player profile with bio and games summary: profile.html, profile.html?u=<id> (js/profile.js)
 js/account-link.js  The 👤 登录 / 我的主页 button in page headers
 js/home-events.js   The upcoming-events banner at the top of the home page
+js/share.js         The 📤 分享 button (home and events pages): the club's QR card images/share-qr.png, to save, forward
+                    or copy the link (siteUrl in js/config.js)
 js/richtext.js      The formatted-description editor for events, and the cleaner that keeps only safe formatting
 score.html          Scoreboard for any game: score.html?game=<id> (js/scoreboard.js, css/scoreboard.css)
 js/scoreboards/     Each game's scoreboard choices (age-of-innovation.js, seti.js, ark-nova.js)
