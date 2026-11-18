@@ -41,9 +41,9 @@
   const catOf = (g) => (CATEGORIES.includes(g.category) ? g.category : "other");
   const bandOf = (g) => BANDS.findIndex((b) => (g.weight ?? 0) < b.max);
   const dots = (i) => "★".repeat(i + 1) + "☆".repeat(BANDS.length - i - 1);
-  // Each difficulty band of a category shows 10 games at a time; the rest (and their pictures) load when its page
+  // Each difficulty band of a category shows 8 games at a time; the rest (and their pictures) load when its page
   // is turned.
-  const PER_PAGE = 10;
+  const PER_PAGE = 8;
   let catPage = {}; // "category:band" → page (1-based)
   let lastFilter = ""; // search + filters the pages belong to: changing them goes back to page 1
 
@@ -211,7 +211,7 @@
           </div>
         </a>`;
 
-    // Category sections, each split into difficulty bands from light to heavy, 10 games per band per page.
+    // Category sections, each split into difficulty bands from light to heavy, 8 games per band per page.
     const filterKey = [q, activeTag, activeCat, activeLoan].join("|");
     if (filterKey !== lastFilter) {
       lastFilter = filterKey;
@@ -221,7 +221,7 @@
     els.grid.innerHTML = [...CATEGORIES, "other"].map((cat) => {
       const inCat = list.filter((g) => catOf(g) === cat);
       if (!inCat.length) return "";
-      // Every difficulty band has its own pages of 10 games.
+      // Every difficulty band has its own pages of 8 games.
       const bands = BANDS.map((b, i) => {
         const inBand = inCat.filter((g) => bandOf(g) === i);
         if (!inBand.length) return "";
