@@ -3787,20 +3787,8 @@
       "tags": ["Strategy", "Euro"],
       "links": [
         {
-          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
-          "url": "https://www.youtube.com/results?search_query=pirates+of+maracaibo+how+to+play"
-        },
-        {
-          "label": { "zh": "BGA 规则说明", "en": "Rules on Board Game Arena" },
-          "url": "https://en.doc.boardgamearena.com/Gamehelppiratesofmaracaibo"
-        },
-        {
-          "label": { "zh": "在 BGA 上在线玩", "en": "Play online on Board Game Arena" },
-          "url": "https://boardgamearena.com/gamepanel?game=piratesofmaracaibo"
-        },
-        {
-          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
-          "url": "https://boardgamegeek.com/boardgame/397385/pirates-of-maracaibo"
+          "label": { "zh": "欢乐小镇规则讲解视频", "en": "Happy Village rules video" },
+          "url": "https://youtu.be/DDp2YdrbayI"
         }
       ]
     },
@@ -4095,12 +4083,8 @@
       "tags": ["Thematic", "Deduction", "Strategy"],
       "links": [
         {
-          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
-          "url": "https://www.youtube.com/results?search_query=beast+board+game+studio+midhall+how+to+play"
-        },
-        {
-          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
-          "url": "https://boardgamegeek.com/boardgame/281549/beast"
+          "label": { "zh": "欢乐小镇规则讲解视频", "en": "Happy Village rules video" },
+          "url": "https://youtu.be/o3xqUH1HF7c"
         }
       ]
     },
