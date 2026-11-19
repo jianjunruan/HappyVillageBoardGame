@@ -1722,12 +1722,8 @@
       "tags": ["Strategy", "Euro"],
       "links": [
         {
-          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
-          "url": "https://www.youtube.com/results?search_query=grand+austria+hotel+how+to+play"
-        },
-        {
-          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
-          "url": "https://boardgamegeek.com/boardgame/182874/grand-austria-hotel"
+          "label": { "zh": "欢乐小镇规则讲解视频", "en": "Happy Village rules video" },
+          "url": "https://youtu.be/Th4nQ9N_7ZQ"
         }
       ]
     },
