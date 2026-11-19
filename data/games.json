@@ -3286,12 +3286,8 @@
       "tags": ["Euro", "Party"],
       "links": [
         {
-          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
-          "url": "https://www.youtube.com/results?search_query=manila+board+game+how+to+play"
-        },
-        {
-          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
-          "url": "https://boardgamegeek.com/boardgame/15817/manila"
+          "label": { "zh": "欢乐小镇规则讲解视频", "en": "Happy Village rules video" },
+          "url": "https://youtu.be/CPPM-2y0KCI"
         }
       ]
     },
