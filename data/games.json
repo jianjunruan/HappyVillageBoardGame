@@ -4269,6 +4269,34 @@
           "url": "https://gameurlife.pixnet.net/blog/posts/10344862973"
         }
       ]
+    },
+    {
+      "id": "maximum-apocalypse-gothic-horrors",
+      "name": { "zh": "末日启示录：哥特恐怖", "en": "Maximum Apocalypse: Gothic Horrors" },
+      "scorer": "score.html?game=maximum-apocalypse",
+      "image": "images/maximum-apocalypse-gothic-horrors.jpg",
+      "description": {
+        "zh": "《末日启示录》的扩展，把末日换成哥特恐怖题材：加入克苏鲁和吸血鬼两种末日剧本，以及神父、浪人两名新幸存者，还有新的怪物、地点和道具卡。玩法和基础游戏相同，大家合作探索随机生成的地图、对抗怪物、完成剧本目标。可以和其他《末日启示录》内容混在一起玩，最多 6 人。（第二版也能单独玩，1–4 人。）设计师：Mike Gnade（2019）。\n\n适合：喜欢合作冒险和克苏鲁、吸血鬼题材的玩家。",
+        "en": "An expansion for Maximum Apocalypse that turns the end of the world gothic: it adds two apocalypse scenarios, Cthulhu and Vampires, two new survivors, the Priest and the Ronin, plus new monsters, locations and item cards. It plays like the base game: work together to explore a randomly built map, fight monsters and complete the scenario. Mix it with other Maximum Apocalypse content for up to 6 players. (The second edition can also be played on its own by 1–4 players.) Designed by Mike Gnade (2019).\n\nGreat for: fans of co-op adventures and Cthulhu or vampire stories."
+      },
+      "players": "1–6",
+      "playtime": "45–90",
+      "age": "13",
+      "category": "american",
+      "weight": 2.3,
+      "series": "maximum-apocalypse",
+      "rulebookFrom": "maximum-apocalypse",
+      "tags": ["Co-op", "Thematic", "Cards", "Expansion"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=maximum+apocalypse+gothic+horrors"
+        },
+        {
+          "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
+          "url": "https://boardgamegeek.com/boardgame/244841/maximum-apocalypse-gothic-horrors"
+        }
+      ]
     }
   ]
 }
