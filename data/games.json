@@ -1333,6 +1333,7 @@
     {
       "id": "the-message",
       "name": { "zh": "风声", "en": "The Message" },
+      "series": "the-message",
       "scoring": { "mode": "teams", "teams": [{ "key": "lurker", "zh": "潜伏战线", "en": "Undercover", "color": "#c0392b" }, { "key": "military", "zh": "军情处", "en": "Military", "color": "#2c6fbb" }, { "key": "neutral", "zh": "酱油", "en": "Bystander", "color": "#8a6d3b" }] },
       "image": "images/the-message.jpg",
       "description": {
@@ -4239,6 +4240,33 @@
         {
           "label": { "zh": "BoardGameGeek 页面", "en": "BoardGameGeek page" },
           "url": "https://boardgamegeek.com/boardgame/316554/dune-imperium"
+        }
+      ]
+    },
+    {
+      "id": "the-message-attack-by-stratagem",
+      "name": { "zh": "风声：再临", "en": "The Message: Attack by Stratagem" },
+      "series": "the-message",
+      "scoring": { "mode": "teams", "teams": [{ "key": "military", "zh": "军情", "en": "Military", "color": "#2c6fbb" }, { "key": "lurker", "zh": "潜伏", "en": "Undercover", "color": "#c0392b" }, { "key": "agent", "zh": "特工", "en": "Agent", "color": "#8a6d3b" }] },
+      "image": "images/the-message-attack-by-stratagem.jpg",
+      "description": {
+        "zh": "《风声》谍战身份推理游戏的重制新版（风声黑名单的更新版）。每人秘密获得一个阵营身份，再从 3 张角色里挑 1 个：军情（蓝）要让自己阵营收集到 3 张蓝色情报，潜伏（红）要收集 3 张红色情报，新加入的特工则单独行动，完成机密任务或收集 6 张真情报就独自获胜。每回合摸牌、出牌，再把情报以密电、文本或直达的方式传出去，别人可以截获、转移或烧毁；收到 3 张假情报（黑）的角色会死亡。新版加入“响应点”时机，基础牌和身份牌分开，规则更简单、更偏重推理谁是自己人。内含 8 张身份牌、25 张角色牌、87 张基础牌。（2017）\n\n适合：喜欢谍战、伪装和推理的聚会；3–7 人，一局约 30 分钟。",
+        "en": "A remake of the spy deduction game The Message (an update of The Message: Blacklist). Everyone secretly gets a side and picks 1 of 3 characters: the Military (blue) win by gathering 3 blue messages on their side, the Undercover (red) by gathering 3 red ones, and the new Agents play alone, winning by completing a secret mission or collecting 6 true messages. Each turn you draw, play cards and send a message as a secret telegram, a document or a direct delivery, while others intercept, redirect or burn it; a character who receives 3 false (black) messages dies. This edition adds response timings and separates the basic and identity decks, with simpler rules and more focus on working out who is on your side. Contains 8 identity cards, 25 character cards and 87 basic cards. (2017)\n\nGreat for: groups who enjoy spy stories, bluffing and deduction; 3–7 players, about 30 minutes."
+      },
+      "players": "3–7",
+      "playtime": "30",
+      "age": "15",
+      "category": "party",
+      "weight": 2.2,
+      "tags": ["Party", "Social Deduction", "Cards"],
+      "links": [
+        {
+          "label": { "zh": "在 YouTube 搜索教学视频", "en": "Find how-to-play videos on YouTube" },
+          "url": "https://www.youtube.com/results?search_query=%E9%A2%A8%E8%81%B2%E5%86%8D%E8%87%A8+%E6%A1%8C%E9%81%8A%E6%95%99%E5%AD%B8"
+        },
+        {
+          "label": { "zh": "规则与心得（逸马桌游部落格）", "en": "Rules and review (Gameurlife blog, Chinese)" },
+          "url": "https://gameurlife.pixnet.net/blog/posts/10344862973"
         }
       ]
     }
