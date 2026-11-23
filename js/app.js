@@ -229,19 +229,28 @@
         const pages = Math.ceil(inBand.length / PER_PAGE);
         const page = Math.min(Math.max(1, catPage[key] || 1), pages);
         const here = inBand.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+        // With more than one page: where we are in the title, a "more games" card at the end of the grid, and
+        // numbered page buttons, so nobody thinks the first 8 are all there is.
+        const first = (page - 1) * PER_PAGE + 1, last = first + here.length - 1;
+        const left = inBand.length - last;
+        const pageBtn = (n, label, cls = "") =>
+          `<button class="page-btn${cls}" type="button" data-band-page="${key}" data-page="${n}"${n === page ? ' aria-current="page"' : ""}${n < 1 || n > pages ? " disabled" : ""} aria-label="${esc(t("pageN", { n }))}">${esc(label)}</button>`;
         const pager =
           pages > 1
             ? `<nav class="cat-pager" aria-label="${esc(t("cat_" + cat))} · ${esc(t("band_" + b.key))}">
-            <button class="btn ghost btn-sm" type="button" data-band-page="${key}" data-page="${page - 1}"${page <= 1 ? " disabled" : ""}>${esc(t("prevPage"))}</button>
-            <span>${esc(t("pageOf", { n: page, m: pages }))}</span>
-            <button class="btn ghost btn-sm" type="button" data-band-page="${key}" data-page="${page + 1}"${page >= pages ? " disabled" : ""}>${esc(t("nextPage"))}</button>
+            ${pageBtn(page - 1, t("prevPage"), " is-step")}
+            ${Array.from({ length: pages }, (_, k) => pageBtn(k + 1, String(k + 1), k + 1 === page ? " is-on" : "")).join("")}
+            ${page < pages ? pageBtn(page + 1, t("nextPage"), " is-step is-next") : pageBtn(1, t("backFirst"), " is-step")}
           </nav>`
             : "";
+        const more = left > 0
+          ? `<button class="more-tile" type="button" data-band-page="${key}" data-page="${page + 1}"><b>${esc(t("moreGames", { n: left }))}</b><span>${esc(t("moreNext"))}</span></button>`
+          : "";
         return `
-          <div class="band" id="band-${cat}-${i}">
-            <h3 class="band-title"><span class="dots" aria-hidden="true">${dots(i)}</span> ${esc(t("band_" + b.key))}
-              <span class="band-range">${esc(t("bandRange", { v: b.range }))} · ${esc(t("count", { n: inBand.length }))}</span></h3>
-            <div class="grid">${here.map(card).join("")}</div>
+          <div class="band band-${b.key}" id="band-${cat}-${i}">
+            <h3 class="band-title"><span class="band-pill"><span class="dots" aria-hidden="true">${dots(i)}</span> ${esc(t("band_" + b.key))}</span>
+              <span class="band-range">${esc(t("bandRange", { v: b.range }))} · ${esc(pages > 1 ? t("bandShowing", { a: first, b: last, n: inBand.length, p: page, m: pages }) : t("count", { n: inBand.length }))}</span></h3>
+            <div class="grid">${here.map(card).join("")}${more}</div>
             ${pager}
           </div>`;
       }).join("");

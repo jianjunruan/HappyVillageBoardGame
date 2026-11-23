@@ -100,7 +100,46 @@ main.wrap { padding-top: 12px; }
 
 /* Category sections, split into difficulty bands */
 .cat-section { margin: 4px 0 40px; }
-.cat-pager { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 18px 0 0; flex-wrap: wrap; color: var(--muted); font-size: 0.9rem; }
+/* Each difficulty band has its own colour: a tinted panel, a coloured edge and title pill, and its pager. */
+:root {
+  --band-light: #2e8b57; --band-light-soft: #e9f6ee;
+  --band-medium-light: #2b78c2; --band-medium-light-soft: #e7f1fb;
+  --band-medium-heavy: #c97a0c; --band-medium-heavy-soft: #fcf1df;
+  --band-heavy: #b83227; --band-heavy-soft: #fae7e4;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --band-light: #5fd393; --band-light-soft: #17281e;
+    --band-medium-light: #6fb3f2; --band-medium-light-soft: #16222f;
+    --band-medium-heavy: #f2b04e; --band-medium-heavy-soft: #2c2312;
+    --band-heavy: #f07a6e; --band-heavy-soft: #2e1916;
+  }
+}
+.band { --band: var(--accent); --band-soft: var(--accent-soft); margin: 22px 0 0; padding: 4px 16px 18px; border-radius: var(--radius); background: var(--band-soft); border-left: 5px solid var(--band); }
+.band-light { --band: var(--band-light); --band-soft: var(--band-light-soft); }
+.band-medium-light { --band: var(--band-medium-light); --band-soft: var(--band-medium-light-soft); }
+.band-medium-heavy { --band: var(--band-medium-heavy); --band-soft: var(--band-medium-heavy-soft); }
+.band-heavy { --band: var(--band-heavy); --band-soft: var(--band-heavy-soft); }
+.band-pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 12px; border-radius: 999px; background: var(--band); color: #fff; font-weight: 700; }
+.band-pill .dots { color: #fff; }
+@media (prefers-color-scheme: dark) { .band-pill, .band-pill .dots { color: #111; } }
+.band .band-range { color: var(--text); opacity: 0.8; }
+/* "N more games · next page" at the end of a band's grid */
+.more-tile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-height: 160px; padding: 16px; border: 2px dashed var(--band);
+  border-radius: var(--radius); background: var(--surface); color: var(--band); font: inherit; cursor: pointer; text-align: center; }
+.more-tile b { font-size: 1.25rem; }
+.more-tile span { font-weight: 700; padding: 6px 14px; border-radius: 999px; background: var(--band); color: #fff; }
+@media (prefers-color-scheme: dark) { .more-tile span { color: #111; } }
+.more-tile:hover, .more-tile:focus-visible { border-style: solid; outline: none; box-shadow: 0 0 0 3px var(--band-soft), 0 0 0 5px var(--band); }
+/* the band's page buttons */
+.cat-pager { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 18px 0 0; flex-wrap: wrap; }
+.page-btn { min-width: 42px; min-height: 42px; padding: 6px 12px; border: 2px solid var(--band); border-radius: 999px; background: var(--surface); color: var(--band); font: inherit; font-weight: 700; cursor: pointer; }
+.page-btn.is-on { background: var(--band); color: #fff; }
+@media (prefers-color-scheme: dark) { .page-btn.is-on, .page-btn.is-next { color: #111; } }
+.page-btn.is-next { background: var(--band); color: #fff; padding: 6px 18px; }
+.page-btn:disabled { opacity: 0.35; cursor: default; }
+.page-btn:focus-visible { outline: 3px solid var(--band); outline-offset: 2px; }
+@media (max-width: 520px) { .band { padding: 4px 10px 14px; } .page-btn.is-step { flex: 1 1 40%; } }
 .cat-title {
   display: flex;
   align-items: baseline;
@@ -366,3 +405,5 @@ dialog.login { width: min(380px, calc(100vw - 24px)); }
   .share-acts .btn { flex: 1 1 100%; }
   .share-img { max-width: 100%; }
 }
+/* dark mode: dark text on the bright band-coloured buttons (after the rules above so it wins) */
+@media (prefers-color-scheme: dark) { .page-btn.is-next, .page-btn.is-on { color: #111; } }
