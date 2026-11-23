@@ -99,6 +99,8 @@
       add: "提议活动 →",
       all: "全部 {n} 个 →",
       adopted: "✓ 已采纳",
+      watching: "👀 关注中",
+      watchingTip: "管理员已经注意到了，还在观望，还没确定是否采纳。",
       by: "{name} 提议",
       byAnon: "匿名提议",
       none: "💡 想参加什么活动？提议一个期望活动 →",
@@ -113,6 +115,8 @@
       add: "Suggest one →",
       all: "All {n} →",
       adopted: "✓ Adopted",
+      watching: "👀 Watching",
+      watchingTip: "The admins have seen this and are thinking about it; not decided yet.",
       by: "by {name}",
       byAnon: "anonymous",
       none: "💡 What event would you like? Suggest one →",
@@ -161,8 +165,10 @@
       <ul class="hw-list">${shown
         .map((w) => {
           const on = voted.has(w.id);
-          return `<li class="hw-item${w.status === "adopted" ? " is-adopted" : ""}">
-          <a href="events.html#wishes"><span class="hw-title"><b>${esc(w.title)}</b>${w.status === "adopted" ? ` <span class="hw-badge">${esc(tr("adopted"))}</span>` : ""}</span>
+          const badge = w.status === "adopted" ? ` <span class="hw-badge">${esc(tr("adopted"))}</span>`
+            : w.status === "watching" ? ` <span class="hw-badge is-watch" title="${esc(tr("watchingTip"))}">${esc(tr("watching"))}</span>` : "";
+          return `<li class="hw-item${w.status === "adopted" ? " is-adopted" : w.status === "watching" ? " is-watching" : ""}">
+          <a href="events.html#wishes"><span class="hw-title"><b>${esc(w.title)}</b>${badge}</span>
           ${w.description ? `<span class="hw-desc">${esc(w.description)}</span>` : ""}
           <small>${esc(w.name ? tr("by", { name: w.name }) : tr("byAnon"))}</small></a>
           <div class="hw-vote"><button type="button" class="hw-vote-btn${on ? " is-on" : ""}" data-vote="${w.id}" aria-pressed="${on}" aria-label="${esc(tr("voteLabel", { title: w.title }))}">${esc(tr(on ? "voted" : "vote"))}</button><small>${esc(tr("votes", { n: w.votes || 0 }))}</small></div>

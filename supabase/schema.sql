@@ -942,12 +942,13 @@ create table if not exists public.event_wishes (
   created_at timestamptz not null default now(),
   user_id uuid references auth.users (id) on delete set null  -- the account that suggested it; never readable
 );
--- 'open' (待定), 'adopted' (已采纳) or 'rejected' (未采纳). (The first version had no 'rejected'.)
+-- 'open' (待定), 'watching' (关注中: an admin has seen it and is considering it, not decided yet), 'adopted' (已采纳)
+-- or 'rejected' (未采纳). (The first version had no 'rejected'; 'watching' came later.)
 -- The name is optional: an empty name means the wish was suggested anonymously (匿名).
 alter table public.event_wishes drop constraint if exists event_wishes_name_check;
 alter table public.event_wishes add constraint event_wishes_name_check check (char_length(trim(name)) <= 30);
 alter table public.event_wishes drop constraint if exists event_wishes_status_check;
-alter table public.event_wishes add constraint event_wishes_status_check check (status in ('open', 'adopted', 'rejected'));
+alter table public.event_wishes add constraint event_wishes_status_check check (status in ('open', 'watching', 'adopted', 'rejected'));
 -- The suggesting browser's secret (like event sign-ups); never readable. Lets them change or delete it.
 alter table public.event_wishes add column if not exists token text;
 -- How many "+1" votes it has (kept up to date by toggle_event_wish_vote).

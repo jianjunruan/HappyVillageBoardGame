@@ -265,6 +265,9 @@
       wishSubmit: "💡 提交",
       wishThanks: "✓ 谢谢！你的期望活动已提交。",
       wishAdopted: "✓ 已采纳",
+      wishWatching: "👀 关注中",
+      wishWatchingTip: "管理员已经注意到了，还在观望，还没确定是否采纳。",
+      wishWatch: "👀 关注",
       wishBy: "{name} 提议 · {date}",
       wishRejected: "未采纳",
       wishAdopt: "✓ 采纳",
@@ -670,6 +673,9 @@
       wishSubmit: "💡 Send",
       wishThanks: "✓ Thanks! Your suggestion was sent.",
       wishAdopted: "✓ Adopted",
+      wishWatching: "👀 Watching",
+      wishWatchingTip: "The admins have seen this and are thinking about it; not decided yet.",
+      wishWatch: "👀 Watch",
       wishBy: "Suggested by {name} · {date}",
       wishRejected: "Declined",
       wishAdopt: "✓ Adopt",
@@ -1170,20 +1176,23 @@
     const mineW = wishMine.has(w.id);
     const voted = wishVoted.has(w.id);
     const badge = st === "adopted" ? `<span class="ev-wish-badge">${esc(tr("wishAdopted"))}</span>`
+      : st === "watching" ? `<span class="ev-wish-badge is-watch" title="${esc(tr("wishWatchingTip"))}">${esc(tr("wishWatching"))}</span>`
       : st === "rejected" ? `<span class="ev-wish-badge is-no">${esc(tr("wishRejected"))}</span>` : "";
     // A declined wish keeps its votes but takes no new ones (taking a vote back still works).
     const canVote = st !== "rejected" || voted;
     const voteBtn = `<button class="ev-vote${voted ? " is-on" : ""}" type="button" data-wish-vote="${w.id}" aria-pressed="${voted}"${canVote ? "" : " disabled"}>${esc(tr(voted ? "voted" : canVote ? "vote" : "voteNo"))}</button>`;
     const admin = isAdmin
-      ? [st !== "adopted" && `<button class="link-btn" type="button" data-wish-status="adopted" data-id="${w.id}">${esc(tr("wishAdopt"))}</button>`,
+      ? [st !== "watching" && st !== "adopted" && `<button class="link-btn" type="button" data-wish-status="watching" data-id="${w.id}">${esc(tr("wishWatch"))}</button>`,
+         st !== "adopted" && `<button class="link-btn" type="button" data-wish-status="adopted" data-id="${w.id}">${esc(tr("wishAdopt"))}</button>`,
          st !== "rejected" && `<button class="link-btn" type="button" data-wish-status="rejected" data-id="${w.id}">${esc(tr("wishReject"))}</button>`,
          st !== "open" && `<button class="link-btn" type="button" data-wish-status="open" data-id="${w.id}">${esc(tr("wishReopen"))}</button>`]
           .filter(Boolean).join("")
       : "";
     const own = mineW ? `<button class="link-btn" type="button" data-wish-edit="${w.id}">${esc(tr("wishEdit"))}</button>` : "";
     const del = mineW || isAdmin ? `<button class="link-btn" type="button" data-wish-delete="${w.id}">${esc(tr("wishDelete"))}</button>` : "";
-    return `<article class="ev-wish${st === "adopted" ? " is-adopted" : st === "rejected" ? " is-rejected" : ""}${mineW ? " is-mine" : ""}">
+    return `<article class="ev-wish${st === "adopted" ? " is-adopted" : st === "watching" ? " is-watching" : st === "rejected" ? " is-rejected" : ""}${mineW ? " is-mine" : ""}">
       <div class="ev-wish-top"><h3>${esc(w.title)}</h3>${badge}${mineW ? `<span class="ev-wish-mine">${esc(tr("wishMine"))}</span>` : ""}</div>
+      ${st === "watching" ? `<p class="ev-wish-watch">${esc(tr("wishWatchingTip"))}</p>` : ""}
       ${w.description ? `<p class="ev-wish-desc">${esc(w.description)}</p>` : ""}
       <p class="ev-wish-by">${esc(w.name ? tr("wishBy", { name: w.name, date: fmtDate(w.created_at.slice(0, 10)) }) : tr("wishByAnon", { date: fmtDate(w.created_at.slice(0, 10)) }))}</p>
       <div class="ev-wish-vote">${voteBtn}<span class="ev-wish-count">${esc(tr("votes", { n: w.votes || 0 }))}</span></div>

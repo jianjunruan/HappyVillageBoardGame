@@ -386,6 +386,9 @@ dialog.login { width: min(380px, calc(100vw - 24px)); }
 .hw-item.is-adopted { outline: 2px solid var(--ok); }
 .hw-item a { flex: 1; background: none; }
 .hw-item.is-adopted a { outline: none; }
+.hw-item.is-watching { outline: 2px dashed var(--watch, #7b4fc9); }
+.hw-badge.is-watch { background: var(--watch, #7b4fc9); }
+@media (prefers-color-scheme: dark) { .hw-item.is-watching { outline-color: #b393f0; } .hw-badge.is-watch { background: #b393f0; color: #111; } }
 .hw-vote { display: flex; align-items: center; gap: 8px; padding: 0 10px 8px; }
 .hw-vote small { color: var(--muted); font-size: 0.78rem; }
 .hw-vote-btn { padding: 3px 10px; border: 1px solid var(--accent); border-radius: 999px; background: var(--surface); color: var(--accent); font: inherit; font-size: 0.8rem; font-weight: 700; cursor: pointer; }
