@@ -1,8 +1,10 @@
 // Werewolf judge's recorder (werewolf.html), linked from every 狼人杀 game ("judge" in data/games.json).
 //
 // Two views:
-//   • the judge's view (only on the judge's phone): deal the roles, run each night step by step, the sheriff
-//     election, vote counting, the hunter, knight, wolf beauty and idiot, a speaking timer, the full log and past games;
+//   • the judge's view (only on the judge's phone): pick a board (or the roles one by one), deal the roles, run each
+//     night step by step, the sheriff election, vote counting, a speaking timer, the full log and past games. Roles:
+//     werewolf, wolf beauty, villager, seer, witch, hunter, knight, and from 米勒山谷狼人：新月 the defender (守卫),
+//     elder (长老), scapegoat (替罪羊), idiot (白痴) and piper (吹笛人, plays alone);
 //   • the players' view: only what everyone may know — seats in or out, the sheriff, deaths announced in the morning,
 //     every vote and its result, the timer; the roles only once the game is over. It shows on the judge's phone
 //     ("在本机显示"), or on another screen (a TV, a tablet) through a 6-character room code:
@@ -55,6 +57,42 @@
       charmDie: "殉情",
       ruleBeauty: "狼美人：每晚魅惑一人，狼美人出局时被魅惑者殉情（殉情不能发动技能）；狼美人不能自爆。骑士：白天发言阶段可翻牌决斗一次，决斗到狼则狼出局并立即天黑，决斗到好人则骑士以死谢罪。",
       ruleIdiot: "白痴：被投票放逐时翻牌免死，之后留在场上但不能再投票；被狼刀、被毒照常出局。",
+      ruleGuard: "守卫：每晚第一个睁眼，守护一人（可以守自己），不能连续两晚守同一人；被守护的人当晚不会被狼杀。",
+      ruleElder: "长老：第一次被狼刀不会死（第二次才死）；如果被投票放逐、被毒或被猎人带走，所有好人神职从此失去技能。",
+      ruleGoat: "替罪羊：放逐投票平票时，由替罪羊代替出局，并决定第二天谁可以投票。",
+      rulePiper: "吹笛人：自己一个阵营。每晚迷惑两名玩家（不能迷惑自己），被迷惑的玩家睁眼互认；当所有存活玩家都被迷惑时，吹笛人独自获胜。",
+      customRoles: "选择这局用到的神职和特殊角色（点选加入，再点移除）：",
+      guardWitch: "同一晚被守护又被女巫救",
+      guardDie: "同守同救则死",
+      guardLive: "仍然活着",
+      stepGuard: "守卫",
+      stepPiper: "吹笛人",
+      guardOpen: "🛡️ 守卫请睁眼",
+      guardHint: "请选择今晚要守护的玩家（可以守自己{ban}）。",
+      guardBan: "；不能连续守 {s}",
+      noGuard: "空守",
+      confirmGuard: "守护 {s}",
+      piperOpen: "🎵 吹笛人请睁眼",
+      piperHint: "请选择今晚要迷惑的两名玩家（不能迷惑自己，已被迷惑的不用再选）。",
+      confirmPipe: "迷惑 {list}",
+      pipedWake: "🎵 请所有被迷惑的玩家睁眼互认：{list}，然后闭眼。",
+      powersLost: "⚠️ 长老被好人害死，神职已经失去技能：照常念流程，假装等待即可。",
+      guard: "守卫",
+      piper: "吹笛人",
+      piped: "已被迷惑",
+      elderSaved: "长老第一次被狼刀，没有死",
+      goatOut: "平票 → 替罪羊 {s} 出局",
+      goatHint: "替罪羊出局后，由他决定明天谁可以投票（投票时把不能投票的人记为弃票）。",
+      winPiper: "🎵 吹笛人独自获胜",
+      piperWin: "吹笛人胜",
+      solo: "🎵 吹笛人 {n}",
+      c_goat: "平票时替罪",
+      p_guard: "🛡️ 守卫守 {s}",
+      p_pipe: "🎵 吹笛人迷惑 {list}",
+      p_elder: "👴 长老挡下第一刀",
+      e_elderLost: "👴 长老被好人害死：所有神职失去技能",
+      e_goat: "🐐 平票，替罪羊 {s} 代替出局",
+      e_win_piper: "🏆 所有存活玩家都被迷惑，吹笛人独自获胜",
       deal: "🃏 发身份",
       dealHint: "先选身份，再点座位号。或者直接随机发牌。",
       clear: "清除",
@@ -369,6 +407,42 @@
       charmDie: "charmed player dies",
       ruleBeauty: "Wolf beauty: charms a player each night; when she is out, the charmed player dies with her (and can't use a skill); she can't self-destruct. Knight: once, during the day's talk, may duel a player: a wolf is out and night falls at once; a good player means the knight dies instead.",
       ruleIdiot: "Idiot: when voted out, reveals the card and stays, but can no longer vote; dies as usual to wolves or poison.",
+      ruleGuard: "Defender: wakes first each night and protects a player from the wolves (may protect herself), never the same player two nights running.",
+      ruleElder: "Elder: survives the first werewolf attack (dies at the second). If the village kills her (vote, poison or the hunter), every good role loses its power for the rest of the game.",
+      ruleGoat: "Scapegoat: when the exile vote is tied, the scapegoat is out instead, and decides who may vote the next day.",
+      rulePiper: "Piper: plays alone. Each night charms two players (not herself); the charmed players wake and see each other. When every player left is charmed, the piper wins alone.",
+      customRoles: "Pick the special roles in this game (tap to add, tap again to remove):",
+      guardWitch: "Protected and saved by the witch the same night",
+      guardDie: "dies",
+      guardLive: "lives",
+      stepGuard: "Defender",
+      stepPiper: "Piper",
+      guardOpen: "🛡️ Defender, wake up",
+      guardHint: "Pick a player to protect tonight (herself allowed{ban}).",
+      guardBan: "; not {s} again",
+      noGuard: "No one",
+      confirmGuard: "Protect {s}",
+      piperOpen: "🎵 Piper, wake up",
+      piperHint: "Pick two players to charm (not herself; players already charmed don't count).",
+      confirmPipe: "Charm {list}",
+      pipedWake: "🎵 Charmed players, wake up and see each other: {list}. Then sleep.",
+      powersLost: "⚠️ The village killed the elder, so the good roles have lost their powers: call this step and pretend to wait.",
+      guard: "Defender",
+      piper: "Piper",
+      piped: "charmed",
+      elderSaved: "The elder survived her first werewolf attack",
+      goatOut: "Tie → scapegoat {s} is out",
+      goatHint: "The scapegoat now decides who may vote tomorrow (mark the others as abstaining).",
+      winPiper: "🎵 The piper wins alone",
+      piperWin: "Piper wins",
+      solo: "🎵 Piper {n}",
+      c_goat: "scapegoat on a tie",
+      p_guard: "🛡️ Defender protected {s}",
+      p_pipe: "🎵 Piper charmed {list}",
+      p_elder: "👴 The elder survived the attack",
+      e_elderLost: "👴 The village killed the elder: the good roles lose their powers",
+      e_goat: "🐐 Tied vote: scapegoat {s} is out instead",
+      e_win_piper: "🏆 Every player left is charmed: the piper wins alone",
       deal: "🃏 Deal roles",
       dealHint: "Pick a role, then tap seats. Or deal at random.",
       clear: "Clear",
@@ -648,10 +722,19 @@
     hunter: { zh: "猎人", en: "Hunter", c: "god", side: "god" },
     knight: { zh: "骑士", en: "Knight", c: "god", side: "god" },
     idiot: { zh: "白痴", en: "Idiot", c: "god", side: "god" },
+    guard: { zh: "守卫", en: "Defender", c: "god", side: "god" },
+    elder: { zh: "长老", en: "Elder", c: "god", side: "god" },
+    scapegoat: { zh: "替罪羊", en: "Scapegoat", c: "god", side: "god" },
+    piper: { zh: "吹笛人", en: "Piper", c: "solo", side: "solo" },
   };
+  // Every special role a board can use, in the order they're listed.
+  const SPECIALS = ["seer", "witch", "hunter", "guard", "idiot", "knight", "elder", "scapegoat", "beauty", "piper"];
   const BOARDS = {
     beauty: { zh: "预女猎骑·狼美人", en: "Seer, Witch, Hunter, Knight · Wolf Beauty", specials: ["beauty", "seer", "witch", "hunter", "knight"], wolves: 3 },
     classic: { zh: "预女猎白", en: "Seer, Witch, Hunter, Idiot", specials: ["seer", "witch", "hunter", "idiot"], wolves: 4 },
+    guard: { zh: "预女猎守", en: "Seer, Witch, Hunter, Defender", specials: ["seer", "witch", "hunter", "guard"], wolves: 4 },
+    newmoon: { zh: "米勒山谷·新月", en: "Miller's Hollow · New Moon", specials: ["seer", "witch", "hunter", "guard", "idiot", "elder", "scapegoat", "piper"], wolves: 3, n: 14 },
+    custom: { zh: "自选角色", en: "Pick the roles", specials: null, wolves: 3 },
   };
   const rn = (r) => (r && ROLES[r] ? ROLES[r][lang()] : "?");
   const boardName = (b) => (BOARDS[b] ? BOARDS[b][lang()] : "");
@@ -685,10 +768,15 @@
       cfg: cfg || { board: "beauty", n: 12, wolves: 3, vils: 4, duelCharm: false, charmRepeat: false, selfSave: "never", win: "side", hideRoles: false },
       players: [], witch: { anti: true, poison: true }, sheriff: null, sheriffDone: false,
       night: null, day: null, charm: null, knightUsed: false, pending: [], log: [], pub: [], winner: null,
+      lastGuard: null, piped: [], elderHit: false, powersLost: false,
       elect: { stage: "signup", cands: [], withdrawn: [] }, vote: null, seq: 0,
     };
   }
-  const BOARD = () => BOARDS[S.cfg.board] || BOARDS.beauty;
+  // The custom board keeps its roles in cfg.custom.
+  const BOARD = () => {
+    const b = BOARDS[S.cfg.board] || BOARDS.beauty;
+    return b.specials ? b : { ...b, specials: SPECIALS.filter((r) => (S.cfg.custom || []).includes(r)) };
+  };
   const has = (r) => r === "wolf" || r === "vil" || BOARD().specials.includes(r);
   function save() {
     store.set(KEY, { S, hist: hist.slice(-40) });
@@ -699,6 +787,7 @@
       S = d.S;
       hist = Array.isArray(d.hist) ? d.hist : [];
       if (!S.pub) S.pub = [];
+      if (!S.piped) S.piped = [];
       return;
     }
     S = fresh();
@@ -761,6 +850,9 @@
         if (v.poison) parts.push(tr("p_poison", { s: s(v.poison) }));
         if (v.charm) parts.push(tr("p_charm", { s: s(v.charm) }));
         if (v.check) parts.push(tr("p_check", { s: s(v.check), res: tr(v.res ? "wolfWord" : "goodWord") }));
+        if (v.guard) parts.unshift(tr("p_guard", { s: s(v.guard) }));
+        if (v.pipe && v.pipe.length) parts.push(tr("p_pipe", { list: list(v.pipe, roleOf) }));
+        if (v.elder) parts.push(tr("p_elder"));
         return parts.join(lang() === "zh" ? "；" : "; ");
       }
       case "death": return tr("e_death", { s: s(v.s), cause: tr("c_" + (CAUSES.includes(v.cause) ? v.cause : "wolf")) });
@@ -768,7 +860,9 @@
       case "hunterCharm": return tr("e_hunterCharm");
       case "beautyDuel": return tr("e_beautyDuel", { s: s(v.s) });
       case "beautyCharm": return tr("e_beautyCharm", { s: s(v.s) });
-      case "win": return tr("e_win_" + (["good", "god", "vil", "all"].includes(v.w) ? v.w : "good"));
+      case "win": return tr("e_win_" + (["good", "god", "vil", "all", "piper"].includes(v.w) ? v.w : "good"));
+      case "elderLost": return tr("e_elderLost");
+      case "goat": return tr("e_goat", { s: s(v.s) });
       case "sheriff": return v.s ? tr("e_sheriff", { s: s(v.s) }) : tr("e_badgeLost");
       case "noCand": return tr("e_noCand");
       case "cands": return tr("e_cands", { up: list(v.up, roleOf), down: list(v.down, roleOf) });
@@ -801,8 +895,8 @@
       default: return "";
     }
   }
-  const CAUSES = ["duel", "duelFail", "charm", "wolf", "poison", "exile", "shot", "explode"];
-  const PUBLIC_CAUSES = ["exile", "shot", "explode", "duel", "duelFail"]; // night deaths stay "out"
+  const CAUSES = ["duel", "duelFail", "charm", "wolf", "poison", "exile", "shot", "explode", "goat"];
+  const PUBLIC_CAUSES = ["exile", "shot", "explode", "duel", "duelFail", "goat"]; // night deaths stay "out"
 
   function needCounts() {
     const c = { wolf: S.cfg.wolves, vil: S.cfg.vils };
@@ -830,8 +924,14 @@
     p.at = phaseKey();
     L("death", { s: seat, cause });
     if (cause === "charm" && !applyingNight) PL("out", { s: seat });
+    // The village killing the elder takes every good role's power away.
+    if (p.role === "elder" && ["exile", "poison", "shot", "goat"].includes(cause) && !S.powersLost) {
+      S.powersLost = true;
+      L("elderLost");
+    }
     if (p.role === "hunter") {
-      if (cause === "poison") L("hunterPoison");
+      if (S.powersLost) {} // no powers left: no shot (the log already says why)
+      else if (cause === "poison") L("hunterPoison");
       else if (cause === "charm") L("hunterCharm");
       else S.pending.push({ type: "hunter", seat });
     }
@@ -850,12 +950,19 @@
     const w = a.filter((p) => sideOf(p.role) === "wolf").length;
     const g = a.filter((p) => sideOf(p.role) === "god").length;
     const v = a.filter((p) => p.role === "vil").length;
+    const piper = a.find((p) => p.role === "piper");
+    const hasG = S.players.some((p) => sideOf(p.role) === "god"), hasV = S.players.some((p) => p.role === "vil");
     let win = null;
-    if (w === 0) win = "good";
-    else if (S.cfg.win === "side" ? g === 0 || v === 0 : g + v === 0) win = "wolf";
+    // The piper wins the moment everyone else still in is charmed.
+    if (piper && a.every((p) => p === piper || S.piped.includes(p.seat))) win = "piper";
+    else if (w === 0 && !piper) win = "good";
+    // 屠边 only counts a side the board has (a custom board may have no gods, or no villagers).
+    else if (w > 0) {
+      if (S.cfg.win === "side" ? (hasG && g === 0) || (hasV && v === 0) : g + v === 0) win = "wolf";
+    }
     if (win && !S.winner) {
       S.winner = win;
-      LP("win", { w: win === "good" ? "good" : S.cfg.win === "city" ? "all" : g === 0 ? "god" : "vil" });
+      LP("win", { w: win === "piper" ? "piper" : win === "good" ? "good" : S.cfg.win === "city" ? "all" : hasG && g === 0 ? "god" : "vil" });
     }
     if (!win) S.winner = null;
   }
@@ -870,15 +977,26 @@
     });
   }
   function startNight() {
-    S.night = { step: "wolf", kill: null, save: false, poison: null, check: null, charm: null };
+    S.night = { step: nightSteps()[0], kill: null, save: false, poison: null, check: null, charm: null, guard: null, pipe: [] };
     S.day = null;
   }
-  function nightDeaths(n) {
+  // Who dies at dawn. The defender stops the wolves' kill (protected and saved the same night: cfg.guardWitch);
+  // the elder survives the first time the wolves reach her (elder: true tells the caller).
+  function nightOutcome(n) {
     const d = [];
-    if (n.kill && !n.save) d.push([n.kill, "wolf"]);
-    if (n.poison && (n.poison !== n.kill || n.save)) d.push([n.poison, "poison"]);
-    return d;
+    let hit = n.kill && !(n.guard && n.guard === n.kill);
+    if (n.kill && n.guard === n.kill && n.save && S.cfg.guardWitch !== "live") hit = true; // 同守同救则死
+    else if (n.save) hit = false;
+    let elder = false;
+    if (hit && P(n.kill) && P(n.kill).role === "elder" && !S.elderHit) {
+      hit = false;
+      elder = true;
+    }
+    if (hit) d.push([n.kill, "wolf"]);
+    if (n.poison && !d.some((x) => x[0] === n.poison)) d.push([n.poison, "poison"]);
+    return { deaths: d, elder };
   }
+  const nightDeaths = (n) => nightOutcome(n).deaths;
   function applyDeaths(deaths) {
     const before = alive().map((p) => p.seat);
     applyingNight = true;
@@ -887,10 +1005,13 @@
     PL("announce", { list: before.filter((s) => !P(s).alive) });
   }
   function startDay() {
-    const n = S.night, deaths = nightDeaths(n);
+    const n = S.night, out = nightOutcome(n), deaths = out.deaths;
     if (n.save) S.witch.anti = false;
     if (n.poison) S.witch.poison = false;
-    L("night", { kill: n.kill, save: n.save, poison: n.poison, charm: n.charm, check: n.check, res: n.check ? isWolf(n.check) : false });
+    if (out.elder) S.elderHit = true;
+    S.lastGuard = n.guard || null;
+    (n.pipe || []).forEach((x) => !S.piped.includes(x) && S.piped.push(x));
+    L("night", { kill: n.kill, save: n.save, poison: n.poison, charm: n.charm, check: n.check, res: n.check ? isWolf(n.check) : false, guard: n.guard, pipe: n.pipe, elder: out.elder });
     S.charm = n.charm || null;
     S.phase = "day";
     S.day = { exiled: false, announced: false };
@@ -924,7 +1045,7 @@
         const r = p.role ? ROLES[p.role] : null;
         const ok = filter ? filter(p) : true;
         const hide = S.cfg.hideRoles && S.phase !== "setup";
-        const tags = [S.sheriff === p.seat ? "👮" : "", S.charm === p.seat && !hide ? "💋" : "", p.role === "knight" && S.knightUsed ? "⚔️" : "", p.revealed ? "🃏" : ""].join("");
+        const tags = [S.sheriff === p.seat ? "👮" : "", S.charm === p.seat && !hide ? "💋" : "", S.piped && S.piped.includes(p.seat) && !hide ? "🎵" : "", p.role === "knight" && S.knightUsed ? "⚔️" : "", p.revealed ? "🃏" : ""].join("");
         const on = Array.isArray(pick) ? pick.includes(p.seat) : pick === p.seat;
         return `<button type="button" class="ww-seat ${r && !hide ? r.c : ""} ${p.alive ? "" : "dead"} ${on ? "sel" : ""} ${ok ? "" : "dim"}" ${onTap && ok ? `data-tap="${onTap}" data-seat="${p.seat}"` : "disabled"}>
           <span class="tags">${tags}</span><span class="no">${p.seat}</span><span class="rl">${hide ? "·" : r ? esc(rn(p.role)) : "—"}</span>${sub ? `<span class="rl sub">${esc(sub(p))}</span>` : ""}</button>`;
@@ -971,7 +1092,7 @@
     else if (tab === "more") h += renderMore();
     else {
       if (S.winner)
-        h += `<div class="ww-card win ${S.winner === "wolf" ? "wolfwin" : ""}"><div class="big">${esc(tr(S.winner === "good" ? "winGood" : "winWolf"))}</div><p class="hint">${esc(tr("winHint"))}</p><div class="ww-btns">${B("sec", "newGame", tr("newGame"))}</div></div>`;
+        h += `<div class="ww-card win ${S.winner === "wolf" ? "wolfwin" : S.winner === "piper" ? "piperwin" : ""}"><div class="big">${esc(tr(S.winner === "good" ? "winGood" : S.winner === "piper" ? "winPiper" : "winWolf"))}</div><p class="hint">${esc(tr("winHint"))}</p><div class="ww-btns">${B("sec", "newGame", tr("newGame"))}</div></div>`;
       h += S.phase === "night" ? renderNight() : renderDay();
       h += `<div class="ww-card"><h2>${esc(tr("status"))}</h2>${statusLine()}${seatGrid()}</div>`;
     }
@@ -982,8 +1103,8 @@
   function statusLine() {
     const a = alive();
     const w = a.filter((p) => sideOf(p.role) === "wolf").length, g = a.filter((p) => sideOf(p.role) === "god").length, v = a.filter((p) => p.role === "vil").length;
-    const wi = byRole("witch");
-    return `<div class="ww-pills"><span>${esc(tr("w", { n: w }))}</span><span>${esc(tr("g", { n: g }))}</span><span>${esc(tr("v", { n: v }))}</span>${
+    const wi = byRole("witch"), so = a.filter((p) => sideOf(p.role) === "solo").length;
+    return `<div class="ww-pills"><span>${esc(tr("w", { n: w }))}</span><span>${esc(tr("g", { n: g }))}</span><span>${esc(tr("v", { n: v }))}</span>${so ? `<span>${esc(tr("solo", { n: so }))}</span>` : ""}${
       wi && wi.alive ? `<span class="${S.witch.anti ? "" : "used"}">${esc(tr("antiShort"))}</span><span class="${S.witch.poison ? "" : "used"}">${esc(tr("poisonShort"))}</span>` : ""
     }</div>`;
   }
@@ -1004,7 +1125,9 @@
       ${row(tr("winRule"), chip(S.cfg.win === "side", "cfg", tr("side"), "win:side") + chip(S.cfg.win === "city", "cfg", tr("city"), "win:city"))}
       ${beauty ? row(tr("charmRepeat"), chip(!S.cfg.charmRepeat, "cfg", tr("never"), "charmRepeat:0") + chip(S.cfg.charmRepeat, "cfg", tr("always"), "charmRepeat:1")) : ""}
       ${beauty ? row(tr("duelCharm"), chip(!S.cfg.duelCharm, "cfg", tr("noCharmDie"), "duelCharm:0") + chip(S.cfg.duelCharm, "cfg", tr("charmDie"), "duelCharm:1")) : ""}
-      <p class="hint" style="margin:8px 0 0">${esc(tr(beauty ? "ruleBeauty" : "ruleIdiot"))}</p>
+      ${has("guard") && has("witch") ? row(tr("guardWitch"), chip(S.cfg.guardWitch !== "live", "cfg", tr("guardDie"), "guardWitch:die") + chip(S.cfg.guardWitch === "live", "cfg", tr("guardLive"), "guardWitch:live")) : ""}
+      ${S.cfg.board === "custom" ? `<p class="hint" style="margin:10px 0 6px">${esc(tr("customRoles"))}</p><div class="ww-palette">${SPECIALS.map((r) => chip((S.cfg.custom || []).includes(r), "togRole", rn(r), r)).join("")}</div>` : ""}
+      ${[["beauty", "ruleBeauty"], ["idiot", "ruleIdiot"], ["guard", "ruleGuard"], ["elder", "ruleElder"], ["scapegoat", "ruleGoat"], ["piper", "rulePiper"]].filter(([r]) => has(r) || (r === "beauty" && has("knight"))).map(([, k]) => `<p class="hint" style="margin:8px 0 0">${esc(tr(k))}</p>`).join("")}
     </div>
     <div class="ww-card"><h2>${esc(tr("deal"))}</h2><p class="hint">${esc(tr("dealHint"))}</p>
       <div class="ww-palette">${["wolf", "vil", ...BOARD().specials].map((k) => chip(ui.brush === k, "brush", rn(k), k)).join("")}${chip(ui.brush === null, "brush", tr("clear"), "")}</div>
@@ -1039,9 +1162,10 @@
 
   // ---- night ----
   function nightSteps() {
-    return ["wolf", ...["beauty", "witch", "seer", "hunter"].filter(has), "dawn"];
+    return [...["guard"].filter(has), "wolf", ...["beauty", "witch", "seer", "piper", "hunter"].filter(has), "dawn"];
   }
-  const STEP_LABEL = { wolf: "stepWolf", beauty: "stepBeauty", witch: "stepWitch", seer: "stepSeer", hunter: "stepHunter", dawn: "stepDawn" };
+  const STEP_LABEL = { guard: "stepGuard", wolf: "stepWolf", beauty: "stepBeauty", witch: "stepWitch", seer: "stepSeer", piper: "stepPiper", hunter: "stepHunter", dawn: "stepDawn" };
+  const lostNote = (r) => (S.powersLost && ["guard", "witch", "seer", "hunter"].includes(r) ? `<p class="hint">${esc(tr("powersLost"))}</p>` : "");
   function nightSet(o, move = true) {
     act(() => {
       Object.assign(S.night, o);
@@ -1059,7 +1183,33 @@
       return p && !p.alive ? `<p class="hint">${esc(tr("deadNote", { role: rn(r), seat: S_(p.seat) }))}</p>` : "";
     };
     const nextBtn = `<div class="ww-btns">${B("", "nightNext", tr("next"))}</div>`;
-    if (n.step === "wolf") {
+    const lost = S.powersLost && ["guard", "witch", "seer", "hunter"].includes(n.step);
+    if (lost) {
+      const p = byRole(n.step);
+      h += `<h2>${esc(tr({ guard: "guardOpen", witch: "witchOpen", seer: "seerOpen", hunter: "hunterOpen" }[n.step]))}</h2>${p && p.alive ? lostNote(n.step) : deadNote(n.step)}${nextBtn}`;
+    } else if (n.step === "guard") {
+      const g = byRole("guard");
+      h += `<h2>${esc(tr("guardOpen"))}</h2>${deadNote("guard")}`;
+      if (g && g.alive) {
+        const ban = S.lastGuard;
+        h += `<p class="hint">${esc(tr("guardHint", { ban: ban ? tr("guardBan", { s: S_(ban) }) : "" }))}</p>
+          ${seatGrid({ pick: sel(), filter: (p) => p.alive && p.seat !== ban, onTap: "pickSel" })}
+          <div class="ww-btns">${B("sec", "nightGuard", tr("noGuard"), { args: "0" })}${B("", "nightGuard", tr("confirmGuard", { s: S_(sel()) }), { dis: !sel(), args: String(sel() || 0) })}</div>`;
+      } else h += nextBtn;
+    } else if (n.step === "piper") {
+      const pp = byRole("piper");
+      h += `<h2>${esc(tr("piperOpen"))}</h2>${deadNote("piper")}`;
+      if (pp && pp.alive) {
+        const pick = ui.multi || [];
+        const can = alive().filter((p) => p.seat !== pp.seat && !S.piped.includes(p.seat)).length;
+        const need = Math.min(2, can);
+        h += `<p class="hint">${esc(tr("piperHint"))}</p>
+          ${seatGrid({ pick, filter: (p) => p.alive && p.seat !== pp.seat && !S.piped.includes(p.seat), onTap: "pickMulti", sub: (p) => (S.piped.includes(p.seat) ? tr("piped") : "") })}
+          <div class="ww-btns">${B("purple", "nightPipe", tr("confirmPipe", { list: pick.length ? list(pick) : "" }), { dis: pick.length !== need })}</div>`;
+        const charmed = [...new Set([...S.piped, ...(n.pipe || []), ...pick])]; // incl. the two being picked now
+        if (charmed.length) h += `<p class="hint" style="margin-top:8px">${esc(tr("pipedWake", { list: list(charmed) }))}</p>`;
+      } else h += nextBtn;
+    } else if (n.step === "wolf") {
       const wolves = S.players.filter((p) => sideOf(p.role) === "wolf" && p.alive).map((p) => p.seat);
       h += `<h2>${esc(tr("wolfOpen"))}</h2><p class="hint">${esc(tr("wolfHint", { list: list(wolves) }))}</p>
         ${seatGrid({ pick: sel(), filter: (p) => p.alive, onTap: "pickSel" })}
@@ -1103,15 +1253,18 @@
         h += `<div class="ww-result ${poisoned ? "w" : "g"}">${esc(tr(poisoned ? "cantShoot" : "canShoot"))}</div><p class="hint">${esc(tr("hunterHint", { s: S_(hu.seat) }))}${charmed && !poisoned ? " " + esc(tr("hunterCharmed")) : ""}</p>`;
       h += nextBtn;
     } else {
-      const dies = nightDeaths(n).map((d) => d[0]);
+      const outc = nightOutcome(n), dies = outc.deaths.map((d) => d[0]);
       const bz = byRole("beauty");
       if (bz && dies.includes(bz.seat) && n.charm && !dies.includes(n.charm)) dies.push(n.charm);
       const jr = judgeRole;
       h += `<h2>${esc(tr("dawn"))}</h2>
+        ${has("guard") ? `<div class="ww-row">${esc(tr("guard"))}<b>${esc(n.guard ? pn(n.guard, jr) : tr("noGuard"))}</b></div>` : ""}
         <div class="ww-row">${esc(tr("kill"))}<b>${esc(n.kill ? pn(n.kill, jr) : tr("noKill"))}</b></div>
+        ${outc.elder ? `<p class="hint">👴 ${esc(tr("elderSaved"))}</p>` : ""}
         ${has("beauty") ? `<div class="ww-row">${esc(tr("charm"))}<b>${esc(n.charm ? pn(n.charm, jr) : "—")}</b></div>` : ""}
         <div class="ww-row">${esc(tr("witch"))}<b>${esc(n.save ? tr("saved") : n.poison ? tr("poisoned", { s: pn(n.poison, jr) }) : tr("noUse"))}</b></div>
         <div class="ww-row">${esc(tr("seer"))}<b>${esc(n.check ? `${pn(n.check, jr)} → ${tr(isWolf(n.check) ? "wolfWord" : "goodWord")}` : "—")}</b></div>
+        ${has("piper") ? `<div class="ww-row">${esc(tr("piper"))}<b>${esc(n.pipe && n.pipe.length ? list(n.pipe, jr) : "—")}</b></div>` : ""}
         <p class="big">${esc(dies.length ? tr("deadLast", { list: list(dies) }) : tr("peaceful"))}</p>
         <div class="ww-btns">${B("gold", "startDay", tr("dayBreak"))}</div>`;
     }
@@ -1145,7 +1298,7 @@
       else {
         const k = byRole("knight");
         h += `<div class="ww-card"><h2>${esc(tr("exileVote"))}</h2><p class="hint">${esc(tr("exileHint"))}${S.sheriff && P(S.sheriff).alive ? " " + esc(tr("sheriffWeight", { s: S_(S.sheriff) })) : ""}</p>
-          ${k && k.alive && !S.knightUsed ? `<div class="ww-btns">${B("gold", "openDuel", tr("duelBtn"))}</div>` : ""}
+          ${k && k.alive && !S.knightUsed && !S.powersLost ? `<div class="ww-btns">${B("gold", "openDuel", tr("duelBtn"))}</div>` : ""}
           <div class="ww-btns">${B("red", "startExileVote", tr("startVote"))}</div>
           <div class="ww-btns">${B("sec", "openExplode", tr("explodeBtn"))}</div></div>`;
       }
@@ -1243,6 +1396,8 @@
     const isS = v.kind === "sheriff";
     let btns = "";
     if (lead.length === 1) btns += B(isS ? "gold" : "red", "finishVote", isS ? tr("electOk", { s: S_(lead[0]) }) : tr("exileOk", { s: S_(lead[0]) }), { args: `ok:${lead[0]}` });
+    const goat = !isS && lead.length > 1 ? byRole("scapegoat") : null;
+    if (goat && goat.alive) btns += B("red", "finishVote", tr("goatOut", { s: S_(goat.seat) }), { args: `goat:${goat.seat}` });
     if (lead.length > 1 && v.pk < 1) btns += B("purple", "finishVote", tr("goPk", { list: list(lead) }), { args: "pk:0" });
     btns += B("sec", "finishVote", tr(isS ? "badgeLostBtn" : "noExileBtn"), { args: "none:0" });
     const hint = tr("voteHint") + " " + (isS ? tr("voteHintS") : liveSheriff() ? tr("sheriffWeight", { s: S_(liveSheriff()) }) : "") + (v.pk ? tr(isS ? "pkHintS" : "pkHintE") : "");
@@ -1266,6 +1421,12 @@
         return;
       }
       S.vote = null;
+      if (action === "goat") {
+        S.day.exiled = true;
+        LP("goat", { s: target });
+        kill(target, "goat");
+        return;
+      }
       if (v.kind === "sheriff") setSheriffInner(action === "ok" ? target : null);
       else if (action === "ok") doExile(target);
       else {
@@ -1418,14 +1579,14 @@
   }
   function gameText(g) {
     const roleOf = (s) => (g.players.find((p) => p.seat === s) || {}).role;
-    const r = g.winner === "good" ? tr("goodWin") : g.winner === "wolf" ? tr("wolfWin") : tr("undecided");
+    const r = g.winner === "good" ? tr("goodWin") : g.winner === "wolf" ? tr("wolfWin") : g.winner === "piper" ? tr("piperWin") : tr("undecided");
     return `${tr("logHead", { board: boardName(g.board || "beauty") })} ${fmtT(g.t)}\n${tr("result", { r })}\n${logText(g.log, roleOf)}`;
   }
   function renderHistory() {
     let h = `<div class="ww-card"><h2>${esc(tr("historyCard"))}</h2>${S.phase === "setup" ? `<div class="ww-btns" style="margin-top:0">${B("sec", "closeHistory", tr("backSetup"))}</div>` : ""}
       ${archive.length ? "" : `<p class="hint">${esc(tr("noHistory"))}</p>`}`;
     archive.forEach((g, i) => {
-      const res = g.winner === "good" ? `<span class="good">${esc(tr("goodWin"))}</span>` : g.winner === "wolf" ? `<span class="bad">${esc(tr("wolfWin"))}</span>` : `<span class="hint">${esc(tr("undecided"))}</span>`;
+      const res = g.winner === "good" ? `<span class="good">${esc(tr("goodWin"))}</span>` : g.winner === "wolf" ? `<span class="bad">${esc(tr("wolfWin"))}</span>` : g.winner === "piper" ? `<span class="solo">${esc(tr("piperWin"))}</span>` : `<span class="hint">${esc(tr("undecided"))}</span>`;
       h += `<button type="button" class="ww-row ww-rowbtn" data-act="openGame" data-args="${i}"><span>${i === 0 ? esc(tr("lastGame")) : ""}${esc(fmtT(g.t))} · ${esc(boardName(g.board || "beauty"))} · ${esc(tr("rounds", { n: g.round }))}</span><b>${res} ${ui.open === i ? "▲" : "▼"}</b></button>`;
       if (ui.open === i) {
         const roleOf = (s) => (g.players.find((p) => p.seat === s) || {}).role;
@@ -1473,14 +1634,14 @@
   function renderPub(st) {
     if (!st || typeof st !== "object") return "";
     const seats = Array.isArray(st.seats) ? st.seats : [];
-    const over = st.winner === "good" || st.winner === "wolf";
+    const over = st.winner === "good" || st.winner === "wolf" || st.winner === "piper";
     const sheriff = N(st.sheriff);
     const pubEv = Array.isArray(st.pub) ? st.pub.filter((e) => e && typeof e === "object") : [];
     let h = "";
     const phase = st.phase === "night" ? `🌙 ${tr("nightN", { n: N(st.round) })}` : st.phase === "day" ? `☀️ ${tr("dayN", { n: N(st.round) })}` : tr("pubWaiting");
     h += `<div class="ww-card ww-pubhead ${st.phase === "night" ? "night" : st.phase === "day" ? "day" : ""}"><div class="ww-pubphase">${esc(phase)}</div>
       ${BOARDS[st.board] ? `<div class="hint">${esc(boardName(st.board))}</div>` : ""}</div>`;
-    if (over) h += `<div class="ww-card win ${st.winner === "wolf" ? "wolfwin" : ""}"><div class="big">${esc(tr(st.winner === "good" ? "winGood" : "winWolf"))}</div></div>`;
+    if (over) h += `<div class="ww-card win ${st.winner === "wolf" ? "wolfwin" : st.winner === "piper" ? "piperwin" : ""}"><div class="big">${esc(tr(st.winner === "good" ? "winGood" : st.winner === "piper" ? "winPiper" : "winWolf"))}</div></div>`;
     h += `<div id="pub-timer"></div>`;
     if (st.phase === "night" && !over) h += `<div class="ww-card ww-center"><div class="big">${esc(tr("pubNight"))}</div><p class="hint">${esc(tr("pubNightHint"))}</p></div>`;
     if (st.phase === "day") {
@@ -1800,13 +1961,33 @@
       if (!BOARDS[b]) return;
       S.cfg.board = b;
       S.cfg.wolves = BOARDS[b].wolves;
+      if (BOARDS[b].n) S.cfg.n = BOARDS[b].n;
+      if (b === "custom" && !Array.isArray(S.cfg.custom)) S.cfg.custom = ["seer", "witch", "hunter", "guard"];
       fixVil();
       initPlayers();
-      if (!["wolf", "vil", ...BOARDS[b].specials].includes(ui.brush)) ui.brush = "wolf";
+      if (!["wolf", "vil", ...BOARD().specials].includes(ui.brush)) ui.brush = "wolf";
       render();
     },
+    togRole: (r) => {
+      if (!SPECIALS.includes(r)) return;
+      const c = (S.cfg.custom = Array.isArray(S.cfg.custom) ? S.cfg.custom : []);
+      const i = c.indexOf(r);
+      i < 0 ? c.push(r) : c.splice(i, 1);
+      // keep at least one villager seat: more seats when needed
+      S.cfg.n = Math.max(S.cfg.n, c.length + S.cfg.wolves + 1);
+      fixVil();
+      initPlayers();
+      if (!["wolf", "vil", ...BOARD().specials].includes(ui.brush)) ui.brush = "wolf";
+      render();
+    },
+    nightGuard: (s) => nightSet({ guard: N(s) || null }),
+    nightPipe: () => {
+      const pick = (ui.multi || []).slice();
+      ui.multi = [];
+      nightSet({ pipe: pick });
+    },
     setN: (d) => {
-      S.cfg.n = Math.min(18, Math.max(8, S.cfg.n + N(d)));
+      S.cfg.n = Math.min(20, Math.max(Math.max(8, BOARD().specials.length + 2), S.cfg.n + N(d)));
       fixVil();
       initPlayers();
       render();
@@ -1936,6 +2117,15 @@
     copyRoom: (_, btn) => room && copyText(roomUrl(room.code), btn),
   };
   const taps = {
+    pickMulti: (s) => {
+      const m = (ui.multi = ui.multi || []), i = m.indexOf(s);
+      if (i >= 0) m.splice(i, 1);
+      else {
+        m.push(s);
+        if (m.length > 2) m.shift();
+      }
+      render();
+    },
     pickSel: (s) => {
       ui.sel = ui.sel === s ? null : s;
       render();

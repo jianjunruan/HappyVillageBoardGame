@@ -145,3 +145,7 @@ button { font: inherit; }
   .ww-grid { gap: 6px; }
   .clock { font-size: 38px; min-width: 110px; }
 }
+/* the piper plays alone (from 米勒山谷狼人：新月) */
+.ww-seat.solo .rl { color: var(--purple); }
+.solo { color: var(--purple); }
+.ww-card.win.piperwin { border-color: var(--purple); }
