@@ -1664,3 +1664,85 @@ grant execute on function public.submit_event_feedback(bigint, text, integer, te
 grant execute on function public.my_event_feedback(bigint, text) to anon, authenticated;
 grant execute on function public.admin_event_feedback(bigint) to authenticated;
 grant execute on function public.admin_feedback_summary() to authenticated;
+
+-- ---------------------------------------------------------------------------------------------------------------
+-- Werewolf judge rooms (werewolf.html): the judge's phone keeps the whole game; a room only holds what the players may
+-- see (seats alive or out, the sheriff, announced deaths, votes, the speaking timer, roles only once the game is over),
+-- so a second screen (a TV, a tablet on the table) can show it. The judge opens a room and gets a 6-character code;
+-- only the judge's browser secret can change it; anyone with the code can read it. Rooms are removed after 2 days.
+create table if not exists public.werewolf_rooms (
+  code text primary key check (code ~ '^[A-Z0-9]{6}$'),
+  token text not null check (char_length(token) between 16 and 100),  -- the judge's browser secret
+  state jsonb not null default '{}',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+alter table public.werewolf_rooms enable row level security;
+-- No policies and no grants: the website only goes through the functions below (the secret is never readable).
+revoke all on public.werewolf_rooms from anon, authenticated;
+
+-- Opens a room for this browser's secret and returns its code. At most 30 new rooms a minute across the site.
+create or replace function public.werewolf_room_open(p_token text)
+returns text
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  c text;
+begin
+  if p_token is null or char_length(p_token) not between 16 and 100 then
+    raise exception 'missing browser secret' using errcode = 'HVR01';
+  end if;
+  perform pg_advisory_xact_lock(hashtext('hv-werewolf-rooms'));
+  delete from public.werewolf_rooms where updated_at < now() - interval '2 days';
+  if (select count(*) from public.werewolf_rooms where created_at > now() - interval '1 minute') >= 30 then
+    raise exception 'Too many rooms opened just now, try again in a minute' using errcode = 'HVR02';
+  end if;
+  loop
+    c := upper(substr(md5(random()::text || clock_timestamp()::text), 1, 6));
+    exit when not exists (select 1 from public.werewolf_rooms where code = c);
+  end loop;
+  insert into public.werewolf_rooms (code, token) values (c, p_token);
+  return c;
+end;
+$$;
+
+-- The judge updates what the players see. Returns false if the room is gone or the secret doesn't match.
+create or replace function public.werewolf_room_set(p_code text, p_token text, p_state jsonb)
+returns boolean
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  c text;
+begin
+  if jsonb_typeof(p_state) is distinct from 'object' or pg_column_size(p_state) > 60000 then
+    raise exception 'state must be a small object' using errcode = 'HVR03';
+  end if;
+  update public.werewolf_rooms set state = p_state, updated_at = now()
+  where code = upper(p_code) and token = p_token
+  returning code into c;
+  return c is not null;
+end;
+$$;
+
+-- Anyone with the code: { "state": {...}, "updated_at": ... }, or null when there's no such room.
+create or replace function public.werewolf_room_get(p_code text)
+returns jsonb
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select jsonb_build_object('state', state, 'updated_at', updated_at)
+  from public.werewolf_rooms where code = upper(p_code);
+$$;
+
+revoke execute on function public.werewolf_room_open(text) from public;
+revoke execute on function public.werewolf_room_set(text, text, jsonb) from public;
+revoke execute on function public.werewolf_room_get(text) from public;
+grant execute on function public.werewolf_room_open(text) to anon, authenticated;
+grant execute on function public.werewolf_room_set(text, text, jsonb) to anon, authenticated;
+grant execute on function public.werewolf_room_get(text) to anon, authenticated;

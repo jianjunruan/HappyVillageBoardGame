@@ -504,6 +504,14 @@ window.HVLoans = (() => {
         admin: "ifSignedIn",
         body: nextId ? { p_player: playerId, p_token: token, p_next: nextId } : { p_player: playerId, p_token: token },
       }),
+    // ---------- werewolf judge rooms (werewolf.html): what the players' screen shows ----------
+    // Opens a room for this browser's secret. Returns its 6-character code.
+    werewolfOpen: (token) => request("/rest/v1/rpc/werewolf_room_open", { method: "POST", body: { p_token: token } }),
+    // The judge's phone sends the public state. Returns false if the room is gone or isn't this browser's.
+    werewolfSet: (code, token, state) =>
+      request("/rest/v1/rpc/werewolf_room_set", { method: "POST", body: { p_code: code, p_token: token, p_state: state } }),
+    // Anyone with the code: { state, updated_at }, or null.
+    werewolfGet: (code) => request("/rest/v1/rpc/werewolf_room_get", { method: "POST", body: { p_code: code } }),
     // ---------- games played at an event table (对局) ----------
     // The host (or an admin) starts a game on the day: saved at once as a game record with the chosen players
     // (playerIds; all of the table's players when left out) and no scores yet, under recordGame (the base game of an

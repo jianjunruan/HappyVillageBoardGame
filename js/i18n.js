@@ -10,6 +10,7 @@ window.HVI18n = (() => {
     zh: {
       siteName: "欢乐小镇桌游",
       scorer: "计分板 & 战绩记录",
+      judge: "法官记录器",
       tagline: "找桌游、学规则、看教学视频。",
       searchPlaceholder: "搜索桌游，例如：策略、派对、卡牌……",
       searchLabel: "搜索桌游",
@@ -285,6 +286,7 @@ window.HVI18n = (() => {
       signInError: "Sign-in failed: {msg}",
       notAdmin: "This account is not an admin.",
       scorer: "Scorer & game records",
+      judge: "Judge's recorder",
       footer: "Happy Village Board Game Club",
       toggle: "中文",
       toggleLabel: "切换到中文",

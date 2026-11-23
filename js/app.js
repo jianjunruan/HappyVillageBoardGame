@@ -476,7 +476,7 @@
       <h2 id="detail-title">${esc(gameName(g))}</h2>
       <p class="meta">${meta(g).join(" · ")}</p>
       ${(g.tags || []).length ? `<p class="tag-row">${g.tags.map((k) => `<span class="chip">${esc(tagLabel(k))}</span>`).join("")}</p>` : ""}
-      ${scorerOf(g) ? `<p class="scorer-link"><a class="btn" href="${esc(scorerOf(g))}">🧮 ${esc(t("scorer"))}</a></p>` : ""}
+      ${scorerOf(g) || g.judge ? `<p class="scorer-link">${scorerOf(g) ? `<a class="btn" href="${esc(scorerOf(g))}">🧮 ${esc(t("scorer"))}</a>` : ""}${g.judge ? ` <a class="btn" href="${esc(g.judge)}?game=${encodeURIComponent(g.id)}">🐺 ${esc(t("judge"))}</a>` : ""}</p>` : ""}
       ${HVLoans.enabled ? `<div id="loan-box" class="loan-box"></div><div id="pdf-preview" class="pdf-preview" hidden></div>` : ""}
       <p class="description">${esc(loc(g.description))}</p>
       ${renderLinks(g.links)}`;

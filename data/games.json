@@ -183,6 +183,7 @@
     {
       "id": "werewolves-characters",
       "name": { "zh": "米勒山谷狼人：特殊身份", "en": "The Werewolves of Miller's Hollow: Characters" },
+      "judge": "werewolf.html",
       "scorer": "score.html?game=werewolves-of-millers-hollow",
       "image": "images/werewolves-characters.jpg",
       "description": {
@@ -211,6 +212,7 @@
     {
       "id": "werewolves-new-moon",
       "name": { "zh": "米勒山谷狼人：新月", "en": "The Werewolves of Miller's Hollow: New Moon" },
+      "judge": "werewolf.html",
       "scorer": "score.html?game=werewolves-of-millers-hollow",
       "image": "images/werewolves-new-moon.jpg",
       "description": {
@@ -913,6 +915,7 @@
     {
       "id": "werewolf-2021-limited",
       "name": { "zh": "狼人杀2021限定版", "en": "Werewolf 2021 Limited Edition" },
+      "judge": "werewolf.html",
       "scoring": { "mode": "teams", "teams": [{ "key": "village", "zh": "好人阵营", "en": "Villagers", "color": "#2e7d4f" }, { "key": "wolves", "zh": "狼人阵营", "en": "Werewolves", "color": "#8e2b2b" }, { "key": "solo", "zh": "第三方", "en": "Others", "color": "#8a6d3b" }] },
       "image": "images/werewolf-2021-limited.jpg",
       "description": {
@@ -935,6 +938,7 @@
     {
       "id": "werewolves-of-millers-hollow",
       "name": { "zh": "米勒山谷狼人", "en": "The Werewolves of Miller's Hollow" },
+      "judge": "werewolf.html",
       "scoring": { "mode": "teams", "teams": [{ "key": "village", "zh": "好人阵营", "en": "Villagers", "color": "#2e7d4f" }, { "key": "wolves", "zh": "狼人阵营", "en": "Werewolves", "color": "#8e2b2b" }, { "key": "solo", "zh": "第三方", "en": "Others", "color": "#8a6d3b" }] },
       "image": "images/werewolves-of-millers-hollow.jpg",
       "description": {

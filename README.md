@@ -46,6 +46,7 @@ All games live in **`data/games.json`**.
 | `weight` | yes | Difficulty on BGG's 1–5 scale (the "Weight" on the game's BoardGameGeek page), e.g. `2.9`. Groups the game into 入门 Light (under 2), 轻中度 Medium-light (2–2.75), 中重度 Medium-heavy (2.75–3.5) or 重度 Heavy (3.5+). |
 | `series` | no | Keeps related games next to each other within a difficulty band: give the base game, its expansions and other editions the same value, normally the base game's `id` (e.g. `"terraforming-mars"`). The base game is shown first, then the rest by difficulty. |
 | `scorer` | no | Another scorer page for this game's **🧮 计分板 & 战绩记录** button, e.g. `"flip7.html"`, or the base game's scoreboard for an expansion (`"score.html?game=terraforming-mars"`). Without it the button opens `score.html?game=<id>`. |
+| `judge` | no | A judge's tool for the game, shown as a **🐺 法官记录器** button in its popup: `"werewolf.html"` (the 狼人杀 judge's recorder; every 狼人杀 game has it). |
 | `noLoan` | no | `true`: the game is never lent out, wherever its sets are. Its card shows **🔒 不外借**, it is left out of the **可借** filter, and admins get no lend form for it (e.g. 圆梦领航). |
 | `scoring` | no | How the game is won, when it isn't "highest score": `{ "mode": "low" }`, `{ "mode": "win" }` (only who won), `{ "mode": "teams", "teams": [{ "key", "zh", "en", "color" }] }`, `{ "mode": "coop", "score": { "zh", "en", "min", "max" } }` (score optional), or `{ "mode": "none" }` (not scored, no button). |
 | `rulebookFrom` | no | Default rulebook sharing: the `id` of the game whose Happy Village rulebook this one also shows (e.g. an expansion → `"terraforming-mars"`). Admins can change it on the site (game popup → 🔗, or 库存管理), which overrides this value. |
@@ -110,6 +111,7 @@ js/share.js         The 📤 分享 button (home and events pages): the club's Q
                     or copy the link (siteUrl in js/config.js)
 js/richtext.js      The formatted-description editor for events, and the cleaner that keeps only safe formatting
 score.html          Scoreboard for any game: score.html?game=<id> (js/scoreboard.js, css/scoreboard.css)
+werewolf.html       狼人杀 judge's recorder, and the players' board: werewolf.html?room=<code> (js/werewolf.js, css/werewolf.css)
 js/scoreboards/     Each game's scoreboard choices (age-of-innovation.js, seti.js, ark-nova.js)
 aoi.html            Old link; redirects to the 大创造时代 scoreboard
 css/style.css       Styles (light and dark mode)

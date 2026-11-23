@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>狼人杀法官记录器 · 欢乐小镇桌游</title>
+  <meta name="description" content="狼人杀法官记录器：发身份、夜晚流程、警长竞选、投票记录和计时，另有给玩家看的投票看板。Werewolf judge's recorder with a players' board for vote results.">
+  <link rel="icon" href="images/favicon-48.png" type="image/png">
+  <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/werewolf.css?v=1.2.2">
+</head>
+<body>
+  <!-- One page for the judge's recorder and the players' board (werewolf.html?room=CODE); see js/werewolf.js -->
+  <header class="ww-head">
+    <a id="ww-home" class="ww-home" href="index.html"><img src="images/logo.png" alt="" width="32" height="32"></a>
+    <h1 id="ww-title">狼人杀法官记录器</h1>
+    <span id="ww-phase" class="ww-phase"></span>
+    <button id="ww-show-btn" class="ww-chip" type="button" data-act="openShow"></button>
+    <button id="ww-tmr-btn" class="ww-chip" type="button" data-act="toggleTimer"></button>
+    <button id="ww-undo" class="ww-chip" type="button"></button>
+  </header>
+  <nav class="ww-subhead">
+    <a id="ww-back" class="ww-link" href="index.html"></a>
+    <button id="lang-toggle" class="ww-chip" type="button">EN</button>
+  </nav>
+  <main id="app" class="ww-main"></main>
+  <div id="modal"></div>
+  <div id="timer"></div>
+
+  <script src="js/config.js?v=1.2.2"></script>
+  <script src="js/i18n.js?v=1.2.2"></script>
+  <script src="js/loans.js?v=1.2.2"></script>
+  <script src="js/werewolf.js?v=1.2.2"></script>
+</body>
+</html>
