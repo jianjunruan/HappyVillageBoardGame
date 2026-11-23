@@ -5,7 +5,8 @@
 //     night step by step, the sheriff election, vote counting, a speaking timer, the full log and past games. Roles:
 //     werewolf, wolf beauty, villager, seer, witch, hunter, knight; from 米勒山谷狼人：新月 the defender (守卫), elder
 //     (长老), scapegoat (替罪羊), idiot (白痴) and piper (吹笛人, plays alone); and the 网易狼人杀 roles 狼王, 白狼王,
-//     石像鬼, 恶灵骑士, 梦魇, 血月使徒, 隐狼, 守墓人, 通灵师, 摄梦人, 猎魔人, 乌鸦 and 魔术师;
+//     石像鬼, 恶灵骑士, 梦魇, 血月使徒, 隐狼, 守墓人, 通灵师, 摄梦人, 猎魔人, 乌鸦 and 魔术师; and the animal boards'
+//     熊, 狐狸, 企鹅 and 大公鸡 (villagers show as 小绵羊 there);
 //   • the players' view: only what everyone may know — seats in or out, the sheriff, deaths announced in the morning,
 //     every vote and its result, the timer; the roles only once the game is over. It shows on the judge's phone
 //     ("在本机显示"), or on another screen (a TV, a tablet) through a 6-character room code:
@@ -110,6 +111,7 @@
       groupGods: "神职",
       groupWolves: "狼人阵营",
       groupSolo: "第三方",
+      groupAnimals: "动物",
       stepMagician: "魔术师",
       stepNightmare: "梦魇",
       stepDreamer: "摄梦人",
@@ -184,6 +186,45 @@
       e_immune: "🛡️ {s} 免疫这次伤害",
       e_noShot2: "🔫 {s} 不能开枪（{cause}）",
       e_shot2: "🔫 {h} 开枪带走 {t}",
+      ruleBear: "熊：每天天亮时，法官宣布熊有没有咆哮：熊左右两边最近的存活玩家里有狼人就咆哮。熊死了或当晚被冰冻就不会咆哮。",
+      ruleFox: "狐狸：每晚选一人，查验他和左右两边最近的存活玩家共三人，法官只说「有狼」或「没有狼」；查到没有狼后，狐狸失去技能。",
+      rulePenguin: "企鹅：每晚在狼人之前睁眼，冰冻一名玩家，被冰冻的人当晚不能使用技能（熊被冰冻则不会咆哮）。",
+      ruleRooster: "大公鸡：没有技能；如果夜里被狼人杀死，第二天跳过白天，直接进入黑夜。",
+      freezeRule: "企鹅冰冻同一人",
+      freezeRow: "不能连续两晚",
+      freezeGame: "整局只能一次",
+      freezeWolf: "企鹅冰冻狼人时",
+      freezeWolfKill: "狼队照常刀人",
+      freezeWolfStop: "狼队当晚不能刀人",
+      stepPenguin: "企鹅",
+      stepFox: "狐狸",
+      penguinOpen: "🐧 企鹅请睁眼",
+      penguinHint: "选择今晚要冰冻的玩家{ban}。",
+      freezeBanRow: "（不能连续两晚冰冻 {s}）",
+      freezeBanGame: "（已冰冻过的玩家不能再选）",
+      noFreeze: "不冰冻",
+      confirmFreeze: "冰冻 {s}",
+      foxOpen: "🦊 狐狸请睁眼",
+      foxHint: "选择一人：查验他和左右两边最近的存活玩家。",
+      foxCheck: "查验 {s}",
+      foxThree: "查验：{list}",
+      foxWolf: "🐺 有狼",
+      foxClear: "✅ 没有狼（狐狸从此失去技能）",
+      foxLost: "🦊 狐狸之前查到过没有狼，已经失去技能：照常念流程，假装等待即可。",
+      blockedFreeze: "🧊 {role} 今晚被企鹅冰冻，不能使用技能：照常念流程，假装等待即可。",
+      packFrozen: "🧊 狼人 {s} 被企鹅冰冻，狼队今晚不能刀人。",
+      freezeRow2: "企鹅",
+      foxRow: "狐狸",
+      roosterSkip: "🐓 大公鸡夜里被狼人杀死：跳过今天白天，直接进入黑夜。",
+      bearRow: "熊",
+      sheep: "小绵羊",
+      p_freeze: "🧊 企鹅冰冻 {s}",
+      p_fox: "🦊 狐狸验 {list} → {res}",
+      e_bear: "🐻 熊咆哮了！",
+      e_bearQuiet: "🐻 熊没有咆哮",
+      e_rooster: "🐓 大公鸡被狼人杀死，跳过白天",
+      pubBear: "🐻 熊咆哮了",
+      pubBearQuiet: "🐻 熊没有咆哮",
       deal: "🃏 发身份",
       dealHint: "先选身份，再点座位号。或者直接随机发牌。",
       clear: "清除",
@@ -550,6 +591,7 @@
       groupGods: "Gods",
       groupWolves: "Werewolf side",
       groupSolo: "Own side",
+      groupAnimals: "Animals",
       stepMagician: "Magician",
       stepNightmare: "Nightmare",
       stepDreamer: "Dreamweaver",
@@ -624,6 +666,45 @@
       e_immune: "🛡️ {s} is immune to this",
       e_noShot2: "🔫 {s} can't shoot ({cause})",
       e_shot2: "🔫 {h} shoots {t}",
+      ruleBear: "Bear: each morning the judge says whether the bear growled: it growls if a werewolf is among its nearest living neighbours on either side. A dead bear, or one frozen that night, doesn't growl.",
+      ruleFox: "Fox: each night picks a player and checks them and their nearest living neighbours (three players); the judge only says \"a wolf\" or \"no wolf\". After a \"no wolf\" the fox loses its power.",
+      rulePenguin: "Penguin: wakes before the werewolves and freezes a player, who can't use a skill that night (a frozen bear doesn't growl).",
+      ruleRooster: "Rooster: no skill; if the werewolves kill it at night, the next day is skipped and night falls again.",
+      freezeRule: "Penguin freezing the same player",
+      freezeRow: "not two nights running",
+      freezeGame: "once a game",
+      freezeWolf: "Penguin freezes a werewolf",
+      freezeWolfKill: "the pack still kills",
+      freezeWolfStop: "no kill that night",
+      stepPenguin: "Penguin",
+      stepFox: "Fox",
+      penguinOpen: "🐧 Penguin, wake up",
+      penguinHint: "Pick a player to freeze tonight{ban}.",
+      freezeBanRow: " (not {s} two nights running)",
+      freezeBanGame: " (players frozen before can't be picked)",
+      noFreeze: "No one",
+      confirmFreeze: "Freeze {s}",
+      foxOpen: "🦊 Fox, wake up",
+      foxHint: "Pick a player: check them and their nearest living neighbours.",
+      foxCheck: "Check {s}",
+      foxThree: "Checked: {list}",
+      foxWolf: "🐺 A wolf",
+      foxClear: "✅ No wolf (the fox loses its power)",
+      foxLost: "🦊 The fox found no wolf before and has lost its power: call this step and pretend to wait.",
+      blockedFreeze: "🧊 The {role} is frozen by the penguin tonight and can't use a skill: call this step and pretend to wait.",
+      packFrozen: "🧊 Werewolf {s} is frozen: the pack can't kill tonight.",
+      freezeRow2: "Penguin",
+      foxRow: "Fox",
+      roosterSkip: "🐓 The werewolves killed the rooster: today is skipped and night falls again.",
+      bearRow: "Bear",
+      sheep: "Lamb",
+      p_freeze: "🧊 Penguin froze {s}",
+      p_fox: "🦊 Fox checked {list} → {res}",
+      e_bear: "🐻 The bear growled!",
+      e_bearQuiet: "🐻 The bear didn't growl",
+      e_rooster: "🐓 The werewolves killed the rooster: the day is skipped",
+      pubBear: "🐻 The bear growled",
+      pubBearQuiet: "🐻 The bear didn't growl",
       deal: "🃏 Deal roles",
       dealHint: "Pick a role, then tap seats. Or deal at random.",
       clear: "Clear",
@@ -919,11 +1000,16 @@
     demonhunter: { zh: "猎魔人", en: "Demon Hunter", c: "god", side: "god" },
     crow: { zh: "乌鸦", en: "Crow", c: "god", side: "god" },
     magician: { zh: "魔术师", en: "Magician", c: "god", side: "god" },
+    bear: { zh: "熊", en: "Bear", c: "god", side: "god" },
+    fox: { zh: "狐狸", en: "Fox", c: "god", side: "god" },
+    penguin: { zh: "企鹅", en: "Penguin", c: "god", side: "god" },
+    rooster: { zh: "大公鸡", en: "Rooster", c: "god", side: "god" },
     piper: { zh: "吹笛人", en: "Piper", c: "solo", side: "solo" },
   };
   // Every special role a board can use, grouped for the 自选角色 picker.
   const SPECIAL_GROUPS = [
     ["groupGods", ["seer", "witch", "hunter", "guard", "idiot", "knight", "elder", "scapegoat", "gravekeeper", "psychic", "dreamer", "demonhunter", "crow", "magician"]],
+    ["groupAnimals", ["bear", "fox", "penguin", "rooster"]],
     ["groupWolves", ["wolfking", "whitewolf", "beauty", "gargoyle", "evilknight", "nightmare", "bloodmoon", "hiddenwolf"]],
     ["groupSolo", ["piper"]],
   ];
@@ -941,10 +1027,12 @@
     evilknight: { zh: "恶灵骑士", en: "Evil Knight", specials: ["evilknight", "seer", "witch", "hunter", "guard"], wolves: 3 },
     nightmare: { zh: "梦魇守卫", en: "Nightmare · Defender", specials: ["nightmare", "seer", "witch", "hunter", "guard"], wolves: 3 },
     bloodmoon: { zh: "血月猎魔", en: "Blood Moon · Demon Hunter", specials: ["bloodmoon", "seer", "witch", "guard", "demonhunter"], wolves: 3 },
+    animaldream: { zh: "动物梦境", en: "Animal Dream", specials: ["bear", "penguin", "rooster"], wolves: 3, n: 9, sheep: true },
+    animals: { zh: "动物局·熊狐企鸦", en: "Animals · Bear, Fox, Penguin, Crow", specials: ["bear", "fox", "penguin", "crow"], wolves: 4, n: 12, sheep: true },
     newmoon: { zh: "米勒山谷·新月", en: "Miller's Hollow · New Moon", specials: ["seer", "witch", "hunter", "guard", "idiot", "elder", "scapegoat", "piper"], wolves: 3, n: 14 },
     custom: { zh: "自选角色", en: "Pick the roles", specials: null, wolves: 3 },
   };
-  const rn = (r) => (r && ROLES[r] ? ROLES[r][lang()] : "?");
+  const rn = (r) => (r === "vil" && S && S.cfg && BOARDS[S.cfg.board] && BOARDS[S.cfg.board].sheep ? tr("sheep") : r && ROLES[r] ? ROLES[r][lang()] : "?");
   const boardName = (b) => (BOARDS[b] ? BOARDS[b][lang()] : "");
   const sideOf = (r) => (ROLES[r] ? ROLES[r].side : "vil");
 
@@ -978,6 +1066,7 @@
       night: null, day: null, charm: null, knightUsed: false, pending: [], log: [], pub: [], winner: null,
       lastGuard: null, piped: [], elderHit: false, powersLost: false,
       lastFear: null, fear: null, lastDream: null, swapped: [], curse: null, lastExiled: null, bloodNight: 0,
+      lastFreeze: null, frozen: null, frozenList: [], foxDone: false,
       elect: { stage: "signup", cands: [], withdrawn: [] }, vote: null, seq: 0,
     };
   }
@@ -998,6 +1087,7 @@
       if (!S.pub) S.pub = [];
       if (!S.piped) S.piped = [];
       if (!S.swapped) S.swapped = [];
+      if (!S.frozenList) S.frozenList = [];
       return;
     }
     S = fresh();
@@ -1071,6 +1161,8 @@
         if (v.pcheck) parts.push(tr("p_pcheck", { s: s(v.pcheck), role: rn(v.prole) }));
         if (v.hunt) parts.push(tr("p_hunt", { s: s(v.hunt) }));
         if (v.curse) parts.push(tr("p_curse", { s: s(v.curse) }));
+        if (v.freeze) parts.unshift(tr("p_freeze", { s: s(v.freeze) }));
+        if (v.fox && v.fox.length) parts.push(tr("p_fox", { list: list(v.fox, roleOf), res: tr(v.foxWolf ? "foxWolf" : "foxClear") }));
         if (v.pipe && v.pipe.length) parts.push(tr("p_pipe", { list: list(v.pipe, roleOf) }));
         if (v.elder) parts.push(tr("p_elder"));
         return parts.join(lang() === "zh" ? "；" : "; ");
@@ -1083,6 +1175,8 @@
       case "win": return tr("e_win_" + (["good", "god", "vil", "all", "piper"].includes(v.w) ? v.w : "good"));
       case "elderLost": return tr("e_elderLost");
       case "take": return tr("e_take", { s: s(v.s), t: s(v.t) });
+      case "bear": return tr(v.g ? "e_bear" : "e_bearQuiet");
+      case "rooster": return tr("e_rooster");
       case "bloodmoon": return tr("e_bloodmoon", { s: s(v.s) });
       case "immune": return tr("e_immune", { s: s(v.s) });
       case "noShot2": return tr("e_noShot2", { s: s(v.s), cause: tr("c_" + (CAUSES.includes(v.cause) ? v.cause : "wolf")) });
@@ -1162,7 +1256,7 @@
       L("elderLost");
     }
     if (p.role === "hunter" || p.role === "wolfking") {
-      const feared = S.fear === seat && NIGHT_CAUSES.includes(cause);
+      const feared = (S.fear === seat || S.frozen === seat) && NIGHT_CAUSES.includes(cause);
       if (p.role === "hunter" && S.powersLost) {} // no powers left: no shot (the log already says why)
       else if (NO_SHOT.includes(cause) || (p.role === "wolfking" && cause === "explode") || feared) L("noShot2", { s: seat, cause: feared ? "wolf" : cause });
       else S.pending.push({ type: "hunter", seat });
@@ -1209,7 +1303,7 @@
     });
   }
   function startNight() {
-    S.night = { step: nightSteps()[0], kill: null, save: false, poison: null, check: null, charm: null, guard: null, pipe: [], swap: [], fear: null, dream: null, gcheck: null, pcheck: null, hunt: null, curse: null };
+    S.night = { step: nightSteps()[0], kill: null, save: false, poison: null, check: null, charm: null, guard: null, pipe: [], swap: [], fear: null, dream: null, gcheck: null, pcheck: null, hunt: null, curse: null, freeze: null, fox: null };
     S.day = null;
   }
   // Who dies at dawn. The magician's swap moves every skill aimed at one of the two to the other. The defender and
@@ -1252,6 +1346,12 @@
     deaths.forEach((d) => kill(d[0], d[1]));
     applyingNight = false;
     PL("announce", { list: before.filter((s) => !P(s).alive) });
+    // The bear growls when a werewolf (not a hidden one) sits next to it, unless it's dead or was frozen.
+    const bear = byRole("bear");
+    if (bear) {
+      const g = bear.alive && S.frozen !== bear.seat && neighbours(bear.seat).some((x) => isWolf(x) && roleAt(x) !== "hiddenwolf");
+      LP("bear", { g });
+    }
   }
   function startDay() {
     const n = S.night, out = nightOutcome(n), deaths = out.deaths;
@@ -1263,18 +1363,34 @@
     S.fear = n.fear || null;
     S.lastDream = n.dream || null;
     S.curse = n.curse ? { seat: n.curse, round: S.round } : null;
+    S.frozen = n.freeze || null;
+    S.lastFreeze = n.freeze || null;
+    if (n.freeze && !S.frozenList.includes(n.freeze)) S.frozenList.push(n.freeze);
+    const foxSeats = n.fox ? foxThree(out.sw(n.fox)) : [];
+    const foxWolf = foxSeats.some((x) => seerSees(x));
+    if (n.fox && !foxWolf) S.foxDone = true;
     (n.swap || []).forEach((x) => !S.swapped.includes(x) && S.swapped.push(x));
     (n.pipe || []).forEach((x) => !S.piped.includes(x) && S.piped.push(x));
     const chk = out.sw(n.check), g = out.sw(n.gcheck), ps = out.sw(n.pcheck);
     L("night", {
       kill: n.kill, save: n.save, poison: n.poison, charm: n.charm, check: n.check, res: chk ? seerSees(chk) : false, guard: n.guard, pipe: n.pipe, elder: out.elder,
-      swap: n.swap, fear: n.fear, dream: n.dream, gcheck: n.gcheck, grole: g ? roleAt(g) : null, pcheck: n.pcheck, prole: ps ? roleAt(ps) : null, hunt: n.hunt, curse: n.curse,
+      swap: n.swap, fear: n.fear, dream: n.dream, freeze: n.freeze, fox: foxSeats, foxWolf, gcheck: n.gcheck, grole: g ? roleAt(g) : null, pcheck: n.pcheck, prole: ps ? roleAt(ps) : null, hunt: n.hunt, curse: n.curse,
     });
     S.charm = n.charm || null;
     S.phase = "day";
     S.day = { exiled: false, announced: false };
+    // The wolves killing the rooster skip the day (no election, no vote).
+    const rooster = seatOf("rooster");
+    if (rooster && deaths.some((d) => d[0] === rooster && d[1] === "wolf")) {
+      applyDeaths(deaths);
+      S.day.announced = true;
+      S.day.exiled = true;
+      S.day.skipped = true;
+      if (S.round === 1) S.sheriffDone = true;
+      LP("rooster");
+    }
     // Day 1: the sheriff election comes before the deaths are announced.
-    if (S.round === 1 && !S.sheriffDone) S.day.pendingDeaths = deaths;
+    else if (S.round === 1 && !S.sheriffDone) S.day.pendingDeaths = deaths;
     else {
       applyDeaths(deaths);
       S.day.announced = true;
@@ -1303,7 +1419,7 @@
         const r = p.role ? ROLES[p.role] : null;
         const ok = filter ? filter(p) : true;
         const hide = S.cfg.hideRoles && S.phase !== "setup";
-        const tags = [S.sheriff === p.seat ? "👮" : "", S.charm === p.seat && !hide ? "💋" : "", S.piped && S.piped.includes(p.seat) && !hide ? "🎵" : "", S.curse && S.curse.round === S.round && S.curse.seat === p.seat && S.phase === "day" ? "🐦" : "", p.role === "knight" && S.knightUsed ? "⚔️" : "", p.revealed ? "🃏" : ""].join("");
+        const tags = [S.sheriff === p.seat ? "👮" : "", S.charm === p.seat && !hide ? "💋" : "", S.piped && S.piped.includes(p.seat) && !hide ? "🎵" : "", S.curse && S.curse.round === S.round && S.curse.seat === p.seat && S.phase === "day" ? "🐦" : "", S.phase === "night" && S.night && S.night.freeze === p.seat && !hide ? "🧊" : "", p.role === "knight" && S.knightUsed ? "⚔️" : "", p.revealed ? "🃏" : ""].join("");
         const on = Array.isArray(pick) ? pick.includes(p.seat) : pick === p.seat;
         return `<button type="button" class="ww-seat ${r && !hide ? r.c : ""} ${p.alive ? "" : "dead"} ${on ? "sel" : ""} ${ok ? "" : "dim"}" ${onTap && ok ? `data-tap="${onTap}" data-seat="${p.seat}"` : "disabled"}>
           <span class="tags">${tags}</span><span class="no">${p.seat}</span><span class="rl">${hide ? "·" : r ? esc(rn(p.role)) : "—"}</span>${sub ? `<span class="rl sub">${esc(sub(p))}</span>` : ""}</button>`;
@@ -1375,6 +1491,7 @@
     ["wolfking", "ruleWolfking"], ["whitewolf", "ruleWhitewolf"], ["gargoyle", "ruleGargoyle"], ["evilknight", "ruleEvilknight"], ["nightmare", "ruleNightmare"],
     ["bloodmoon", "ruleBloodmoon"], ["hiddenwolf", "ruleHiddenwolf"], ["gravekeeper", "ruleGravekeeper"], ["psychic", "rulePsychic"], ["dreamer", "ruleDreamer"],
     ["demonhunter", "ruleDemonhunter"], ["crow", "ruleCrow"], ["magician", "ruleMagician"],
+    ["bear", "ruleBear"], ["fox", "ruleFox"], ["penguin", "rulePenguin"], ["rooster", "ruleRooster"],
   ];
   function renderSetup() {
     const n = needCounts(), c = curCounts();
@@ -1390,6 +1507,8 @@
       ${row(tr("winRule"), chip(S.cfg.win === "side", "cfg", tr("side"), "win:side") + chip(S.cfg.win === "city", "cfg", tr("city"), "win:city"))}
       ${beauty ? row(tr("charmRepeat"), chip(!S.cfg.charmRepeat, "cfg", tr("never"), "charmRepeat:0") + chip(S.cfg.charmRepeat, "cfg", tr("always"), "charmRepeat:1")) : ""}
       ${beauty ? row(tr("duelCharm"), chip(!S.cfg.duelCharm, "cfg", tr("noCharmDie"), "duelCharm:0") + chip(S.cfg.duelCharm, "cfg", tr("charmDie"), "duelCharm:1")) : ""}
+      ${has("penguin") ? row(tr("freezeRule"), chip(S.cfg.freezeRule !== "game", "cfg", tr("freezeRow"), "freezeRule:row") + chip(S.cfg.freezeRule === "game", "cfg", tr("freezeGame"), "freezeRule:game")) : ""}
+      ${has("penguin") ? row(tr("freezeWolf"), chip(S.cfg.freezeWolf !== "stop", "cfg", tr("freezeWolfKill"), "freezeWolf:kill") + chip(S.cfg.freezeWolf === "stop", "cfg", tr("freezeWolfStop"), "freezeWolf:stop")) : ""}
       ${has("guard") && has("witch") ? row(tr("guardWitch"), chip(S.cfg.guardWitch !== "live", "cfg", tr("guardDie"), "guardWitch:die") + chip(S.cfg.guardWitch === "live", "cfg", tr("guardLive"), "guardWitch:live")) : ""}
       ${S.cfg.board === "custom" ? `<p class="hint" style="margin:10px 0 6px">${esc(tr("customRoles"))}</p>${SPECIAL_GROUPS.map(([g, rs]) => `<p class="ww-group">${esc(tr(g))}</p><div class="ww-palette">${rs.map((r) => chip((S.cfg.custom || []).includes(r), "togRole", rn(r), r)).join("")}</div>`).join("")}` : ""}
       ${RULES.filter(([r]) => has(r) || (r === "beauty" && has("knight"))).map(([, k]) => `<p class="hint" style="margin:8px 0 0">${esc(tr(k))}</p>`).join("")}
@@ -1427,27 +1546,39 @@
 
   // ---- night ----
   // The order the judge calls the roles in.
-  const NIGHT_ORDER = ["magician", "nightmare", "guard", "dreamer", "wolf", "beauty", "gargoyle", "witch", "seer", "psychic", "gravekeeper", "demonhunter", "crow", "piper", "hunter"];
+  const NIGHT_ORDER = ["magician", "nightmare", "penguin", "guard", "dreamer", "wolf", "beauty", "gargoyle", "witch", "seer", "fox", "psychic", "gravekeeper", "demonhunter", "crow", "piper", "hunter"];
   function nightSteps() {
     return [...NIGHT_ORDER.filter((r) => r === "wolf" || has(r)), "dawn"];
   }
   const STEP_LABEL = {
     magician: "stepMagician", nightmare: "stepNightmare", guard: "stepGuard", dreamer: "stepDreamer", wolf: "stepWolf", beauty: "stepBeauty", gargoyle: "stepGargoyle",
-    witch: "stepWitch", seer: "stepSeer", psychic: "stepPsychic", gravekeeper: "stepGravekeeper", demonhunter: "stepDemonhunter", crow: "stepCrow", piper: "stepPiper", hunter: "stepHunter", dawn: "stepDawn",
+    witch: "stepWitch", seer: "stepSeer", fox: "stepFox", penguin: "stepPenguin", psychic: "stepPsychic", gravekeeper: "stepGravekeeper", demonhunter: "stepDemonhunter", crow: "stepCrow", piper: "stepPiper", hunter: "stepHunter", dawn: "stepDawn",
   };
   const OPEN = {
     magician: "magicianOpen", nightmare: "nightmareOpen", guard: "guardOpen", dreamer: "dreamerOpen", beauty: "beautyOpen", gargoyle: "gargoyleOpen", witch: "witchOpen",
-    seer: "seerOpen", psychic: "psychicOpen", gravekeeper: "gravekeeperOpen", demonhunter: "demonhunterOpen", crow: "crowOpen", piper: "piperOpen", hunter: "hunterOpen",
+    seer: "seerOpen", fox: "foxOpen", penguin: "penguinOpen", psychic: "psychicOpen", gravekeeper: "gravekeeperOpen", demonhunter: "demonhunterOpen", crow: "crowOpen", piper: "piperOpen", hunter: "hunterOpen",
   };
   // Why a role can't act tonight, if it can't: the elder's death, the blood moon, or the nightmare's fear.
   function blocked(r) {
     const god = sideOf(r) === "god";
-    if (god && S.powersLost && ["guard", "witch", "seer", "hunter", "gravekeeper", "psychic", "dreamer", "demonhunter", "crow", "magician"].includes(r)) return tr("powersLost");
+    if (god && S.powersLost && ["guard", "witch", "seer", "hunter", "gravekeeper", "psychic", "dreamer", "demonhunter", "crow", "magician", "fox", "penguin"].includes(r)) return tr("powersLost");
     if (god && S.bloodNight === S.round) return tr("blockedBlood");
     const p = byRole(r);
+    if (p && S.night && S.night.freeze === p.seat) return tr("blockedFreeze", { role: rn(r) });
     if (p && S.night && S.night.fear === p.seat) return tr("blockedFear", { role: rn(r) });
+    if (r === "fox" && S.foxDone) return tr("foxLost");
     return "";
   }
+  // The nearest living player on each side of a seat (seats wrap round the table).
+  function neighbours(seat) {
+    const al = alive().map((p) => p.seat).sort((a, b) => a - b);
+    const others = al.filter((x) => x !== seat);
+    if (!others.length) return [];
+    const right = others.find((x) => x > seat) ?? others[0];
+    const left = [...others].reverse().find((x) => x < seat) ?? others[others.length - 1];
+    return [...new Set([left, right])];
+  }
+  const foxThree = (seat) => [...new Set([seat, ...neighbours(seat)])];
   function nightSet(o, move = true) {
     act(() => {
       Object.assign(S.night, o);
@@ -1483,6 +1614,18 @@
       h += `<p class="hint">${esc(tr("magicianHint"))}</p>
         ${seatGrid({ pick, filter: (p) => p.alive && !S.swapped.includes(p.seat), onTap: "pickMulti" })}
         <div class="ww-btns">${B("sec", "nightSwap", tr("noSwap"), { args: "none" })}${B("purple", "nightSwap", tr("confirmSwap", { list: pick.length ? list(pick) : "" }), { dis: pick.length !== 2 })}</div>`;
+    } else if (n.step === "penguin") {
+      const game = S.cfg.freezeRule === "game";
+      const banned = (seat) => (game ? S.frozenList.includes(seat) : seat === S.lastFreeze);
+      const ban = game ? (S.frozenList.length ? tr("freezeBanGame") : "") : S.lastFreeze ? tr("freezeBanRow", { s: S_(S.lastFreeze) }) : "";
+      h += `<p class="hint">${esc(tr("penguinHint", { ban }))}</p>${pickOne("freeze", (p) => p.alive && !banned(p.seat), "noFreeze", "confirmFreeze")}`;
+    } else if (n.step === "fox") {
+      h += `<p class="hint">${esc(tr("foxHint"))}</p>`;
+      if (n.fox) {
+        const three = foxThree(nightOutcome(n).sw(n.fox));
+        const wolf = three.some((x) => seerSees(x));
+        h += `${seatGrid({ pick: three, filter: () => false })}<p class="hint">${esc(tr("foxThree", { list: list(three) }))}</p><div class="ww-result ${wolf ? "w" : "g"}">${esc(tr(wolf ? "foxWolf" : "foxClear"))}</div>${nextBtn}`;
+      } else h += `${seatGrid({ pick: sel(), filter: (p) => p.alive, onTap: "pickSel" })}<div class="ww-btns">${B("", "nightPick", tr("foxCheck", { s: S_(sel()) }), { dis: !sel(), args: `fox:${sel() || 0}:stay` })}</div>`;
     } else if (n.step === "nightmare") {
       const ban = S.lastFear;
       h += `<p class="hint">${esc(tr("nightmareHint", { ban: ban ? tr("guardBan", { s: S_(ban) }) : "" }))}</p>${pickOne("fear", (p) => p.alive && p.seat !== ban && sideOf(p.role) !== "wolf", "noFear", "confirmFear")}`;
@@ -1521,6 +1664,8 @@
       const pack = S.players.filter((p) => sideOf(p.role) === "wolf" && p.alive && !LONE_WOLVES.includes(p.role)).map((p) => p.seat);
       const lone = S.players.filter((p) => p.alive && LONE_WOLVES.includes(p.role)).map((p) => p.seat);
       const hint = pack.length ? tr("wakeWolves", { list: list(pack) }) + (lone.length ? tr("hiddenNote", { list: list(lone) }) : "") : tr("loneWolves", { list: list(lone) });
+      if (n.freeze && S.cfg.freezeWolf === "stop" && isWolf(n.freeze))
+        return h + `<h2>${esc(tr("wolfOpen"))}</h2><p class="hint">${esc(tr("packFrozen", { s: S_(n.freeze) }))}</p><div class="ww-btns">${B("", "nightKill", tr("next"), { args: "0" })}</div></div>`;
       h += `<h2>${esc(tr("wolfOpen"))}</h2><p class="hint">${esc(hint)}</p>${swapNote}
         ${seatGrid({ pick: sel(), filter: (p) => p.alive, onTap: "pickSel" })}
         <div class="ww-btns">${B("sec", "nightKill", tr("noKill"), { args: "0" })}${B("red", "nightKill", tr("confirmKill", { s: S_(sel()) }), { dis: !sel(), args: String(sel() || 0) })}</div>`;
@@ -1559,6 +1704,7 @@
       h += `<h2>${esc(tr("dawn"))}</h2>
         ${row(has("magician"), "swapRow", n.swap && n.swap.length === 2 ? `${pn(n.swap[0], jr)} ⇄ ${pn(n.swap[1], jr)}` : tr("noSwap"))}
         ${row(has("nightmare"), "fearRow", n.fear ? pn(n.fear, jr) : "—")}
+        ${row(has("penguin"), "freezeRow2", n.freeze ? pn(n.freeze, jr) : "—")}
         ${row(has("guard"), "guard", n.guard ? pn(n.guard, jr) : tr("noGuard"))}
         ${row(has("dreamer"), "dreamRow", n.dream ? pn(n.dream, jr) : "—")}
         ${row(true, "kill", n.kill ? pn(n.kill, jr) : tr("noKill"))}
@@ -1567,6 +1713,7 @@
         ${row(has("gargoyle"), "gargRow", n.gcheck ? `${pn(n.gcheck, jr)} → ${rn(roleAt(outc.sw(n.gcheck)))}` : "—")}
         ${row(has("witch"), "witch", n.save ? tr("saved") : n.poison ? tr("poisoned", { s: pn(n.poison, jr) }) : tr("noUse"))}
         ${row(has("seer"), "seer", n.check ? `${pn(n.check, jr)} → ${tr(seerSees(outc.sw(n.check)) ? "wolfWord" : "goodWord")}` : "—")}
+        ${row(has("fox"), "foxRow", n.fox ? `${list(foxThree(outc.sw(n.fox)), jr)} → ${tr(foxThree(outc.sw(n.fox)).some((x) => seerSees(x)) ? "foxWolf" : "foxClear")}` : "—")}
         ${row(has("psychic"), "psyRow", n.pcheck ? `${pn(n.pcheck, jr)} → ${rn(roleAt(outc.sw(n.pcheck)))}` : "—")}
         ${row(has("demonhunter"), "huntRow", n.hunt ? pn(n.hunt, jr) : "—")}
         ${row(has("crow"), "curseRow", n.curse ? pn(n.curse, jr) : "—")}
@@ -1598,7 +1745,8 @@
     }
     const last = [...S.pub].reverse().find((e) => e.e === "announce");
     const ds = last ? last.v.list || [] : [];
-    h += `<div class="ww-card"><h2>${esc(tr("lastNight"))}</h2><p class="big">${esc(ds.length ? tr("died", { list: list(ds) }) : tr("peace"))}</p>${S.round === 1 && ds.length ? `<p class="hint">${esc(tr("lastWords"))}</p>` : ""}</div>`;
+    const bearEv = [...S.pub].reverse().find((e) => e.e === "bear" && e.k.r === S.round);
+    h += `<div class="ww-card"><h2>${esc(tr("lastNight"))}</h2><p class="big">${esc(ds.length ? tr("died", { list: list(ds) }) : tr("peace"))}</p>${S.round === 1 && ds.length ? `<p class="hint">${esc(tr("lastWords"))}</p>` : ""}${bearEv ? `<p class="big">${esc(tr(bearEv.v.g ? "e_bear" : "e_bearQuiet"))}</p>` : ""}${S.day.skipped ? `<p class="hint">${esc(tr("roosterSkip"))}</p>` : ""}</div>`;
     if (!d.exiled) {
       if (S.vote) h += voteWidget();
       else {
@@ -1974,7 +2122,9 @@
       if (!st.announced) h += `<div class="ww-card ww-center"><p class="hint">${esc(tr("pubNotYet"))}</p></div>`;
       else if (last && N(last.k && last.k.r) === N(st.round)) {
         const ds = Array.isArray(last.v && last.v.list) ? last.v.list : [];
-        h += `<div class="ww-card ww-center"><h2>${esc(tr("pubDeaths"))}</h2><div class="big">${esc(ds.length ? list(ds) : tr("pubNoDeaths"))}</div></div>`;
+        const bearEv = [...pubEv].reverse().find((e) => e.e === "bear" && N(e.k && e.k.r) === N(st.round));
+        const roosterEv = pubEv.some((e) => e.e === "rooster" && N(e.k && e.k.r) === N(st.round));
+        h += `<div class="ww-card ww-center"><h2>${esc(tr("pubDeaths"))}</h2><div class="big">${esc(ds.length ? list(ds) : tr("pubNoDeaths"))}</div>${bearEv ? `<div class="big">${esc(tr(bearEv.v && bearEv.v.g ? "pubBear" : "pubBearQuiet"))}</div>` : ""}${roosterEv ? `<p class="hint">${esc(tr("e_rooster"))}</p>` : ""}</div>`;
       }
       if (st.pending) h += `<div class="ww-card ww-center"><p class="hint">${esc(tr("pubPending"))}</p></div>`;
       if (st.elect && typeof st.elect === "object") {
@@ -2310,7 +2460,7 @@
     // one seat for a role's night skill: "field:seat" (":stay" keeps the step to show a result)
     nightPick: (a) => {
       const [field, seat, stay] = a.split(":");
-      if (!["fear", "guard", "dream", "gcheck", "pcheck", "hunt", "curse"].includes(field)) return;
+      if (!["fear", "guard", "dream", "gcheck", "pcheck", "hunt", "curse", "freeze", "fox"].includes(field)) return;
       nightSet({ [field]: N(seat) || null }, stay !== "stay");
     },
     nightSwap: (a) => {
