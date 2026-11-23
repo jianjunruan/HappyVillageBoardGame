@@ -6,7 +6,7 @@
 window.HV_CONFIG = {
   // The site's version, shown at the bottom of every page. Raised one step with every change by
   // `node scripts/bump-version.mjs` (1.1.0 → 1.1.1 … 1.1.9 → 1.2.0); see CLAUDE.md. Don't edit it by hand.
-  version: "1.2.3",
+  version: "1.2.4",
 
   apiBase: null,
 

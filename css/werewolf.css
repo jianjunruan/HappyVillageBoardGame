@@ -149,3 +149,5 @@ button { font: inherit; }
 .ww-seat.solo .rl { color: var(--purple); }
 .solo { color: var(--purple); }
 .ww-card.win.piperwin { border-color: var(--purple); }
+/* group headings in the 自选角色 picker */
+.ww-group { margin: 8px 0 4px; font-size: 12px; font-weight: 700; color: var(--mute); }
