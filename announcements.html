@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>通告 · 欢乐小镇桌游</title>
+  <meta name="description" content="欢乐小镇桌游：所有进行中的通告。Happy Village Board Games: current announcements.">
+  <link rel="icon" href="images/favicon-48.png" type="image/png">
+  <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css?v=1.4.0">
+  <link rel="stylesheet" href="css/events.css?v=1.4.0">
+</head>
+<body>
+  <!-- Every current announcement (滚动通告) in a list; see js/announcements.js -->
+  <header class="site-header">
+    <div class="wrap">
+      <div class="title-row">
+        <h1><a class="ev-home" href="index.html"><img class="logo" src="images/logo.png" alt="" width="56" height="56"></a>
+          <span id="an-title"></span></h1>
+        <div class="header-actions">
+          <a id="an-back" class="admin-btn" href="index.html"></a>
+          <a id="account-link" class="admin-btn" href="account.html">登录 / 注册</a>
+          <button id="lang-toggle" class="lang-toggle" type="button">EN</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap ev-main" id="an-main" aria-live="polite"></main>
+
+  <script src="js/config.js?v=1.4.0"></script>
+  <script src="js/i18n.js?v=1.4.0"></script>
+  <script src="js/loans.js?v=1.4.0"></script>
+  <script src="js/announce.js?v=1.4.0"></script>
+  <script src="js/announcements.js?v=1.4.0"></script>
+  <script src="js/account-link.js?v=1.4.0"></script>
+</body>
+</html>

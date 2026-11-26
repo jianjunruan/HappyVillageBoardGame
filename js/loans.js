@@ -601,6 +601,24 @@ window.HVLoans = (() => {
       if (!rows.length) throw Object.assign(new Error("Nothing updated"), { code: "nothing-updated" });
     },
     deleteWish: (id) => adminDelete("event_wishes", id),
+    // ---------- announcements (滚动通告, js/announce.js) ----------
+    // Current ones for `today` ("YYYY-MM-DD", the visitor's own day): [{ id, body, starts_on, ends_on }], in order.
+    announcements: (today) =>
+      request(`/rest/v1/announcements?select=id,body,starts_on,ends_on&starts_on=lte.${today}&ends_on=gte.${today}&order=starts_on.asc,id.asc`),
+    // Admins: every announcement, newest end first (past ones too).
+    allAnnouncements: () => request("/rest/v1/announcements?select=id,body,starts_on,ends_on,created_at&order=ends_on.desc,id.desc", { admin: true }),
+    // Admins. fields: { body, starts_on, ends_on }. With an id it changes that one.
+    async saveAnnouncement(fields, id = null) {
+      const rows = await request(id ? `/rest/v1/announcements?id=eq.${encodeURIComponent(id)}&select=id` : "/rest/v1/announcements?select=id", {
+        method: id ? "PATCH" : "POST",
+        admin: true,
+        prefer: "return=representation",
+        body: fields,
+      });
+      if (!rows.length) throw Object.assign(new Error("Nothing saved"), { code: "nothing-updated" });
+      return rows[0];
+    },
+    deleteAnnouncement: (id) => adminDelete("announcements", id),
     // ---------- game wishes (想玩桌游, wishgames.html) ----------
     // Most "+1" first, then newest: [{ id, name, title, description, photo, status: "open" | "watching" | "buying" |
     // "rejected" | "bought", admin_note, votes, created_at, status_at }].
