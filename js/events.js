@@ -329,6 +329,12 @@
       playerNote: "备注（可不填）",
       playerNotePh: "例如：会晚到半小时、第一次玩求教…",
       playerNoteHint: "会显示在名字下面，大家都能看到。",
+      editNote: "✏️ 备注",
+      editNoteLabel: "修改 {name} 的备注",
+      noteTitle: "修改备注：{name}",
+      noteSave: "💾 保存备注",
+      noteSaved: "✓ 备注已更新。",
+      noteNotMine: "只能修改自己报名的备注。",
       asAccount: "👤 用你的账号报名：{name}",
       namePh: "其他人会看到这个名字",
       contactHint: "联系方式：手机号和微信号二选一，至少填一个。",
@@ -774,6 +780,12 @@
       playerNote: "Note (optional)",
       playerNotePh: "e.g. I'll be 30 minutes late, first time playing…",
       playerNoteHint: "Shown under the name, for everyone to see.",
+      editNote: "✏️ Note",
+      editNoteLabel: "Edit {name}'s note",
+      noteTitle: "Edit note: {name}",
+      noteSave: "💾 Save note",
+      noteSaved: "✓ Note updated.",
+      noteNotMine: "You can only change the note on your own sign-up.",
       asAccount: "👤 Signing up with your account: {name}",
       namePh: "Others will see this name",
       contactHint: "Contact: a phone number or a WeChat ID (at least one).",
@@ -1050,6 +1062,7 @@
     if (code === "HVW01") return tr("errWishFlood");
     if (code === "HVW02") return tr("errWishDeclined");
     if (code === "wish-not-mine") return tr("wishNotMine");
+    if (code === "note-not-mine") return tr("noteNotMine");
     if (code === "qr-not-image") return tr("qrNotImage");
     if (code === "HVE11") return tr("needContact");
     if (code === "HVE12") return tr("errTwice");
@@ -1309,7 +1322,10 @@
       .map((p) => {
         const me = mine.has(p.id);
         const who = `${esc(p.name)}${p.id === hostId ? ` <small>· ${esc(tr("host"))}</small>` : ""}${me ? ` <small>(${esc(tr("me"))})</small>` : ""}`;
-        return `<span class="ev-player${me ? " is-me" : ""}${p.note ? " has-note" : ""}">${p.note ? `<span class="ev-pwho"><span>${who}</span><small class="ev-pnote">${esc(p.note)}</small></span>` : who}${
+        const noteBtn = (me && !over) || isAdmin
+          ? `<button type="button" class="ev-pnote-btn" data-edit-note="${p.id}" aria-label="${esc(tr("editNoteLabel", { name: p.name }))}">${esc(tr("editNote"))}</button>`
+          : "";
+        return `<span class="ev-player${me ? " is-me" : ""}${p.note || noteBtn ? " has-note" : ""}">${p.note || noteBtn ? `<span class="ev-pwho"><span>${who}</span>${p.note ? `<small class="ev-pnote">${esc(p.note)}</small>` : ""}${noteBtn}</span>` : who}${
           isAdmin ? `<button type="button" class="ev-x" data-remove-player="${p.id}" data-name="${esc(p.name)}" aria-label="${esc(tr("removePlayer", { name: p.name }))}">✕</button>` : ""
         }</span>`;
       })
@@ -1773,6 +1789,27 @@
     if (D.mode === "feedback") return renderFeedbackForm();
     if (D.mode === "fbview") return renderFeedbackView();
     if (D.mode === "guest") return renderGuestForm();
+    if (D.mode === "pnote") return renderNoteForm();
+  }
+  // A player's own note under their name, changed after signing up (admins: anyone's).
+  function renderNoteForm() {
+    dlg.innerHTML = `${head(tr("noteTitle", { name: D.name }))}
+      <form class="ev-form" data-note-form novalidate>
+        <label class="ev-field"><span>${esc(tr("playerNote"))}</span><input name="pnote" maxlength="50" autocomplete="off" placeholder="${esc(tr("playerNotePh"))}" value="${esc(D.pnote || "")}" autofocus><small class="ev-hint">${esc(tr("playerNoteHint"))}</small></label>
+        ${errLine()}
+        <div class="form-actions"><button class="btn ghost" type="button" data-close>${esc(tr("cancel"))}</button><button class="btn" type="submit"${busy ? " disabled" : ""}>${esc(busy ? tr("saving") : tr("noteSave"))}</button></div>
+      </form>`;
+  }
+  async function submitNote() {
+    readForm();
+    D.err = "";
+    const id = D.player;
+    const note = String(D.pnote || "").trim().slice(0, 50);
+    await submit(async () => {
+      const ok = await HVLoans.setPlayerNote(id, token(), note);
+      if (!ok) throw Object.assign(new Error(tr("noteNotMine")), { code: "note-not-mine" });
+      flash = { text: tr("noteSaved"), ok: true };
+    });
   }
   // Admins: correct an unregistered player's name, or merge them into another player (guest or account).
   function renderGuestForm() {
@@ -2627,6 +2664,7 @@
     if ((D.mode === "open" || D.mode === "join") && f.elements.pnote) D.pnote = v("pnote");
     if (D.mode === "time") Object.assign(D, { time: v("time"), note: v("note") });
     if (D.mode === "people") D.extra = v("extra");
+    if (D.mode === "pnote") D.pnote = v("pnote");
     if (D.mode === "guest") {
       D.how = (f.querySelector("input[name=how]:checked") || {}).value || "rename";
       if (f.elements.newname) D.newName = v("newname");
@@ -3042,6 +3080,11 @@
       if (t) openDialog({ mode: "start", table: t.id, picked: new Set(t.event_players.map((p) => String(p.id))), add: "", err: "" });
       return;
     }
+    if (b.dataset.editNote) {
+      const p = ev && ev.event_tables.flatMap((t) => t.event_players).find((x) => x.id === Number(b.dataset.editNote));
+      if (p) openDialog({ mode: "pnote", player: p.id, name: p.name, pnote: p.note || "", err: "" });
+      return;
+    }
     if (b.dataset.addPlayer) {
       const t = tableOf(b.dataset.addPlayer);
       if (t) openDialog({ mode: "add", table: t.id, name: "", toGame: true, err: "" });
@@ -3267,6 +3310,7 @@
     if (f.hasAttribute("data-people-form")) return void submitPeople();
     if (f.hasAttribute("data-fb-form")) return void submitFeedback();
     if (f.hasAttribute("data-guest-form")) return void submitGuest();
+    if (f.hasAttribute("data-note-form")) return void submitNote();
   });
   // "close" arrives a moment later, so ignore it if another dialog has been opened since.
   dlg.addEventListener("cancel", (e) => {

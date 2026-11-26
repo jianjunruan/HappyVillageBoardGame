@@ -591,6 +591,36 @@ begin
 end;
 $$;
 
+-- Changes a sign-up's own note (shown under the name): with the browser's secret, the signed-in account that signed
+-- up, or as an admin. Not after the event is over (one day of slack), except for admins. Returns true if it worked.
+create or replace function public.set_event_player_note(p_player bigint, p_token text, p_note text)
+returns boolean
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  d date;
+begin
+  select e.event_date into d
+  from public.event_players p
+  join public.event_tables t on t.id = p.table_id
+  join public.events e on e.id = t.event_id
+  where p.id = p_player
+    and (p.token = p_token or (p.user_id is not null and p.user_id = auth.uid()) or public.is_admin());
+  if d is null then
+    return false;
+  end if;
+  if d < current_date - 1 and not public.is_admin() then
+    raise exception 'this event is over' using errcode = 'HVE01';
+  end if;
+  update public.event_players set note = left(trim(coalesce(p_note, '')), 50) where id = p_player;
+  return true;
+end;
+$$;
+revoke execute on function public.set_event_player_note(bigint, text, text) from public;
+grant execute on function public.set_event_player_note(bigint, text, text) to anon, authenticated;
+
 -- True when the caller is a table's current host: by the host's browser secret, or by the account they signed up with.
 create or replace function public.is_event_table_host(p_table bigint, p_host_token text, p_host_player bigint, p_token text)
 returns boolean
