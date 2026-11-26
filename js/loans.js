@@ -531,6 +531,9 @@ window.HVLoans = (() => {
           ...(note ? { p_player_note: note } : {}),
         },
       }),
+    // Changes a sign-up's own note ("" clears it): this browser's or account's sign-up, or any as an admin. Returns true if it worked.
+    setPlayerNote: (playerId, token, note) =>
+      request("/rest/v1/rpc/set_event_player_note", { method: "POST", admin: "ifSignedIn", body: { p_player: playerId, p_token: token, p_note: note } }),
     // Returns true if this browser's sign-up was removed. A host can name the player who takes over (nextId);
     // without one, the next person who joined does.
     leaveTable: (playerId, token, nextId) =>
