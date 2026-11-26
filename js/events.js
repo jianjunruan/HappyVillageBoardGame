@@ -326,6 +326,9 @@
       note: "备注（可不填）",
       notePh: "例如：新手教学、下午 3 点开始",
       yourName: "你的名字",
+      playerNote: "备注（可不填）",
+      playerNotePh: "例如：会晚到半小时、第一次玩求教…",
+      playerNoteHint: "会显示在名字下面，大家都能看到。",
       asAccount: "👤 用你的账号报名：{name}",
       namePh: "其他人会看到这个名字",
       contactHint: "联系方式：手机号和微信号二选一，至少填一个。",
@@ -751,6 +754,9 @@
       note: "Note (optional)",
       notePh: "e.g. teaching game, starts at 3 pm",
       yourName: "Your name",
+      playerNote: "Note (optional)",
+      playerNotePh: "e.g. I'll be 30 minutes late, first time playing…",
+      playerNoteHint: "Shown under the name, for everyone to see.",
       asAccount: "👤 Signing up with your account: {name}",
       namePh: "Others will see this name",
       contactHint: "Contact: a phone number or a WeChat ID (at least one).",
@@ -1267,7 +1273,8 @@
     const chips = players
       .map((p) => {
         const me = mine.has(p.id);
-        return `<span class="ev-player${me ? " is-me" : ""}">${esc(p.name)}${p.id === hostId ? ` <small>· ${esc(tr("host"))}</small>` : ""}${me ? ` <small>(${esc(tr("me"))})</small>` : ""}${
+        const who = `${esc(p.name)}${p.id === hostId ? ` <small>· ${esc(tr("host"))}</small>` : ""}${me ? ` <small>(${esc(tr("me"))})</small>` : ""}`;
+        return `<span class="ev-player${me ? " is-me" : ""}${p.note ? " has-note" : ""}">${p.note ? `<span class="ev-pwho"><span>${who}</span><small class="ev-pnote">${esc(p.note)}</small></span>` : who}${
           isAdmin ? `<button type="button" class="ev-x" data-remove-player="${p.id}" data-name="${esc(p.name)}" aria-label="${esc(tr("removePlayer", { name: p.name }))}">✕</button>` : ""
         }</span>`;
       })
@@ -1767,7 +1774,9 @@
       : `<div class="ev-chosen"><span class="ev-thumb ev-thumb-icon" aria-hidden="true">🎲</span><span><b>${esc(D.game.custom)}</b><small>${esc(tr("custom"))}</small></span><button class="link-btn" type="button" data-change-game>${esc(tr("change"))}</button></div>`;
   }
   // Admins sign up other players: a name box with matching players from all events to pick from (js below).
-  const nameField = () => (isAdmin ? adminNameField() : ownNameField() + contactField());
+  const nameField = () => (isAdmin ? adminNameField() + playerNoteField() : ownNameField() + playerNoteField() + contactField());
+  // The player's own note (公开), shown under their name on the table.
+  const playerNoteField = () => `<label class="ev-field"><span>${esc(tr("playerNote"))}</span><input name="pnote" maxlength="50" autocomplete="off" placeholder="${esc(tr("playerNotePh"))}" value="${esc(D.pnote || "")}"><small class="ev-hint">${esc(tr("playerNoteHint"))}</small></label>`;
   // Every sign-up needs a phone number or WeChat ID (private: only the person and admins see it). A signed-in player
   // with one saved on their account uses that; everyone else types it (remembered in this browser for next time).
   const hasSavedContact = () => Boolean(HVLoans.userId && myContact && (myContact.phone || myContact.wechat));
@@ -2532,6 +2541,7 @@
     }
     if (D.mode === "join") D.name = v("name");
     if ((D.mode === "open" || D.mode === "join") && f.elements.phone) Object.assign(D, { phone: v("phone"), wechat: v("wechat") });
+    if ((D.mode === "open" || D.mode === "join") && f.elements.pnote) D.pnote = v("pnote");
     if (D.mode === "time") Object.assign(D, { time: v("time"), note: v("note") });
     if (D.mode === "people") D.extra = v("extra");
     if (D.mode === "feedback") {
@@ -2701,7 +2711,8 @@
         isAdmin ? freshToken() : token(),
         who.user,
         !empty,
-        c
+        c,
+        empty ? "" : String(D.pnote || "").trim().slice(0, 50)
       );
       if (!isAdmin) {
         store.set("hv-event-name", name);
@@ -2719,10 +2730,11 @@
     const contact = name && !D.err && needsContact() ? checkContact() : null;
     if (!name || D.err) return renderDialog();
     await submit(async () => {
-      if (isAdmin) await HVLoans.joinTable(D.table, name, freshToken(), who.user);
+      const pnote = String(D.pnote || "").trim().slice(0, 50);
+      if (isAdmin) await HVLoans.joinTable(D.table, name, freshToken(), who.user, null, pnote);
       else {
         const c = await contactForSignup(contact);
-        const id = await HVLoans.joinTable(D.table, name, token(), null, c);
+        const id = await HVLoans.joinTable(D.table, name, token(), null, c, pnote);
         store.set("hv-event-name", name);
         rememberMine(id);
       }
