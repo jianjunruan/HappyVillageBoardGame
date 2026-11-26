@@ -168,8 +168,9 @@ window.HVLoans = (() => {
     // ---------- player accounts ----------
     // Returns { signedIn: true } when the account can be used at once, or { confirm: true } when Supabase sent a
     // confirmation email first (the "Confirm email" setting).
-    async signUp(email, password, redirectTo) {
-      const data = await auth("/signup", { body: { email, password }, redirectTo });
+    // contact: { phone, wechat } (at least one); kept with the new account and saved to profile_contacts by the database.
+    async signUp(email, password, redirectTo, contact = null) {
+      const data = await auth("/signup", { body: { email, password, ...(contact ? { data: contact } : {}) }, redirectTo });
       if (data && data.access_token) {
         keepSession(data);
         return { signedIn: true };
@@ -199,6 +200,23 @@ window.HVLoans = (() => {
       const rows = await request(`/rest/v1/profiles?user_id=eq.${encodeURIComponent(userId)}&select=user_id,name,aliases,bio,created_at`);
       return rows[0] || null;
     },
+    // A player's private contact { phone, wechat }, or null. Only the player themselves and admins get it.
+    async contact(userId) {
+      const rows = await request(`/rest/v1/profile_contacts?user_id=eq.${encodeURIComponent(userId)}&select=phone,wechat`, { admin: true });
+      return rows[0] || null;
+    },
+    // Saves the signed-in player's contact { phone, wechat } (at least one).
+    async saveContact(fields, exists) {
+      const id = userIdOf(session);
+      const rows = await request(exists ? `/rest/v1/profile_contacts?user_id=eq.${encodeURIComponent(id)}&select=phone,wechat` : "/rest/v1/profile_contacts?select=phone,wechat", {
+        method: exists ? "PATCH" : "POST",
+        admin: true,
+        prefer: "return=representation",
+        body: exists ? fields : { user_id: id, ...fields },
+      });
+      if (!rows.length) throw Object.assign(new Error("Nothing saved"), { code: "nothing-updated" });
+      return rows[0];
+    },
     // Saves the signed-in player's profile: { name, aliases, bio }.
     async saveProfile(fields, exists) {
       const id = userIdOf(session);
@@ -219,6 +237,8 @@ window.HVLoans = (() => {
     mySignupsPage: (today, past, offset, limit = 10) =>
       request("/rest/v1/rpc/my_event_signups_page", { method: "POST", admin: true, body: { p_today: today, p_past: past, p_offset: offset, p_limit: limit } }),
     // Admins only: the event's sign-ups made from a player account: [{ player_id, user_id, profile_name }].
+    // Admins only: each sign-up's contact: [{ player_id, phone, wechat }].
+    eventContacts: (eventId) => request("/rest/v1/rpc/event_contacts", { method: "POST", admin: true, body: { p_event: eventId } }),
     eventPlayerAccounts: (eventId) => request("/rest/v1/rpc/event_player_accounts", { method: "POST", admin: true, body: { p_event: eventId } }),
     // Admins only: everyone who ever signed up, across all events, plus player accounts with no sign-ups:
     // [{ user_id (null = not registered), profile_name, name, events, signups, first_date, last_date }].
@@ -460,7 +480,8 @@ window.HVLoans = (() => {
     // table: { game_id, game_name, on_site, max_players, note, start_time ("HH:MM" or null) }. Returns { table_id, player_id }.
     // user: admins only, the player account this sign-up is for (left out when there is none).
     // seat false (admins): an empty table for anyone to join; nobody is seated.
-    openTable: (eventId, table, name, token, user = null, seat = true) =>
+    // contact: { phone, wechat } for a sign-up without a saved account contact (left out otherwise).
+    openTable: (eventId, table, name, token, user = null, seat = true, contact = null) =>
       request("/rest/v1/rpc/open_event_table", {
         method: "POST",
         admin: "ifSignedIn",
@@ -476,6 +497,7 @@ window.HVLoans = (() => {
           p_start_time: table.start_time || null,
           ...(user ? { p_user: user } : {}),
           ...(seat ? {} : { p_seat: false }),
+          ...(contact ? { p_phone: contact.phone || "", p_wechat: contact.wechat || "" } : {}),
         },
       }),
     // Changes a table's start time ("HH:MM" or null) and note as its current host. Returns false if this browser isn't the host.
@@ -490,11 +512,17 @@ window.HVLoans = (() => {
       request("/rest/v1/rpc/delete_event_table", { method: "POST", admin: "ifSignedIn", body: { p_table: tableId, p_token: token } }),
     // Returns the new player id.
     // user: admins only, the player account this sign-up is for (left out when there is none).
-    joinTable: (tableId, name, token, user = null) =>
+    joinTable: (tableId, name, token, user = null, contact = null) =>
       request("/rest/v1/rpc/join_event_table", {
         method: "POST",
         admin: "ifSignedIn",
-        body: { p_table: tableId, p_name: name, p_token: token, ...(user ? { p_user: user } : {}) },
+        body: {
+          p_table: tableId,
+          p_name: name,
+          p_token: token,
+          ...(user ? { p_user: user } : {}),
+          ...(contact ? { p_phone: contact.phone || "", p_wechat: contact.wechat || "" } : {}),
+        },
       }),
     // Returns true if this browser's sign-up was removed. A host can name the player who takes over (nextId);
     // without one, the next person who joined does.

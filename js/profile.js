@@ -30,6 +30,14 @@
       aliasesHint: "用逗号或空格分开，最多 5 个。计分板上用昵称或这些名字记录的对局，都会算进你的主页。",
       bio: "个人简介（可不填）",
       bioPh: "喜欢的桌游、常来的时间、想找什么样的牌友……",
+      phone: "手机号",
+      wechat: "微信号",
+      contactHint: "联系方式：手机号和微信号二选一，至少填一个。",
+      privacy: "🔒 不会公开，只有你自己和管理员能看到。联系方式只是方便到时候联系你，避免出现不知道报名的是谁、找不到人的情况。",
+      privacyShort: "🔒 仅本人和管理员可见",
+      needContact: "请填写手机号或微信号（至少一个）。",
+      badPhone: "手机号格式不对，请只填数字（可以带 + 和空格）。",
+      noContact: "还没有填写联系方式（手机号或微信号）。报名活动需要，请点“编辑资料”补充。",
       save: "💾 保存",
       saving: "正在保存……",
       cancel: "取消",
@@ -116,6 +124,14 @@
       aliasesHint: "Separate with commas or spaces, up to 5. Games recorded under your nickname or these names count on your profile.",
       bio: "Bio (optional)",
       bioPh: "Favourite games, when you usually come, what kind of players you're looking for…",
+      phone: "Phone number",
+      wechat: "WeChat ID",
+      contactHint: "Contact: a phone number or a WeChat ID (at least one).",
+      privacy: "🔒 Never shown publicly: only you and the admins can see it. It's only so we can reach you when needed, so we always know who signed up and can find them.",
+      privacyShort: "🔒 Only you and admins can see this",
+      needContact: "Please enter a phone number or a WeChat ID (at least one).",
+      badPhone: "That phone number doesn't look right. Use digits only (+ and spaces are fine).",
+      noContact: "No contact yet (phone number or WeChat ID). It's needed to sign up for events: tap “Edit profile” to add it.",
       save: "💾 Save",
       saving: "Saving…",
       cancel: "Cancel",
@@ -204,6 +220,7 @@
 
   let own = false;
   let profile = null; // { user_id, name, aliases, bio, created_at }
+  let contact = null; // { phone, wechat }: private, only loaded for the player themselves or an admin
   let scores = null; // game records with this player
   // 我的活动报名 (own page only): current sign-ups (event today or later) or past ones, 10 a page, each page loaded
   // from the database only when shown; pages already loaded are kept.
@@ -263,12 +280,14 @@
       const [p, data] = await Promise.all([HVLoans.profile(uid), fetch("data/games.json").then((r) => r.json()).catch(() => null)]);
       catalog = Object.fromEntries(((data && data.games) || []).map((g) => [g.id, g]));
       profile = p;
+      // RLS returns the contact only to the player themselves and to admins.
+      contact = HVLoans.userId ? await HVLoans.contact(uid).catch(() => null) : null;
       if (profile) {
         const [s] = await Promise.all([HVLoans.playerScores([profile.name, ...(profile.aliases || [])]), own ? loadSignups() : null]);
         scores = s;
       } else if (own) {
         // A new account: set the nickname first (the one typed at sign-up is suggested).
-        editing = { name: localStorage.getItem("hv-pending-name") || "", aliases: "", bio: "", err: "", setup: true };
+        editing = { name: localStorage.getItem("hv-pending-name") || "", aliases: "", bio: "", phone: (contact && contact.phone) || "", wechat: (contact && contact.wechat) || "", err: "", setup: true };
       }
     } catch (err) {
       loadErr = err;
@@ -365,17 +384,29 @@
         <p class="pf-since">${esc(tr("since", { date: fmtDay(ymd(new Date(profile.created_at))) }))}</p>
       </div>
       <p class="pf-bio${profile.bio ? "" : " is-empty"}">${esc(profile.bio || tr("noBio"))}</p>
+      ${contactLine()}
       ${flash ? `<p class="ac-msg is-ok" role="status">${esc(flash)}</p>` : ""}
       ${own && !editing ? `<div class="ac-actions"><button class="btn" type="button" data-edit>${esc(tr("edit"))}</button><a class="btn ghost" href="account.html">${esc(tr("account"))}</a><button class="btn signout" type="button" data-signout>${esc(tr("signOut"))}</button></div>` : ""}
     </section>`;
   }
 
+  function contactLine() {
+    const has = contact && (contact.phone || contact.wechat);
+    if (!has) return own ? `<p class="pf-contact is-missing">${esc(tr("noContact"))}</p>` : "";
+    const parts = [contact.phone ? `📱 ${contact.phone}` : "", contact.wechat ? `💬 ${tr("wechat")}：${contact.wechat}` : ""].filter(Boolean);
+    return `<p class="pf-contact">${esc(parts.join(" · "))}<br><small class="ac-hint ac-private">${esc(tr("privacyShort"))}</small></p>`;
+  }
   function editForm() {
     const e = editing;
     return `<form class="ac-form" data-edit-form novalidate>
       <label class="ac-field"><span>${esc(tr("nickname"))}</span><input name="name" maxlength="30" autocomplete="nickname" value="${esc(e.name)}" required autofocus></label>
       <label class="ac-field"><span>${esc(tr("aliases"))}</span><input name="aliases" value="${esc(e.aliases)}"></label>
       <small class="ac-hint">${esc(tr("aliasesHint"))}</small>
+      <fieldset class="ac-contact"><legend>${esc(tr("contactHint"))}</legend>
+        <label class="ac-field"><span>${esc(tr("phone"))}</span><input name="phone" type="tel" inputmode="tel" maxlength="30" autocomplete="tel" value="${esc(e.phone)}"></label>
+        <label class="ac-field"><span>${esc(tr("wechat"))}</span><input name="wechat" maxlength="60" autocomplete="off" value="${esc(e.wechat)}"></label>
+        <small class="ac-hint ac-private">${esc(tr("privacy"))}</small>
+      </fieldset>
       <label class="ac-field"><span>${esc(tr("bio"))}</span><textarea name="bio" rows="5" maxlength="1000" placeholder="${esc(tr("bioPh"))}">${esc(e.bio)}</textarea></label>
       ${e.err ? `<p class="ac-msg is-err" role="alert">${esc(e.err)}</p>` : ""}
       <div class="ac-actions">
@@ -838,6 +869,8 @@
     editing.name = f.elements.name.value;
     editing.aliases = f.elements.aliases.value;
     editing.bio = f.elements.bio.value;
+    editing.phone = f.elements.phone.value;
+    editing.wechat = f.elements.wechat.value;
   }
   main.addEventListener("click", (e) => {
     const b = e.target.closest("button");
@@ -859,7 +892,7 @@
     }
     if (b.hasAttribute("data-edit")) {
       flash = "";
-      editing = { name: profile.name, aliases: (profile.aliases || []).join("、"), bio: profile.bio || "", err: "" };
+      editing = { name: profile.name, aliases: (profile.aliases || []).join("、"), bio: profile.bio || "", phone: (contact && contact.phone) || "", wechat: (contact && contact.wechat) || "", err: "" };
       return render();
     }
     if (b.hasAttribute("data-cancel")) {
@@ -885,12 +918,23 @@
       editing.err = tr("tooMany");
       return render();
     }
+    const phone = editing.phone.trim().slice(0, 30);
+    const wechat = editing.wechat.trim().slice(0, 60);
+    if (!phone && !wechat) {
+      editing.err = tr("needContact");
+      return render();
+    }
+    if (phone && !/^\+?[\d\s-]{5,20}$/.test(phone)) {
+      editing.err = tr("badPhone");
+      return render();
+    }
     busy = true;
     editing.err = "";
     render();
     try {
       const wasSetup = editing.setup;
       profile = await HVLoans.saveProfile({ name: name.slice(0, 30), aliases, bio: editing.bio.trim() }, Boolean(profile));
+      if (!contact || contact.phone !== phone || contact.wechat !== wechat) contact = await HVLoans.saveContact({ phone, wechat }, Boolean(contact));
       if (wasSetup) localStorage.removeItem("hv-pending-name");
       editing = null;
       flash = tr("saved");
