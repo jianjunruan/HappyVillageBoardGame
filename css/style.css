@@ -412,3 +412,7 @@ dialog.login { width: min(380px, calc(100vw - 24px)); }
 }
 /* dark mode: dark text on the bright band-coloured buttons (after the rules above so it wins) */
 @media (prefers-color-scheme: dark) { .page-btn.is-next, .page-btn.is-on { color: #111; } }
+
+/* "即将上线，敬请期待" speech bubble on adopted wishes (home page and events.html) */
+.wish-soon { position: relative; display: inline-block; justify-self: start; align-self: flex-start; margin: 8px 0 2px; padding: 4px 10px; border-radius: 12px; background: var(--ok); color: #fff; font-size: 0.82rem; font-weight: 700; line-height: 1.4; }
+.wish-soon::before { content: ""; position: absolute; left: 14px; top: -6px; border: 6px solid transparent; border-top: 0; border-bottom-color: var(--ok); }
