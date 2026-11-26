@@ -416,3 +416,6 @@ dialog.login { width: min(380px, calc(100vw - 24px)); }
 /* "即将上线，敬请期待" speech bubble on adopted wishes (home page and events.html) */
 .wish-soon { position: relative; display: inline-block; justify-self: start; align-self: flex-start; margin: 8px 0 2px; padding: 4px 10px; border-radius: 12px; background: var(--ok); color: #fff; font-size: 0.82rem; font-weight: 700; line-height: 1.4; }
 .wish-soon::before { content: ""; position: absolute; left: 14px; top: -6px; border: 6px solid transparent; border-top: 0; border-bottom-color: var(--ok); }
+/* The admins' note on a wish when adopting or declining (期望活动 and 想玩桌游): shown in red */
+.wish-admin-note { margin: 6px 0 0; color: var(--danger); font-size: 0.88rem; font-weight: 600; white-space: pre-line; overflow-wrap: anywhere; }
+.hw-photo { display: block; width: 100%; height: 90px; object-fit: contain; margin-bottom: 4px; border-radius: 8px; background: var(--surface); }

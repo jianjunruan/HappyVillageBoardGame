@@ -257,6 +257,9 @@
       wishIntro: "想参加什么样的活动？告诉我们！",
       wishNote: "备注：我们会根据情况决定是否采纳举办，提交期望活动不代表一定会举办。",
       wishAdd: "＋ 提议活动",
+      wishSignIn: "👤 登录后提议",
+      wishSignInHint: "只有注册用户可以提议和投票，请先登录或注册。",
+      errWishSignIn: "请先登录（只有注册用户可以提议和投票）。",
       wishEmpty: "还没有人提议，来提第一个吧！",
       wishFormTitle: "提议期望活动",
       wishName: "你的名字（可不填）",
@@ -270,6 +273,15 @@
       wishThanks: "✓ 谢谢！你的期望活动已提交。",
       wishAdopted: "✓ 已采纳",
       wishSoon: "🚀 即将上线，敬请期待",
+      wishNoteBtn: "📝 备注",
+      wishAdminNote: "📝 管理员备注：{note}",
+      wishNoteAdopt: "采纳：{title}",
+      wishNoteReject: "不采纳：{title}",
+      wishNoteEdit: "备注：{title}",
+      wishNoteField: "备注（可不填，会用红字显示给大家看）",
+      wishNotePhAdopt: "例如：预计下个月举办，日期待定",
+      wishNotePhReject: "例如：场地暂时不方便",
+      wishNoteSave: "💾 保存",
       wishWatching: "👀 关注中",
       wishWatchingTip: "管理员已经注意到了，还在观望，还没确定是否采纳。",
       wishWatch: "👀 关注",
@@ -714,6 +726,9 @@
       wishIntro: "What kind of event would you like? Tell us!",
       wishNote: "Note: we decide case by case whether to hold a suggested event. Suggesting one doesn't mean it will happen.",
       wishAdd: "+ Suggest an event",
+      wishSignIn: "👤 Sign in to suggest",
+      wishSignInHint: "Only registered players can suggest and vote. Please sign in or sign up.",
+      errWishSignIn: "Please sign in first (only registered players can suggest and vote).",
       wishEmpty: "No suggestions yet. Be the first!",
       wishFormTitle: "Suggest an event",
       wishName: "Your name (optional)",
@@ -727,6 +742,15 @@
       wishThanks: "✓ Thanks! Your suggestion was sent.",
       wishAdopted: "✓ Adopted",
       wishSoon: "🚀 Coming soon. Stay tuned!",
+      wishNoteBtn: "📝 Note",
+      wishAdminNote: "📝 Admin note: {note}",
+      wishNoteAdopt: "Adopt: {title}",
+      wishNoteReject: "Decline: {title}",
+      wishNoteEdit: "Note: {title}",
+      wishNoteField: "Note (optional; shown to everyone in red)",
+      wishNotePhAdopt: "e.g. Planned for next month, date to be set",
+      wishNotePhReject: "e.g. The venue doesn't suit it for now",
+      wishNoteSave: "💾 Save",
       wishWatching: "👀 Watching",
       wishWatchingTip: "The admins have seen this and are thinking about it; not decided yet.",
       wishWatch: "👀 Watch",
@@ -1075,6 +1099,7 @@
     if (code === "cancel-gone") return tr("cancelGone");
     if (code === "HVW01") return tr("errWishFlood");
     if (code === "HVW02") return tr("errWishDeclined");
+    if (code === "HVW05") return tr("errWishSignIn");
     if (code === "wish-not-mine") return tr("wishNotMine");
     if (code === "note-not-mine") return tr("noteNotMine");
     if (code === "qr-not-image") return tr("qrNotImage");
@@ -1296,9 +1321,10 @@
     const voteBtn = `<button class="ev-vote${voted ? " is-on" : ""}" type="button" data-wish-vote="${w.id}" aria-pressed="${voted}"${canVote ? "" : " disabled"}>${esc(tr(voted ? "voted" : canVote ? "vote" : "voteNo"))}</button>`;
     const admin = isAdmin
       ? [st !== "watching" && st !== "adopted" && `<button class="link-btn" type="button" data-wish-status="watching" data-id="${w.id}">${esc(tr("wishWatch"))}</button>`,
-         st !== "adopted" && `<button class="link-btn" type="button" data-wish-status="adopted" data-id="${w.id}">${esc(tr("wishAdopt"))}</button>`,
-         st !== "rejected" && `<button class="link-btn" type="button" data-wish-status="rejected" data-id="${w.id}">${esc(tr("wishReject"))}</button>`,
-         st !== "open" && `<button class="link-btn" type="button" data-wish-status="open" data-id="${w.id}">${esc(tr("wishReopen"))}</button>`]
+         st !== "adopted" && `<button class="link-btn" type="button" data-wish-note-for="adopted" data-id="${w.id}">${esc(tr("wishAdopt"))}</button>`,
+         st !== "rejected" && `<button class="link-btn" type="button" data-wish-note-for="rejected" data-id="${w.id}">${esc(tr("wishReject"))}</button>`,
+         st !== "open" && `<button class="link-btn" type="button" data-wish-status="open" data-id="${w.id}">${esc(tr("wishReopen"))}</button>`,
+         `<button class="link-btn" type="button" data-wish-note-for="" data-id="${w.id}">${esc(tr("wishNoteBtn"))}</button>`]
           .filter(Boolean).join("")
       : "";
     const own = mineW ? `<button class="link-btn" type="button" data-wish-edit="${w.id}">${esc(tr("wishEdit"))}</button>` : "";
@@ -1307,6 +1333,7 @@
       <div class="ev-wish-top"><h3>${esc(w.title)}</h3>${badge}${mineW ? `<span class="ev-wish-mine">${esc(tr("wishMine"))}</span>` : ""}</div>
       ${st === "adopted" ? `<p class="wish-soon">${esc(tr("wishSoon"))}</p>` : ""}
       ${st === "watching" ? `<p class="ev-wish-watch">${esc(tr("wishWatchingTip"))}</p>` : ""}
+      ${w.admin_note ? `<p class="wish-admin-note">${esc(tr("wishAdminNote", { note: w.admin_note }))}</p>` : ""}
       ${w.description ? `<p class="ev-wish-desc">${esc(w.description)}</p>` : ""}
       <p class="ev-wish-by">${esc(w.name ? tr("wishBy", { name: w.name, date: fmtDate(w.created_at.slice(0, 10)) }) : tr("wishByAnon", { date: fmtDate(w.created_at.slice(0, 10)) }))}</p>
       <div class="ev-wish-vote">${voteBtn}<span class="ev-wish-count">${esc(tr("votes", { n: w.votes || 0 }))}</span></div>
@@ -1318,8 +1345,13 @@
   function wishSection() {
     if (wishes == null) return ""; // not set up yet (or couldn't load): leave the page as it was
     return `<section class="ev-wishes" id="wishes" aria-labelledby="ev-wishes-title">
-      <div class="ev-head"><h2 id="ev-wishes-title">${esc(tr("wishTitle"))}</h2><button class="btn" type="button" data-wish-add>${esc(tr("wishAdd"))}</button></div>
+      <div class="ev-head"><h2 id="ev-wishes-title">${esc(tr("wishTitle"))}</h2>${
+        HVLoans.userId
+          ? `<button class="btn" type="button" data-wish-add>${esc(tr("wishAdd"))}</button>`
+          : `<a class="btn" href="account.html?next=${encodeURIComponent("events.html#wishes")}">${esc(tr("wishSignIn"))}</a>`
+      }</div>
       <p class="ev-hint">${esc(tr("wishIntro"))}</p>
+      ${HVLoans.userId ? "" : `<p class="ev-msg">${esc(tr("wishSignInHint"))}</p>`}
       <p class="ev-wish-note">${esc(tr("wishNote"))}</p>
       ${flash ? `<p class="ev-msg ${flash.ok ? "is-ok" : "is-err"}" role="status">${esc(flash.text)}</p>` : ""}
       ${wishes.length ? `<div class="ev-wish-list">${wishOrder(wishes).map(wishCard).join("")}</div>` : `<p class="ev-empty">${esc(tr("wishEmpty"))}</p>`}
@@ -1808,6 +1840,7 @@
     if (D.mode === "leave") return renderLeaveForm();
     if (D.mode === "host") return renderHostForm();
     if (D.mode === "wish") return renderWishForm();
+    if (D.mode === "wishnote") return renderWishNoteForm();
     if (D.mode === "start") return renderStartForm();
     if (D.mode === "add") return renderAddForm();
     if (D.mode === "score") return renderScoreForm();
@@ -2612,6 +2645,26 @@
         <div class="form-actions"><button class="btn ghost" type="button" data-close>${esc(tr("cancel"))}</button><button class="btn" type="submit"${busy ? " disabled" : ""}>${esc(busy ? tr("saving") : tr("wishSubmit"))}</button></div>
       </form>`;
   }
+  // Admins: adopt / decline a wish (or just change the note), with a note shown in red under it.
+  function renderWishNoteForm() {
+    const w = (wishes || []).find((x) => x.id === D.id);
+    if (!w) return closeDialog();
+    const k = D.status === "adopted" ? "wishNoteAdopt" : D.status === "rejected" ? "wishNoteReject" : "wishNoteEdit";
+    dlg.innerHTML = `${head(tr(k, { title: w.title }))}
+      <form class="ev-form" data-wishnote-form novalidate>
+        <label class="ev-field"><span>${esc(tr("wishNoteField"))}</span><textarea name="wnote" rows="3" maxlength="300" placeholder="${esc(tr(D.status === "rejected" ? "wishNotePhReject" : "wishNotePhAdopt"))}" autofocus>${esc(D.note)}</textarea></label>
+        ${errLine()}
+        <div class="form-actions"><button class="btn ghost" type="button" data-close>${esc(tr("cancel"))}</button><button class="btn" type="submit"${busy ? " disabled" : ""}>${esc(busy ? tr("saving") : tr("wishNoteSave"))}</button></div>
+      </form>`;
+  }
+  async function submitWishNote() {
+    readForm();
+    const st = D;
+    await submit(async () => {
+      await HVLoans.setWishStatus(st.id, st.status || null, st.note);
+      flash = null;
+    });
+  }
   async function submitWish() {
     readForm();
     D.err = "";
@@ -2725,6 +2778,7 @@
     if (D.mode === "leave") D.next = (f.querySelector("input[name=next]:checked") || {}).value || "";
     if (D.mode === "host") D.host = (f.querySelector("input[name=host]:checked") || {}).value || "";
     if (D.mode === "wish") Object.assign(D, { name: v("name"), title: v("title"), desc: v("desc") });
+    if (D.mode === "wishnote") D.note = v("wnote");
     if (D.mode === "start") {
       D.picked = new Set([...f.querySelectorAll("input[name=pick]:checked")].map((x) => x.value));
       D.add = v("addname") || "";
@@ -2989,6 +3043,7 @@
 
   // "我也想参加 +1": only this wish's numbers change, so no full reload.
   async function toggleVote(id, btn) {
+    if (!HVLoans.userId) return void (location.href = `account.html?next=${encodeURIComponent("events.html#wishes")}`); // players only
     if (busy) return;
     busy = true;
     btn.disabled = true;
@@ -3067,6 +3122,11 @@
     if (b.dataset.pastPage) return pastSt.loading ? undefined : void showPast(Number(b.dataset.pastPage));
     if (b.hasAttribute("data-new-event")) return openEventForm(null);
     if (b.hasAttribute("data-wish-add")) return openDialog({ mode: "wish", name: "", title: "", desc: "", err: "" }); // empty by default: anonymous unless they type a name
+    if (b.dataset.wishNoteFor != null) {
+      const w = (wishes || []).find((x) => x.id === Number(b.dataset.id));
+      if (w) openDialog({ mode: "wishnote", id: w.id, status: b.dataset.wishNoteFor, note: w.admin_note || "", err: "" });
+      return;
+    }
     if (b.dataset.wishStatus) return void act(() => HVLoans.setWishStatus(Number(b.dataset.id), b.dataset.wishStatus));
     if (b.dataset.wishEdit) {
       const w = (wishes || []).find((x) => x.id === Number(b.dataset.wishEdit));
@@ -3352,6 +3412,7 @@
     if (f.hasAttribute("data-leave-form")) return void submitLeave();
     if (f.hasAttribute("data-host-form")) return void submitHost();
     if (f.hasAttribute("data-wish-form")) return void submitWish();
+    if (f.hasAttribute("data-wishnote-form")) return void submitWishNote();
     if (f.hasAttribute("data-start-form")) return void submitStart();
     if (f.hasAttribute("data-add-form")) return void submitAdd();
     if (f.hasAttribute("data-score-form")) return void submitScores();

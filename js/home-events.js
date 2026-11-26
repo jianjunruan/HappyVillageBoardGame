@@ -106,6 +106,7 @@
       soon: "🚀 即将上线，敬请期待",
       watching: "👀 关注中",
       watchingTip: "管理员已经注意到了，还在观望，还没确定是否采纳。",
+      adminNote: "📝 {note}",
       by: "{name} 提议",
       byAnon: "匿名提议",
       none: "💡 想参加什么活动？提议一个期望活动 →",
@@ -123,6 +124,7 @@
       soon: "🚀 Coming soon. Stay tuned!",
       watching: "👀 Watching",
       watchingTip: "The admins have seen this and are thinking about it; not decided yet.",
+      adminNote: "📝 {note}",
       by: "by {name}",
       byAnon: "anonymous",
       none: "💡 What event would you like? Suggest one →",
@@ -176,6 +178,7 @@
           return `<li class="hw-item${w.status === "adopted" ? " is-adopted" : w.status === "watching" ? " is-watching" : ""}">
           <a href="events.html#wishes"><span class="hw-title"><b>${esc(w.title)}</b>${badge}</span>
           ${w.status === "adopted" ? `<span class="wish-soon">${esc(tr("soon"))}</span>` : ""}
+          ${w.admin_note ? `<span class="wish-admin-note">${esc(tr("adminNote", { note: w.admin_note }))}</span>` : ""}
           ${w.description ? `<span class="hw-desc">${esc(w.description)}</span>` : ""}
           <small>${esc(w.name ? tr("by", { name: w.name }) : tr("byAnon"))}</small></a>
           <div class="hw-vote"><button type="button" class="hw-vote-btn${on ? " is-on" : ""}" data-vote="${w.id}" aria-pressed="${on}" aria-label="${esc(tr("voteLabel", { title: w.title }))}">${esc(tr(on ? "voted" : "vote"))}</button><small>${esc(tr("votes", { n: w.votes || 0 }))}</small></div>
@@ -187,6 +190,7 @@
   box.addEventListener("click", async (e) => {
     const b = e.target.closest("[data-vote]");
     if (!b || busy) return;
+    if (!HVLoans.userId) return void (location.href = "account.html?next=" + encodeURIComponent("events.html#wishes")); // players only
     busy = true;
     b.disabled = true;
     const id = Number(b.dataset.vote);
@@ -209,5 +213,126 @@
       render();
     },
     () => {}
+  );
+})();
+
+// Game wishes (想玩桌游) under the event wishes: the most-wanted games still open (declined and bought ones left out),
+// each with its photo, a "我也想玩 +1" button and the admins' note; links to wishgames.html.
+(() => {
+  const box = document.getElementById("home-gamewishes");
+  if (!box || !window.HVLoans || !HVLoans.enabled) return;
+  const SHOW = 4;
+  const STR = {
+    zh: {
+      title: "🎲 想玩桌游",
+      add: "我想玩… →",
+      all: "全部 {n} 个 →",
+      history: "已购买 →",
+      buying: "🛒 购买中",
+      watching: "👀 关注中",
+      by: "{name} 提议",
+      byAnon: "匿名提议",
+      none: "🎲 想玩什么桌游？告诉我们 →",
+      note: "我们会根据大家的投票和情况决定是否采购，提交不代表一定会买。",
+      adminNote: "📝 {note}",
+      vote: "🙋 +1",
+      voted: "✓ 想玩",
+      votes: "{n} 人想玩",
+      voteLabel: "我也想玩「{title}」",
+    },
+    en: {
+      title: "🎲 Games we'd like",
+      add: "Suggest one →",
+      all: "All {n} →",
+      history: "Bought →",
+      buying: "🛒 Buying",
+      watching: "👀 Watching",
+      by: "by {name}",
+      byAnon: "anonymous",
+      none: "🎲 Which game would you like to play? Tell us →",
+      note: "We decide what to buy from the votes and other things; suggesting a game doesn't mean we'll buy it.",
+      adminNote: "📝 {note}",
+      vote: "🙋 +1",
+      voted: "✓ Want it",
+      votes: "{n} want to play",
+      voteLabel: "I want to play \"{title}\" too",
+    },
+  };
+  const tr = (k, vars = {}) => (STR[HVI18n.lang][k] ?? STR.zh[k]).replace(/\{(\w+)\}/g, (_, v) => vars[v] ?? "");
+  const esc = (s) =>
+    String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  function token() {
+    let tk = "";
+    try {
+      tk = JSON.parse(localStorage.getItem("hv-event-token") || '""');
+    } catch {}
+    if (typeof tk !== "string" || tk.length < 16) {
+      const bytes = new Uint8Array(16);
+      crypto.getRandomValues(bytes);
+      tk = [...bytes].map((b) => b.toString(16).padStart(2, "0")).join("");
+      try {
+        localStorage.setItem("hv-event-token", JSON.stringify(tk));
+      } catch {}
+    }
+    return tk;
+  }
+  let wishes = null;
+  let voted = new Set();
+  let busy = false;
+  function render() {
+    if (!wishes) return;
+    box.hidden = false;
+    // 购买中 first, then by votes (the server's order).
+    const live = [...wishes.filter((w) => w.status === "buying"), ...wishes.filter((w) => w.status === "open" || w.status === "watching")];
+    const hasBought = wishes.some((w) => w.status === "bought");
+    if (!live.length) {
+      box.className = "home-wishes is-empty";
+      box.innerHTML = `<a class="hw-none" id="home-gamewishes-title" href="wishgames.html">${esc(tr("none"))}</a>`;
+      return;
+    }
+    box.className = "home-wishes";
+    const shown = live.slice(0, SHOW);
+    box.innerHTML = `<div class="hw-head"><h2 id="home-gamewishes-title">${esc(tr("title"))}</h2>
+        <span class="hw-links">${live.length > SHOW ? `<a href="wishgames.html">${esc(tr("all", { n: live.length }))}</a>` : ""}${hasBought ? `<a href="wishgames.html#bought">${esc(tr("history"))}</a>` : ""}<a href="wishgames.html">${esc(tr("add"))}</a></span></div>
+      <ul class="hw-list">${shown
+        .map((w) => {
+          const on = voted.has(w.id);
+          const badge = w.status === "buying" ? ` <span class="hw-badge">${esc(tr("buying"))}</span>`
+            : w.status === "watching" ? ` <span class="hw-badge is-watch">${esc(tr("watching"))}</span>` : "";
+          return `<li class="hw-item${w.status === "buying" ? " is-adopted" : w.status === "watching" ? " is-watching" : ""}">
+          <a href="wishgames.html">${w.photo ? `<img class="hw-photo" src="${esc(HVLoans.wishPhotoUrl(w.photo))}" alt="" loading="lazy">` : ""}<span class="hw-title"><b>${esc(w.title)}</b>${badge}</span>
+          ${w.admin_note ? `<span class="wish-admin-note">${esc(tr("adminNote", { note: w.admin_note }))}</span>` : ""}
+          ${w.description ? `<span class="hw-desc">${esc(w.description)}</span>` : ""}
+          <small>${esc(w.name ? tr("by", { name: w.name }) : tr("byAnon"))}</small></a>
+          <div class="hw-vote"><button type="button" class="hw-vote-btn${on ? " is-on" : ""}" data-vote="${w.id}" aria-pressed="${on}" aria-label="${esc(tr("voteLabel", { title: w.title }))}">${esc(tr(on ? "voted" : "vote"))}</button><small>${esc(tr("votes", { n: w.votes || 0 }))}</small></div>
+        </li>`;
+        })
+        .join("")}</ul>
+      <p class="hw-note">${esc(tr("note"))}</p>`;
+  }
+  box.addEventListener("click", async (e) => {
+    const b = e.target.closest("[data-vote]");
+    if (!b || busy) return;
+    if (!HVLoans.userId) return void (location.href = "account.html?next=" + encodeURIComponent("wishgames.html")); // players only
+    busy = true;
+    b.disabled = true;
+    const id = Number(b.dataset.vote);
+    try {
+      const r = await HVLoans.toggleGameWishVote(id, token());
+      const w = wishes.find((x) => x.id === id);
+      if (w) w.votes = r.votes;
+      r.voted ? voted.add(id) : voted.delete(id);
+    } catch {}
+    busy = false;
+    render();
+  });
+  HVI18n.onChange(render);
+  Promise.all([HVLoans.gameWishes(60), HVLoans.gameWishState(token()).catch(() => null)]).then(
+    ([rows, st]) => {
+      wishes = rows;
+      voted = new Set(((st && st.voted) || []).map(Number));
+      render();
+    },
+    () => {} // not set up yet: no section
   );
 })();
