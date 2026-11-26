@@ -1051,7 +1051,7 @@ grant execute on function public.cancel_event_game(bigint, text) to anon, authen
 grant execute on function public.add_event_table_player(bigint, text, text, bigint) to anon, authenticated;
 
 -- ---------------------------------------------------------------------------------------------------------------
--- Event wishes (期望活动): anyone can suggest an event they'd like (their name, the event's name, a short description).
+-- Event wishes (期望活动): signed-in players can suggest an event they'd like (their name, the event's name, a short description).
 -- Everyone can see them. The person who suggested one can change or delete it (from the same browser, or signed in
 -- with the same account); admins adopt (已采纳) or decline (未采纳) it, or delete it. Suggesting doesn't mean it will
 -- be held. Anyone can add a "我也想参加 +1" vote, once per browser / account.
@@ -1104,6 +1104,9 @@ as $$
 declare
   w bigint;
 begin
+  if auth.uid() is null then
+    raise exception 'sign in first' using errcode = 'HVW05';  -- only player accounts can suggest and vote
+  end if;
   if p_token is null or char_length(p_token) not between 16 and 100 then
     raise exception 'missing browser secret' using errcode = 'HVW03';
   end if;
@@ -1178,6 +1181,9 @@ declare
   v bigint;
   n integer;
 begin
+  if auth.uid() is null then
+    raise exception 'sign in first' using errcode = 'HVW05';  -- only player accounts can suggest and vote
+  end if;
   if p_token is null or char_length(p_token) not between 16 and 100 then
     raise exception 'missing browser secret' using errcode = 'HVW03';
   end if;
@@ -1248,7 +1254,7 @@ grant execute on function public.toggle_event_wish_vote(bigint, text) to anon, a
 grant execute on function public.my_event_wish_state(text) to anon, authenticated;
 
 -- ---------------------------------------------------------------------------------------------------------------
--- Game wishes (想玩桌游, wishgames.html): anyone can suggest a board game they'd like to play here (their name, the
+-- Game wishes (想玩桌游, wishgames.html): signed-in players can suggest a board game they'd like to play here (their name, the
 -- game, a short description, and one optional photo). Everyone can see them and add a "我也想玩 +1" vote. Like event
 -- wishes, the person who suggested one can change or delete it, from the same browser or account.
 -- Admins: 'watching' (关注中), 'buying' (adopted: 已采纳 · 购买中), 'rejected' (未采纳), then 'bought' (已购买: off the
@@ -1306,6 +1312,9 @@ as $$
 declare
   w bigint;
 begin
+  if auth.uid() is null then
+    raise exception 'sign in first' using errcode = 'HVW05';  -- only player accounts can suggest and vote
+  end if;
   if p_token is null or char_length(p_token) not between 16 and 100 then
     raise exception 'missing browser secret' using errcode = 'HVW03';
   end if;
@@ -1367,6 +1376,9 @@ declare
   v bigint;
   n integer;
 begin
+  if auth.uid() is null then
+    raise exception 'sign in first' using errcode = 'HVW05';  -- only player accounts can suggest and vote
+  end if;
   if p_token is null or char_length(p_token) not between 16 and 100 then
     raise exception 'missing browser secret' using errcode = 'HVW03';
   end if;
@@ -1435,19 +1447,22 @@ grant execute on function public.delete_game_wish(bigint, text) to anon, authent
 grant execute on function public.toggle_game_wish_vote(bigint, text) to anon, authenticated;
 grant execute on function public.my_game_wish_state(text) to anon, authenticated;
 
--- Game wish photos: a public bucket so everyone can see them. Anyone can add one (random names only; the website
--- shrinks the photo first, and the bucket takes images up to 5 MB); only admins can delete them.
+-- Game wish photos: a public bucket so everyone can see them. Signed-in players can add one (random names only; the
+-- website shrinks the photo first, and the bucket takes images up to 5 MB) and delete their own (when they change the
+-- photo or delete the wish); admins can delete any.
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values ('game-wish-photos', 'game-wish-photos', true, 5242880, array['image/png', 'image/jpeg', 'image/webp'])
 on conflict (id) do update
   set public = true, file_size_limit = excluded.file_size_limit, allowed_mime_types = excluded.allowed_mime_types;
 drop policy if exists "Anyone can add game wish photos" on storage.objects;
-create policy "Anyone can add game wish photos" on storage.objects
-  for insert to anon, authenticated
+drop policy if exists "Players can add game wish photos" on storage.objects;
+create policy "Players can add game wish photos" on storage.objects
+  for insert to authenticated
   with check (bucket_id = 'game-wish-photos' and name ~ '^[0-9a-f]{24}\.(jpg|png|webp)$');
 drop policy if exists "Admins can delete game wish photos" on storage.objects;
-create policy "Admins can delete game wish photos" on storage.objects
-  for delete to authenticated using (bucket_id = 'game-wish-photos' and public.is_admin());
+drop policy if exists "Players and admins can delete game wish photos" on storage.objects;
+create policy "Players and admins can delete game wish photos" on storage.objects
+  for delete to authenticated using (bucket_id = 'game-wish-photos' and (owner = auth.uid() or public.is_admin()));
 
 -- ---------------------------------------------------------------------------------------------------------------
 -- Event organizers (负责人). Only admins can see the list and manage it. Each event has one main organizer and any

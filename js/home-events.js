@@ -190,6 +190,7 @@
   box.addEventListener("click", async (e) => {
     const b = e.target.closest("[data-vote]");
     if (!b || busy) return;
+    if (!HVLoans.userId) return void (location.href = "account.html?next=" + encodeURIComponent("events.html#wishes")); // players only
     busy = true;
     b.disabled = true;
     const id = Number(b.dataset.vote);
@@ -312,6 +313,7 @@
   box.addEventListener("click", async (e) => {
     const b = e.target.closest("[data-vote]");
     if (!b || busy) return;
+    if (!HVLoans.userId) return void (location.href = "account.html?next=" + encodeURIComponent("wishgames.html")); // players only
     busy = true;
     b.disabled = true;
     const id = Number(b.dataset.vote);

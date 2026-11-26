@@ -257,6 +257,9 @@
       wishIntro: "想参加什么样的活动？告诉我们！",
       wishNote: "备注：我们会根据情况决定是否采纳举办，提交期望活动不代表一定会举办。",
       wishAdd: "＋ 提议活动",
+      wishSignIn: "👤 登录后提议",
+      wishSignInHint: "只有注册用户可以提议和投票，请先登录或注册。",
+      errWishSignIn: "请先登录（只有注册用户可以提议和投票）。",
       wishEmpty: "还没有人提议，来提第一个吧！",
       wishFormTitle: "提议期望活动",
       wishName: "你的名字（可不填）",
@@ -723,6 +726,9 @@
       wishIntro: "What kind of event would you like? Tell us!",
       wishNote: "Note: we decide case by case whether to hold a suggested event. Suggesting one doesn't mean it will happen.",
       wishAdd: "+ Suggest an event",
+      wishSignIn: "👤 Sign in to suggest",
+      wishSignInHint: "Only registered players can suggest and vote. Please sign in or sign up.",
+      errWishSignIn: "Please sign in first (only registered players can suggest and vote).",
       wishEmpty: "No suggestions yet. Be the first!",
       wishFormTitle: "Suggest an event",
       wishName: "Your name (optional)",
@@ -1093,6 +1099,7 @@
     if (code === "cancel-gone") return tr("cancelGone");
     if (code === "HVW01") return tr("errWishFlood");
     if (code === "HVW02") return tr("errWishDeclined");
+    if (code === "HVW05") return tr("errWishSignIn");
     if (code === "wish-not-mine") return tr("wishNotMine");
     if (code === "note-not-mine") return tr("noteNotMine");
     if (code === "qr-not-image") return tr("qrNotImage");
@@ -1338,8 +1345,13 @@
   function wishSection() {
     if (wishes == null) return ""; // not set up yet (or couldn't load): leave the page as it was
     return `<section class="ev-wishes" id="wishes" aria-labelledby="ev-wishes-title">
-      <div class="ev-head"><h2 id="ev-wishes-title">${esc(tr("wishTitle"))}</h2><button class="btn" type="button" data-wish-add>${esc(tr("wishAdd"))}</button></div>
+      <div class="ev-head"><h2 id="ev-wishes-title">${esc(tr("wishTitle"))}</h2>${
+        HVLoans.userId
+          ? `<button class="btn" type="button" data-wish-add>${esc(tr("wishAdd"))}</button>`
+          : `<a class="btn" href="account.html?next=${encodeURIComponent("events.html#wishes")}">${esc(tr("wishSignIn"))}</a>`
+      }</div>
       <p class="ev-hint">${esc(tr("wishIntro"))}</p>
+      ${HVLoans.userId ? "" : `<p class="ev-msg">${esc(tr("wishSignInHint"))}</p>`}
       <p class="ev-wish-note">${esc(tr("wishNote"))}</p>
       ${flash ? `<p class="ev-msg ${flash.ok ? "is-ok" : "is-err"}" role="status">${esc(flash.text)}</p>` : ""}
       ${wishes.length ? `<div class="ev-wish-list">${wishOrder(wishes).map(wishCard).join("")}</div>` : `<p class="ev-empty">${esc(tr("wishEmpty"))}</p>`}
@@ -3031,6 +3043,7 @@
 
   // "我也想参加 +1": only this wish's numbers change, so no full reload.
   async function toggleVote(id, btn) {
+    if (!HVLoans.userId) return void (location.href = `account.html?next=${encodeURIComponent("events.html#wishes")}`); // players only
     if (busy) return;
     busy = true;
     btn.disabled = true;

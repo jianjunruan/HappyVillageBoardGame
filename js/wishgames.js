@@ -12,6 +12,9 @@
       intro: "想玩什么桌游？写下来（可以附一张照片），大家都能看到，也可以点“我也想玩 +1”投票。",
       note: "我们会根据大家的投票和情况决定是否采购，提交不代表一定会买。",
       add: "＋ 我想玩…",
+      signIn: "👤 登录后提议",
+      signInHint: "只有注册用户可以提议和投票，请先登录或注册。",
+      errSignIn: "请先登录（只有注册用户可以提议和投票）。",
       empty: "还没有人提交。想玩什么桌游？来提第一个吧！",
       bought: "✅ 已购买（{n}）",
       boughtHint: "已经买回来的桌游，可以在桌游目录里找找。",
@@ -85,6 +88,9 @@
       intro: "What game would you like to play here? Write it down (a photo is welcome). Everyone can see it and tap \"I want to play +1\".",
       note: "We decide what to buy from the votes and other things; suggesting a game doesn't mean we'll buy it.",
       add: "+ I'd like to play…",
+      signIn: "👤 Sign in to suggest",
+      signInHint: "Only registered players can suggest and vote. Please sign in or sign up.",
+      errSignIn: "Please sign in first (only registered players can suggest and vote).",
       empty: "Nothing here yet. Which game would you like? Suggest the first one!",
       bought: "✅ Bought ({n})",
       boughtHint: "Games we've bought: look for them in the catalogue.",
@@ -184,12 +190,16 @@
     const code = err && err.code;
     if (code === "HVW01") return tr("errFlood");
     if (code === "HVW02") return tr("errClosed");
+    if (code === "HVW05") return tr("errSignIn");
     if (code === "not-mine") return tr("notMine");
     if (code === "not-image") return tr("fPhotoBad");
     if (code === "42501" || (err && (err.status === 401 || err.status === 403))) return tr("errAdmin");
     return tr("failed", { msg: (err && err.message) || "" });
   }
 
+  // Only registered players can suggest and vote (the database checks again).
+  const signedIn = () => Boolean(HVLoans.userId);
+  const LOGIN = "account.html?next=" + encodeURIComponent("wishgames.html");
   let wishes = null;
   let loadErr = null;
   let isAdmin = false;
@@ -268,8 +278,11 @@
     const bought = wishes.filter((w) => w.status === "bought").sort((a, b) => String(b.status_at || "").localeCompare(String(a.status_at || "")));
     const list = [...active, ...rejected];
     main.innerHTML = `<section class="ev-wishes">
-        <div class="ev-head"><h2>${esc(tr("heading"))}</h2><button class="btn" type="button" data-add>${esc(tr("add"))}</button></div>
+        <div class="ev-head"><h2>${esc(tr("heading"))}</h2>${
+          signedIn() ? `<button class="btn" type="button" data-add>${esc(tr("add"))}</button>` : `<a class="btn" href="${esc(LOGIN)}">${esc(tr("signIn"))}</a>`
+        }</div>
         <p class="ev-hint">${esc(tr("intro"))}</p>
+        ${signedIn() ? "" : `<p class="ev-msg">${esc(tr("signInHint"))}</p>`}
         <p class="ev-wish-note">${esc(tr("note"))}</p>
         ${flash ? `<p class="ev-msg ${flash.ok ? "is-ok" : "is-err"}" role="status">${esc(flash.text)}</p>` : ""}
         ${list.length ? `<div class="ev-wish-list">${list.map(card).join("")}</div>` : `<p class="ev-empty">${esc(tr("empty"))}</p>`}
@@ -393,17 +406,26 @@
       return renderDialog();
     }
     const st = D;
+    const before = st.id ? (wishes.find((x) => x.id === st.id) || {}).photo || "" : ""; // the photo saved now
     await run(async () => {
       let photo = st.photo || "";
-      if (st.file) photo = await HVLoans.uploadWishPhoto(await shrinkImage(st.file));
+      let uploaded = "";
+      if (st.file) photo = uploaded = await HVLoans.uploadWishPhoto(await shrinkImage(st.file));
       const fields = { name: st.name.trim().slice(0, 30), title, description: st.desc.trim().slice(0, 1000), photo };
-      if (st.id) {
-        if (!(await HVLoans.updateGameWish(st.id, fields, token()))) throw Object.assign(new Error("not mine"), { code: "not-mine" });
-        flash = { text: tr("saved"), ok: true };
-      } else {
-        await HVLoans.addGameWish(fields, token());
-        flash = { text: tr("thanks"), ok: true };
+      try {
+        if (st.id) {
+          if (!(await HVLoans.updateGameWish(st.id, fields, token()))) throw Object.assign(new Error("not mine"), { code: "not-mine" });
+          flash = { text: tr("saved"), ok: true };
+        } else {
+          await HVLoans.addGameWish(fields, token());
+          flash = { text: tr("thanks"), ok: true };
+        }
+      } catch (err) {
+        if (uploaded) await HVLoans.deleteWishPhoto(uploaded).catch(() => {}); // not saved: don't keep the new photo
+        throw err;
       }
+      // A replaced or removed photo is deleted from storage, so nothing is left behind.
+      if (before && before !== photo) await HVLoans.deleteWishPhoto(before).catch(() => {});
     });
   }
   async function submitNote() {
@@ -415,6 +437,7 @@
     });
   }
   async function vote(id, btn) {
+    if (!signedIn()) return void (location.href = LOGIN);
     if (busy) return;
     busy = true;
     btn.disabled = true;
@@ -451,10 +474,9 @@
     if (b.hasAttribute("data-del")) {
       if (!confirm(tr("delConfirm", { title: w.title }))) return;
       return void run(async () => {
-        if (isAdmin) {
-          await HVLoans.deleteGameWish(id);
-          if (w.photo) await HVLoans.deleteWishPhoto(w.photo).catch(() => {});
-        } else if (!(await HVLoans.deleteOwnGameWish(id, token()))) throw Object.assign(new Error("not mine"), { code: "not-mine" });
+        if (isAdmin) await HVLoans.deleteGameWish(id);
+        else if (!(await HVLoans.deleteOwnGameWish(id, token()))) throw Object.assign(new Error("not mine"), { code: "not-mine" });
+        if (w.photo) await HVLoans.deleteWishPhoto(w.photo).catch(() => {}); // the photo goes with it
         flash = { text: tr("deleted"), ok: true };
       });
     }

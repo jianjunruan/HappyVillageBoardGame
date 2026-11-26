@@ -622,7 +622,8 @@ window.HVLoans = (() => {
       if (!rows.length) throw Object.assign(new Error("Nothing updated"), { code: "nothing-updated" });
     },
     deleteGameWish: (id) => adminDelete("game_wishes", id),
-    // A wish's photo (a JPEG/PNG/WebP blob, already made small) under a random name in the public bucket. Anyone.
+    // A wish's photo (a JPEG/PNG/WebP blob, already made small) under a random name in the public bucket.
+    // Signed-in players only; they can delete their own photos again (deleteWishPhoto), admins any.
     async uploadWishPhoto(blob) {
       const ext = blob.type === "image/png" ? "png" : blob.type === "image/webp" ? "webp" : "jpg";
       const bytes = new Uint8Array(12);
@@ -630,7 +631,7 @@ window.HVLoans = (() => {
       const name = [...bytes].map((b) => b.toString(16).padStart(2, "0")).join("") + "." + ext;
       await storage(`/object/${WISH_PHOTO_BUCKET}/${name}`, {
         method: "POST",
-        admin: Boolean(session),
+        admin: true,
         body: blob,
         headers: { "Content-Type": blob.type || "image/jpeg", "cache-control": "max-age=31536000" },
       });
