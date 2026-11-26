@@ -1698,6 +1698,47 @@ $$;
 revoke execute on function public.admin_player_roster() from public, anon;
 grant execute on function public.admin_player_roster() to authenticated;
 
+-- Admins only: tidy up sign-ups made without an account (未注册). Every such sign-up under the name p_old (ignoring
+-- case and spaces) gets the name p_new: a correction, or a merge with another guest's name. With p_user they are
+-- merged into that player account instead (p_new should then be its nickname). Returns how many sign-ups changed.
+-- Refused (HVE12) if the person would end up twice at one table.
+create or replace function public.admin_merge_guest(p_old text, p_new text, p_user uuid default null)
+returns integer
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  k text := lower(trim(coalesce(p_old, '')));
+  nw text := trim(coalesce(p_new, ''));
+  n integer;
+begin
+  if not public.is_admin() then
+    raise exception 'admins only' using errcode = '42501';
+  end if;
+  if k = '' or char_length(nw) not between 1 and 30 then
+    raise exception 'missing name' using errcode = 'HVE05';
+  end if;
+  if p_user is not null and not exists (select 1 from public.profiles where user_id = p_user) then
+    raise exception 'player account not found' using errcode = 'HVE10';
+  end if;
+  if exists (
+    select 1 from public.event_players g
+    join public.event_players o on o.table_id = g.table_id and o.id <> g.id
+    where g.user_id is null and lower(trim(g.name)) = k
+      and not (o.user_id is null and lower(trim(o.name)) = k)
+      and (lower(trim(o.name)) = lower(nw) or (p_user is not null and o.user_id = p_user))) then
+    raise exception 'they would be twice at one table' using errcode = 'HVE12';
+  end if;
+  update public.event_players set name = nw, user_id = p_user
+  where user_id is null and lower(trim(name)) = k;
+  get diagnostics n = row_count;
+  return n;
+end;
+$$;
+revoke execute on function public.admin_merge_guest(text, text, uuid) from public, anon;
+grant execute on function public.admin_merge_guest(text, text, uuid) to authenticated;
+
 -- ---------- Event feedback (活动反馈) ----------
 -- After an event, anyone can tell us how it went: from the event's day until 7 days after. Anonymous unless they
 -- choose to give a name; no account is ever stored, only the browser's secret (so one browser gives one answer per
