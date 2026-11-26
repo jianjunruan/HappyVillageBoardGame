@@ -325,6 +325,7 @@
       note: "备注（可不填）",
       notePh: "例如：新手教学、下午 3 点开始",
       yourName: "你的名字",
+      asAccount: "👤 用你的账号报名：{name}",
       namePh: "其他人会看到这个名字",
       contactHint: "联系方式：手机号和微信号二选一，至少填一个。",
       cPhone: "手机号",
@@ -747,6 +748,7 @@
       note: "Note (optional)",
       notePh: "e.g. teaching game, starts at 3 pm",
       yourName: "Your name",
+      asAccount: "👤 Signing up with your account: {name}",
       namePh: "Others will see this name",
       contactHint: "Contact: a phone number or a WeChat ID (at least one).",
       cPhone: "Phone number",
@@ -1801,7 +1803,9 @@
   const adminNameField = () => `<p class="ev-hint">${esc(tr("adminSignupHint"))}</p>
     <label class="ev-field"><span>${esc(tr("playerNameAdmin"))}</span><input name="name" maxlength="30" autocomplete="off" placeholder="${esc(tr("playerNameAdminPh"))}" value="${esc(D.name || "")}" required${D.name ? "" : " autofocus"}></label>
     <div id="ev-suggest">${suggestHtml()}</div>`;
-  const ownNameField = () => `<label class="ev-field"><span>${esc(tr("yourName"))}</span><input name="name" maxlength="30" autocomplete="nickname" placeholder="${esc(tr("namePh"))}" value="${esc(D.name)}" required${D.name ? "" : " autofocus"}></label>`;
+  // A signed-in player (not an admin) always signs up as themselves: their account's nickname, no name to type.
+  const asAccount = () => !isAdmin && Boolean(HVLoans.userId && profileName);
+  const ownNameField = () => asAccount() ? `<p class="ev-as-account">${esc(tr("asAccount", { name: profileName }))}</p>` : `<label class="ev-field"><span>${esc(tr("yourName"))}</span><input name="name" maxlength="30" autocomplete="nickname" placeholder="${esc(tr("namePh"))}" value="${esc(D.name)}" required${D.name ? "" : " autofocus"}></label>`;
   function renderOpenForm() {
     dlg.innerHTML = `${head(tr("openNew"))}
       <form class="ev-form" data-open-form novalidate>
@@ -2640,6 +2644,7 @@
     if (f) f.focus();
   }
   function checkName() {
+    if (asAccount()) D.name = profileName; // signed-in players sign up under their account's nickname
     const name = String(D.name || "").trim();
     if (!name) {
       D.err = tr("needName");
@@ -3244,6 +3249,10 @@
         profileName = (p && p.name) || "";
         profileNames = p ? [p.name, ...(p.aliases || [])].map(nameKey).filter(Boolean) : [];
         if (ev) render();
+        if (D && (D.mode === "open" || D.mode === "join")) {
+          readForm();
+          renderDialog();
+        }
       }, () => {});
     if (uid)
       HVLoans.contact(uid).then(
