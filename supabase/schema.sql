@@ -1651,7 +1651,8 @@ $$;
 revoke execute on function public.event_contacts(bigint) from public, anon;
 grant execute on function public.event_contacts(bigint) to authenticated;
 
--- Admins only: everyone who ever signed up for an event, across all events (events.html?players).
+-- Every signed-in player (and admins): everyone who ever signed up for an event, across all events (events.html?players).
+-- Names and counts only, never contacts.
 -- Sign-ups belong to a player account (registered) when made while signed in, or when made without signing in
 -- under a name that belongs to exactly one account (see player_account_names). The rest are grouped by name
 -- (ignoring case and spaces). Player accounts that never signed up are listed too, with 0 events.
@@ -1672,7 +1673,7 @@ as $$
     join public.event_tables t on t.id = p.table_id
     join public.events e on e.id = t.event_id
     left join public.player_account_names() n on p.user_id is null and n.k = lower(trim(p.name))
-    where public.is_admin()
+    where auth.uid() is not null
   ), g as (
     select (array_agg(s.uid))[1] as uid,
            (array_agg(s.name order by s.event_date desc, s.joined_at desc))[1] as name,
@@ -1686,7 +1687,7 @@ as $$
   union all
   select pr.user_id, pr.name, pr.name, 0, 0, 0, null, null
   from public.profiles pr
-  where public.is_admin() and not exists (select 1 from g where g.uid = pr.user_id);
+  where auth.uid() is not null and not exists (select 1 from g where g.uid = pr.user_id);
 $$;
 revoke execute on function public.admin_player_roster() from public, anon;
 grant execute on function public.admin_player_roster() to authenticated;

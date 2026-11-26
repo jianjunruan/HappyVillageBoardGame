@@ -357,6 +357,7 @@
       failed: "操作失败：{msg}",
       // admin sign-in
       adminLogin: "管理员登录",
+      playerLogin: "登录 / 注册",
       email: "邮箱",
       password: "密码",
       signIn: "登录",
@@ -366,8 +367,8 @@
       staffBtn: "👥 负责人",
       playersBtn: "📋 玩家名单",
       playersTitle: "玩家总名单",
-      playersHint: "所有活动里报过名的玩家，每人一行，只有管理员能看到。用玩家账号报名的算已注册；没登录报名的，名字和某个账号的昵称、别名或用过的名字一样，也算进那个账号。其他按名字合并（不分大小写）。注册了但还没报过名的账号也会列出来。",
-      playersOnly: "玩家名单只有管理员可以查看，请先登录。",
+      playersHint: "所有活动里报过名的玩家，每人一行，登录的玩家都能看到（不显示联系方式）。用玩家账号报名的算已注册；没登录报名的，名字和某个账号的昵称、别名或用过的名字一样，也算进那个账号。其他按名字合并（不分大小写）。注册了但还没报过名的账号也会列出来。",
+      playersOnly: "登录后就能查看玩家名单。",
       playersSearch: "搜索名字",
       playersEvents: "参加 {n} 次活动",
       playersSignups: "报了 {n} 桌",
@@ -779,6 +780,7 @@
       errOffline: "Couldn't connect. Check your connection and try again.",
       failed: "Something went wrong: {msg}",
       adminLogin: "Admin sign-in",
+      playerLogin: "Sign in / sign up",
       email: "Email",
       password: "Password",
       signIn: "Sign in",
@@ -787,8 +789,8 @@
       staffBtn: "👥 Organizers",
       playersBtn: "📋 Players",
       playersTitle: "All players",
-      playersHint: "Everyone who signed up for any event, one line each. Admins only. Sign-ups made from a player account count as registered, and so do sign-ups without signing in under a name that matches an account's nickname, alias or a name it used. The rest are grouped by name (ignoring case). Accounts that never signed up are listed too.",
-      playersOnly: "Only admins can see the players list. Please sign in.",
+      playersHint: "Everyone who signed up for any event, one line each. Every signed-in player can see it (contacts are never shown). Sign-ups made from a player account count as registered, and so do sign-ups without signing in under a name that matches an account's nickname, alias or a name it used. The rest are grouped by name (ignoring case). Accounts that never signed up are listed too.",
+      playersOnly: "Sign in to see the players list.",
       playersSearch: "Search names",
       playersEvents: "{n} events",
       playersSignups: "{n} tables",
@@ -1085,7 +1087,7 @@
       if (STAFF_VIEW) {
         if (isAdmin) staffRows = await HVLoans.staffList();
       } else if (PLAYERS_VIEW) {
-        if (isAdmin) rosterRows = await HVLoans.playerRoster();
+        if (HVLoans.userId) rosterRows = await HVLoans.playerRoster(); // any signed-in player
       } else if (EVENT_ID == null) {
         let st;
         let count;
@@ -1193,7 +1195,7 @@
     main.innerHTML = `
       <div class="ev-head">
         <h2>${esc(tr("upcoming"))}</h2>
-        ${isAdmin ? `<span class="ev-head-acts"><a class="btn ghost" href="events.html?players">${esc(tr("playersBtn"))}</a><a class="btn ghost" href="events.html?staff">${esc(tr("staffBtn"))}</a><button class="btn" type="button" data-new-event>${esc(tr("newEvent"))}</button></span>` : ""}
+        ${isAdmin ? `<span class="ev-head-acts"><a class="btn ghost" href="events.html?players">${esc(tr("playersBtn"))}</a><a class="btn ghost" href="events.html?staff">${esc(tr("staffBtn"))}</a><button class="btn" type="button" data-new-event>${esc(tr("newEvent"))}</button></span>` : HVLoans.userId ? `<span class="ev-head-acts"><a class="btn ghost" href="events.html?players">${esc(tr("playersBtn"))}</a></span>` : ""}
       </div>
       ${up.length ? `<div class="ev-list">${up.map(eventCard).join("")}</div>` : `<p class="ev-empty">${esc(tr("noUpcoming"))}</p>`}
       ${wishSection()}
@@ -1428,13 +1430,12 @@
       ${staffRows.length ? `<div class="ev-staff-grid">${staffRows.map((s) => staffCard(s, null, true)).join("")}</div>` : `<p class="ev-empty">${esc(tr("staffEmpty"))}</p>`}`;
   }
 
-  // Everyone who ever signed up, across all events: 全部 / 已注册 / 未注册 and a name search. Admins only.
+  // Everyone who ever signed up, across all events: 全部 / 已注册 / 未注册 and a name search. Any signed-in player.
   function renderPlayersPage() {
     document.title = `${tr("playersTitle")} · ${tr("title")} · ${HVI18n.t("siteName")}`;
     const crumb = `<p class="ev-crumb"><a href="events.html">${esc(tr("backToEvents"))}</a></p>`;
-    if (!adminChecked) return void (main.innerHTML = crumb + `<p class="ev-msg">${esc(tr("loading"))}</p>`);
-    if (!isAdmin)
-      return void (main.innerHTML = crumb + `<p class="ev-msg">${esc(tr("playersOnly"))}</p><button class="btn" type="button" data-signin>${esc(tr("adminLogin"))}</button>`);
+    if (!HVLoans.userId)
+      return void (main.innerHTML = crumb + `<p class="ev-msg">${esc(tr("playersOnly"))}</p><a class="btn" href="account.html?next=${encodeURIComponent("events.html?players")}">${esc(tr("playerLogin"))}</a>`);
     if (!rosterRows) return void (main.innerHTML = crumb + `<p class="ev-msg">${esc(tr("loading"))}</p>`);
     const typing = document.activeElement && document.activeElement.id === "ev-roster-q";
     main.innerHTML = `${crumb}
