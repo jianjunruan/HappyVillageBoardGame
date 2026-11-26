@@ -389,6 +389,9 @@
       guestRegTag: "已注册",
       guestSave: "💾 保存",
       guestSaved: "✓ 已更新 {n} 条报名记录。",
+      guestAliasAdded: "已把「{old}」加入这个账号的“其他名字”，用这个名字记录的对局也会算进他的主页。",
+      guestAliasFailed: "「{old}」没能加入这个账号的“其他名字”（可能别的账号已经用了这个名字）。",
+      guestAliasFull: "这个账号的“其他名字”已经有 5 个了，「{old}」没有加进去；需要的话请玩家自己在主页调整。",
       needGuestName: "请填写新名字。",
       needGuestTarget: "请选择要合并到的玩家。",
       errTwice: "这样会让同一个人在同一桌出现两次，请先在活动页移除其中一个报名。",
@@ -828,6 +831,9 @@
       guestRegTag: "registered",
       guestSave: "💾 Save",
       guestSaved: "✓ Updated {n} sign-ups.",
+      guestAliasAdded: "“{old}” was added to the account's other names, so games recorded under it count on their profile too.",
+      guestAliasFailed: "“{old}” couldn't be added to the account's other names (another account may already use it).",
+      guestAliasFull: "The account already has 5 other names, so “{old}” wasn't added. The player can change them on their profile.",
       needGuestName: "Please enter the new name.",
       needGuestTarget: "Please choose the player to merge into.",
       errTwice: "That would put the same person twice at one table. Remove one of the sign-ups on the event page first.",
@@ -1807,8 +1813,9 @@
     if (D.err) return renderDialog();
     const key = D.key;
     await submit(async () => {
-      const n = await HVLoans.mergeGuest(key, newName, user);
-      flash = { text: tr("guestSaved", { n }), ok: true };
+      const r = await HVLoans.mergeGuest(key, newName, user);
+      const extra = r.alias === "added" ? tr("guestAliasAdded", { old: r.old }) : r.alias === "full" ? tr("guestAliasFull", { old: r.old }) : r.alias === "failed" ? tr("guestAliasFailed", { old: r.old }) : "";
+      flash = { text: [tr("guestSaved", { n: r.changed }), extra].filter(Boolean).join(" "), ok: true };
     });
   }
 

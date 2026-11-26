@@ -1700,10 +1700,13 @@ grant execute on function public.admin_player_roster() to authenticated;
 
 -- Admins only: tidy up sign-ups made without an account (未注册). Every such sign-up under the name p_old (ignoring
 -- case and spaces) gets the name p_new: a correction, or a merge with another guest's name. With p_user they are
--- merged into that player account instead (p_new should then be its nickname). Returns how many sign-ups changed.
+-- merged into that player account instead (p_new should then be its nickname), and the old name is added to the
+-- account's other names (so games recorded under it count on their profile), unless it already has 5.
+-- Returns { "changed": n, "alias": "added" | "had" | "full" | "failed" | null, "old": the old name }.
 -- Refused (HVE12) if the person would end up twice at one table.
+drop function if exists public.admin_merge_guest(text, text, uuid);
 create or replace function public.admin_merge_guest(p_old text, p_new text, p_user uuid default null)
-returns integer
+returns jsonb
 language plpgsql
 security definer
 set search_path = ''
@@ -1712,6 +1715,9 @@ declare
   k text := lower(trim(coalesce(p_old, '')));
   nw text := trim(coalesce(p_new, ''));
   n integer;
+  old_name text;
+  pr record;
+  alias_state text;
 begin
   if not public.is_admin() then
     raise exception 'admins only' using errcode = '42501';
@@ -1730,10 +1736,28 @@ begin
       and (lower(trim(o.name)) = lower(nw) or (p_user is not null and o.user_id = p_user))) then
     raise exception 'they would be twice at one table' using errcode = 'HVE12';
   end if;
+  -- The old name as it was last written (before the update below changes it).
+  select trim(name) into old_name from public.event_players
+  where user_id is null and lower(trim(name)) = k order by joined_at desc, id desc limit 1;
   update public.event_players set name = nw, user_id = p_user
   where user_id is null and lower(trim(name)) = k;
   get diagnostics n = row_count;
-  return n;
+  if p_user is not null and old_name is not null then
+    select name, aliases into pr from public.profiles where user_id = p_user for update;
+    if lower(trim(pr.name)) = k or exists (select 1 from unnest(pr.aliases) a where lower(trim(a)) = k) then
+      alias_state := 'had';
+    elsif cardinality(pr.aliases) >= 5 then
+      alias_state := 'full';
+    else
+      begin
+        update public.profiles set aliases = array_append(aliases, old_name) where user_id = p_user;
+        alias_state := 'added';
+      exception when others then
+        alias_state := 'failed';  -- e.g. another account already uses that name: keep the merge anyway
+      end;
+    end if;
+  end if;
+  return jsonb_build_object('changed', n, 'alias', alias_state, 'old', old_name);
 end;
 $$;
 revoke execute on function public.admin_merge_guest(text, text, uuid) from public, anon;

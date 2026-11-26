@@ -243,7 +243,7 @@ window.HVLoans = (() => {
     // Admins only: everyone who ever signed up, across all events, plus player accounts with no sign-ups:
     // [{ user_id (null = not registered), profile_name, name, events, signups, first_date, last_date }].
     // Admins only: renames every sign-up made without an account under oldName to newName, or (with userId) merges them
-    // into that player account. Returns how many sign-ups changed.
+    // into that player account (adding the old name to its other names). Returns { changed, alias: "added" | "had" | "full" | null, old }.
     mergeGuest: (oldName, newName, userId = null) =>
       request("/rest/v1/rpc/admin_merge_guest", { method: "POST", admin: true, body: { p_old: oldName, p_new: newName, ...(userId ? { p_user: userId } : {}) } }),
     playerRoster: () => request("/rest/v1/rpc/admin_player_roster", { method: "POST", admin: true, body: {} }),
