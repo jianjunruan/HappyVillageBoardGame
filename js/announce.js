@@ -9,6 +9,8 @@
       region: "通告",
       none: "暂时没有通告",
       manage: "⚙️ 管理通告",
+      all: "全部 →",
+      allLabel: "查看所有进行中的通告",
       title: "📢 管理滚动通告",
       hint: "每条通告只在选定的日期里滚动显示（开始和结束当天都算），过期后自动不显示。有多条时轮流滚动。",
       add: "＋ 新通告",
@@ -37,6 +39,8 @@
       region: "Announcements",
       none: "No announcements right now",
       manage: "⚙️ Manage",
+      all: "All →",
+      allLabel: "See all current announcements",
       title: "📢 Scrolling announcements",
       hint: "Each announcement scrolls only on the days you pick (first and last day included) and disappears afterwards. Several take turns.",
       add: "+ New announcement",
@@ -90,6 +94,7 @@
     .hv-ann.is-still .hv-ann-text { white-space: normal; }
     .hv-ann.is-still .hv-ann-view { white-space: normal; }
     .hv-ann-none { color: #8a7a3a; font-weight: 500; }
+    .hv-ann-all { text-decoration: none; font-weight: 700; }
     .hv-ann-btn { flex: none; padding: 2px 8px; border: 1px solid #d9bd4f; border-radius: 999px; background: #fff; color: #5a4300;
       font: inherit; font-size: 0.8rem; cursor: pointer; }
     @media (prefers-color-scheme: dark) {
@@ -126,6 +131,8 @@
   `;
   document.head.append(css);
 
+  // announcements.html, from this page (admin pages live one folder down).
+  const PAGE = (/\/admin\//.test(location.pathname) ? "../" : "") + "announcements.html";
   const bar = document.createElement("div");
   bar.className = "hv-ann";
   bar.setAttribute("role", "region");
@@ -178,6 +185,7 @@
     bar.setAttribute("aria-label", tr("region"));
     bar.innerHTML = `<span class="hv-ann-icon" aria-hidden="true">📢</span>
       <div class="hv-ann-view">${items.length ? `<span class="hv-ann-text"></span>` : `<span class="hv-ann-none">${esc(tr("none"))}</span>`}</div>
+      ${items.length && !/announcements\.html$/.test(location.pathname) ? `<a class="hv-ann-btn hv-ann-all" href="${PAGE}" aria-label="${esc(tr("allLabel"))}">${esc(tr("all"))}</a>` : ""}
       ${isAdmin ? `<button class="hv-ann-btn" type="button" data-ann-manage>${esc(tr("manage"))}</button>` : ""}`;
     if (items.length) play();
   }
@@ -186,6 +194,7 @@
   bar.addEventListener("pointerleave", (e) => e.pointerType === "mouse" && anim && anim.play());
   bar.addEventListener("click", (e) => {
     if (e.target.closest("[data-ann-manage]")) return void openManager();
+    if (e.target.closest("a")) return; // 全部 → the announcements page
     if (anim) anim.playState === "paused" ? anim.play() : anim.pause(); // a tap pauses / resumes on phones
   });
 
@@ -256,10 +265,12 @@
     form.ends_on = f.elements.end.value;
   }
   // After a change: the list in the dialog and the bar itself.
+  const changeListeners = []; // e.g. announcements.html redraws its list after an admin's change
   async function refresh() {
     await loadAll();
     renderManager();
     await loadCurrent();
+    changeListeners.forEach((fn) => fn());
   }
   dlg.addEventListener("click", async (e) => {
     if (e.target === dlg || e.target.closest("[data-close]")) return dlg.close();
@@ -320,6 +331,7 @@
     at = 0;
     paint();
   }
+  window.HVAnnounce = { manage: () => openManager(), onChange: (fn) => changeListeners.push(fn) };
   function start() {
     document.body.prepend(bar);
     loadCurrent();

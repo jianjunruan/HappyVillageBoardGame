@@ -364,3 +364,8 @@ p.ev-tpl { margin: 0; color: var(--muted); }
 .gw-photo-big { background: var(--bg); }
 .gw-preview { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
 .gw-preview img { width: 72px; height: 72px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); }
+
+/* announcements.html */
+.an-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.an-item { padding: 12px 14px; border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); border-left: 4px solid #e0b100; }
+.an-body { margin: 0 0 6px; font-size: 1.02rem; font-weight: 600; white-space: pre-line; overflow-wrap: anywhere; }
