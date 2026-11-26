@@ -419,3 +419,20 @@ dialog.login { width: min(380px, calc(100vw - 24px)); }
 /* The admins' note on a wish when adopting or declining (期望活动 and 想玩桌游): shown in red */
 .wish-admin-note { margin: 6px 0 0; color: var(--danger); font-size: 0.88rem; font-weight: 600; white-space: pre-line; overflow-wrap: anywhere; }
 .hw-photo { display: block; width: 100%; height: 90px; object-fit: contain; margin-bottom: 4px; border-radius: 8px; background: var(--surface); }
+
+/* Colour themes, so the three are easy to tell apart: 活动 keeps the site's orange, 期望活动 is blue, 想玩桌游 is pink.
+   Each one redefines --accent / --accent-soft inside its own sections (home page, events page, wishgames.html), so
+   its buttons, +1s, links and notes follow. */
+#home-wishes, #wishes { --accent: #2f6fb5; --accent-soft: #e2edf9; }
+#home-gamewishes, #gw-main, #gw-dlg { --accent: #c23b78; --accent-soft: #fbe2ee; }
+@media (prefers-color-scheme: dark) {
+  #home-wishes, #wishes { --accent: #4d93d9; --accent-soft: #1d3046; }
+  #home-gamewishes, #gw-main, #gw-dlg { --accent: #dd5d97; --accent-soft: #452136; }
+}
+.home-wishes:not(.is-empty) { border: 2px solid var(--accent); background: linear-gradient(180deg, var(--accent-soft) 0, var(--surface) 64px); }
+.home-wishes .hw-head h2 { color: var(--accent); }
+.hw-none { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.hw-item { border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); }
+#wishes, #gw-main > .ev-wishes { padding: 14px; border-radius: var(--radius); border: 2px solid var(--accent); background: linear-gradient(180deg, var(--accent-soft) 0, var(--bg) 90px); }
+#wishes .ev-head h2, #gw-main .ev-head h2 { color: var(--accent); }
+#wishes .ev-wish, #gw-main .ev-wish { border-top: 4px solid var(--accent); }
