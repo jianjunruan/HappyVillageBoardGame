@@ -269,6 +269,7 @@
       wishSubmit: "💡 提交",
       wishThanks: "✓ 谢谢！你的期望活动已提交。",
       wishAdopted: "✓ 已采纳",
+      wishSoon: "🚀 即将上线，敬请期待",
       wishWatching: "👀 关注中",
       wishWatchingTip: "管理员已经注意到了，还在观望，还没确定是否采纳。",
       wishWatch: "👀 关注",
@@ -693,6 +694,7 @@
       wishSubmit: "💡 Send",
       wishThanks: "✓ Thanks! Your suggestion was sent.",
       wishAdopted: "✓ Adopted",
+      wishSoon: "🚀 Coming soon. Stay tuned!",
       wishWatching: "👀 Watching",
       wishWatchingTip: "The admins have seen this and are thinking about it; not decided yet.",
       wishWatch: "👀 Watch",
@@ -1226,6 +1228,7 @@
     const del = mineW || isAdmin ? `<button class="link-btn" type="button" data-wish-delete="${w.id}">${esc(tr("wishDelete"))}</button>` : "";
     return `<article class="ev-wish${st === "adopted" ? " is-adopted" : st === "watching" ? " is-watching" : st === "rejected" ? " is-rejected" : ""}${mineW ? " is-mine" : ""}">
       <div class="ev-wish-top"><h3>${esc(w.title)}</h3>${badge}${mineW ? `<span class="ev-wish-mine">${esc(tr("wishMine"))}</span>` : ""}</div>
+      ${st === "adopted" ? `<p class="wish-soon">${esc(tr("wishSoon"))}</p>` : ""}
       ${st === "watching" ? `<p class="ev-wish-watch">${esc(tr("wishWatchingTip"))}</p>` : ""}
       ${w.description ? `<p class="ev-wish-desc">${esc(w.description)}</p>` : ""}
       <p class="ev-wish-by">${esc(w.name ? tr("wishBy", { name: w.name, date: fmtDate(w.created_at.slice(0, 10)) }) : tr("wishByAnon", { date: fmtDate(w.created_at.slice(0, 10)) }))}</p>
