@@ -84,6 +84,7 @@
       suHistory: "🕘 历史活动",
       suNoCurrent: "没有还没结束的活动报名。",
       suNoHistory: "还没有历史活动记录。",
+      cancelled: "已取消",
       suLoading: "加载中…",
       suLoadFailed: "没能加载：{msg}",
       host: "房主",
@@ -169,6 +170,7 @@
       suHistory: "🕘 Past events",
       suNoCurrent: "No sign-ups for events that are still to come.",
       suNoHistory: "No past events yet.",
+      cancelled: "Cancelled",
       suLoading: "Loading…",
       suLoadFailed: "Couldn't load: {msg}",
       host: "host",
@@ -795,7 +797,7 @@
   function signupsHtml() {
     const item = (x) => `<li>
       <span class="pf-day">${esc(fmtDay(x.event_date, { month: "short", day: "numeric", weekday: "short" }))}</span>
-      <a href="events.html?id=${x.event_id}">${esc(x.title)}</a>
+      <a href="events.html?id=${x.event_id}"${x.cancelled ? ' class="is-cancelled"' : ""}>${x.cancelled ? `<span class="pf-cancel">${esc(tr("cancelled"))}</span> ` : ""}${esc(x.title)}</a>
       <span class="pf-res">🎲 ${esc(x.game_id && catalog[x.game_id] ? gameName(x.game_id) : x.game_name)}${x.table_time ? ` · ${esc(tr("startsAt", { t: x.table_time.slice(0, 5) }))}` : ""}${x.is_host ? ` · <b>${esc(tr("host"))}</b>` : ""}</span>
     </li>`;
     const past = su.view === "past";

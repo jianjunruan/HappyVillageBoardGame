@@ -1372,7 +1372,7 @@ set search_path = ''
 as $$
   with mine as (
     select e.id as event_id, e.title, e.event_date, e.start_time as event_time, t.id as table_id, t.game_id, t.game_name,
-           t.start_time as table_time, t.host_player = p.id as is_host
+           t.start_time as table_time, t.host_player = p.id as is_host, e.cancelled
     from public.event_players p
     join public.event_tables t on t.id = p.table_id
     join public.events e on e.id = t.event_id
