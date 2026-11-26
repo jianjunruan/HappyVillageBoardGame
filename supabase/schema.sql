@@ -327,6 +327,8 @@ alter table public.events add column if not exists map_url text not null default
   check (map_url = '' or (char_length(map_url) <= 500 and map_url ~* '^https://'));
 -- People coming without signing up (e.g. friends someone brings along). Admins set it; it is added to the headcount.
 alter table public.events add column if not exists extra_people integer not null default 0 check (extra_people between 0 and 200);
+-- An admin can mark an event as cancelled (已取消): it stays listed with a "cancelled" tag, and sign-ups are closed.
+alter table public.events add column if not exists cancelled boolean not null default false;
 
 create table if not exists public.event_tables (
   id bigint generated always as identity primary key,
@@ -400,10 +402,14 @@ set search_path = ''
 as $$
 declare
   d date;
+  c boolean;
 begin
-  select event_date into d from public.events where id = p_event;
+  select event_date, cancelled into d, c from public.events where id = p_event;
   if d is null then
     raise exception 'event not found' using errcode = 'HVE01';
+  end if;
+  if c then
+    raise exception 'this event was cancelled' using errcode = 'HVE01';
   end if;
   if d < current_date - 1 then
     raise exception 'this event is over' using errcode = 'HVE01';
@@ -650,8 +656,8 @@ revoke select on public.event_tables from anon, authenticated;
 grant select (id, event_id, game_id, game_name, on_site, max_players, note, created_at, start_time, host_player)
   on public.event_tables to anon, authenticated;
 grant select (id, table_id, name, joined_at) on public.event_players to anon, authenticated;  -- not the token
-grant insert (title, event_date, start_time, end_time, location, map_url, description, extra_people) on public.events to authenticated;
-grant update (title, event_date, start_time, end_time, location, map_url, description, extra_people) on public.events to authenticated;
+grant insert (title, event_date, start_time, end_time, location, map_url, description, extra_people, cancelled) on public.events to authenticated;
+grant update (title, event_date, start_time, end_time, location, map_url, description, extra_people, cancelled) on public.events to authenticated;
 grant delete on public.events to authenticated;
 grant update (game_name, on_site, max_players, note, start_time) on public.event_tables to authenticated;  -- admins only (policy)
 grant delete on public.event_tables, public.event_players to authenticated;

@@ -359,6 +359,8 @@ dialog.login { width: min(380px, calc(100vw - 24px)); }
 .he-when, .he-meta { color: var(--muted); font-size: 0.86rem; }
 .he-rel { display: inline-block; padding: 0 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-weight: 700; font-size: 0.78rem; }
 .he-rel.is-now { background: var(--ok); color: #fff; }
+.he-cancel { display: inline-block; vertical-align: 0.1em; padding: 0 8px; border-radius: 999px; background: var(--danger); color: #fff; font-weight: 700; font-size: 0.78rem; }
+.he-card.is-cancelled { opacity: 0.75; }
 .he-go { flex: none; padding: 7px 12px; border-radius: 10px; background: var(--accent); color: #fff; font-weight: 700; font-size: 0.9rem; white-space: nowrap; }
 @media (max-width: 520px) {
   .he-list { grid-template-columns: 1fr; }

@@ -410,20 +410,20 @@ window.HVLoans = (() => {
     // With fromDay ("YYYY-MM-DD"): only events on that day or later (today's events count as current).
     events: (fromDay) =>
       request("/rest/v1/events?order=event_date.asc,start_time.asc.nullsfirst,id.asc" + (fromDay ? `&event_date=gte.${fromDay}` : "") +
-        "&select=id,title,event_date,start_time,end_time,location,extra_people,description,event_tables(id,game_id,game_name,on_site,max_players,event_players(id,name)),event_staff(staff_id,staff(name))"),
+        "&select=id,title,event_date,start_time,end_time,location,extra_people,cancelled,description,event_tables(id,game_id,game_name,on_site,max_players,event_players(id,name)),event_staff(staff_id,staff(name))"),
     // One page of past events (before beforeDay), most recent first: { rows, total }. limit 0 just counts them.
     pastEvents: (beforeDay, offset = 0, limit = 10) =>
       request(`/rest/v1/events?event_date=lt.${beforeDay}&order=event_date.desc,start_time.desc.nullslast,id.desc&offset=${offset}&limit=${limit}` +
-        "&select=id,title,event_date,start_time,end_time,location,extra_people,description,event_tables(id,game_id,game_name,on_site,max_players,event_players(id,name)),event_staff(staff_id,staff(name))", { withCount: true }),
+        "&select=id,title,event_date,start_time,end_time,location,extra_people,cancelled,description,event_tables(id,game_id,game_name,on_site,max_players,event_players(id,name)),event_staff(staff_id,staff(name))", { withCount: true }),
     // The next upcoming events (from `fromDay`, "YYYY-MM-DD"), with their tables and main organizer, for the home page.
     upcomingEvents: (fromDay, limit = 2) =>
       request(`/rest/v1/events?event_date=gte.${fromDay}&order=event_date.asc,start_time.asc.nullsfirst,id.asc&limit=${limit}` +
-        "&select=id,title,event_date,start_time,end_time,location,extra_people,event_tables(id,event_players(id,name)),event_staff(staff_id,is_lead,sort,staff(name))"),
+        "&select=id,title,event_date,start_time,end_time,location,extra_people,cancelled,event_tables(id,event_players(id,name)),event_staff(staff_id,is_lead,sort,staff(name))"),
     // One event with its tables, players and organizers, or null. Organizers are null for visitors once the event is
     // over (see the staff policy in schema.sql).
     async event(id) {
       const rows = await request(`/rest/v1/events?id=eq.${encodeURIComponent(id)}` +
-        "&select=id,title,event_date,start_time,end_time,location,extra_people,map_url,description," +
+        "&select=id,title,event_date,start_time,end_time,location,extra_people,cancelled,map_url,description," +
         "event_tables(id,game_id,game_name,on_site,max_players,note,created_at,start_time,host_player,event_players(id,name,joined_at)," +
         "event_games(id,score_id,started_at,game_scores(id,players,winner,top_score,pending,details)))," +
         "event_staff(staff_id,is_lead,sort,staff(id,name,phone,wechat,xhs,wechat_qr,xhs_qr))", { admin: "ifSignedIn" });
@@ -443,7 +443,7 @@ window.HVLoans = (() => {
       }
       return ev;
     },
-    // fields: { title, event_date, start_time, end_time, location, map_url, description }. With an id it changes that event. Admins only.
+    // fields: { title, event_date, start_time, end_time, location, map_url, description, cancelled }. With an id it changes that event. Admins only.
     async saveEvent(fields, id = null) {
       const rows = await request(id ? `/rest/v1/events?id=eq.${encodeURIComponent(id)}` : "/rest/v1/events", {
         method: id ? "PATCH" : "POST",
