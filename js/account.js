@@ -17,6 +17,12 @@
       passwordHint: "至少 6 位。",
       nickname: "昵称",
       nicknameHint: "其他玩家看到的名字；计分板上用这个名字记录的对局会算进你的主页。",
+      phone: "手机号",
+      wechat: "微信号",
+      contactHint: "手机号和微信号二选一，至少填一个，方便活动时联系你。",
+      privacy: "🔒 不会公开：只有你自己和管理员能看到。",
+      needContact: "请填写手机号或微信号（至少一个）。",
+      badPhone: "手机号格式不对，请只填数字（可以带 + 和空格）。",
       signIn: "登录",
       signUp: "注册",
       forgot: "忘记密码？",
@@ -64,6 +70,12 @@
       passwordHint: "At least 6 characters.",
       nickname: "Nickname",
       nicknameHint: "The name other players see. Games recorded under this name on the scoreboards count on your profile.",
+      phone: "Phone number",
+      wechat: "WeChat ID",
+      contactHint: "Give a phone number or a WeChat ID (at least one), so we can reach you about events.",
+      privacy: "🔒 Never shown publicly: only you and the admins can see it.",
+      needContact: "Please enter a phone number or a WeChat ID (at least one).",
+      badPhone: "That phone number doesn't look right. Use digits only (+ and spaces are fine).",
       signIn: "Sign in",
       signUp: "Create account",
       forgot: "Forgot password?",
@@ -189,6 +201,10 @@
       </div>
       <form class="ac-form" data-form="${up ? "up" : "in"}" novalidate>
         ${up ? field("nickname", "nickname", "text", 'maxlength="30" autocomplete="nickname" autofocus') + `<small class="ac-hint">${esc(tr("nicknameHint"))}</small>` : ""}
+        ${up ? `<fieldset class="ac-contact"><legend>${esc(tr("contactHint"))}</legend>
+          ${field("phone", "phone", "tel", 'maxlength="30" inputmode="tel" autocomplete="tel"')}
+          ${field("wechat", "wechat", "text", 'maxlength="60" autocomplete="off"')}
+          <small class="ac-hint ac-private">${esc(tr("privacy"))}</small></fieldset>` : ""}
         ${field("email", "email", "email", `autocomplete="email"${up ? "" : " autofocus"}`)}
         ${field("password", "password", "password", `autocomplete="${up ? "new-password" : "current-password"}"`)}
         ${up ? `<small class="ac-hint">${esc(tr("passwordHint"))}</small>` + field("password2", "password2", "password", 'autocomplete="new-password"') : ""}
@@ -269,12 +285,16 @@
     if (form === "up") {
       const nickname = v("nickname").trim();
       if (!nickname) return bad("needNickname");
+      const phone = v("phone").trim();
+      const wechat = v("wechat").trim();
+      if (!phone && !wechat) return bad("needContact");
+      if (phone && !/^\+?[\d\s-]{5,20}$/.test(phone)) return bad("badPhone");
       if (!email) return bad("needEmail");
       if (pw.length < 6) return bad("shortPassword");
       if (pw !== v("password2")) return bad("mismatch");
       return void run(async () => {
         localStorage.setItem(PENDING, nickname.slice(0, 30));
-        const r = await HVLoans.signUp(email, pw, linkBack());
+        const r = await HVLoans.signUp(email, pw, linkBack(), { phone, wechat });
         if (r.signedIn) {
           await ensureProfile(nickname);
           location.href = next;

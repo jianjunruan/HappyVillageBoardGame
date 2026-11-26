@@ -326,6 +326,17 @@
       notePh: "例如：新手教学、下午 3 点开始",
       yourName: "你的名字",
       namePh: "其他人会看到这个名字",
+      contactHint: "联系方式：手机号和微信号二选一，至少填一个。",
+      cPhone: "手机号",
+      cWechat: "微信号",
+      privacy: "🔒 不会公开：只有你自己和管理员能看到。",
+      contactSaved: "📱 联系方式：用你账号里填写的（🔒 只有你自己和管理员能看到）。",
+      contactSavedEdit: "修改",
+      contactAccountNote: "会保存到你的账号里，以后报名不用再填。",
+      needContact: "请填写手机号或微信号（至少一个）。",
+      badPhone: "手机号格式不对，请只填数字（可以带 + 和空格）。",
+      contactOf: "📱 {v}",
+      contactNone: "（没有联系方式）",
       needName: "请填写你的名字。",
       badMax: "人数上限请填 1–30 的整数，或留空表示不限。",
       openSubmit: "🎲 开桌并加入",
@@ -737,6 +748,17 @@
       notePh: "e.g. teaching game, starts at 3 pm",
       yourName: "Your name",
       namePh: "Others will see this name",
+      contactHint: "Contact: a phone number or a WeChat ID (at least one).",
+      cPhone: "Phone number",
+      cWechat: "WeChat ID",
+      privacy: "🔒 Never shown publicly: only you and the admins can see it.",
+      contactSaved: "📱 Contact: the one saved on your account (🔒 only you and the admins can see it).",
+      contactSavedEdit: "Change",
+      contactAccountNote: "It's saved to your account, so you won't need to enter it next time.",
+      needContact: "Please enter a phone number or a WeChat ID (at least one).",
+      badPhone: "That phone number doesn't look right. Use digits only (+ and spaces are fine).",
+      contactOf: "📱 {v}",
+      contactNone: "(no contact)",
       needName: "Please enter your name.",
       badMax: "Max players must be a whole number from 1 to 30, or empty for no limit.",
       openSubmit: "🎲 Open and join",
@@ -874,6 +896,7 @@
   let mine = new Set(store.get("hv-event-mine", []));
   const saveMine = () => store.set("hv-event-mine", [...mine].slice(-300));
   let profileName = ""; // a signed-in player's nickname
+  let myContact; // signed-in player's saved contact { phone, wechat }: undefined until loaded, null if none
   let profileNames = []; // their nickname and other names, lower case: a game with one of them is theirs to score
   const myName = () => store.get("hv-event-name", "") || profileName;
 
@@ -982,6 +1005,7 @@
     if (code === "HVW02") return tr("errWishDeclined");
     if (code === "wish-not-mine") return tr("wishNotMine");
     if (code === "qr-not-image") return tr("qrNotImage");
+    if (code === "HVE11") return tr("needContact");
     if (code === "HVE01") return tr("errOver");
     if (code === "HVE02") return tr("errFull");
     if (code === "HVE03" || code === "23505") return tr("errName");
@@ -1737,7 +1761,43 @@
       : `<div class="ev-chosen"><span class="ev-thumb ev-thumb-icon" aria-hidden="true">🎲</span><span><b>${esc(D.game.custom)}</b><small>${esc(tr("custom"))}</small></span><button class="link-btn" type="button" data-change-game>${esc(tr("change"))}</button></div>`;
   }
   // Admins sign up other players: a name box with matching players from all events to pick from (js below).
-  const nameField = () => (isAdmin ? adminNameField() : ownNameField());
+  const nameField = () => (isAdmin ? adminNameField() : ownNameField() + contactField());
+  // Every sign-up needs a phone number or WeChat ID (private: only the person and admins see it). A signed-in player
+  // with one saved on their account uses that; everyone else types it (remembered in this browser for next time).
+  const hasSavedContact = () => Boolean(HVLoans.userId && myContact && (myContact.phone || myContact.wechat));
+  const needsContact = () => !isAdmin && !hasSavedContact();
+  function contactField() {
+    if (hasSavedContact())
+      return `<p class="ev-hint ev-contact-saved">${esc(tr("contactSaved"))} <a href="profile.html">${esc(tr("contactSavedEdit"))}</a></p>`;
+    return `<fieldset class="ev-field ev-contact"><legend>${esc(tr("contactHint"))}</legend>
+      <div class="ev-row">
+        <label class="ev-field"><span>${esc(tr("cPhone"))}</span><input name="phone" type="tel" inputmode="tel" maxlength="30" autocomplete="tel" value="${esc(D.phone || "")}"></label>
+        <label class="ev-field"><span>${esc(tr("cWechat"))}</span><input name="wechat" maxlength="60" autocomplete="off" value="${esc(D.wechat || "")}"></label>
+      </div>
+      <small class="ev-hint ev-private">${esc(tr("privacy"))}${HVLoans.userId ? " " + esc(tr("contactAccountNote")) : ""}</small>
+    </fieldset>`;
+  }
+  // Checks the typed contact; returns { phone, wechat } or null (D.err set).
+  function checkContact() {
+    const phone = String(D.phone || "").trim().slice(0, 30);
+    const wechat = String(D.wechat || "").trim().slice(0, 60);
+    if (!phone && !wechat) D.err = tr("needContact");
+    else if (phone && !/^\+?[\d\s-]{5,20}$/.test(phone)) D.err = tr("badPhone");
+    else return { phone, wechat };
+    return null;
+  }
+  // Before a sign-up: a signed-in player's typed contact is saved to their account; a visitor's goes with the sign-up.
+  async function contactForSignup(c) {
+    if (!c) return null;
+    if (HVLoans.userId) {
+      if (myContact === undefined) myContact = await HVLoans.contact(HVLoans.userId).catch(() => null); // still loading
+      myContact = await HVLoans.saveContact(c, Boolean(myContact));
+      return null;
+    }
+    store.set("hv-event-contact", c);
+    return c;
+  }
+  const savedGuestContact = () => (isAdmin || HVLoans.userId ? {} : store.get("hv-event-contact", {}) || {});
   const adminNameField = () => `<p class="ev-hint">${esc(tr("adminSignupHint"))}</p>
     <label class="ev-field"><span>${esc(tr("playerNameAdmin"))}</span><input name="name" maxlength="30" autocomplete="off" placeholder="${esc(tr("playerNameAdminPh"))}" value="${esc(D.name || "")}" required${D.name ? "" : " autofocus"}></label>
     <div id="ev-suggest">${suggestHtml()}</div>`;
@@ -1991,7 +2051,19 @@
             ? `<br><small class="ev-hint">${esc(tr("regAs", { name: u.profile_name || a.name || "" }))}${byName ? ` · ${esc(tr("byName"))}` : ""}</small> <a class="ev-home" href="profile.html?u=${encodeURIComponent(u.user_id)}">${esc(tr("homeLink"))}</a>`
             : "";
         const at = a.tables.map((id) => games.get(id)).filter(Boolean);
-        return `<li><b>${name}</b>${tag}${badge}${at.length ? `<br><small class="ev-hint">${esc(at.join("、"))}</small>` : ""}${link}</li>`;
+        // Admins: the person's phone / WeChat (from any of their sign-ups), private to admins and the person.
+        let contactHtml = "";
+        if (isAdmin && D.contacts instanceof Map && a.players.length) {
+          const seen = new Set();
+          for (const id of a.players) {
+            const c = D.contacts.get(id);
+            if (!c) continue;
+            if (c.phone) seen.add(c.phone);
+            if (c.wechat) seen.add(`${tr("cWechat")}：${c.wechat}`);
+          }
+          contactHtml = `<br><small class="ev-contact-line${seen.size ? "" : " is-missing"}">${esc(seen.size ? tr("contactOf", { v: [...seen].join(" · ") }) : tr("contactNone"))}</small>`;
+        }
+        return `<li><b>${name}</b>${tag}${badge}${at.length ? `<br><small class="ev-hint">${esc(at.join("、"))}</small>` : ""}${contactHtml}${link}</li>`;
       })
       .join("");
     const seg = (f, label) =>
@@ -2020,12 +2092,13 @@
   }
   // Opens the "来玩的人" list; for admins, also looks up which sign-ups came from a player account.
   async function openPeople() {
-    openDialog({ mode: "people", filter: "all", accounts: null, accErr: "" });
+    openDialog({ mode: "people", filter: "all", accounts: null, contacts: null, accErr: "" });
     if (!isAdmin) return;
     const state = D;
     try {
-      const rows = await HVLoans.eventPlayerAccounts(ev.id);
+      const [rows, cs] = await Promise.all([HVLoans.eventPlayerAccounts(ev.id), HVLoans.eventContacts(ev.id).catch(() => [])]);
       state.accounts = new Map(rows.map((r) => [Number(r.player_id), r]));
+      state.contacts = new Map(cs.map((r) => [Number(r.player_id), r]));
     } catch (err) {
       state.accErr = errText(err);
     }
@@ -2450,6 +2523,7 @@
       if (f.elements.empty) D.empty = f.elements.empty.checked;
     }
     if (D.mode === "join") D.name = v("name");
+    if ((D.mode === "open" || D.mode === "join") && f.elements.phone) Object.assign(D, { phone: v("phone"), wechat: v("wechat") });
     if (D.mode === "time") Object.assign(D, { time: v("time"), note: v("note") });
     if (D.mode === "people") D.extra = v("extra");
     if (D.mode === "feedback") {
@@ -2556,7 +2630,7 @@
   function startOpen() {
     // The start time begins as the event's own start time; the host can change or clear it.
     if (isAdmin) loadAdminRoster();
-    openDialog({ mode: "open", step: "pick", q: "", custom: "", game: null, onSite: true, time: ev && ev.start_time ? fmtTime(ev.start_time) : "", max: "", note: "", name: isAdmin ? "" : myName(), user: null, err: "" });
+    openDialog({ mode: "open", step: "pick", q: "", custom: "", game: null, onSite: true, time: ev && ev.start_time ? fmtTime(ev.start_time) : "", max: "", note: "", name: isAdmin ? "" : myName(), ...savedGuestContact(), user: null, err: "" });
   }
   function chooseGame(game) {
     const g = game.id && gameById(game.id);
@@ -2605,17 +2679,20 @@
     else if ((empty || name) && max && (Number(max) < 1 || Number(max) > 30)) D.err = tr("badMax");
     const who = isAdmin && name && !D.err ? adminSignupUser() : { user: null };
     if (who.err) D.err = who.err;
+    const contact = name && !D.err && needsContact() ? checkContact() : null;
     if ((!empty && !name) || D.err) return renderDialog();
     const g = D.game.id && gameById(D.game.id);
     const gameName = g ? (typeof g.name === "string" ? g.name : g.name.zh || g.name.en) : D.game.custom;
     await submit(async () => {
+      const c = await contactForSignup(contact);
       const r = await HVLoans.openTable(
         EVENT_ID,
         { game_id: g ? g.id : null, game_name: gameName, on_site: D.onSite, max_players: max ? Number(max) : null, note: D.note, start_time: D.time || null },
         empty ? "-" : name,
         isAdmin ? freshToken() : token(),
         who.user,
-        !empty
+        !empty,
+        c
       );
       if (!isAdmin) {
         store.set("hv-event-name", name);
@@ -2630,11 +2707,13 @@
     const name = checkName();
     const who = isAdmin && name ? adminSignupUser() : { user: null };
     if (who.err) D.err = who.err;
+    const contact = name && !D.err && needsContact() ? checkContact() : null;
     if (!name || D.err) return renderDialog();
     await submit(async () => {
       if (isAdmin) await HVLoans.joinTable(D.table, name, freshToken(), who.user);
       else {
-        const id = await HVLoans.joinTable(D.table, name, token());
+        const c = await contactForSignup(contact);
+        const id = await HVLoans.joinTable(D.table, name, token(), null, c);
         store.set("hv-event-name", name);
         rememberMine(id);
       }
@@ -2822,7 +2901,7 @@
     const tableOf = (id) => ev.event_tables.find((t) => t.id === Number(id));
     if (b.dataset.join) {
       if (isAdmin) loadAdminRoster();
-      return openDialog({ mode: "join", table: Number(b.dataset.join), name: isAdmin ? "" : myName(), user: null, err: "" });
+      return openDialog({ mode: "join", table: Number(b.dataset.join), name: isAdmin ? "" : myName(), ...savedGuestContact(), user: null, err: "" });
     }
     if (b.dataset.leave) {
       const t = tableOf(b.dataset.table);
@@ -3166,6 +3245,19 @@
         profileNames = p ? [p.name, ...(p.aliases || [])].map(nameKey).filter(Boolean) : [];
         if (ev) render();
       }, () => {});
+    if (uid)
+      HVLoans.contact(uid).then(
+        (c) => {
+          myContact = c;
+          if (D && (D.mode === "open" || D.mode === "join")) {
+            readForm();
+            renderDialog();
+          }
+        },
+        () => {
+          myContact = null;
+        }
+      );
   }
   // The catalogue only matters for names and pictures, so the event shows first and fills in after.
   load();

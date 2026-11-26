@@ -195,3 +195,11 @@ a.is-cancelled { color: var(--muted); }
 .pf-su-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
 .pf-recent.is-loading { opacity: 0.5; }
 html.pf3d-open { overflow: hidden; }
+
+/* Private contact (手机号 / 微信号): sign-up form and profile */
+.ac-contact { display: grid; gap: 10px; margin: 0; padding: 10px 12px 12px; border: 1px dashed var(--border); border-radius: 10px; min-width: 0; }
+.ac-contact legend { padding: 0 4px; font-size: 0.88rem; color: var(--text); font-weight: 600; }
+.ac-contact small.ac-hint { margin-top: 0; }
+.ac-private { color: var(--ok); font-weight: 600; }
+.pf-contact { margin: 8px 0 0; font-size: 0.92rem; }
+.pf-contact.is-missing { color: var(--danger); font-weight: 600; }
