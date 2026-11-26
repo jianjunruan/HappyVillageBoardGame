@@ -324,3 +324,11 @@ p.ev-tpl { margin: 0; color: var(--muted); }
 .ev-fb-comments small { color: var(--muted); }
 .ev-fb-other { width: 100%; margin-top: 8px; min-height: 42px; padding: 8px 12px; border: 1px solid var(--accent); border-radius: 10px; background: var(--surface); color: var(--text); font: inherit; }
 .ev-fb-sub { margin: 10px 0 6px; font-size: 0.9rem; font-weight: 700; }
+
+/* Cancelled events (已取消) */
+.ev-cancel-tag { display: inline-block; vertical-align: 0.1em; padding: 0 8px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; background: var(--danger); color: #fff; }
+.ev-card.is-cancelled { opacity: 0.7; }
+.ev-card.is-cancelled .ev-cal { background: var(--muted); }
+.ev-card.is-cancelled .ev-title-text, .ev-title-text.is-cancelled { text-decoration: line-through; color: var(--muted); }
+.ev-empty.is-cancelled { color: var(--danger); font-weight: 600; }
+.ev-check > span { display: flex; flex-direction: column; gap: 2px; }

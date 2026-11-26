@@ -29,6 +29,10 @@
       tomorrow: "明天",
       inDays: "{n} 天后",
       over: "已结束",
+      cancelledTag: "已取消",
+      cancelledNote: "这个活动已取消，不能再报名。",
+      evCancelled: "标记为已取消",
+      evCancelledHint: "活动仍会显示在列表里，并标上“已取消”；不能再开桌或报名。",
       tables: "{n} 桌",
       people: "{n} 人参加",
       headcount: "👥 共 {n} 人参加",
@@ -329,7 +333,7 @@
       joinSubmit: "✓ 加入这一桌",
       saving: "正在保存……",
       // errors
-      errOver: "这个活动已经结束或不存在了。",
+      errOver: "这个活动已经结束、已取消或不存在了。",
       errFull: "这一桌已经满了。",
       errJoined: "你的账号已经在这一桌了。",
       errName: "这一桌已经有同名的人了，换个写法吧（比如加上姓氏）。",
@@ -437,6 +441,10 @@
       tomorrow: "Tomorrow",
       inDays: "In {n} days",
       over: "Over",
+      cancelledTag: "Cancelled",
+      cancelledNote: "This event has been cancelled, so sign-ups are closed.",
+      evCancelled: "Mark as cancelled",
+      evCancelledHint: "The event stays in the list with a \"Cancelled\" tag; no more tables or sign-ups.",
       tables: "{n} tables",
       people: "{n} people coming",
       headcount: "👥 {n} people coming",
@@ -735,7 +743,7 @@
       joinTitle: "Join {game}",
       joinSubmit: "✓ Join this table",
       saving: "Saving…",
-      errOver: "This event is over or no longer exists.",
+      errOver: "This event is over, cancelled or no longer exists.",
       errFull: "This table is full.",
       errJoined: "Your account has already joined this table.",
       errName: "Someone with this name already joined this table. Try another spelling (e.g. add your surname).",
@@ -1138,10 +1146,10 @@
     const rel = relDay(e.event_date);
     const games = (e.event_tables || []).map(tableName);
     const shown = games.slice(0, 4);
-    return `<a class="ev-card${isOver(e) ? " is-past" : ""}" href="events.html?id=${e.id}">
+    return `<a class="ev-card${isOver(e) ? " is-past" : ""}${e.cancelled ? " is-cancelled" : ""}" href="events.html?id=${e.id}">
       <span class="ev-cal" aria-hidden="true"><small>${esc(new Intl.DateTimeFormat(lang() === "zh" ? "zh-CN" : "en-GB", { month: "short" }).format(d))}</small><b>${d.getDate()}</b></span>
       <span class="ev-card-body">
-        <span class="ev-card-title">${esc(e.title)}</span>
+        <span class="ev-card-title">${e.cancelled ? `<span class="ev-cancel-tag">${esc(tr("cancelledTag"))}</span> ` : ""}<span class="ev-title-text">${esc(e.title)}</span></span>
         <span class="ev-when">${esc(fmtDate(e.event_date))}${e.start_time ? ` · ${esc(timeRange(e))}` : ""} <span class="ev-rel ${rel.cls}">${esc(rel.text)}</span></span>
         ${e.location ? `<span class="ev-card-place">📍 ${esc(e.location)}</span>` : ""}
         ${e.description ? `<span class="ev-card-desc">${esc(HVRich.text(e.description))}</span>` : ""}
@@ -1470,13 +1478,14 @@
       return;
     }
     document.title = `${ev.title} · ${tr("title")} · ${HVI18n.t("siteName")}`;
-    const over = isOver(ev);
+    // A cancelled event is closed like a finished one: no new tables, no sign-ups.
+    const over = isOver(ev) || !!ev.cancelled;
     const rel = relDay(ev.event_date);
     const tables = ev.event_tables;
     main.innerHTML = `
       <p class="ev-crumb"><a href="events.html">${esc(tr("allEvents"))}</a></p>
       <section class="ev-hero">
-        <h2>${esc(ev.title)}</h2>
+        <h2>${ev.cancelled ? `<span class="ev-cancel-tag">${esc(tr("cancelledTag"))}</span> ` : ""}<span class="ev-title-text${ev.cancelled ? " is-cancelled" : ""}">${esc(ev.title)}</span></h2>
         <p class="ev-when">📅 ${esc(fmtDate(ev.event_date, true))}${ev.start_time ? ` · 🕒 ${esc(timeRange(ev))}` : ""} <span class="ev-rel ${rel.cls}">${esc(rel.text)}</span></p>
         ${placeLine(ev)}
         <p class="ev-when"><button class="ev-count" type="button" data-people>${esc(tr("headcount", { n: HVLoans.headcount(ev) }))}</button></p>
@@ -1490,7 +1499,7 @@
         ${over ? "" : `<button class="btn" type="button" data-open-table>${esc(tr("openNew"))}</button>`}
       </div>
       ${flash ? `<p class="ev-msg ${flash.ok ? "is-ok" : "is-err"}" role="status">${esc(flash.text)}</p>` : ""}
-      ${over ? `<p class="ev-empty">${esc(tr("overNote"))}</p>` : ""}
+      ${over ? `<p class="ev-empty${ev.cancelled ? " is-cancelled" : ""}">${esc(tr(ev.cancelled ? "cancelledNote" : "overNote"))}</p>` : ""}
       ${tables.length ? `<div class="ev-tables">${tables.map((t) => tableCard(t, over)).join("")}</div>` : over ? "" : `<p class="ev-empty">${esc(tr("openFirst"))}</p>`}`;
   }
 
@@ -1780,6 +1789,7 @@
         </div>
         <label class="ev-field"><span>${esc(tr("evPlace"))}</span><input name="place" maxlength="200" placeholder="${esc(tr("evPlacePh"))}" value="${esc(D.place)}"></label>
         <label class="ev-field"><span>${esc(tr("evMap"))}</span><input name="map" type="url" inputmode="url" maxlength="500" placeholder="${esc(tr("evMapPh"))}" value="${esc(D.map)}"><small class="ev-hint">${esc(tr("evMapHint"))}</small></label>
+        <label class="ev-check"><input type="checkbox" name="cancelled"${D.cancelled ? " checked" : ""}><span><b>${esc(tr("evCancelled"))}</b><small class="ev-hint">${esc(tr("evCancelledHint"))}</small></span></label>
         <div class="ev-field"><span id="ev-desc-label">${esc(tr("evDesc"))}</span>${HVRich.editorHtml(D.desc, tr("evDescPh"))}</div>
         <p class="ev-tpl-save"><button class="btn ghost btn-sm" type="button" data-tpl-save>${esc(tr("tplSave"))}</button>${D.tplMsg ? `<span class="ev-msg ${D.tplMsg.ok ? "is-ok" : "is-err"}" role="status">${esc(D.tplMsg.text)}</span>` : ""}</p>
         ${staffPickers()}
@@ -2469,6 +2479,7 @@
     }
     if (D.mode === "event") {
       Object.assign(D, { title: v("title"), date: v("date"), time: v("time"), end: v("end"), place: v("place"), map: v("map") });
+      if (f.elements.cancelled) D.cancelled = f.elements.cancelled.checked;
       if (f.querySelector("[data-rich]")) D.desc = HVRich.value(f.querySelector("[data-rich]"));
       if (f.elements.tpl) D.tplSel = f.elements.tpl.value;
       // Chosen organizers in order, without gaps or repeats.
@@ -2486,6 +2497,7 @@
       end: e ? fmtTime(e.end_time) : "",
       place: e ? e.location || "" : "",
       map: e ? e.map_url || "" : "",
+      cancelled: e ? !!e.cancelled : false,
       desc: e ? e.description : "",
       slots: e ? (e.event_staff || []).filter((x) => x.staff).map((x) => String(x.staff.id)) : [], // already in order
       staff: null,
@@ -2656,6 +2668,7 @@
           location: String(state.place || "").trim().slice(0, 200),
           map_url: state.map || "",
           description: String(state.desc || "").trim(),
+          cancelled: !!state.cancelled,
         },
         state.id
       );

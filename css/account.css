@@ -54,6 +54,8 @@
 .pf-recent li:last-child { border-bottom: 0; }
 .pf-recent li.is-won .pf-res b { color: var(--ok); }
 .pf-day { color: var(--muted); font-size: 0.85rem; min-width: 4.5em; }
+.pf-cancel { display: inline-block; vertical-align: 0.1em; padding: 0 8px; border-radius: 999px; background: var(--danger); color: #fff; font-weight: 700; font-size: 0.78rem; text-decoration: none; }
+a.is-cancelled { color: var(--muted); }
 .pf-res { color: var(--muted); font-size: 0.88rem; margin-left: auto; }
 .pf-recent a:not(.pf-game) { font-weight: 600; }
 

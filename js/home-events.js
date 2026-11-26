@@ -16,6 +16,8 @@
       noTables: "还没有人开桌，快来开第一桌！",
       lead: "负责人：{name}",
       none: "📅 活动报名：暂时没有新活动，看看往期活动 →",
+      cancelled: "已取消",
+      view: "查看 →",
     },
     en: {
       title: "📅 Upcoming events",
@@ -29,6 +31,8 @@
       noTables: "No tables yet. Open the first one!",
       lead: "Organizer: {name}",
       none: "📅 Events: nothing coming up yet. See past events →",
+      cancelled: "Cancelled",
+      view: "View →",
     },
   };
   const tr = (k, vars = {}) => (STR[HVI18n.lang][k] ?? STR.zh[k]).replace(/\{(\w+)\}/g, (_, v) => vars[v] ?? "");
@@ -53,16 +57,16 @@
     // 负责人1 (or, if that person was deleted, the first one left).
     const lead = (e.event_staff || []).filter((x) => x.staff).sort((a, b) => b.is_lead - a.is_lead || a.sort - b.sort)[0];
     const when = new Intl.DateTimeFormat(locale(), { month: HVI18n.lang === "zh" ? "long" : "short", day: "numeric", weekday: "short" }).format(d);
-    return `<a class="he-card" href="events.html?id=${e.id}">
+    return `<a class="he-card${e.cancelled ? " is-cancelled" : ""}" href="events.html?id=${e.id}">
       <span class="he-cal" aria-hidden="true"><small>${esc(new Intl.DateTimeFormat(locale(), { month: "short" }).format(d))}</small><b>${d.getDate()}</b></span>
       <span class="he-body">
-        <span class="he-name">${esc(e.title)}</span>
+        <span class="he-name">${e.cancelled ? `<span class="he-cancel">${esc(tr("cancelled"))}</span> ` : ""}${esc(e.title)}</span>
         <span class="he-when">${esc(when)}${e.start_time ? ` · ${esc(e.start_time.slice(0, 5))}${e.end_time ? "–" + esc(e.end_time.slice(0, 5)) : ""}` : ""} <span class="he-rel${n <= 1 ? " is-now" : ""}">${esc(rel)}</span></span>
         ${e.location ? `<span class="he-meta">📍 ${esc(e.location)}</span>` : ""}
         <span class="he-meta">${esc(tables.length ? tr("tables", { n: tables.length, p: people }) : people ? `${tr("people", { p: people })} · ${tr("noTables")}` : tr("noTables"))}</span>
         ${lead ? `<span class="he-meta">${esc(tr("lead", { name: lead.staff.name }))}</span>` : ""}
       </span>
-      <span class="he-go">${esc(tr("join"))}</span>
+      <span class="he-go">${esc(tr(e.cancelled ? "view" : "join"))}</span>
     </a>`;
   }
   function render() {
