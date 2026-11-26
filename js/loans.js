@@ -444,7 +444,7 @@ window.HVLoans = (() => {
     async event(id) {
       const rows = await request(`/rest/v1/events?id=eq.${encodeURIComponent(id)}` +
         "&select=id,title,event_date,start_time,end_time,location,extra_people,cancelled,map_url,description," +
-        "event_tables(id,game_id,game_name,on_site,max_players,note,created_at,start_time,host_player,event_players(id,name,joined_at)," +
+        "event_tables(id,game_id,game_name,on_site,max_players,note,created_at,start_time,host_player,event_players(id,name,joined_at,note)," +
         "event_games(id,score_id,started_at,game_scores(id,players,winner,top_score,pending,details)))," +
         "event_staff(staff_id,is_lead,sort,staff(id,name,phone,wechat,xhs,wechat_qr,xhs_qr))", { admin: "ifSignedIn" });
       const ev = rows[0] || null;
@@ -481,7 +481,8 @@ window.HVLoans = (() => {
     // user: admins only, the player account this sign-up is for (left out when there is none).
     // seat false (admins): an empty table for anyone to join; nobody is seated.
     // contact: { phone, wechat } for a sign-up without a saved account contact (left out otherwise).
-    openTable: (eventId, table, name, token, user = null, seat = true, contact = null) =>
+    // note: the player's own note, shown under their name ("" for none).
+    openTable: (eventId, table, name, token, user = null, seat = true, contact = null, note = "") =>
       request("/rest/v1/rpc/open_event_table", {
         method: "POST",
         admin: "ifSignedIn",
@@ -498,6 +499,7 @@ window.HVLoans = (() => {
           ...(user ? { p_user: user } : {}),
           ...(seat ? {} : { p_seat: false }),
           ...(contact ? { p_phone: contact.phone || "", p_wechat: contact.wechat || "" } : {}),
+          ...(note ? { p_player_note: note } : {}),
         },
       }),
     // Changes a table's start time ("HH:MM" or null) and note as its current host. Returns false if this browser isn't the host.
@@ -512,7 +514,7 @@ window.HVLoans = (() => {
       request("/rest/v1/rpc/delete_event_table", { method: "POST", admin: "ifSignedIn", body: { p_table: tableId, p_token: token } }),
     // Returns the new player id.
     // user: admins only, the player account this sign-up is for (left out when there is none).
-    joinTable: (tableId, name, token, user = null, contact = null) =>
+    joinTable: (tableId, name, token, user = null, contact = null, note = "") =>
       request("/rest/v1/rpc/join_event_table", {
         method: "POST",
         admin: "ifSignedIn",
@@ -522,6 +524,7 @@ window.HVLoans = (() => {
           p_token: token,
           ...(user ? { p_user: user } : {}),
           ...(contact ? { p_phone: contact.phone || "", p_wechat: contact.wechat || "" } : {}),
+          ...(note ? { p_player_note: note } : {}),
         },
       }),
     // Returns true if this browser's sign-up was removed. A host can name the player who takes over (nextId);

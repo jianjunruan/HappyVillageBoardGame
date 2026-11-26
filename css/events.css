@@ -342,3 +342,8 @@ p.ev-tpl { margin: 0; color: var(--muted); }
 .ev-contact-line { color: var(--text); }
 .ev-contact-line.is-missing { color: var(--muted); }
 .ev-as-account { margin: 0; padding: 8px 10px; border-radius: 10px; background: var(--accent-soft); color: var(--text); font-weight: 600; }
+
+/* A player's own note under their name on a table */
+.ev-player.has-note { border-radius: 12px; align-items: flex-start; }
+.ev-pwho { display: grid; gap: 1px; min-width: 0; }
+.ev-player small.ev-pnote { color: var(--text); opacity: 0.75; font-size: 0.78rem; line-height: 1.3; }

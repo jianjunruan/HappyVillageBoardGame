@@ -360,6 +360,8 @@ create table if not exists public.event_players (
 );
 create index if not exists event_players_by_table on public.event_players (table_id);
 create unique index if not exists event_players_one_name on public.event_players (table_id, lower(trim(name)));
+-- A short note the player adds when signing up (e.g. "I'll be 30 minutes late"), shown under their name to everyone.
+alter table public.event_players add column if not exists note text not null default '' check (char_length(note) <= 50);
 -- Contact for a sign-up made without a player account (手机号 or 微信号, at least one): private. Only the database
 -- functions below use it (no grants), and only admins can read it back (event_contacts).
 create table if not exists public.event_player_contacts (
@@ -468,10 +470,11 @@ drop function if exists public.open_event_table(bigint, text, text, boolean, int
 drop function if exists public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time);
 drop function if exists public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time, uuid);
 drop function if exists public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time, uuid, boolean);
--- p_phone / p_wechat: the sign-up's contact (see event_contact_guard).
+drop function if exists public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time, uuid, boolean, text, text);
+-- p_phone / p_wechat: the sign-up's contact (see event_contact_guard). p_player_note: the player's own note (公开).
 create or replace function public.open_event_table(p_event bigint, p_game_id text, p_game_name text, p_on_site boolean,
   p_max_players integer, p_note text, p_name text, p_token text, p_start_time time default null, p_user uuid default null,
-  p_seat boolean default true, p_phone text default null, p_wechat text default null)
+  p_seat boolean default true, p_phone text default null, p_wechat text default null, p_player_note text default null)
 returns jsonb
 language plpgsql
 security definer
@@ -501,8 +504,9 @@ begin
   if not coalesce(p_seat, true) then
     return jsonb_build_object('table_id', t, 'player_id', null);  -- empty: the first to join becomes the host
   end if;
-  insert into public.event_players (table_id, name, token, user_id)
-  values (t, trim(p_name), p_token, public.event_signup_user(p_name, p_user)) returning id into p;
+  insert into public.event_players (table_id, name, token, user_id, note)
+  values (t, trim(p_name), p_token, public.event_signup_user(p_name, p_user), left(trim(coalesce(p_player_note, '')), 50))
+  returning id into p;
   perform public.event_contact_guard(p, p_phone, p_wechat);
   update public.event_tables set host_player = p where id = t;
   return jsonb_build_object('table_id', t, 'player_id', p);
@@ -512,8 +516,9 @@ $$;
 -- Joins a table. Returns the new player id. p_user: admins only, the player account the sign-up is for.
 drop function if exists public.join_event_table(bigint, text, text);
 drop function if exists public.join_event_table(bigint, text, text, uuid);
+drop function if exists public.join_event_table(bigint, text, text, uuid, text, text);
 create or replace function public.join_event_table(p_table bigint, p_name text, p_token text, p_user uuid default null,
-  p_phone text default null, p_wechat text default null)
+  p_phone text default null, p_wechat text default null, p_player_note text default null)
 returns bigint
 language plpgsql
 security definer
@@ -541,7 +546,8 @@ begin
   if u is not null and exists (select 1 from public.event_players where table_id = p_table and user_id = u) then
     raise exception 'this account already joined this table' using errcode = 'HVE07';
   end if;
-  insert into public.event_players (table_id, name, token, user_id) values (p_table, trim(p_name), p_token, u) returning id into p;
+  insert into public.event_players (table_id, name, token, user_id, note)
+  values (p_table, trim(p_name), p_token, u, left(trim(coalesce(p_player_note, '')), 50)) returning id into p;
   perform public.event_contact_guard(p, p_phone, p_wechat);
   -- An empty table (an admin's open table, or everyone left it): the first to join becomes its host.
   update public.event_tables set host_player = p, host_token = p_token where id = p_table and host_player is null;
@@ -700,22 +706,22 @@ grant select on public.events to anon, authenticated;
 revoke select on public.event_tables from anon, authenticated;
 grant select (id, event_id, game_id, game_name, on_site, max_players, note, created_at, start_time, host_player)
   on public.event_tables to anon, authenticated;
-grant select (id, table_id, name, joined_at) on public.event_players to anon, authenticated;  -- not the token
+grant select (id, table_id, name, joined_at, note) on public.event_players to anon, authenticated;  -- not the token
 grant insert (title, event_date, start_time, end_time, location, map_url, description, extra_people, cancelled) on public.events to authenticated;
 grant update (title, event_date, start_time, end_time, location, map_url, description, extra_people, cancelled) on public.events to authenticated;
 grant delete on public.events to authenticated;
 grant update (game_name, on_site, max_players, note, start_time) on public.event_tables to authenticated;  -- admins only (policy)
 grant delete on public.event_tables, public.event_players to authenticated;
 revoke execute on function public.event_signup_guard(bigint) from public, anon, authenticated;
-revoke execute on function public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time, uuid, boolean, text, text) from public;
-revoke execute on function public.join_event_table(bigint, text, text, uuid, text, text) from public;
+revoke execute on function public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time, uuid, boolean, text, text, text) from public;
+revoke execute on function public.join_event_table(bigint, text, text, uuid, text, text, text) from public;
 revoke execute on function public.leave_event_table(bigint, text, bigint) from public;
 revoke execute on function public.delete_event_table(bigint, text) from public;
 revoke execute on function public.set_event_table_time(bigint, text, time, text) from public;
 grant execute on function public.set_event_table_time(bigint, text, time, text) to anon, authenticated;
 revoke execute on function public.is_event_table_host(bigint, text, bigint, text) from public, anon, authenticated;
-grant execute on function public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time, uuid, boolean, text, text) to anon, authenticated;
-grant execute on function public.join_event_table(bigint, text, text, uuid, text, text) to anon, authenticated;
+grant execute on function public.open_event_table(bigint, text, text, boolean, integer, text, text, text, time, uuid, boolean, text, text, text) to anon, authenticated;
+grant execute on function public.join_event_table(bigint, text, text, uuid, text, text, text) to anon, authenticated;
 grant execute on function public.leave_event_table(bigint, text, bigint) to anon, authenticated;
 grant execute on function public.delete_event_table(bigint, text) to anon, authenticated;
 revoke execute on function public.set_event_table_host(bigint, bigint) from public, anon;
