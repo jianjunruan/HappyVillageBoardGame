@@ -378,6 +378,23 @@
       playersNever: "还没报过名",
       playersLast: "最近：{d}",
       playersNone: "没有符合条件的玩家。",
+      guestEdit: "✏️ 修改 / 合并",
+      guestTitle: "修改未注册玩家：{name}",
+      guestHint: "会改这个名字（不分大小写）在所有活动里的报名记录。",
+      guestRename: "改名（写错名字时用）",
+      guestNewName: "新名字",
+      guestMerge: "合并到另一位玩家（同一个人用了不同名字时用）",
+      guestTarget: "合并到",
+      guestPick: "请选择…",
+      guestRegTag: "已注册",
+      guestSave: "💾 保存",
+      guestSaved: "✓ 已更新 {n} 条报名记录。",
+      guestAliasAdded: "已把「{old}」加入这个账号的“其他名字”，用这个名字记录的对局也会算进他的主页。",
+      guestAliasFailed: "「{old}」没能加入这个账号的“其他名字”（可能别的账号已经用了这个名字）。",
+      guestAliasFull: "这个账号的“其他名字”已经有 5 个了，「{old}」没有加进去；需要的话请玩家自己在主页调整。",
+      needGuestName: "请填写新名字。",
+      needGuestTarget: "请选择要合并到的玩家。",
+      errTwice: "这样会让同一个人在同一桌出现两次，请先在活动页移除其中一个报名。",
       staffTitle: "负责人",
       staffHint: "这个名单只有管理员能看到。被安排到活动里的负责人，联系方式会显示在活动页上；活动结束后自动隐藏。",
       staffEmpty: "还没有负责人。先添加一位，发布活动时就能选择。",
@@ -803,6 +820,23 @@
       playersNever: "No sign-ups yet",
       playersLast: "Last: {d}",
       playersNone: "No players match.",
+      guestEdit: "✏️ Edit / merge",
+      guestTitle: "Edit unregistered player: {name}",
+      guestHint: "Changes this name (ignoring case) on their sign-ups at every event.",
+      guestRename: "Rename (for a misspelled name)",
+      guestNewName: "New name",
+      guestMerge: "Merge into another player (the same person used different names)",
+      guestTarget: "Merge into",
+      guestPick: "Choose…",
+      guestRegTag: "registered",
+      guestSave: "💾 Save",
+      guestSaved: "✓ Updated {n} sign-ups.",
+      guestAliasAdded: "“{old}” was added to the account's other names, so games recorded under it count on their profile too.",
+      guestAliasFailed: "“{old}” couldn't be added to the account's other names (another account may already use it).",
+      guestAliasFull: "The account already has 5 other names, so “{old}” wasn't added. The player can change them on their profile.",
+      needGuestName: "Please enter the new name.",
+      needGuestTarget: "Please choose the player to merge into.",
+      errTwice: "That would put the same person twice at one table. Remove one of the sign-ups on the event page first.",
       staffTitle: "Organizers",
       staffHint: "Only admins can see this list. When an organizer is assigned to an event, their contact details show on that event's page, and are hidden again after the event.",
       staffEmpty: "No organizers yet. Add one, then pick them when publishing an event.",
@@ -1018,6 +1052,7 @@
     if (code === "wish-not-mine") return tr("wishNotMine");
     if (code === "qr-not-image") return tr("qrNotImage");
     if (code === "HVE11") return tr("needContact");
+    if (code === "HVE12") return tr("errTwice");
     if (code === "HVE01") return tr("errOver");
     if (code === "HVE02") return tr("errFull");
     if (code === "HVE03" || code === "23505") return tr("errName");
@@ -1448,6 +1483,7 @@
     main.innerHTML = `${crumb}
       <div class="ev-head"><h2>${esc(tr("playersTitle"))}</h2></div>
       <p class="ev-hint">${esc(tr("playersHint"))}</p>
+      ${flash ? `<p class="ev-msg ${flash.ok ? "is-ok" : "is-err"}" role="status">${esc(flash.text)}</p>` : ""}
       <div class="ev-roster-tools">
         <input id="ev-roster-q" type="search" placeholder="${esc(tr("playersSearch"))}" value="${esc(rosterSt.q)}" autocomplete="off">
         <div class="ev-filters" id="ev-roster-filters"></div>
@@ -1491,7 +1527,9 @@
                   .filter(Boolean)
                   .join(" · ")
               : tr("playersNever");
-            const home = reg ? `<a class="ev-home" href="profile.html?u=${encodeURIComponent(r.user_id)}">${esc(tr("homeLink"))}</a>` : "";
+            const home = reg
+              ? `<a class="ev-home" href="profile.html?u=${encodeURIComponent(r.user_id)}">${esc(tr("homeLink"))}</a>`
+              : isAdmin && Number(r.signups) ? `<button class="link-btn" type="button" data-guest-edit="${esc(name)}">${esc(tr("guestEdit"))}</button>` : "";
             return `<li><div class="ev-roster-row"><span><b>${esc(name)}</b>${nick} <span class="ev-acc ${reg ? "is-reg" : "is-guest"}">${esc(tr(reg ? "isReg" : "isGuest"))}</span><br><small class="ev-hint">${esc(meta)}</small></span>${home}</div></li>`;
           })
           .join("")
@@ -1734,6 +1772,51 @@
     if (D.mode === "people") return renderPeople();
     if (D.mode === "feedback") return renderFeedbackForm();
     if (D.mode === "fbview") return renderFeedbackView();
+    if (D.mode === "guest") return renderGuestForm();
+  }
+  // Admins: correct an unregistered player's name, or merge them into another player (guest or account).
+  function renderGuestForm() {
+    const others = (rosterRows || [])
+      .filter((r) => (r.user_id || nameKey(r.name) !== nameKey(D.key)) && (r.name || r.profile_name))
+      .map((r) => ({ v: r.user_id ? "u:" + r.user_id : "n:" + r.name, label: r.user_id ? `${r.profile_name || r.name}（${tr("guestRegTag")}）` : r.name }))
+      .sort((a, b) => a.label.localeCompare(b.label, lang() === "zh" ? "zh-CN" : "en"));
+    const merge = D.how === "merge";
+    dlg.innerHTML = `${head(tr("guestTitle", { name: D.key }))}
+      <form class="ev-form" data-guest-form novalidate>
+        <p class="ev-hint">${esc(tr("guestHint"))}</p>
+        <label class="ev-leave-opt"><input type="radio" name="how" value="rename"${merge ? "" : " checked"} data-guest-how><span>${esc(tr("guestRename"))}</span></label>
+        ${merge ? "" : `<label class="ev-field"><span>${esc(tr("guestNewName"))}</span><input name="newname" maxlength="30" autocomplete="off" value="${esc(D.newName)}" autofocus></label>`}
+        <label class="ev-leave-opt"><input type="radio" name="how" value="merge"${merge ? " checked" : ""} data-guest-how><span>${esc(tr("guestMerge"))}</span></label>
+        ${merge ? `<label class="ev-field"><span>${esc(tr("guestTarget"))}</span><select name="target"><option value="">${esc(tr("guestPick"))}</option>${others
+          .map((o) => `<option value="${esc(o.v)}"${o.v === D.target ? " selected" : ""}>${esc(o.label)}</option>`)
+          .join("")}</select></label>` : ""}
+        ${errLine()}
+        <div class="form-actions"><button class="btn ghost" type="button" data-close>${esc(tr("cancel"))}</button><button class="btn" type="submit"${busy ? " disabled" : ""}>${esc(busy ? tr("saving") : tr("guestSave"))}</button></div>
+      </form>`;
+  }
+  async function submitGuest() {
+    readForm();
+    D.err = "";
+    let newName = "";
+    let user = null;
+    if (D.how === "merge") {
+      if (!D.target) D.err = tr("needGuestTarget");
+      else if (D.target.startsWith("u:")) {
+        user = D.target.slice(2);
+        const r = (rosterRows || []).find((x) => x.user_id === user);
+        newName = (r && (r.profile_name || r.name)) || "";
+      } else newName = D.target.slice(2);
+    } else {
+      newName = String(D.newName || "").trim().slice(0, 30);
+      if (!newName) D.err = tr("needGuestName");
+    }
+    if (D.err) return renderDialog();
+    const key = D.key;
+    await submit(async () => {
+      const r = await HVLoans.mergeGuest(key, newName, user);
+      const extra = r.alias === "added" ? tr("guestAliasAdded", { old: r.old }) : r.alias === "full" ? tr("guestAliasFull", { old: r.old }) : r.alias === "failed" ? tr("guestAliasFailed", { old: r.old }) : "";
+      flash = { text: [tr("guestSaved", { n: r.changed }), extra].filter(Boolean).join(" "), ok: true };
+    });
   }
 
   const norm = (s) => String(s || "").toLowerCase().replace(/[\s·:：\-–—'’!！?？.,，、()（）]/g, "");
@@ -2544,6 +2627,11 @@
     if ((D.mode === "open" || D.mode === "join") && f.elements.pnote) D.pnote = v("pnote");
     if (D.mode === "time") Object.assign(D, { time: v("time"), note: v("note") });
     if (D.mode === "people") D.extra = v("extra");
+    if (D.mode === "guest") {
+      D.how = (f.querySelector("input[name=how]:checked") || {}).value || "rename";
+      if (f.elements.newname) D.newName = v("newname");
+      if (f.elements.target) D.target = v("target");
+    }
     if (D.mode === "feedback") {
       D.improve = v("improve");
       if (f.elements.fbname) D.name = v("fbname");
@@ -2867,6 +2955,7 @@
       rosterSt.filter = b.dataset.rosterFilter;
       return renderRosterList();
     }
+    if (b.dataset.guestEdit != null) return openDialog({ mode: "guest", key: b.dataset.guestEdit, how: "rename", newName: b.dataset.guestEdit, target: "", err: "" });
     if (b.hasAttribute("data-retry")) {
       main.innerHTML = `<p class="ev-msg">${esc(tr("loading"))}</p>`;
       return void load();
@@ -3036,7 +3125,7 @@
   dlg.addEventListener("change", async (e) => {
     if (!D) return;
     const t = e.target;
-    if (t.name === "slot") {
+    if (t.name === "slot" || t.hasAttribute("data-guest-how")) {
       readForm();
       return renderDialog();
     }
@@ -3177,6 +3266,7 @@
     if (f.hasAttribute("data-score-form")) return void submitScores();
     if (f.hasAttribute("data-people-form")) return void submitPeople();
     if (f.hasAttribute("data-fb-form")) return void submitFeedback();
+    if (f.hasAttribute("data-guest-form")) return void submitGuest();
   });
   // "close" arrives a moment later, so ignore it if another dialog has been opened since.
   dlg.addEventListener("cancel", (e) => {
