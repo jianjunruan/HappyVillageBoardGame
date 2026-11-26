@@ -2241,3 +2241,32 @@ revoke execute on function public.werewolf_room_get(text) from public;
 grant execute on function public.werewolf_room_open(text) to anon, authenticated;
 grant execute on function public.werewolf_room_set(text, text, jsonb) to anon, authenticated;
 grant execute on function public.werewolf_room_get(text) to anon, authenticated;
+
+-- ---------------------------------------------------------------------------------------------------------------
+-- Announcements (滚动通告): a scrolling bar at the top of every page (js/announce.js). Admins add, change and remove
+-- them; each one shows from starts_on to ends_on (whole days, both included) and several take turns. Visitors can
+-- only read the ones not over yet (one day of slack for time zones; the website checks the exact local day).
+create table if not exists public.announcements (
+  id bigint generated always as identity primary key,
+  body text not null check (char_length(trim(body)) between 1 and 200),
+  starts_on date not null default current_date,
+  ends_on date not null,
+  created_at timestamptz not null default now(),
+  constraint announcements_dates check (ends_on >= starts_on)
+);
+alter table public.announcements enable row level security;
+drop policy if exists "Anyone can view current announcements" on public.announcements;
+create policy "Anyone can view current announcements" on public.announcements
+  for select using (ends_on >= current_date - 1 or public.is_admin());
+drop policy if exists "Admins can add announcements" on public.announcements;
+create policy "Admins can add announcements" on public.announcements for insert to authenticated with check (public.is_admin());
+drop policy if exists "Admins can change announcements" on public.announcements;
+create policy "Admins can change announcements" on public.announcements
+  for update to authenticated using (public.is_admin()) with check (public.is_admin());
+drop policy if exists "Admins can delete announcements" on public.announcements;
+create policy "Admins can delete announcements" on public.announcements for delete to authenticated using (public.is_admin());
+revoke all on public.announcements from anon, authenticated;
+grant select (id, body, starts_on, ends_on, created_at) on public.announcements to anon, authenticated;
+grant insert (body, starts_on, ends_on) on public.announcements to authenticated;   -- admins only (policy)
+grant update (body, starts_on, ends_on) on public.announcements to authenticated;   -- admins only (policy)
+grant delete on public.announcements to authenticated;                              -- admins only (policy)
