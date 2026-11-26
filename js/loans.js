@@ -15,6 +15,7 @@ window.HVLoans = (() => {
   // Event organizers (负责人) and their QR code pictures.
   const STAFF_FIELDS = "id,name,phone,wechat,xhs,wechat_qr,xhs_qr";
   const QR_BUCKET = "staff-qr";
+  const WISH_PHOTO_BUCKET = "game-wish-photos"; // 想玩桌游 photos (anyone can add)
 
   function readSession() {
     try {
@@ -577,7 +578,7 @@ window.HVLoans = (() => {
     // Most "+1" votes first, then newest: [{ id, name, title, description, status: "open" | "adopted" | "rejected",
     // votes, created_at }]. Optional limit.
     wishes: (limit) =>
-      request("/rest/v1/event_wishes?select=id,name,title,description,status,votes,created_at&order=votes.desc,created_at.desc,id.desc" + (limit ? `&limit=${limit}` : "")),
+      request("/rest/v1/event_wishes?select=id,name,title,description,status,votes,created_at,admin_note&order=votes.desc,created_at.desc,id.desc" + (limit ? `&limit=${limit}` : "")),
     // Anyone (the browser's secret, and the account when signed in, let them change or delete it later). Returns the new id.
     addWish: (name, title, description, token) =>
       request("/rest/v1/rpc/add_event_wish", { method: "POST", admin: "ifSignedIn", body: { p_name: name, p_title: title, p_description: description, p_token: token } }),
@@ -591,12 +592,52 @@ window.HVLoans = (() => {
       request("/rest/v1/rpc/toggle_event_wish_vote", { method: "POST", admin: "ifSignedIn", body: { p_wish: id, p_token: token } }),
     // Which wishes this browser / account suggested and voted for: { mine: [ids], voted: [ids] }.
     wishState: (token) => request("/rest/v1/rpc/my_event_wish_state", { method: "POST", admin: "ifSignedIn", body: { p_token: token } }),
-    // Admins: adopt ("adopted"), decline ("rejected") or undecided again ("open"), or delete.
-    async setWishStatus(id, status) {
-      const rows = await request(`/rest/v1/event_wishes?id=eq.${encodeURIComponent(id)}&select=id`, { method: "PATCH", admin: true, prefer: "return=representation", body: { status } });
+    // Admins: adopt ("adopted"), decline ("rejected") or undecided again ("open"), or delete. note: the admins' note
+    // (shown in red; left as it is when not given).
+    async setWishStatus(id, status, note) {
+      const body = status ? { status } : {};
+      if (note != null) body.admin_note = String(note).trim().slice(0, 300);
+      const rows = await request(`/rest/v1/event_wishes?id=eq.${encodeURIComponent(id)}&select=id`, { method: "PATCH", admin: true, prefer: "return=representation", body });
       if (!rows.length) throw Object.assign(new Error("Nothing updated"), { code: "nothing-updated" });
     },
     deleteWish: (id) => adminDelete("event_wishes", id),
+    // ---------- game wishes (想玩桌游, wishgames.html) ----------
+    // Most "+1" first, then newest: [{ id, name, title, description, photo, status: "open" | "watching" | "buying" |
+    // "rejected" | "bought", admin_note, votes, created_at, status_at }].
+    gameWishes: (limit) =>
+      request("/rest/v1/game_wishes?select=id,name,title,description,photo,status,admin_note,votes,created_at,status_at&order=votes.desc,created_at.desc,id.desc" + (limit ? `&limit=${limit}` : "")),
+    addGameWish: (fields, token) =>
+      request("/rest/v1/rpc/add_game_wish", { method: "POST", admin: "ifSignedIn", body: { p_name: fields.name, p_title: fields.title, p_description: fields.description, p_photo: fields.photo || "", p_token: token } }),
+    // The person who suggested it. Returns false if this browser / account didn't.
+    updateGameWish: (id, fields, token) =>
+      request("/rest/v1/rpc/update_game_wish", { method: "POST", admin: "ifSignedIn", body: { p_wish: id, p_token: token, p_name: fields.name, p_title: fields.title, p_description: fields.description, p_photo: fields.photo || "" } }),
+    deleteOwnGameWish: (id, token) => request("/rest/v1/rpc/delete_game_wish", { method: "POST", admin: "ifSignedIn", body: { p_wish: id, p_token: token } }),
+    toggleGameWishVote: (id, token) => request("/rest/v1/rpc/toggle_game_wish_vote", { method: "POST", admin: "ifSignedIn", body: { p_wish: id, p_token: token } }),
+    gameWishState: (token) => request("/rest/v1/rpc/my_game_wish_state", { method: "POST", admin: "ifSignedIn", body: { p_token: token } }),
+    // Admins: status ("open" | "watching" | "buying" | "rejected" | "bought"; null keeps it) and/or the note.
+    async setGameWishStatus(id, status, note) {
+      const body = status ? { status } : {};
+      if (note != null) body.admin_note = String(note).trim().slice(0, 300);
+      const rows = await request(`/rest/v1/game_wishes?id=eq.${encodeURIComponent(id)}&select=id`, { method: "PATCH", admin: true, prefer: "return=representation", body });
+      if (!rows.length) throw Object.assign(new Error("Nothing updated"), { code: "nothing-updated" });
+    },
+    deleteGameWish: (id) => adminDelete("game_wishes", id),
+    // A wish's photo (a JPEG/PNG/WebP blob, already made small) under a random name in the public bucket. Anyone.
+    async uploadWishPhoto(blob) {
+      const ext = blob.type === "image/png" ? "png" : blob.type === "image/webp" ? "webp" : "jpg";
+      const bytes = new Uint8Array(12);
+      crypto.getRandomValues(bytes);
+      const name = [...bytes].map((b) => b.toString(16).padStart(2, "0")).join("") + "." + ext;
+      await storage(`/object/${WISH_PHOTO_BUCKET}/${name}`, {
+        method: "POST",
+        admin: Boolean(session),
+        body: blob,
+        headers: { "Content-Type": blob.type || "image/jpeg", "cache-control": "max-age=31536000" },
+      });
+      return name;
+    },
+    deleteWishPhoto: (name) => storage(`/object/${WISH_PHOTO_BUCKET}/${encodeURIComponent(name)}`, { method: "DELETE", admin: true }),
+    wishPhotoUrl: (name) => `${base}/storage/v1/object/public/${WISH_PHOTO_BUCKET}/${encodeURIComponent(name)}`,
     // Admins: make another player at the table its host. Returns false if that player isn't at the table (any more).
     setTableHost: (tableId, playerId) =>
       request("/rest/v1/rpc/set_event_table_host", { method: "POST", admin: true, body: { p_table: tableId, p_player: playerId } }),

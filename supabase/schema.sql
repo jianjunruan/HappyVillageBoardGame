@@ -1076,6 +1076,8 @@ alter table public.event_wishes add column if not exists token text;
 -- How many "+1" votes it has (kept up to date by toggle_event_wish_vote).
 alter table public.event_wishes add column if not exists votes integer not null default 0;
 create index if not exists event_wishes_by_date on public.event_wishes (created_at desc);
+-- The admins' note when adopting or declining (shown in red under the wish).
+alter table public.event_wishes add column if not exists admin_note text not null default '' check (char_length(admin_note) <= 300);
 
 -- One "+1" per browser secret, and one per signed-in account. Never readable from the website.
 create table if not exists public.event_wish_votes (
@@ -1230,8 +1232,8 @@ create policy "Admins can change event wishes" on public.event_wishes
 drop policy if exists "Admins can delete event wishes" on public.event_wishes;
 create policy "Admins can delete event wishes" on public.event_wishes for delete to authenticated using (public.is_admin());
 revoke all on public.event_wishes from anon, authenticated;
-grant select (id, name, title, description, status, votes, created_at) on public.event_wishes to anon, authenticated;  -- not user_id or token
-grant update (status) on public.event_wishes to authenticated;  -- admins only (policy)
+grant select (id, name, title, description, status, votes, created_at, admin_note) on public.event_wishes to anon, authenticated;  -- not user_id or token
+grant update (status, admin_note) on public.event_wishes to authenticated;  -- admins only (policy)
 grant delete on public.event_wishes to authenticated;           -- admins only (policy)
 revoke execute on function public.add_event_wish(text, text, text, text) from public;
 revoke execute on function public.is_event_wish_owner(text, uuid, text) from public, anon, authenticated;
@@ -1244,6 +1246,208 @@ grant execute on function public.update_event_wish(bigint, text, text, text, tex
 grant execute on function public.delete_event_wish(bigint, text) to anon, authenticated;
 grant execute on function public.toggle_event_wish_vote(bigint, text) to anon, authenticated;
 grant execute on function public.my_event_wish_state(text) to anon, authenticated;
+
+-- ---------------------------------------------------------------------------------------------------------------
+-- Game wishes (想玩桌游, wishgames.html): anyone can suggest a board game they'd like to play here (their name, the
+-- game, a short description, and one optional photo). Everyone can see them and add a "我也想玩 +1" vote. Like event
+-- wishes, the person who suggested one can change or delete it, from the same browser or account.
+-- Admins: 'watching' (关注中), 'buying' (adopted: 已采纳 · 购买中), 'rejected' (未采纳), then 'bought' (已购买: off the
+-- home page, kept on wishgames.html as history). admin_note: the admins' note when adopting or declining (shown in red).
+create table if not exists public.game_wishes (
+  id bigint generated always as identity primary key,
+  name text not null default '' check (char_length(trim(name)) <= 30),
+  title text not null check (char_length(trim(title)) between 1 and 80),
+  description text not null default '' check (char_length(description) <= 1000),
+  photo text check (photo is null or photo ~ '^[0-9a-f]{24}\.(jpg|png|webp)$'),  -- name in the "game-wish-photos" bucket
+  status text not null default 'open' check (status in ('open', 'watching', 'buying', 'rejected', 'bought')),
+  admin_note text not null default '' check (char_length(admin_note) <= 300),
+  votes integer not null default 0,
+  token text,                                                     -- the suggesting browser's secret; never readable
+  user_id uuid references auth.users (id) on delete set null,    -- the account that suggested it; never readable
+  created_at timestamptz not null default now(),
+  status_at timestamptz                                           -- when the status last changed (e.g. the day it was bought)
+);
+create index if not exists game_wishes_by_votes on public.game_wishes (votes desc, created_at desc);
+create or replace function public.game_wish_status_at()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+begin
+  if new.status is distinct from old.status then
+    new.status_at := now();
+  end if;
+  return new;
+end;
+$$;
+drop trigger if exists game_wishes_status_at on public.game_wishes;
+create trigger game_wishes_status_at before update on public.game_wishes
+  for each row execute function public.game_wish_status_at();
+
+create table if not exists public.game_wish_votes (
+  id bigint generated always as identity primary key,
+  wish_id bigint not null references public.game_wishes (id) on delete cascade,
+  token text not null check (char_length(token) between 16 and 100),
+  user_id uuid references auth.users (id) on delete set null,
+  created_at timestamptz not null default now()
+);
+create unique index if not exists game_wish_votes_one_per_browser on public.game_wish_votes (wish_id, token);
+create unique index if not exists game_wish_votes_one_per_account on public.game_wish_votes (wish_id, user_id) where user_id is not null;
+alter table public.game_wish_votes enable row level security;  -- no policies, no grants: only the functions below use it
+revoke all on public.game_wish_votes from anon, authenticated;
+
+-- Adds a game wish. At most 20 a minute across the site. Returns the new id.
+create or replace function public.add_game_wish(p_name text, p_title text, p_description text, p_photo text, p_token text)
+returns bigint
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  w bigint;
+begin
+  if p_token is null or char_length(p_token) not between 16 and 100 then
+    raise exception 'missing browser secret' using errcode = 'HVW03';
+  end if;
+  perform pg_advisory_xact_lock(hashtext('hv-game-wishes'));
+  if (select count(*) from public.game_wishes where created_at > now() - interval '1 minute') >= 20 then
+    raise exception 'Too many suggestions just now, try again in a minute' using errcode = 'HVW01';
+  end if;
+  insert into public.game_wishes (name, title, description, photo, token, user_id)
+  values (trim(coalesce(p_name, '')), trim(p_title), trim(coalesce(p_description, '')), nullif(p_photo, ''), p_token, auth.uid())
+  returning id into w;
+  return w;
+end;
+$$;
+
+-- The person who suggested it changes it (p_photo: the new photo's name, '' for none). Returns false if it isn't theirs.
+create or replace function public.update_game_wish(p_wish bigint, p_token text, p_name text, p_title text, p_description text, p_photo text)
+returns boolean
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  w bigint;
+begin
+  update public.game_wishes
+  set name = trim(coalesce(p_name, '')), title = trim(p_title), description = trim(coalesce(p_description, '')),
+      photo = nullif(p_photo, '')
+  where id = p_wish and public.is_event_wish_owner(token, user_id, p_token)
+  returning id into w;
+  return w is not null;
+end;
+$$;
+
+create or replace function public.delete_game_wish(p_wish bigint, p_token text)
+returns boolean
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  w bigint;
+begin
+  delete from public.game_wishes
+  where id = p_wish and public.is_event_wish_owner(token, user_id, p_token)
+  returning id into w;
+  return w is not null;
+end;
+$$;
+
+-- "我也想玩 +1", or takes it back. Returns { "voted": …, "votes": … }. Declined or bought ones take no new votes (HVW02).
+create or replace function public.toggle_game_wish_vote(p_wish bigint, p_token text)
+returns jsonb
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  st text;
+  v bigint;
+  n integer;
+begin
+  if p_token is null or char_length(p_token) not between 16 and 100 then
+    raise exception 'missing browser secret' using errcode = 'HVW03';
+  end if;
+  select status into st from public.game_wishes where id = p_wish for update;
+  if st is null then
+    raise exception 'wish not found' using errcode = 'HVW04';
+  end if;
+  select id into v from public.game_wish_votes
+  where wish_id = p_wish and (token = p_token or (auth.uid() is not null and user_id = auth.uid()))
+  limit 1;
+  if v is not null then
+    delete from public.game_wish_votes
+    where wish_id = p_wish and (token = p_token or (auth.uid() is not null and user_id = auth.uid()));
+  else
+    if st in ('rejected', 'bought') then
+      raise exception 'this wish is closed' using errcode = 'HVW02';
+    end if;
+    perform pg_advisory_xact_lock(hashtext('hv-game-wish-votes'));
+    if (select count(*) from public.game_wish_votes where created_at > now() - interval '1 minute') >= 120 then
+      raise exception 'Too many votes just now, try again in a minute' using errcode = 'HVW01';
+    end if;
+    insert into public.game_wish_votes (wish_id, token, user_id) values (p_wish, p_token, auth.uid());
+  end if;
+  select count(*) into n from public.game_wish_votes where wish_id = p_wish;
+  update public.game_wishes set votes = n where id = p_wish;
+  return jsonb_build_object('voted', v is null, 'votes', n);
+end;
+$$;
+
+-- Which game wishes this browser / account suggested and voted for: { "mine": [ids], "voted": [ids] }.
+create or replace function public.my_game_wish_state(p_token text)
+returns jsonb
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select jsonb_build_object(
+    'mine', coalesce((select jsonb_agg(id) from public.game_wishes w
+                      where public.is_event_wish_owner(w.token, w.user_id, p_token)), '[]'::jsonb),
+    'voted', coalesce((select jsonb_agg(distinct wish_id) from public.game_wish_votes x
+                       where (p_token is not null and char_length(p_token) >= 16 and x.token = p_token)
+                          or (auth.uid() is not null and x.user_id = auth.uid())), '[]'::jsonb));
+$$;
+
+alter table public.game_wishes enable row level security;
+drop policy if exists "Anyone can view game wishes" on public.game_wishes;
+create policy "Anyone can view game wishes" on public.game_wishes for select using (true);
+drop policy if exists "Admins can change game wishes" on public.game_wishes;
+create policy "Admins can change game wishes" on public.game_wishes
+  for update to authenticated using (public.is_admin()) with check (public.is_admin());
+drop policy if exists "Admins can delete game wishes" on public.game_wishes;
+create policy "Admins can delete game wishes" on public.game_wishes for delete to authenticated using (public.is_admin());
+revoke all on public.game_wishes from anon, authenticated;
+grant select (id, name, title, description, photo, status, admin_note, votes, created_at, status_at) on public.game_wishes to anon, authenticated;
+grant update (status, admin_note) on public.game_wishes to authenticated;  -- admins only (policy)
+grant delete on public.game_wishes to authenticated;                       -- admins only (policy)
+revoke execute on function public.add_game_wish(text, text, text, text, text) from public;
+revoke execute on function public.update_game_wish(bigint, text, text, text, text, text) from public;
+revoke execute on function public.delete_game_wish(bigint, text) from public;
+revoke execute on function public.toggle_game_wish_vote(bigint, text) from public;
+revoke execute on function public.my_game_wish_state(text) from public;
+grant execute on function public.add_game_wish(text, text, text, text, text) to anon, authenticated;
+grant execute on function public.update_game_wish(bigint, text, text, text, text, text) to anon, authenticated;
+grant execute on function public.delete_game_wish(bigint, text) to anon, authenticated;
+grant execute on function public.toggle_game_wish_vote(bigint, text) to anon, authenticated;
+grant execute on function public.my_game_wish_state(text) to anon, authenticated;
+
+-- Game wish photos: a public bucket so everyone can see them. Anyone can add one (random names only; the website
+-- shrinks the photo first, and the bucket takes images up to 5 MB); only admins can delete them.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('game-wish-photos', 'game-wish-photos', true, 5242880, array['image/png', 'image/jpeg', 'image/webp'])
+on conflict (id) do update
+  set public = true, file_size_limit = excluded.file_size_limit, allowed_mime_types = excluded.allowed_mime_types;
+drop policy if exists "Anyone can add game wish photos" on storage.objects;
+create policy "Anyone can add game wish photos" on storage.objects
+  for insert to anon, authenticated
+  with check (bucket_id = 'game-wish-photos' and name ~ '^[0-9a-f]{24}\.(jpg|png|webp)$');
+drop policy if exists "Admins can delete game wish photos" on storage.objects;
+create policy "Admins can delete game wish photos" on storage.objects
+  for delete to authenticated using (bucket_id = 'game-wish-photos' and public.is_admin());
 
 -- ---------------------------------------------------------------------------------------------------------------
 -- Event organizers (负责人). Only admins can see the list and manage it. Each event has one main organizer and any

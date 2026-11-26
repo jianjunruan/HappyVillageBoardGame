@@ -354,3 +354,13 @@ p.ev-tpl { margin: 0; color: var(--muted); }
 .ev-att.is-present { background: var(--ok); border-color: var(--ok); color: #fff; }
 .ev-att.is-absent { background: var(--danger); border-color: var(--danger); color: #fff; }
 .ev-att-sum { margin: 4px 0 8px; }
+
+/* Game wishes (想玩桌游, wishgames.html): reuses the event wish cards */
+.gw-wish.is-buying { outline: 2px solid var(--ok); }
+.gw-wish.is-bought { opacity: 0.85; }
+.ev-wish-badge.gw-buying { background: var(--accent); }
+.gw-photo { display: block; width: calc(100% + 28px); margin: -12px -14px 10px; padding: 0; border: 0; background: var(--img-bg, var(--bg)); border-radius: var(--radius) var(--radius) 0 0; overflow: hidden; cursor: zoom-in; }
+.gw-photo img { display: block; width: 100%; height: 180px; object-fit: contain; }
+.gw-photo-big { background: var(--bg); }
+.gw-preview { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.gw-preview img { width: 72px; height: 72px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); }
