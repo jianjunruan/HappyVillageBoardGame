@@ -362,6 +362,9 @@ create index if not exists event_players_by_table on public.event_players (table
 create unique index if not exists event_players_one_name on public.event_players (table_id, lower(trim(name)));
 -- A short note the player adds when signing up (e.g. "I'll be 30 minutes late"), shown under their name to everyone.
 alter table public.event_players add column if not exists note text not null default '' check (char_length(note) <= 50);
+-- Check-in (报名打卡), set by admins on the day: 'present' (出席), 'absent' (未出席), or null (未打卡). Only admins can
+-- read or change it (admin_event_attendance / admin_set_attendance); it isn't granted to visitors.
+alter table public.event_players add column if not exists attendance text check (attendance in ('present', 'absent'));
 -- Contact for a sign-up made without a player account (手机号 or 微信号, at least one): private. Only the database
 -- functions below use it (no grants), and only admins can read it back (event_contacts).
 create table if not exists public.event_player_contacts (
@@ -620,6 +623,38 @@ end;
 $$;
 revoke execute on function public.set_event_player_note(bigint, text, text) from public;
 grant execute on function public.set_event_player_note(bigint, text, text) to anon, authenticated;
+
+-- Admins only: the check-in of each of an event's sign-ups (those marked; the rest are 未打卡).
+create or replace function public.admin_event_attendance(p_event bigint)
+returns table (player_id bigint, attendance text)
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select p.id, p.attendance
+  from public.event_players p join public.event_tables t on t.id = p.table_id
+  where public.is_admin() and t.event_id = p_event and p.attendance is not null;
+$$;
+revoke execute on function public.admin_event_attendance(bigint) from public, anon;
+grant execute on function public.admin_event_attendance(bigint) to authenticated;
+
+-- Admins only: marks a sign-up 'present' or 'absent', or back to not checked in (null or '').
+create or replace function public.admin_set_attendance(p_player bigint, p_status text)
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if not public.is_admin() then
+    raise exception 'admins only' using errcode = '42501';
+  end if;
+  update public.event_players set attendance = nullif(p_status, '') where id = p_player;
+end;
+$$;
+revoke execute on function public.admin_set_attendance(bigint, text) from public, anon;
+grant execute on function public.admin_set_attendance(bigint, text) to authenticated;
 
 -- True when the caller is a table's current host: by the host's browser secret, or by the account they signed up with.
 create or replace function public.is_event_table_host(p_table bigint, p_host_token text, p_host_player bigint, p_token text)

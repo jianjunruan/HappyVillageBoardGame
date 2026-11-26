@@ -534,6 +534,11 @@ window.HVLoans = (() => {
     // Changes a sign-up's own note ("" clears it): this browser's or account's sign-up, or any as an admin. Returns true if it worked.
     setPlayerNote: (playerId, token, note) =>
       request("/rest/v1/rpc/set_event_player_note", { method: "POST", admin: "ifSignedIn", body: { p_player: playerId, p_token: token, p_note: note } }),
+    // Admins only: check-ins (报名打卡) at an event: [{ player_id, attendance: "present" | "absent" }] (the rest aren't checked in).
+    attendance: (eventId) => request("/rest/v1/rpc/admin_event_attendance", { method: "POST", admin: true, body: { p_event: eventId } }),
+    // Admins only: status "present", "absent" or "" (not checked in).
+    setAttendance: (playerId, status) =>
+      request("/rest/v1/rpc/admin_set_attendance", { method: "POST", admin: true, body: { p_player: playerId, p_status: status || "" } }),
     // Returns true if this browser's sign-up was removed. A host can name the player who takes over (nextId);
     // without one, the next person who joined does.
     leaveTable: (playerId, token, nextId) =>

@@ -330,6 +330,11 @@
       playerNotePh: "例如：会晚到半小时、第一次玩求教…",
       playerNoteHint: "会显示在名字下面，大家都能看到。",
       editNote: "✏️ 备注",
+      attPresent: "✅ 出席",
+      attAbsent: "❌ 未出席",
+      attNone: "⏳ 未打卡",
+      attLabel: "{name} 的打卡：{state}，点一下切换",
+      attSummary: "报名打卡（只有管理员能看到，点名字旁的标签切换）：✅ 出席 {p} · ❌ 未出席 {a} · ⏳ 未打卡 {n}",
       editNoteLabel: "修改 {name} 的备注",
       noteTitle: "修改备注：{name}",
       noteSave: "💾 保存备注",
@@ -781,6 +786,11 @@
       playerNotePh: "e.g. I'll be 30 minutes late, first time playing…",
       playerNoteHint: "Shown under the name, for everyone to see.",
       editNote: "✏️ Note",
+      attPresent: "✅ Came",
+      attAbsent: "❌ No-show",
+      attNone: "⏳ Not checked",
+      attLabel: "{name}'s check-in: {state}. Tap to change",
+      attSummary: "Check-in (admins only; tap the tag by a name to change it): ✅ came {p} · ❌ no-show {a} · ⏳ not checked {n}",
       editNoteLabel: "Edit {name}'s note",
       noteTitle: "Edit note: {name}",
       noteSave: "💾 Save note",
@@ -954,6 +964,10 @@
   let mine = new Set(store.get("hv-event-mine", []));
   const saveMine = () => store.set("hv-event-mine", [...mine].slice(-300));
   let profileName = ""; // a signed-in player's nickname
+  let attendance = new Map(); // admins: player id -> "present" | "absent" (missing = 未打卡)
+  const ATT_NEXT = { "": "present", present: "absent", absent: "" };
+  const attKey = (st) => (st === "present" ? "attPresent" : st === "absent" ? "attAbsent" : "attNone");
+  const canCheckIn = () => isAdmin && ev && daysAway(ev.event_date) <= 0; // from the event's day on
   let myContact; // signed-in player's saved contact { phone, wechat }: undefined until loaded, null if none
   let profileNames = []; // their nickname and other names, lower case: a game with one of them is theirs to score
   const myName = () => store.get("hv-event-name", "") || profileName;
@@ -1167,6 +1181,13 @@
             myFb = { event: null, row: null };
           }
         }
+        if (ev && isAdmin) {
+          try {
+            attendance = new Map((await HVLoans.attendance(ev.id)).map((r) => [Number(r.player_id), r.attendance]));
+          } catch {
+            attendance = new Map();
+          }
+        }
         // A signed-in player's sign-ups count as theirs on any device.
         if (ev && HVLoans.user) {
           try {
@@ -1322,10 +1343,14 @@
       .map((p) => {
         const me = mine.has(p.id);
         const who = `${esc(p.name)}${p.id === hostId ? ` <small>· ${esc(tr("host"))}</small>` : ""}${me ? ` <small>(${esc(tr("me"))})</small>` : ""}`;
+        const st = attendance.get(p.id) || "";
+        const attBtn = canCheckIn()
+          ? `<button type="button" class="ev-att is-${st || "none"}" data-att="${p.id}" aria-label="${esc(tr("attLabel", { name: p.name, state: tr(attKey(st)) }))}">${esc(tr(attKey(st)))}</button>`
+          : "";
         const noteBtn = (me && !over) || isAdmin
           ? `<button type="button" class="ev-pnote-btn" data-edit-note="${p.id}" aria-label="${esc(tr("editNoteLabel", { name: p.name }))}">${esc(tr("editNote"))}</button>`
           : "";
-        return `<span class="ev-player${me ? " is-me" : ""}${p.note || noteBtn ? " has-note" : ""}">${p.note || noteBtn ? `<span class="ev-pwho"><span>${who}</span>${p.note ? `<small class="ev-pnote">${esc(p.note)}</small>` : ""}${noteBtn}</span>` : who}${
+        return `<span class="ev-player${me ? " is-me" : ""}${p.note || noteBtn ? " has-note" : ""}">${p.note || noteBtn ? `<span class="ev-pwho"><span>${who}</span>${p.note ? `<small class="ev-pnote">${esc(p.note)}</small>` : ""}${attBtn}${noteBtn}</span>` : who}${
           isAdmin ? `<button type="button" class="ev-x" data-remove-player="${p.id}" data-name="${esc(p.name)}" aria-label="${esc(tr("removePlayer", { name: p.name }))}">✕</button>` : ""
         }</span>`;
       })
@@ -1590,6 +1615,7 @@
         ${over ? "" : `<button class="btn" type="button" data-open-table>${esc(tr("openNew"))}</button>`}
       </div>
       ${flash ? `<p class="ev-msg ${flash.ok ? "is-ok" : "is-err"}" role="status">${esc(flash.text)}</p>` : ""}
+      ${canCheckIn() ? attSummaryHtml(tables) : ""}
       ${over ? `<p class="ev-empty${ev.cancelled ? " is-cancelled" : ""}">${esc(tr(ev.cancelled ? "cancelledNote" : "overNote"))}</p>` : ""}
       ${tables.length ? `<div class="ev-tables">${tables.map((t) => tableCard(t, over)).join("")}</div>` : over ? "" : `<p class="ev-empty">${esc(tr("openFirst"))}</p>`}`;
   }
@@ -1790,6 +1816,27 @@
     if (D.mode === "fbview") return renderFeedbackView();
     if (D.mode === "guest") return renderGuestForm();
     if (D.mode === "pnote") return renderNoteForm();
+  }
+  function attSummaryHtml(tables) {
+    const all = tables.flatMap((t) => t.event_players);
+    const p = all.filter((x) => attendance.get(x.id) === "present").length;
+    const a = all.filter((x) => attendance.get(x.id) === "absent").length;
+    return all.length ? `<p class="ev-hint ev-att-sum" data-att-sum>${esc(tr("attSummary", { p, a, n: all.length - p - a }))}</p>` : "";
+  }
+  // Admins: tap a sign-up's check-in tag: 未打卡 → 出席 → 未出席 → 未打卡. Shows at once; undone if saving fails.
+  async function cycleAttendance(btn) {
+    const id = Number(btn.dataset.att);
+    const before = attendance.get(id) || "";
+    const next = ATT_NEXT[before];
+    next ? attendance.set(id, next) : attendance.delete(id);
+    render();
+    try {
+      await HVLoans.setAttendance(id, next);
+    } catch (err) {
+      before ? attendance.set(id, before) : attendance.delete(id);
+      flash = { text: errText(err), ok: false };
+      render();
+    }
   }
   // A player's own note under their name, changed after signing up (admins: anyone's).
   function renderNoteForm() {
@@ -3080,6 +3127,7 @@
       if (t) openDialog({ mode: "start", table: t.id, picked: new Set(t.event_players.map((p) => String(p.id))), add: "", err: "" });
       return;
     }
+    if (b.dataset.att) return void cycleAttendance(b);
     if (b.dataset.editNote) {
       const p = ev && ev.event_tables.flatMap((t) => t.event_players).find((x) => x.id === Number(b.dataset.editNote));
       if (p) openDialog({ mode: "pnote", player: p.id, name: p.name, pnote: p.note || "", err: "" });
@@ -3389,7 +3437,7 @@
       .catch(() => {})
       .then(() => {
         adminChecked = true;
-        if ((STAFF_VIEW || PLAYERS_VIEW) && isAdmin) load();
+        if (isAdmin && (STAFF_VIEW || PLAYERS_VIEW || EVENT_ID != null)) load(); // the event page: admins also see check-ins
         else render();
       });
     // A signed-in player's nickname fills in the name when joining or opening a table.
