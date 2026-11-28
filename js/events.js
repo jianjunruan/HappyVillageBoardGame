@@ -346,7 +346,7 @@
       attAbsent: "❌ 未出席",
       attNone: "⏳ 未打卡",
       attLabel: "{name} 的打卡：{state}，点一下切换",
-      attSummary: "报名打卡（只有管理员能看到，点名字旁的标签切换）：✅ 出席 {p} · ❌ 未出席 {a} · ⏳ 未打卡 {n}",
+      attSummary: "打卡（只有管理员能看到，点名字旁的标签切换）：✅ 出席 {p} 人 · ❌ 未出席 {a} 人 · ⏳ 未打卡 {n} 人",
       editNoteLabel: "修改 {name} 的备注",
       noteTitle: "修改备注：{name}",
       noteSave: "💾 保存备注",
@@ -814,7 +814,7 @@
       attAbsent: "❌ No-show",
       attNone: "⏳ Not checked",
       attLabel: "{name}'s check-in: {state}. Tap to change",
-      attSummary: "Check-in (admins only; tap the tag by a name to change it): ✅ came {p} · ❌ no-show {a} · ⏳ not checked {n}",
+      attSummary: "Check-in (admins only; tap the tag by a name to change it): ✅ came {p} · ❌ no-show {a} · ⏳ not checked {n} people",
       editNoteLabel: "Edit {name}'s note",
       noteTitle: "Edit note: {name}",
       noteSave: "💾 Save note",
@@ -1375,14 +1375,10 @@
       .map((p) => {
         const me = mine.has(p.id);
         const who = `${esc(p.name)}${p.id === hostId ? ` <small>· ${esc(tr("host"))}</small>` : ""}${me ? ` <small>(${esc(tr("me"))})</small>` : ""}`;
-        const st = attendance.get(p.id) || "";
-        const attBtn = canCheckIn()
-          ? `<button type="button" class="ev-att is-${st || "none"}" data-att="${p.id}" aria-label="${esc(tr("attLabel", { name: p.name, state: tr(attKey(st)) }))}">${esc(tr(attKey(st)))}</button>`
-          : "";
         const noteBtn = (me && !over) || isAdmin
           ? `<button type="button" class="ev-pnote-btn" data-edit-note="${p.id}" aria-label="${esc(tr("editNoteLabel", { name: p.name }))}">${esc(tr("editNote"))}</button>`
           : "";
-        return `<span class="ev-player${me ? " is-me" : ""}${p.note || noteBtn ? " has-note" : ""}">${p.note || noteBtn ? `<span class="ev-pwho"><span>${who}</span>${p.note ? `<small class="ev-pnote">${esc(p.note)}</small>` : ""}${attBtn}${noteBtn}</span>` : who}${
+        return `<span class="ev-player${me ? " is-me" : ""}${p.note || noteBtn ? " has-note" : ""}">${p.note || noteBtn ? `<span class="ev-pwho"><span>${who}</span>${p.note ? `<small class="ev-pnote">${esc(p.note)}</small>` : ""}${noteBtn}</span>` : who}${
           isAdmin ? `<button type="button" class="ev-x" data-remove-player="${p.id}" data-name="${esc(p.name)}" aria-label="${esc(tr("removePlayer", { name: p.name }))}">✕</button>` : ""
         }</span>`;
       })
@@ -1647,7 +1643,6 @@
         ${over ? "" : `<button class="btn" type="button" data-open-table>${esc(tr("openNew"))}</button>`}
       </div>
       ${flash ? `<p class="ev-msg ${flash.ok ? "is-ok" : "is-err"}" role="status">${esc(flash.text)}</p>` : ""}
-      ${canCheckIn() ? attSummaryHtml(tables) : ""}
       ${over ? `<p class="ev-empty${ev.cancelled ? " is-cancelled" : ""}">${esc(tr(ev.cancelled ? "cancelledNote" : "overNote"))}</p>` : ""}
       ${tables.length ? `<div class="ev-tables">${tables.map((t) => tableCard(t, over)).join("")}</div>` : over ? "" : `<p class="ev-empty">${esc(tr("openFirst"))}</p>`}`;
   }
@@ -1850,25 +1845,32 @@
     if (D.mode === "guest") return renderGuestForm();
     if (D.mode === "pnote") return renderNoteForm();
   }
-  function attSummaryHtml(tables) {
-    const all = tables.flatMap((t) => t.event_players);
-    const p = all.filter((x) => attendance.get(x.id) === "present").length;
-    const a = all.filter((x) => attendance.get(x.id) === "absent").length;
-    return all.length ? `<p class="ev-hint ev-att-sum" data-att-sum>${esc(tr("attSummary", { p, a, n: all.length - p - a }))}</p>` : "";
+  // A person's check-in, from their sign-ups at this event (someone at two tables is checked in once, for both).
+  const personAtt = (a) => {
+    const sts = a.players.map((id) => attendance.get(id) || "");
+    return sts.includes("present") ? "present" : sts.length && sts.every((x) => x === "absent") ? "absent" : "";
+  };
+  function attSummaryHtml(people) {
+    const signed = people.filter((a) => a.players.length);
+    const p = signed.filter((a) => personAtt(a) === "present").length;
+    const a = signed.filter((a) => personAtt(a) === "absent").length;
+    return signed.length ? `<p class="ev-hint ev-att-sum">${esc(tr("attSummary", { p, a, n: signed.length - p - a }))}</p>` : "";
   }
-  // Admins: tap a sign-up's check-in tag: 未打卡 → 出席 → 未出席 → 未打卡. Shows at once; undone if saving fails.
+  // Admins, in 来玩的人: tap a person's check-in tag: 未打卡 → 出席 → 未出席 → 未打卡 (all their sign-ups here).
+  // Shows at once; undone if saving fails.
   async function cycleAttendance(btn) {
-    const id = Number(btn.dataset.att);
-    const before = attendance.get(id) || "";
-    const next = ATT_NEXT[before];
-    next ? attendance.set(id, next) : attendance.delete(id);
-    render();
+    const ids = btn.dataset.attPerson.split(",").map(Number);
+    const before = new Map(ids.map((id) => [id, attendance.get(id) || ""]));
+    const cur = personAtt({ players: ids });
+    const next = ATT_NEXT[cur];
+    for (const id of ids) next ? attendance.set(id, next) : attendance.delete(id);
+    renderDialog();
     try {
-      await HVLoans.setAttendance(id, next);
+      await Promise.all(ids.map((id) => HVLoans.setAttendance(id, next)));
     } catch (err) {
-      before ? attendance.set(id, before) : attendance.delete(id);
-      flash = { text: errText(err), ok: false };
-      render();
+      for (const [id, st] of before) st ? attendance.set(id, st) : attendance.delete(id);
+      if (D) D.err = errText(err);
+      renderDialog();
     }
   }
   // A player's own note under their name, changed after signing up (admins: anyone's).
@@ -2280,7 +2282,11 @@
           }
           contactHtml = `<br><small class="ev-contact-line${seen.size ? "" : " is-missing"}">${esc(seen.size ? tr("contactOf", { v: [...seen].join(" · ") }) : tr("contactNone"))}</small>`;
         }
-        return `<li><b>${name}</b>${tag}${badge}${at.length ? `<br><small class="ev-hint">${esc(at.join("、"))}</small>` : ""}${contactHtml}${link}</li>`;
+        const ast = personAtt(a);
+        const att = canCheckIn() && a.players.length
+          ? ` <button type="button" class="ev-att is-${ast || "none"}" data-att-person="${a.players.join(",")}" aria-label="${esc(tr("attLabel", { name: a.name || "", state: tr(attKey(ast)) }))}">${esc(tr(attKey(ast)))}</button>`
+          : "";
+        return `<li><b>${name}</b>${tag}${badge}${att}${at.length ? `<br><small class="ev-hint">${esc(at.join("、"))}</small>` : ""}${contactHtml}${link}</li>`;
       })
       .join("");
     const seg = (f, label) =>
@@ -2293,6 +2299,7 @@
           ? `<p class="ev-hint">${esc(tr("accLoading"))}</p>`
           : `<div class="ev-filters">${seg("all", tr("fAll", { n: all.length }))}${seg("reg", tr("fReg", { n: nReg }))}${seg("guest", tr("fGuest", { n: nGuest }))}</div>`;
     dlg.innerHTML = `${head(tr("peopleTitle", { n: HVLoans.headcount(ev) }))}
+      ${canCheckIn() ? attSummaryHtml(all) : ""}
       ${filters}
       ${list.length ? `<ol class="ev-people">${rows}</ol>` : filter !== "all" ? `<p class="ev-empty">${esc(tr("fEmpty"))}</p>` : extra ? "" : `<p class="ev-empty">${esc(tr("peopleNone"))}</p>`}
       ${extra && filter === "all" ? `<p class="ev-hint">${esc(tr("peopleExtra", { n: extra }))}</p>` : ""}
@@ -3187,7 +3194,6 @@
       if (t) openDialog({ mode: "start", table: t.id, picked: new Set(t.event_players.map((p) => String(p.id))), add: "", err: "" });
       return;
     }
-    if (b.dataset.att) return void cycleAttendance(b);
     if (b.dataset.editNote) {
       const p = ev && ev.event_tables.flatMap((t) => t.event_players).find((x) => x.id === Number(b.dataset.editNote));
       if (p) openDialog({ mode: "pnote", player: p.id, name: p.name, pnote: p.note || "", err: "" });
@@ -3301,6 +3307,8 @@
   // The enlarged QR code isn't a form: a click outside or Esc closes it.
   dlg.addEventListener("click", (e) => {
     if (e.target.closest("[data-close]") || (e.target === dlg && D && D.mode === "qr")) return closeDialog();
+    const attBtn = e.target.closest("[data-att-person]");
+    if (attBtn && D && D.mode === "people") return void cycleAttendance(attBtn);
     if (e.target.closest("[data-tpl-save]") && D) return void saveTemplate();
     if (e.target.closest("[data-start-add]") && D) return void startAdd();
     if (D && D.mode === "feedback") {
